@@ -27,47 +27,43 @@ const portrait = Object.values(portraits)[0]?.default;
 const portraitSize = 128;
 ---
 
-<section class="reveal pt-16">
-  <div class="flex flex-col gap-6 sm:flex-row sm:items-start">
-    {
-      portrait ? (
-        <Image
-          src={portrait}
-          alt={dict.hero.portraitAlt}
-          width={portraitSize}
-          height={portraitSize}
-          densities={[1, 2, 3]}
-          quality={90}
-          loading="eager"
-          class="shrink-0 rounded-lg object-cover"
-        />
-      ) : (
-        <div
-          role="img"
-          aria-label={dict.hero.portraitAlt}
-          style={`width:${portraitSize}px;height:${portraitSize}px`}
-          class="flex shrink-0 items-center justify-center rounded-lg bg-surface p-2 text-center text-[10px] leading-tight text-muted"
-        >
-          {dict.hero.portraitPlaceholder}
-        </div>
-      )
-    }
+{/* No .reveal here: the hero is in view at first paint, so it animates on load. */}
+<section class="section-grid hero-grid pt-16">
+  {
+    portrait ? (
+      <Image
+        src={portrait}
+        alt={dict.hero.portraitAlt}
+        width={portraitSize}
+        height={portraitSize}
+        densities={[1, 2, 3]}
+        quality={90}
+        loading="eager"
+        class="enter shrink-0 rounded-lg object-cover"
+      />
+    ) : (
+      <div
+        role="img"
+        aria-label={dict.hero.portraitAlt}
+        style={`width:${portraitSize}px;height:${portraitSize}px`}
+        class="enter flex shrink-0 items-center justify-center rounded-lg bg-surface p-2 text-center text-[10px] leading-tight text-muted"
+      >
+        {dict.hero.portraitPlaceholder}
+      </div>
+    )
+  }
 
-    <div>
-      <h1 class="font-heading text-4xl leading-[1.05] font-semibold tracking-tight sm:text-5xl">
-        {site.name}
-      </h1>
-      <p class="mt-4 max-w-[34rem] text-muted">{dict.hero.positioning}</p>
-    </div>
+  <div class="enter-stagger">
+    <h1 class="font-heading text-4xl leading-[1.05] font-semibold tracking-tight sm:text-5xl">
+      {site.name}
+    </h1>
+    <p class="mt-4 max-w-[34rem] text-muted">{dict.hero.positioning}</p>
+
+    <p class="mt-8">
+      <a href={`mailto:${site.email}`} class="link inline-flex items-center gap-2">
+        <Mail class="size-4" aria-hidden="true" />
+        {dict.hero.cta}
+      </a>
+    </p>
   </div>
-
-  <p class="mt-8">
-    <a
-      href={`mailto:${site.email}`}
-      class="link inline-flex items-center gap-2"
-    >
-      <Mail class="size-4" aria-hidden="true" />
-      {dict.hero.cta}
-    </a>
-  </p>
 </section>

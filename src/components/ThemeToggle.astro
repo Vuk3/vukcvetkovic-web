@@ -11,14 +11,21 @@ const { lang } = Astro.props;
 const dict = getDict(lang);
 ---
 
+{/* Both icons stay in the DOM and cross-rotate; `hidden` cannot be transitioned. */}
 <button
   type="button"
   data-theme-toggle
   aria-label={dict.nav.themeToggle}
-  class="inline-flex size-7 items-center justify-center text-muted transition-colors duration-150 hover:text-fg"
+  class="relative inline-flex size-7 items-center justify-center text-muted transition-colors duration-150 hover:text-fg"
 >
-  <Sun class="size-4 dark:hidden" aria-hidden="true" />
-  <Moon class="hidden size-4 dark:block" aria-hidden="true" />
+  <Sun
+    class="absolute size-4 rotate-0 opacity-100 transition-[opacity,rotate] duration-200 dark:-rotate-90 dark:opacity-0"
+    aria-hidden="true"
+  />
+  <Moon
+    class="absolute size-4 rotate-90 opacity-0 transition-[opacity,rotate] duration-200 dark:rotate-0 dark:opacity-100"
+    aria-hidden="true"
+  />
 </button>
 
 <script>

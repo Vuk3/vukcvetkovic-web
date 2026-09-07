@@ -22,6 +22,7 @@ const en = {
     about: 'About',
     skills: 'Skills',
     experience: 'Experience',
+    education: 'Education',
     projects: 'Projects',
     services: 'Services',
     contact: 'Contact',
@@ -72,6 +73,18 @@ const en = {
           'TODO: what you built or owned, and for whom.',
           'TODO: a technical decision you made and why.',
         ],
+      },
+    },
+  },
+
+  education: {
+    label: 'Education',
+    degrees: {
+      master: {
+        degree: 'MSc, Software Engineering',
+      },
+      bachelor: {
+        degree: 'BSc, Computing and Informatics',
       },
     },
   },

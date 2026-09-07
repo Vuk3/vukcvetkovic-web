@@ -3,6 +3,8 @@
  * A homepage section: a small uppercase label, then content.
  * Sections are separated by whitespace and the label alone — no cards,
  * no borders, no headings competing with the h1 in the hero.
+ *
+ * The label sits in the left margin from lg up; see .section-grid.
  */
 interface Props {
   id: string;
@@ -12,11 +14,11 @@ interface Props {
 const { id, label } = Astro.props;
 ---
 
-<section id={id} class="reveal mt-20">
-  <h2 class="font-heading text-xs font-medium tracking-[0.14em] text-muted uppercase">
+<section id={id} class="reveal section-grid mt-20">
+  <h2 class="font-heading text-xs font-medium tracking-[0.14em] text-muted uppercase lg:pt-1.5">
     {label}
   </h2>
-  <div class="mt-5">
+  <div>
     <slot />
   </div>
 </section>

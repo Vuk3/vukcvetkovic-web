@@ -20,6 +20,7 @@ const sr: Dict = {
     about: 'TODO: About',
     skills: 'TODO: Skills',
     experience: 'TODO: Experience',
+    education: 'TODO: Education',
     projects: 'TODO: Projects',
     services: 'TODO: Services',
     contact: 'TODO: Contact',
@@ -71,6 +72,17 @@ const sr: Dict = {
           'TODO: what you built or owned, and for whom.',
           'TODO: a technical decision you made and why.',
         ],
+      },
+    },
+  },
+  education: {
+    label: 'TODO: Education',
+    degrees: {
+      master: {
+        degree: 'TODO: MSc, Software Engineering',
+      },
+      bachelor: {
+        degree: 'TODO: BSc, Computing and Informatics',
       },
     },
   },

@@ -18,6 +18,9 @@
   --site-muted: #6d6b66;
   --site-hairline: #e4e1db;
   --site-accent: #a34527;
+
+  /* One easing curve for the whole site, so nothing moves in a different way. */
+  --site-ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .dark {
@@ -90,18 +93,86 @@
 }
 
 @layer components {
-  /* The one accent use that repeats: content links and the CTA. */
+  /*
+   * The editorial grid.
+   *
+   * From lg up the section label sits in the left margin and the content keeps
+   * a readable measure beside it, which is what stops the page reading as one
+   * uniform column. Below lg the label simply stacks above its content.
+   *
+   * Prose is capped separately by the components, not by this column: the
+   * content track is 680px so that tables and tag rows can use it, while
+   * paragraphs stay near 70 characters.
+   */
+  .section-grid {
+    display: grid;
+    row-gap: 1.25rem;
+  }
+
+  @media (min-width: 64rem) {
+    .section-grid {
+      grid-template-columns: 10rem 1fr;
+      column-gap: 2.5rem;
+      row-gap: 0;
+    }
+  }
+
+  /*
+   * The hero shares that grid so the portrait lines up with the labels below
+   * it, but between sm and lg it keeps the portrait beside the text rather than
+   * waiting for the label column to appear.
+   */
+  @media (min-width: 40rem) and (max-width: 63.999rem) {
+    .hero-grid {
+      grid-template-columns: auto 1fr;
+      column-gap: 1.5rem;
+    }
+  }
+
+  /*
+   * The one accent use that repeats: content links and the CTA.
+   *
+   * The faint rule is always present, so a link still looks like a link. Hover
+   * draws a solid one across it from the left — two stacked backgrounds rather
+   * than a border, because only background-size can be animated directionally.
+   * Nothing about it changes the box, so no line ever reflows on hover.
+   */
   .link {
     color: var(--site-accent);
-    border-bottom: 1px solid color-mix(in oklab, var(--site-accent) 35%, transparent);
     padding-bottom: 1px;
-    transition:
-      color 150ms,
-      border-color 150ms;
+    background-image:
+      linear-gradient(var(--site-accent), var(--site-accent)),
+      linear-gradient(
+        color-mix(in oklab, var(--site-accent) 35%, transparent),
+        color-mix(in oklab, var(--site-accent) 35%, transparent)
+      );
+    background-position:
+      0 100%,
+      0 100%;
+    background-repeat: no-repeat;
+    background-size:
+      0% 1px,
+      100% 1px;
+    transition: background-size 250ms var(--site-ease);
   }
 
   .link:hover {
-    border-bottom-color: var(--site-accent);
+    background-size:
+      100% 1px,
+      100% 1px;
+  }
+
+  /*
+   * Reading progress: a hairline of accent across the top that tracks scroll.
+   *
+   * Driven by scroll(root), so it is CSS all the way down — no scroll listener.
+   * The base state is scaleX(0), which is also where it stays in a browser
+   * without scroll-driven animations: nothing shows, rather than a bar stuck at
+   * full width.
+   */
+  .scroll-progress {
+    transform-origin: 0 50%;
+    scale: 0 1;
   }
 }
 
@@ -131,16 +202,76 @@
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
     .reveal {
-      animation: reveal 400ms cubic-bezier(0.4, 0, 0.2, 1) both;
+      animation: reveal 400ms var(--site-ease) both;
       animation-timeline: view();
       animation-range: entry 0% entry 55%;
     }
   }
 }
 
+/*
+ * Entry animation, for what is on screen at first paint.
+ *
+ * The hero cannot use a view() timeline: it is already in view, so a
+ * scroll-driven animation would sit at 100% and never play. This is plain
+ * time-based instead, with a small stagger down the text column so the page
+ * assembles itself rather than snapping in. No @supports guard is needed —
+ * every browser can run this one.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .enter,
+  .enter-stagger > * {
+    animation: reveal 500ms var(--site-ease) both;
+  }
+
+  .enter-stagger > *:nth-child(2) {
+    animation-delay: 80ms;
+  }
+
+  .enter-stagger > *:nth-child(3) {
+    animation-delay: 160ms;
+  }
+}
+
+/* Scroll-linked, so the duration is ignored and the range is the scroll range. */
+@keyframes progress {
+  from {
+    scale: 0 1;
+  }
+
+  to {
+    scale: 1 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    .scroll-progress {
+      animation: progress linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+
+/*
+ * Cross-document view transitions: switching language reads as one page
+ * changing rather than a reload. Chrome-only for now; everywhere else the
+ * navigation is simply instant.
+ */
+@view-transition {
+  navigation: auto;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  /* `*` does not reach the view-transition pseudo-elements, so name them. */
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 
   *,

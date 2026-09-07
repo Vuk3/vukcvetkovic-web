@@ -1,8 +1,9 @@
 ---
-import { ArrowUpRight } from '@lucide/astro';
+import { ArrowUpRight, Mail } from '@lucide/astro';
 import type { Lang } from '../i18n/types';
 import { getDict } from '../i18n/utils';
 import { site } from '../site';
+import BrandIcon from './BrandIcon.astro';
 import Section from './Section.astro';
 
 interface Props {
@@ -21,18 +22,21 @@ const entries = [
     href: `mailto:${site.email}`,
     text: site.email,
     external: false,
+    brand: null,
   },
   {
     label: dict.contact.linkedinLabel,
     href: site.links.linkedin,
     text: bare(site.links.linkedin),
     external: true,
+    brand: 'linkedin' as const,
   },
   {
     label: dict.contact.githubLabel,
     href: site.links.github,
     text: bare(site.links.github),
     external: true,
+    brand: 'github' as const,
   },
 ];
 ---
@@ -44,10 +48,18 @@ const entries = [
     {
       entries.map((entry) => (
         <div class="sm:flex sm:gap-6">
-          <dt class="text-[13px] text-muted sm:w-32 sm:shrink-0">{entry.label}</dt>
+          <dt class="flex items-center gap-2 text-[13px] text-muted sm:w-32 sm:shrink-0">
+            {entry.brand ? (
+              <BrandIcon name={entry.brand} class="size-3.5 shrink-0" />
+            ) : (
+              <Mail class="size-3.5 shrink-0" aria-hidden="true" />
+            )}
+            {entry.label}
+          </dt>
           <dd>
             <a
               href={entry.href}
+              target={entry.external ? '_blank' : undefined}
               rel={entry.external ? 'me noopener' : undefined}
               class="link inline-flex items-center gap-1"
             >

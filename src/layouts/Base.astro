@@ -97,9 +97,12 @@ const xDefault = new URL(localizePath(Astro.url.pathname, 'en'), siteUrl).href;
       {dict.nav.skipToContent}
     </a>
 
+    <div class="scroll-progress fixed top-0 left-0 z-50 h-0.5 w-full bg-accent" aria-hidden="true">
+    </div>
+
     <Nav lang={lang} />
 
-    <main id="main" class="mx-auto w-full max-w-[42.5rem] px-6 pb-24">
+    <main id="main" class="mx-auto w-full max-w-[58rem] px-6 pb-24">
       <slot />
     </main>
 

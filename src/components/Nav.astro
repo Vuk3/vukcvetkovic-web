@@ -20,6 +20,7 @@ const sections = [
   { id: 'about', label: dict.nav.about },
   { id: 'skills', label: dict.nav.skills },
   { id: 'experience', label: dict.nav.experience },
+  { id: 'education', label: dict.nav.education },
   { id: 'projects', label: dict.nav.projects },
   { id: 'services', label: dict.nav.services },
   { id: 'contact', label: dict.nav.contact },
@@ -27,7 +28,7 @@ const sections = [
 ---
 
 <header class="sticky top-0 z-40 border-b border-hairline bg-bg">
-  <div class="mx-auto flex w-full max-w-[42.5rem] items-center gap-4 px-6 py-3">
+  <div class="mx-auto flex w-full max-w-[58rem] items-center gap-4 px-6 py-3">
     <a
       href={home}
       class="font-heading text-sm font-medium tracking-tight transition-colors duration-150 hover:text-accent"
@@ -35,7 +36,8 @@ const sections = [
       {site.name}
     </a>
 
-    <nav aria-label={dict.nav.sections} class="ml-auto hidden md:block">
+    {/* Seven labels need more room than md gives, especially in German. */}
+    <nav aria-label={dict.nav.sections} class="ml-auto hidden lg:block">
       <ul class="flex items-center gap-3.5">
         {
           sections.map((section) => (
@@ -52,7 +54,7 @@ const sections = [
       </ul>
     </nav>
 
-    <div class="ml-auto flex items-center gap-2 md:ml-4">
+    <div class="ml-auto flex items-center gap-2 lg:ml-4">
       <ThemeToggle lang={lang} />
       <LangSwitcher lang={lang} />
     </div>

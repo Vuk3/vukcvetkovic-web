@@ -14,6 +14,7 @@ import type { Dict, Lang } from './i18n/types';
 
 type SkillGroupId = keyof Dict['skills']['groups'];
 type RoleId = keyof Dict['experience']['roles'];
+type DegreeId = keyof Dict['education']['degrees'];
 type ProjectId = keyof Dict['projects']['items'];
 
 interface SkillGroup {
@@ -24,6 +25,12 @@ interface SkillGroup {
 interface Role {
   id: RoleId;
   company: string;
+  period: string;
+}
+
+interface Degree {
+  id: DegreeId;
+  school: string;
   period: string;
 }
 
@@ -64,6 +71,23 @@ const experience: Role[] = [
   },
 ];
 
+/**
+ * Degrees, newest first. The school is treated as a fact like `company` above,
+ * so it is written once in its official English form rather than per locale.
+ */
+const education: Degree[] = [
+  {
+    id: 'master',
+    school: 'Faculty of Electronic Engineering, University of Niš',
+    period: '2023 — 2026',
+  },
+  {
+    id: 'bachelor',
+    school: 'Faculty of Electronic Engineering, University of Niš',
+    period: '2019 — 2023',
+  },
+];
+
 /** Projects in display order. TODO: fill in tech tags and links. */
 const projects: Project[] = [
   {
@@ -91,10 +115,9 @@ export const site = {
   /** TODO: the address you want published on vukcvetkovic.com. */
   email: 'TODO@vukcvetkovic.com',
 
-  /** TODO: your profile URLs. */
   links: {
-    linkedin: 'https://www.linkedin.com/in/TODO',
-    github: 'https://github.com/TODO',
+    linkedin: 'https://www.linkedin.com/in/vuk3/',
+    github: 'https://github.com/Vuk3',
   },
 
   /** Open Graph image served from /public. TODO: add public/og.png at 1200×630. */
@@ -102,6 +125,7 @@ export const site = {
 
   skillGroups,
   experience,
+  education,
   projects,
 };
 
