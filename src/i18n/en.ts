@@ -10,10 +10,10 @@
  */
 const en = {
   meta: {
-    title: 'Vuk Cvetković — Full-stack developer',
+    title: 'Vuk Cvetković - Backend developer',
     description:
-      'Full-stack developer working in .NET, NestJS, AWS, React and TypeScript. Backend systems, cloud infrastructure, and the interfaces on top of them.',
-    ogImageAlt: 'Vuk Cvetković, full-stack developer',
+      'Backend developer in Niš, Serbia. Services in NestJS and Node.js, event-driven infrastructure on AWS, and the React interfaces in front of them.',
+    ogImageAlt: 'Vuk Cvetković, backend developer',
   },
 
   nav: {
@@ -32,7 +32,7 @@ const en = {
 
   hero: {
     positioning:
-      'Full-stack developer. Backend systems in .NET and NestJS, interfaces in React and TypeScript, running on AWS.',
+      'Backend developer at Ncoded Solutions, in Niš. I build services in NestJS and Node.js, and in .NET where a client already runs it, then put them on AWS: containers, queues, and the events that pass between them.',
     cta: 'Contact me',
     portraitAlt: 'Portrait of Vuk Cvetković',
     portraitPlaceholder: 'TODO: portrait',
@@ -41,9 +41,9 @@ const en = {
   about: {
     label: 'About',
     paragraphs: [
-      "I'm a full-stack developer. Most of my work sits on the backend — designing APIs and the services behind them in .NET and NestJS — and carries through to the React and TypeScript interfaces on top of them.",
+      'Most of my work sits on the backend. I design APIs and the services behind them, mainly in NestJS and Node.js, and carry the same work through to the React interfaces on top of them when a project needs it.',
       'I care about systems that are still understandable after the first release: clear boundaries between services, types that describe the domain rather than restate the database, and infrastructure a small team can operate without ceremony. Most of what I build runs on AWS.',
-      'TODO: a paragraph in your own words — where you are based, how you got into this work, and what you are focused on right now.',
+      'I am based in Niš, Serbia. I started on the full-stack side, building .NET Web API services behind ASP.NET MVC sites, and have moved steadily towards the backend and the infrastructure under it. Alongside the work I am finishing a master’s in software engineering.',
     ],
   },
 
@@ -52,6 +52,7 @@ const en = {
     groups: {
       backend: { name: 'Backend' },
       frontend: { name: 'Frontend' },
+      data: { name: 'Data' },
       cloud: { name: 'Cloud & DevOps' },
     },
   },
@@ -59,19 +60,19 @@ const en = {
   experience: {
     label: 'Experience',
     roles: {
-      roleOne: {
-        role: 'TODO: Job title',
+      ncoded: {
+        role: 'Backend developer',
         bullets: [
-          'TODO: what you built or owned, and for whom.',
-          'TODO: a technical decision you made and why.',
-          'TODO: an outcome — scope, scale, or what it replaced.',
+          'Backend services in NestJS and Node.js: REST APIs, JWT authentication, role-based access control and third-party integrations, over both SQL and document databases.',
+          'The same work in .NET where a client already runs it, structured with Clean Architecture so the business logic stays separable from the framework around it.',
+          'The AWS side: S3, ECS, EC2, Lambda, Route 53 and EventBridge, covering deployments and the event-driven paths between services.',
         ],
       },
-      roleTwo: {
-        role: 'TODO: Job title',
+      novateq: {
+        role: 'Full-stack developer',
         bullets: [
-          'TODO: what you built or owned, and for whom.',
-          'TODO: a technical decision you made and why.',
+          'Backend services in .NET Web API and the company site in ASP.NET MVC, adapted to what individual clients needed.',
+          'Kept the Sportsbook platform stable by working through incoming issues, and reviewed casino game projects to learn how that side is built.',
         ],
       },
     },
@@ -97,17 +98,17 @@ const en = {
       projectOne: {
         title: 'TODO: Project name',
         description:
-          'TODO: one or two sentences — what it does, who it is for, and what was interesting to build.',
+          'TODO: one or two sentences: what it does, who it is for, and what was interesting to build.',
       },
       projectTwo: {
         title: 'TODO: Project name',
         description:
-          'TODO: one or two sentences — what it does, who it is for, and what was interesting to build.',
+          'TODO: one or two sentences: what it does, who it is for, and what was interesting to build.',
       },
       projectThree: {
         title: 'TODO: Project name',
         description:
-          'TODO: one or two sentences — what it does, who it is for, and what was interesting to build.',
+          'TODO: one or two sentences: what it does, who it is for, and what was interesting to build.',
       },
     },
   },
@@ -118,12 +119,12 @@ const en = {
       {
         title: 'Backend and API development',
         description:
-          'Services and APIs in .NET or NestJS: data modelling, authentication, third-party integrations, and the tests that keep them honest.',
+          'Services and APIs in NestJS, Node.js or .NET: data modelling, authentication, third-party integrations, and the tests that keep them honest.',
       },
       {
         title: 'Full-stack product work',
         description:
-          'A feature taken from schema to screen — the API, the React front end, and the TypeScript contract between them.',
+          'A feature taken from schema to screen: the API, the React front end, and the typed contract between them.',
       },
       {
         title: 'AWS architecture and deployment',

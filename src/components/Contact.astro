@@ -1,5 +1,5 @@
 ---
-import { ArrowUpRight, Mail } from '@lucide/astro';
+import { Mail } from '@lucide/astro';
 import type { Lang } from '../i18n/types';
 import { getDict } from '../i18n/utils';
 import { site } from '../site';
@@ -48,7 +48,7 @@ const entries = [
     {
       entries.map((entry) => (
         <div class="sm:flex sm:gap-6">
-          <dt class="flex items-center gap-2 text-[13px] text-muted sm:w-32 sm:shrink-0">
+          <dt class="display flex items-center gap-2 text-[13px] text-muted sm:w-32 sm:shrink-0">
             {entry.brand ? (
               <BrandIcon name={entry.brand} class="size-3.5 shrink-0" />
             ) : (
@@ -61,10 +61,9 @@ const entries = [
               href={entry.href}
               target={entry.external ? '_blank' : undefined}
               rel={entry.external ? 'me noopener' : undefined}
-              class="link inline-flex items-center gap-1"
+              class="link"
             >
               {entry.text}
-              {entry.external && <ArrowUpRight class="size-3.5" aria-hidden="true" />}
             </a>
           </dd>
         </div>

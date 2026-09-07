@@ -11,8 +11,21 @@ const { lang } = Astro.props;
 const dict = getDict(lang);
 ---
 
+{/*
+  The opening paragraph is set larger than the rest. Every paragraph on the page
+  was the same size, so nothing told the eye where to start reading. Its measure
+  is narrower to compensate for the bigger size.
+*/}
 <Section id="about" label={dict.about.label}>
-  <div class="max-w-[36rem] space-y-4">
-    {dict.about.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+  <div class="space-y-4">
+    {
+      dict.about.paragraphs.map((paragraph, index) =>
+        index === 0 ? (
+          <p class="max-w-[30rem] text-xl leading-[1.5]">{paragraph}</p>
+        ) : (
+          <p class="max-w-[36rem]">{paragraph}</p>
+        ),
+      )
+    }
   </div>
 </Section>

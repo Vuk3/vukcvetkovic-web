@@ -26,5 +26,13 @@ const { lang } = Astro.props;
 <Experience lang={lang} />
 <Education lang={lang} />
 <Projects lang={lang} />
-<Services lang={lang} />
-<Contact lang={lang} />
+
+{/*
+  The two sections aimed at someone deciding whether to write to him sit
+  together on the surface tone, which gives the page a second half rather than
+  one uninterrupted sheet. They share a single band, so the tone changes once.
+*/}
+<div class="band mt-24 py-20">
+  <Services lang={lang} />
+  <Contact lang={lang} />
+</div>

@@ -1,10 +1,14 @@
 ---
 /**
- * A homepage section: a small uppercase label, then content.
- * Sections are separated by whitespace and the label alone — no cards,
- * no borders, no headings competing with the h1 in the hero.
+ * A homepage section: a heading in the left margin, then content.
  *
- * The label sits in the left margin from lg up; see .section-grid.
+ * The heading used to be a tracked-out uppercase label. It is sentence case in
+ * the display width now: an ALL-CAPS eyebrow over every section is decoration
+ * pretending to be structure, and it made every block look the same weight.
+ * Position and width carry the hierarchy here, which is why the size can stay
+ * small without the heading reading as a caption.
+ *
+ * Sections are separated by whitespace alone — no cards, no rules.
  */
 interface Props {
   id: string;
@@ -14,11 +18,11 @@ interface Props {
 const { id, label } = Astro.props;
 ---
 
-<section id={id} class="reveal section-grid mt-20">
-  <h2 class="font-heading text-xs font-medium tracking-[0.14em] text-muted uppercase lg:pt-1.5">
-    {label}
-  </h2>
-  <div>
-    <slot />
+<section id={id} class="mt-24">
+  <div class="shell section-grid">
+    <h2 class="display text-sm lg:pt-1.5">{label}</h2>
+    <div>
+      <slot />
+    </div>
   </div>
 </section>

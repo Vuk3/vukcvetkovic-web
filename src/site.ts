@@ -26,6 +26,8 @@ interface Role {
   id: RoleId;
   company: string;
   period: string;
+  /** The role he holds now, which is the one place the accent earns a second use. */
+  current?: boolean;
 }
 
 interface Degree {
@@ -41,33 +43,49 @@ interface Project {
   links: { live?: string; source?: string };
 }
 
-/** Grouped skills. Group names are translated; the entries are proper nouns. */
+/**
+ * Grouped skills. Group names are translated, the entries are proper nouns.
+ *
+ * Node-side first, .NET after it, which is the order Vuk wants read. TypeScript
+ * is deliberately absent: naming it next to Node and React states the obvious.
+ */
 const skillGroups: SkillGroup[] = [
   {
     id: 'backend',
-    items: ['.NET', 'C#', 'NestJS', 'Node.js', 'TypeScript'],
+    items: ['NestJS', 'Node.js', 'Express', '.NET', 'C#'],
   },
   {
     id: 'frontend',
-    items: ['React', 'TypeScript', 'Astro'],
+    items: ['React', 'Astro'],
+  },
+  {
+    id: 'data',
+    items: ['SQL', 'MongoDB'],
   },
   {
     id: 'cloud',
-    items: ['AWS'],
+    items: ['AWS', 'Docker'],
   },
 ];
 
-/** Roles, newest first. TODO: fill in every company and period. */
+/**
+ * Roles, newest first.
+ *
+ * Periods are open-ended rather than saying "Present", which would be an
+ * English word sitting in the language-neutral file and would need translating
+ * in four places.
+ */
 const experience: Role[] = [
   {
-    id: 'roleOne',
-    company: 'TODO: Company',
-    period: 'TODO: 20XX — Present',
+    id: 'ncoded',
+    company: 'Ncoded Solutions',
+    period: '2024 -',
+    current: true,
   },
   {
-    id: 'roleTwo',
-    company: 'TODO: Company',
-    period: 'TODO: 20XX — 20XX',
+    id: 'novateq',
+    company: 'Novateq Global',
+    period: '2023 - 2024',
   },
 ];
 
@@ -79,12 +97,12 @@ const education: Degree[] = [
   {
     id: 'master',
     school: 'Faculty of Electronic Engineering, University of Niš',
-    period: '2023 — 2026',
+    period: '2023 - 2026',
   },
   {
     id: 'bachelor',
     school: 'Faculty of Electronic Engineering, University of Niš',
-    period: '2019 — 2023',
+    period: '2019 - 2023',
   },
 ];
 
@@ -112,8 +130,7 @@ export const site = {
   domain: 'vukcvetkovic.com',
   url: 'https://vukcvetkovic.com',
 
-  /** TODO: the address you want published on vukcvetkovic.com. */
-  email: 'TODO@vukcvetkovic.com',
+  email: 'vuk.cvetkovic11@gmail.com',
 
   links: {
     linkedin: 'https://www.linkedin.com/in/vuk3/',

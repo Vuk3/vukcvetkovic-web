@@ -12,19 +12,18 @@ const { lang } = Astro.props;
 const dict = getDict(lang);
 ---
 
-{/* Period in the left column, as in Skills and Contact, so this reads as a
-    quieter block than the Experience timeline directly above it. */}
+{/* Same date column as Experience, since both are dated sequences. */}
 <Section id="education" label={dict.education.label}>
-  <ol class="space-y-5">
+  <ol class="space-y-6">
     {
       site.education.map((degree) => (
-        <li class="sm:flex sm:gap-6">
-          <p class="text-[13px] text-muted sm:w-32 sm:shrink-0 sm:pt-1">{degree.period}</p>
+        <li class="sm:grid sm:grid-cols-[6.5rem_1fr] sm:gap-x-6">
+          <p class="display pt-0.5 text-[13px] text-muted">{degree.period}</p>
           <div class="mt-1 sm:mt-0">
-            <h3 class="font-heading text-base font-medium">
+            <h3 class="display text-[1.0625rem]">
               {dict.education.degrees[degree.id].degree}
             </h3>
-            <p class="mt-0.5 text-[13px] text-muted">{degree.school}</p>
+            <p class="text-[13px] text-muted">{degree.school}</p>
           </div>
         </li>
       ))

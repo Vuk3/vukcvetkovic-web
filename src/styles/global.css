@@ -1,13 +1,28 @@
 @import 'tailwindcss';
-@import '@fontsource-variable/inter-tight/wght.css';
+
+/*
+ * One family for the whole page, on both its axes.
+ *
+ * The wdth build (62–125%) rather than wght alone, because the contrast between
+ * display and text here is width, not a second typeface: headings run expanded
+ * and heavy, text runs at normal width. Costs 90KB latin against 35KB, which is
+ * the whole type system for this site.
+ */
+@import '@fontsource-variable/archivo/wdth.css';
 
 /* Dark mode by class on <html>, not prefers-color-scheme, so the toggle wins. */
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
  * Palette. Near-monochrome with exactly one accent.
- * Dark mode is a separate design, not an inversion: the accent is lightened and
- * desaturated so it stays readable on a dark ground (7.7:1 vs 5.8:1 on light).
+ *
+ * The ground stays the warm off-white the brief asked for, but the accent is a
+ * deep petrol green rather than the clay tone it started as: warm ground with a
+ * warm terracotta accent is the single most recognisable generated-page palette
+ * going, and a cold accent on a warm ground reads as a decision instead.
+ *
+ * Dark mode is a separate design, not an inversion — the accent is lightened
+ * until it carries on a dark ground (9.1:1 there against 8.5:1 on light).
  */
 :root {
   color-scheme: light;
@@ -17,7 +32,7 @@
   --site-fg: #1c1b19;
   --site-muted: #6d6b66;
   --site-hairline: #e4e1db;
-  --site-accent: #a34527;
+  --site-accent: #0d5c5c;
 
   /* One easing curve for the whole site, so nothing moves in a different way. */
   --site-ease: cubic-bezier(0.4, 0, 0.2, 1);
@@ -31,7 +46,7 @@
   --site-fg: #ebe9e5;
   --site-muted: #94918b;
   --site-hairline: #2a2926;
-  --site-accent: #e3906d;
+  --site-accent: #5fc2b7;
 }
 
 /*
@@ -39,9 +54,9 @@
  * .dark override at runtime instead of being resolved at build time.
  */
 @theme inline {
-  --font-heading: 'Inter Tight Variable', ui-sans-serif, system-ui, sans-serif;
   --font-sans:
-    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    'Archivo Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif;
 
   --color-bg: var(--site-bg);
   --color-surface: var(--site-surface);
@@ -61,8 +76,8 @@
     background-color: var(--site-bg);
     color: var(--site-fg);
     font-family: var(--font-sans);
-    font-size: 0.9375rem;
-    line-height: 1.75;
+    font-size: 1rem;
+    line-height: 1.7;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -71,7 +86,6 @@
   h2,
   h3,
   h4 {
-    font-family: var(--font-heading);
     text-wrap: balance;
   }
 
@@ -93,6 +107,57 @@
 }
 
 @layer components {
+  /*
+   * The display voice: the same family pushed out on the width axis and up on
+   * the weight axis. It goes on type doing structural work — the name, section
+   * headings, dates — never on anything meant to be read as prose, where the
+   * expanded width would slow reading down.
+   */
+  .display {
+    font-stretch: 112%;
+    font-weight: 620;
+    letter-spacing: -0.015em;
+  }
+
+  /* The name, the one place the type is allowed to be loud. */
+  .display-name {
+    font-stretch: 120%;
+    font-weight: 660;
+    letter-spacing: -0.04em;
+    line-height: 0.92;
+  }
+
+  /*
+   * The measure, in one place. Nav, footer, hero and every section share it, so
+   * the page has a single left edge and the width is one number to change.
+   *
+   * It sits on an inner element rather than on <main>, which is what lets a
+   * section paint a band across the full viewport while its content stays on
+   * the measure.
+   */
+  .shell {
+    margin-inline: auto;
+    width: 100%;
+    max-width: 58rem;
+    padding-inline: 1.5rem;
+  }
+
+  /*
+   * A tonal band. The page was one flat sheet of off-white from the header to
+   * the footer, which read as monotonous however carefully the type was set, so
+   * the last two sections sit on the surface tone instead. It introduces no new
+   * colour, only one already in the palette, and the sections inside it keep
+   * their own rhythm: the first one drops its top margin so the band starts
+   * cleanly rather than opening with a gap.
+   */
+  .band {
+    background-color: var(--site-surface);
+  }
+
+  .band > section:first-child {
+    margin-top: 0;
+  }
+
   /*
    * The editorial grid.
    *
@@ -161,31 +226,16 @@
       100% 1px,
       100% 1px;
   }
-
-  /*
-   * Reading progress: a hairline of accent across the top that tracks scroll.
-   *
-   * Driven by scroll(root), so it is CSS all the way down — no scroll listener.
-   * The base state is scaleX(0), which is also where it stays in a browser
-   * without scroll-driven animations: nothing shows, rather than a bar stuck at
-   * full width.
-   */
-  .scroll-progress {
-    transform-origin: 0 50%;
-    scale: 0 1;
-  }
 }
 
 /*
- * Fade-and-rise on scroll.
+ * Motion is one moment, not a habit.
  *
- * Scroll-driven only — no observer, no library. Browsers without
- * animation-timeline never match the @supports block, so content is simply
- * visible, which is also the reduced-motion outcome.
- *
- * Note: a view() timeline is driven by scroll position, so animation-duration
- * is ignored; animation-range sets how far the element travels instead. The
- * easing curve still applies across that range.
+ * There was a fade-and-rise on every section here, on a view() timeline. It is
+ * gone: an entrance on each section as you scroll is the default treatment of
+ * every generated page, and it makes reading feel gated behind an animation.
+ * What is left is the load sequence below, plus transitions that answer
+ * something the reader did — a hover, the theme toggle, a navigation.
  */
 @keyframes reveal {
   from {
@@ -199,24 +249,10 @@
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    .reveal {
-      animation: reveal 400ms var(--site-ease) both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 55%;
-    }
-  }
-}
-
 /*
- * Entry animation, for what is on screen at first paint.
- *
- * The hero cannot use a view() timeline: it is already in view, so a
- * scroll-driven animation would sit at 100% and never play. This is plain
- * time-based instead, with a small stagger down the text column so the page
- * assembles itself rather than snapping in. No @supports guard is needed —
- * every browser can run this one.
+ * The load sequence: portrait and name together, then the positioning line,
+ * then the call to action. Time-based rather than scroll-driven, because the
+ * hero is in view at first paint and a view() timeline would sit at 100%.
  */
 @media (prefers-reduced-motion: no-preference) {
   .enter,
@@ -230,26 +266,6 @@
 
   .enter-stagger > *:nth-child(3) {
     animation-delay: 160ms;
-  }
-}
-
-/* Scroll-linked, so the duration is ignored and the range is the scroll range. */
-@keyframes progress {
-  from {
-    scale: 0 1;
-  }
-
-  to {
-    scale: 1 1;
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: scroll()) {
-    .scroll-progress {
-      animation: progress linear both;
-      animation-timeline: scroll(root block);
-    }
   }
 }
 
