@@ -12,13 +12,28 @@ const { lang, tone } = Astro.props;
 const dict = getDict(lang);
 ---
 
-<Section id="services" label={dict.services.label} tone={tone}>
-  <ul class="space-y-5">
+{/*
+  The one section whose label is a sentence rather than a word, so it is the one
+  section that sets its label as a statement across the top instead of hanging
+  it in the margin. That is a fact about the content deciding the layout, which
+  is also why this section looks unlike any other on the page.
+
+  Two columns of hairline-topped rows. The rules stop at the column gap, which
+  is what keeps four of them from reading as a 2x2 grid of cards.
+*/}
+<Section
+  id="services"
+  label={dict.services.label}
+  width="services"
+  tone={tone}
+  head="statement"
+>
+  <ul class="svc-grid">
     {
       dict.services.items.map((item) => (
-        <li>
-          <h3 class="display text-[1.25rem]">{item.title}</h3>
-          <p class="measure mt-1 text-muted">{item.description}</p>
+        <li class="svc reveal-item">
+          <h3 class="svc-title">{item.title}</h3>
+          <p class="mt-2 text-muted">{item.description}</p>
         </li>
       ))
     }

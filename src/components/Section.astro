@@ -1,38 +1,75 @@
 ---
 /**
- * A homepage section: a heading in the left margin, then content.
+ * A homepage section: a heading, then content, in one of three shapes.
  *
- * The heading used to be a tracked-out uppercase label. It is sentence case in
- * the display width now: an ALL-CAPS eyebrow over every section is decoration
- * pretending to be structure, and it made every block look the same weight.
+ * Every section used to be the same shape at the same width, which is most of
+ * what made the page read as a CV rendered in a browser. The two things that
+ * vary now are the width (`width`, see the .shell-* family in global.css) and
+ * the shape of the head (`head`), and neither is decorative:
  *
- * Sections are separated by tone rather than by whitespace alone - see
- * `.section-band` in global.css. Spacing is padding rather than a top margin so
- * that two banded sections meet cleanly, with no strip of the ground showing
- * through between them.
- */
-/**
- * `base` is the page ground, `band` the alternating tone, `close` the tinted one
- * that ends the page. Home.astro assigns them, so the whole rhythm is readable
- * in one place, and every section component forwards this through.
+ *   rail       The label hangs in the left margin on a corner bracket, with
+ *              the content beside it. The default, and because each section
+ *              sits at its own width the bracket lands at a different x each
+ *              time - that shift is the page's rhythm.
+ *   rule       A full-contrast rule across the whole column with the label on
+ *              it, for the sections whose content wants the full width.
+ *   statement  The label sets as a large phrase across the top. For Services,
+ *              whose label is a sentence ("What I can help with") rather than
+ *              a word and cannot hang in an 11rem margin.
+ *
+ * Tone is separate again: only About and Projects are banded, and Contact
+ * closes on the tinted tone. Sections on the ground are separated by their
+ * head and their spacing instead.
  */
 export type SectionTone = 'base' | 'band' | 'close';
+export type SectionHead = 'rail' | 'rule' | 'statement';
+
+/** Keys of the .shell-* width family in global.css. */
+export type SectionWidth = 'about' | 'skills' | 'timeline' | 'projects' | 'services' | 'contact';
 
 interface Props {
   id: string;
   label: string;
+  width: SectionWidth;
   tone?: SectionTone;
+  head?: SectionHead;
+  /** `lite` is the quieter rhythm, which Education uses. */
+  space?: 'full' | 'lite';
 }
 
-const { id, label, tone = 'base' } = Astro.props;
+const { id, label, width, tone = 'base', head = 'rail', space = 'full' } = Astro.props;
 
 const toneClass = { base: '', band: 'section-band', close: 'section-close' }[tone];
+const spaceClass = space === 'lite' ? 'sec-lite' : 'sec';
+const widthClass = `shell-${width}`;
 ---
 
-<section id={id} class:list={['py-14', toneClass]}>
-  <div class="shell section-grid reveal">
-    <h2 class="display text-[1.0625rem] lg:pt-2">{label}</h2>
-    <div>
+<section id={id} class:list={[spaceClass, toneClass]}>
+  <div class:list={['shell', widthClass, head === 'rail' && 'sec-grid']}>
+    {
+      head === 'rail' && (
+        <div class="sec-rail reveal">
+          <h2 class="sec-label">{label}</h2>
+        </div>
+      )
+    }
+
+    {
+      head === 'rule' && (
+        <div class="sec-rule reveal">
+          <h2 class="sec-label">{label}</h2>
+        </div>
+      )
+    }
+
+    {head === 'statement' && <h2 class="sec-statement reveal">{label}</h2>}
+
+    <div
+      class:list={[
+        head === 'rule' && 'sec-body',
+        head === 'statement' && 'sec-body sec-body-wide',
+      ]}
+    >
       <slot />
     </div>
   </div>

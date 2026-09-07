@@ -1,0 +1,26 @@
+---
+import NotFound from '../../components/NotFound.astro';
+import { prefixedLocales } from '../../i18n/types';
+import { getDict, resolveLang } from '../../i18n/utils';
+import Base from '../../layouts/Base.astro';
+
+/*
+ * One 404 per prefixed locale, at /sr/404.html, /fr/404.html and /de/404.html.
+ *
+ * These earn their place because of how Cloudflare resolves the page: it serves
+ * the nearest 404.html walking up from the requested path, so /de/typo finds
+ * /de/404.html and a German visitor who mistypes a URL gets a German page
+ * instead of an English one. Without these files that request would fall back
+ * to the root /404.html.
+ */
+export function getStaticPaths() {
+  return prefixedLocales.map((lang) => ({ params: { lang } }));
+}
+
+const lang = resolveLang(Astro.params.lang);
+const dict = getDict(lang);
+---
+
+<Base lang={lang} title={dict.notFound.metaTitle} noindex>
+  <NotFound lang={lang} />
+</Base>

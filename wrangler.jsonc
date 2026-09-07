@@ -11,7 +11,14 @@
 	// _headers and .assetsignore the adapter injects.
 	"assets": {
 		"directory": "./dist/client",
-		"binding": "ASSETS"
+		"binding": "ASSETS",
+		// Without this the build is pure static assets with no Worker behind
+		// them, so an unmatched path returned a bodiless 404 and src/pages/404
+		// would never have been reached. "404-page" serves the *nearest*
+		// 404.html walking up from the requested path, which is also what makes
+		// the per-locale pages worth having: /de/typo resolves to /de/404.html
+		// and only falls back to the root one outside a locale prefix.
+		"not_found_handling": "404-page"
 	},
 	"observability": {
 		"enabled": true

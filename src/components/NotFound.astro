@@ -1,0 +1,39 @@
+---
+/**
+ * The 404 body, shared by /404 and /[lang]/404 so the two cannot drift - the
+ * same arrangement as Home.astro.
+ */
+import { ArrowLeft } from '@lucide/astro';
+import type { Lang } from '../i18n/types';
+import { getDict, localizePath } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = getDict(lang);
+
+// Locale-aware, so a German 404 sends the reader to the German homepage.
+const home = localizePath('/', lang);
+---
+
+{/* In view at first paint, so it uses the load sequence rather than a scroll reveal. */}
+<section class="notfound">
+  <div class="shell shell-hero">
+    <p class="notfound-status enter">{dict.notFound.status}</p>
+
+    <h1 class="notfound-heading enter" style="--enter-delay:80ms">{dict.notFound.heading}</h1>
+
+    <div class="enter" style="--enter-delay:180ms">
+      <p class="notfound-body">{dict.notFound.body}</p>
+
+      <p class="mt-8">
+        <a href={home} class="cta">
+          <ArrowLeft class="size-[1.05rem]" aria-hidden="true" />
+          {dict.notFound.cta}
+        </a>
+      </p>
+    </div>
+  </div>
+</section>

@@ -154,6 +154,14 @@ const sr: Dict = {
   footer: {
     backToTop: "Na vrh",
   },
+
+  notFound: {
+    metaTitle: "Stranica nije pronađena - Vuk Cvetković",
+    status: "404",
+    heading: "Stranica nije pronađena",
+    body: "Adresa je možda pogrešna ili je stranica premeštena. Ceo sajt stoji na jednoj stranici, pa će vas link ispod odvesti do nje.",
+    cta: "Nazad na početnu",
+  },
 };
 
 export default sr;

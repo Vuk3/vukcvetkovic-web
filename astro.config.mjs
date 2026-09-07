@@ -13,6 +13,23 @@ export default defineConfig({
   // Cloudflare, it does not turn any route into an on-demand one.
   output: 'static',
 
+  /*
+   * 'preserve' so the per-locale 404s land on the filenames Cloudflare looks
+   * for.
+   *
+   * `not_found_handling: "404-page"` in wrangler.jsonc serves the nearest file
+   * literally named 404.html, walking up from the requested path. The default
+   * 'directory' format writes src/pages/[lang]/404.astro out as
+   * /sr/404/index.html, which that walk never finds, so /sr/nonsense fell back
+   * to the English page. 'preserve' writes /sr/404.html instead.
+   *
+   * It leaves the four real pages exactly where they were: index routes still
+   * emit index.html, so the URLs stay /, /sr/, /fr/, /de/ with no extension,
+   * and the canonical, hreflang and language-switcher hrefs built from
+   * `Astro.url.pathname` are unchanged. Verified rather than assumed.
+   */
+  build: { format: 'preserve' },
+
   i18n: {
     defaultLocale: 'en',
     locales: ['en', 'sr', 'fr', 'de'],

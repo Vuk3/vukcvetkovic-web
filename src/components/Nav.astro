@@ -28,22 +28,27 @@ const sections = [
 ];
 ---
 
-<header class="sticky top-0 z-40 border-b border-hairline bg-bg">
-  <div class="shell flex items-center gap-4 py-3">
-    <a href={home} class="display text-base transition-colors duration-150 hover:text-accent">
-      {site.name}
-    </a>
+{/*
+  Translucent with a blur rather than an opaque bar, so the page runs under it.
+  The hairline and the padding are driven by scroll position - see .site-head
+  and the head-settle keyframes in global.css - which is pure CSS on a scroll()
+  timeline, so the header still costs no JavaScript. Where that is unsupported
+  it simply stays at the settled height with its hairline showing.
+
+  It sits on the hero's measure, so the wordmark shares a left edge with the
+  name underneath it.
+*/}
+<header class="site-head">
+  <div class="shell shell-hero head-inner">
+    <a href={home} class="brand">{site.name}</a>
 
     {/* Seven labels need more room than md gives, especially in German. */}
     <nav aria-label={dict.nav.sections} class="ml-auto hidden lg:block">
-      <ul class="flex items-center gap-3.5">
+      <ul class="flex items-center gap-5">
         {
           sections.map((section) => (
             <li>
-              <a
-                href={`${home}#${section.id}`}
-                class="text-[15px] text-muted transition-colors duration-150 hover:text-fg"
-              >
+              <a href={`${home}#${section.id}`} class="nav-link">
                 {section.label}
               </a>
             </li>
@@ -52,7 +57,7 @@ const sections = [
       </ul>
     </nav>
 
-    <div class="ml-auto flex items-center gap-3 lg:ml-4">
+    <div class="ml-auto flex items-center gap-3 lg:ml-7">
       <ThemeToggle lang={lang} />
       <LangSwitcher lang={lang} />
 
@@ -81,7 +86,7 @@ const sections = [
               <li>
                 <a
                   href={`${home}#${section.id}`}
-                  class="shell block py-2.5 text-muted transition-colors duration-150 hover:text-fg"
+                  class="shell shell-hero block py-2.5 text-muted transition-colors duration-150 hover:text-fg"
                 >
                   {section.label}
                 </a>

@@ -21,18 +21,25 @@ const { lang } = Astro.props;
 ---
 
 {/*
-  Tones alternate straight down the page, with no two neighbours sharing one.
-  Experience and Education did share a tone, on the grounds that they are the
-  same kind of dated list, but the two then read as one long block and the
-  boundary between them disappeared.
+  Tone is used twice on the page, not on every other section.
 
-  Contact takes the third tone, the tinted one, which is the page ending rather
-  than another step in the alternation.
+  Sections used to alternate ground and band all the way down, and strict
+  alternation turned out to be its own kind of uniformity: eight blocks of equal
+  weight, each starting and ending the same way. What separates a section from
+  its neighbour now is the shape of its head and its width - see Section.astro -
+  which leaves tone free to do something a band should do, which is set two
+  sections apart from the rest.
+
+  So About is banded, because it is the narrowest column on the page and wants
+  to read as the page drawing breath after the hero, and Projects is banded
+  because it is the one section still waiting for its content. Contact takes the
+  third tone, the tinted one, which is the page ending rather than another step
+  in an alternation.
 */}
 <Hero lang={lang} />
 <About lang={lang} tone="band" />
 <Skills lang={lang} />
-<Experience lang={lang} tone="band" />
+<Experience lang={lang} />
 <Education lang={lang} />
 <Projects lang={lang} tone="band" />
 <Services lang={lang} />

@@ -1,4 +1,21 @@
 ---
+/**
+ * One row per project: title and description hold the column, technology tags
+ * and links sit in a fixed aside on the right.
+ *
+ * A row rather than a card, because the section has to read well at three
+ * entries and at nine. Nothing about the layout depends on how many there are,
+ * and a new project is one entry in src/site.ts plus its copy in the four
+ * dictionaries - no layout change.
+ *
+ * The entries are still placeholders, so each row asks whether its title is one
+ * and holds back if it is: the title sets at the muted tone instead of full
+ * contrast, and the aside sits back with it. Three reserved slots read as a
+ * section waiting for content, which is what this is, rather than as three
+ * projects that failed to say anything. The check is on the copy rather than on
+ * a flag in site.ts so that filling in a real title is the only thing needed -
+ * the row goes to full strength on its own.
+ */
 import type { Lang } from '../i18n/types';
 import { getDict } from '../i18n/utils';
 import { site } from '../site';
@@ -11,11 +28,12 @@ interface Props {
 
 const { lang, tone } = Astro.props;
 const dict = getDict(lang);
+
+const isPlaceholder = (text: string) => text.trimStart().startsWith('TODO');
 ---
 
-<Section id="projects" label={dict.projects.label} tone={tone}>
-  {/* Two columns once the content track is wide enough for two short blocks. */}
-  <ul class="grid gap-7 lg:grid-cols-2 lg:gap-x-8">
+<Section id="projects" label={dict.projects.label} width="projects" tone={tone} head="rule">
+  <ul>
     {
       site.projects.map((project) => {
         const copy = dict.projects.items[project.id];
@@ -25,27 +43,36 @@ const dict = getDict(lang);
         ].filter((link): link is { href: string; label: string } => Boolean(link.href));
 
         return (
-          <li>
-            <h3 class="display text-[1.25rem]">{copy.title}</h3>
-            <p class="measure mt-1 text-muted">{copy.description}</p>
+          <li
+            class="project reveal-item"
+            data-placeholder={isPlaceholder(copy.title) ? '' : undefined}
+          >
+            <div>
+              <h3 class="project-title">{copy.title}</h3>
+              <p class="measure mt-2 text-muted">{copy.description}</p>
+            </div>
 
-            <ul class="mt-3 flex flex-wrap gap-1.5">
-              {project.tech.map((tech) => (
-                <li class="rounded bg-surface px-2 py-0.5 text-[15px]">{tech}</li>
-              ))}
-            </ul>
+            <div class="project-aside">
+              {project.tech.length > 0 && (
+                <ul class="project-tags">
+                  {project.tech.map((tech) => (
+                    <li class="tag">{tech}</li>
+                  ))}
+                </ul>
+              )}
 
-            {links.length > 0 && (
-              <ul class="mt-3 flex flex-wrap gap-4 text-[15px]">
-                {links.map((link) => (
-                  <li>
-                    <a href={link.href} target="_blank" rel="noopener" class="link">
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
+              {links.length > 0 && (
+                <ul class="flex flex-wrap gap-5 text-[15px]">
+                  {links.map((link) => (
+                    <li>
+                      <a href={link.href} target="_blank" rel="noopener" class="link">
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </li>
         );
       })

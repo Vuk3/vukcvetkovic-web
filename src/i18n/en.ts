@@ -154,6 +154,18 @@ const en = {
   footer: {
     backToTop: "Back to top",
   },
+
+  /**
+   * The 404 page. `status` is the code itself, which is the same three
+   * characters in every language and is only here so the page can label it.
+   */
+  notFound: {
+    metaTitle: "Page not found - Vuk Cvetković",
+    status: "404",
+    heading: "Page not found",
+    body: "The address may be wrong, or the page may have moved. Everything on this site sits on one page, so the link below will get you there.",
+    cta: "Back to the homepage",
+  },
 };
 
 export default en;

@@ -154,6 +154,14 @@ const de: Dict = {
   footer: {
     backToTop: 'Nach oben',
   },
+
+  notFound: {
+    metaTitle: 'Seite nicht gefunden - Vuk Cvetković',
+    status: '404',
+    heading: 'Seite nicht gefunden',
+    body: 'Die Adresse ist möglicherweise falsch, oder die Seite wurde verschoben. Die ganze Website steht auf einer einzigen Seite, und der Link unten führt Sie dorthin.',
+    cta: 'Zurück zur Startseite',
+  },
 };
 
 export default de;

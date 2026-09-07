@@ -11,9 +11,15 @@ interface Props {
   /** Overrides the locale's default title — for future pages such as a blog. */
   title?: string;
   description?: string;
+  /**
+   * Keeps the page out of search results, and with it the canonical link and
+   * the hreflang set: those describe a page worth indexing in four languages,
+   * which a 404 is not.
+   */
+  noindex?: boolean;
 }
 
-const { lang, title, description } = Astro.props;
+const { lang, title, description, noindex = false } = Astro.props;
 const dict = getDict(lang);
 
 const pageTitle = title ?? dict.meta.title;
@@ -55,10 +61,23 @@ const xDefault = new URL(localizePath(Astro.url.pathname, 'en'), siteUrl).href;
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
     <meta name="author" content={site.name} />
-    <link rel="canonical" href={canonical.href} />
 
-    {alternates.map((alt) => <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />)}
-    <link rel="alternate" hreflang="x-default" href={xDefault} />
+    {/* `follow` rather than `nofollow`: the page is not worth indexing, but the
+        link out of it to the homepage is still worth crawling. */}
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    {!noindex && <link rel="canonical" href={canonical.href} />}
+
+    {
+      !noindex && (
+        <>
+          {alternates.map((alt) => (
+            <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+          ))}
+          <link rel="alternate" hreflang="x-default" href={xDefault} />
+        </>
+      )
+    }
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.domain} />

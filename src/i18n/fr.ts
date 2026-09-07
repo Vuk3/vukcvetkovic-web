@@ -154,6 +154,14 @@ const fr: Dict = {
   footer: {
     backToTop: "Haut de page",
   },
+
+  notFound: {
+    metaTitle: "Page introuvable - Vuk Cvetković",
+    status: "404",
+    heading: "Page introuvable",
+    body: "L’adresse est peut-être incorrecte, ou la page a été déplacée. Tout ce site tient sur une seule page, et le lien ci-dessous vous y mènera.",
+    cta: "Retour à l’accueil",
+  },
 };
 
 export default fr;

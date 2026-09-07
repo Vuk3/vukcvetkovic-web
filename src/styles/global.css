@@ -3,7 +3,7 @@
 /*
  * One family for the whole page, on both its axes.
  *
- * The wdth build (62–125%) rather than wght alone, because the contrast between
+ * The wdth build (62-125%) rather than wght alone, because the contrast between
  * display and text here is width, not a second typeface: headings run expanded
  * and heavy, text runs at normal width. Costs 90KB latin against 35KB, which is
  * the whole type system for this site.
@@ -21,7 +21,7 @@
  * warm terracotta accent is the single most recognisable generated-page palette
  * going, and a cold accent on a warm ground reads as a decision instead.
  *
- * Dark mode is a separate design, not an inversion — the accent is lightened
+ * Dark mode is a separate design, not an inversion - the accent is lightened
  * until it carries on a dark ground (9.1:1 there against 8.5:1 on light).
  */
 :root {
@@ -40,15 +40,26 @@
    * The two band tones, kept separate from --site-surface so the step between
    * sections can be tuned without also darkening every chip and inset.
    *
-   * The step is deliberately large enough to read at a glance. An earlier pass
-   * used the surface tone here and the boundary was invisible, which is the
-   * whole reason the page felt like one uninterrupted sheet.
+   * Only two sections are banded now, About and Projects, rather than every
+   * other one. Strict alternation is itself a kind of uniformity: it gave the
+   * page eight equal blocks, which is most of what made it read as a document.
+   * The rules and the shifting rail carry the boundaries instead, and the tone
+   * is kept for the two sections that genuinely want to sit apart.
    */
-  --site-band: #efeae1;
+  --site-band: #f1ede6;
   --site-close: #e4edeb;
 
   /* One easing curve for the whole site, so nothing moves in a different way. */
   --site-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /*
+   * The gutter, once, for every measure on the page. 20px on a phone, opening
+   * to 48px on a desktop, which is the range the brief asks for.
+   */
+  --site-pad: clamp(1.25rem, 4vw, 3rem);
+
+  /* The left margin that carries a section label. See .sec-rail. */
+  --site-rail: 11rem;
 }
 
 .dark {
@@ -62,8 +73,8 @@
   --site-accent: #5fc2b7;
 
   /* Lighter than the ground here, since a band cannot go darker than #0f0f0f. */
-  --site-band: #1c1c1a;
-  --site-close: #142220;
+  --site-band: #1a1a18;
+  --site-close: #132220;
 }
 
 /*
@@ -109,6 +120,10 @@
     text-wrap: balance;
   }
 
+  p {
+    text-wrap: pretty;
+  }
+
   /* Sticky header clearance for in-page anchors. */
   :target {
     scroll-margin-top: 6rem;
@@ -129,8 +144,8 @@
 @layer components {
   /*
    * The display voice: the same family pushed out on the width axis and up on
-   * the weight axis. It goes on type doing structural work — the name, section
-   * headings, dates — never on anything meant to be read as prose, where the
+   * the weight axis. It goes on type doing structural work - the name, section
+   * headings, dates - never on anything meant to be read as prose, where the
    * expanded width would slow reading down.
    */
   .display {
@@ -139,53 +154,97 @@
     letter-spacing: -0.015em;
   }
 
-  /* The name, the one place the type is allowed to be loud. */
+  /*
+   * The name, and the one place the page is allowed to be loud.
+   *
+   * It sets on two lines, one word each, because that is what buys the size:
+   * "Vuk Cvetković" on a single line caps out around 60px before it runs out of
+   * measure, and 132px is the whole reason the hero now reads as a masthead
+   * rather than as the top of a CV.
+   *
+   * Leading is 0.92 rather than tighter because the second line carries a ć: at
+   * 0.86 its accent collided with the baseline of the line above.
+   */
   .display-name {
-    font-stretch: 120%;
+    font-stretch: 118%;
     font-weight: 660;
     letter-spacing: -0.04em;
     line-height: 0.92;
+    /*
+     * Measured rather than guessed: at the 140px cap "Cvetković" sets 730 wide
+     * in the 808 the column gives it, and at every step down to 320 the ratio
+     * only improves. Neither line wraps at any width, which matters because a
+     * single word has nowhere to wrap to and would simply overhang the page.
+     */
+    font-size: clamp(2.75rem, 9.5vw, 8.75rem);
+  }
+
+  .display-name > span {
+    display: block;
   }
 
   /*
-   * The measure, in one place. Nav, footer, hero and every section share it, so
-   * the page has a single left edge and the width is one number to change.
+   * The measure, as a family rather than a single number.
    *
-   * It sits on an inner element rather than on <main>, which is what lets a
-   * section paint a band across the full viewport while its content stays on
-   * the measure.
+   * Every section used to sit in the same 1024px column, which is the other
+   * half of why the page read as a document: nothing about the width told you
+   * that a run of prose and a grid of logos are different kinds of content.
+   * Each section now names its own width and `.shell` centres it, so the page
+   * has a rhythm of edges instead of one long trough.
+   *
+   * The named width is the *content* width. Padding is added outside it, so
+   * changing the gutter never changes a measure.
    */
   .shell {
-    margin-inline: auto;
     width: 100%;
-    max-width: 64rem;
-    padding-inline: 1.5rem;
+    margin-inline: auto;
+    padding-inline: var(--site-pad);
+    max-width: calc(var(--shell, 72rem) + 2 * var(--site-pad));
+  }
+
+  .shell-hero {
+    --shell: 72rem; /* 1152px - the widest thing on the page, and the page's outer edge. */
+  }
+
+  .shell-about {
+    --shell: 49rem; /* 784px: 560px of prose beside the rail, around 66 characters. */
+  }
+
+  .shell-skills {
+    --shell: 66rem; /* 1056px */
+  }
+
+  .shell-timeline {
+    --shell: 58rem; /* 928px - Experience and Education, which share a shape. */
+  }
+
+  .shell-projects {
+    --shell: 69rem; /* 1104px */
+  }
+
+  .shell-services {
+    --shell: 66rem; /* 1056px */
+  }
+
+  .shell-contact {
+    --shell: 50rem; /* 800px */
   }
 
   /*
    * The measure for running prose, in one place.
    *
-   * There were six of these before, between 34rem and 36rem, set per component
-   * with no relationship to each other, and all of them stopped well short of
-   * the column they sat in. 44rem is 704px, which is 86% of the content column
-   * and lands around 80 characters at the 17px body size. Wider reads fast and
-   * loses the line, narrower is what made the page look like a column of text
-   * pinned to the left of a wide empty page.
+   * 42rem is 672px, which lands around 75 characters at the 17px body size.
+   * It only ever caps a paragraph sitting in a column wider than itself, which
+   * after the width pass above is just the bullets and descriptions.
    */
   .measure {
-    max-width: 44rem;
+    max-width: 42rem;
   }
 
   /*
-   * Section tones.
+   * Section tones. Two banded sections and the tinted close, no alternation.
    *
-   * Sections alternate between the ground and a band tone, edge to edge, so
-   * scrolling the page moves through visible blocks rather than one unbroken
-   * sheet. The tone is what separates one section from the next now, which is
-   * why sections use vertical padding rather than a top margin: two adjacent
-   * bands have to meet with no gap of ground showing between them.
-   *
-   * Contact closes the page on a third tone, the only one carrying any hue,
+   * Contact closes the page on the third tone, the only one carrying any hue,
    * pulled towards the accent. It marks the end of the page and it is the one
    * section where the reader is being asked to do something.
    */
@@ -198,52 +257,114 @@
   }
 
   /*
-   * The editorial grid.
+   * Vertical rhythm. `-lite` is Education, which the brief wants a shade
+   * quieter.
    *
-   * From lg up the section label sits in the left margin and the content keeps
-   * a readable measure beside it, which is what stops the page reading as one
-   * uniform column. Below lg the label simply stacks above its content.
-   *
-   * Prose is capped separately by the components, not by this column: the
-   * content track is 680px so that tables and tag rows can use it, while
-   * paragraphs stay near 70 characters.
+   * Padding rather than a top margin, so two banded sections could meet with no
+   * strip of the ground showing between them - and kept under 6rem because
+   * where two sections both sit on the ground their paddings add up. At 7.5rem
+   * the gap between Skills and Experience came to 240 points of nothing, which
+   * read as the page having run out rather than as breathing room.
    */
-  .section-grid {
+  .sec {
+    padding-block: clamp(3.5rem, 6vw, 5.5rem);
+  }
+
+  .sec-lite {
+    padding-block: clamp(2.75rem, 4.5vw, 4rem);
+  }
+
+  /*
+   * The rail: a section label hung in the left margin on a corner bracket.
+   *
+   * Two hairlines meeting at the top left of the content, with the label
+   * right-aligned into the corner. It is the one structural device the page
+   * repeats, and because each section sits at its own width the bracket lands
+   * at a different x every time, which is where the rhythm comes from. It also
+   * marks where a section starts without needing a band to do it.
+   *
+   * Below lg the bracket flattens to a single rule with the label under it.
+   */
+  .sec-grid {
     display: grid;
-    row-gap: 1.25rem;
+    row-gap: 1.75rem;
+  }
+
+  .sec-rail {
+    border-top: 1px solid var(--site-hairline);
+    padding-top: 0.9rem;
   }
 
   @media (min-width: 64rem) {
-    .section-grid {
-      /*
-       * 8rem, down from 11rem, and a 2rem gap rather than 3rem. The label
-       * column was reserving 224px of a 976px row for words like "Skills" and
-       * then the content beside it capped itself again, which is what left the
-       * text sitting in the left third of a wide page.
-       */
-      grid-template-columns: 8rem 1fr;
-      column-gap: 2rem;
+    .sec-grid {
+      grid-template-columns: var(--site-rail) minmax(0, 1fr);
+      column-gap: 3rem;
       row-gap: 0;
+    }
+
+    .sec-rail {
+      border-right: 1px solid var(--site-hairline);
+      padding-right: 1.5rem;
+      padding-bottom: 0.5rem;
+      text-align: right;
     }
   }
 
   /*
-   * The hero shares that grid so the portrait lines up with the labels below
-   * it, but between sm and lg it keeps the portrait beside the text rather than
-   * waiting for the label column to appear.
+   * The label itself. Modest in size on purpose: the hierarchy in each section
+   * is carried by its content - a 34px date, a 24px company name - and a label
+   * competing with those is what an ALL-CAPS eyebrow over every block does.
+   * Sentence case in the display width, sitting on a rule, is enough.
    */
-  @media (min-width: 40rem) and (max-width: 63.999rem) {
-    .hero-grid {
-      grid-template-columns: auto 1fr;
-      column-gap: 1.5rem;
-    }
+  .sec-label {
+    font-stretch: 112%;
+    font-weight: 620;
+    font-size: clamp(1.125rem, 1.5vw, 1.25rem);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+  }
+
+  /*
+   * The other head: a full-width rule with the label on it, for the two
+   * sections whose content wants the whole column - the dated entries in
+   * Experience and the project rows. Full contrast rather than the hairline
+   * tone, so it does not read as one more of the many content rules below it.
+   */
+  .sec-rule {
+    border-top: 1px solid var(--site-fg);
+    padding-top: 0.9rem;
+  }
+
+  /* The gap between a head that spans the column and the content under it. */
+  .sec-body {
+    margin-top: clamp(1.75rem, 3vw, 2.5rem);
+  }
+
+  .sec-body-wide {
+    margin-top: clamp(2.25rem, 4vw, 3.5rem);
+  }
+
+  /*
+   * And the third: Services, whose label is a phrase rather than a word ("What
+   * I can help with", 25 characters in French). A phrase cannot hang in an
+   * 11rem margin, so it sets as a statement across the top instead. The label
+   * being a sentence is a fact about the content, so the section that owns it
+   * gets a shape of its own.
+   */
+  .sec-statement {
+    font-stretch: 110%;
+    font-weight: 620;
+    font-size: clamp(1.5rem, 2.6vw, 2.125rem);
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    max-width: 30rem;
   }
 
   /*
    * The one accent use that repeats: content links and the CTA.
    *
    * The faint rule is always present, so a link still looks like a link. Hover
-   * draws a solid one across it from the left — two stacked backgrounds rather
+   * draws a solid one across it from the left - two stacked backgrounds rather
    * than a border, because only background-size can be animated directionally.
    * Nothing about it changes the box, so no line ever reflows on hover.
    */
@@ -273,53 +394,684 @@
   }
 
   /*
-   * The stack, as a grid of marks rather than a row of text chips.
+   * The call to action, which is the only filled thing on the page.
    *
-   * This is the one place colour is allowed in beyond the accent, and it is
-   * borrowed rather than invented - each mark carries its own brand colour. At
-   * 44px they are the loudest thing on the page after the name, which is the
-   * point: the stack is the section a visiting engineer actually scans.
+   * Square, on a 1px accent rule, inverting on hover. It was a text link with
+   * an envelope beside it before, indistinguishable from the three links in
+   * Contact, and the hero's one instruction should not have to be looked for.
    */
-  .stack-tile {
-    --brand-mix: 100%;
-
-    display: flex;
-    width: 5rem;
-    flex-direction: column;
+  .cta {
+    display: inline-flex;
     align-items: center;
-    gap: 0.7rem;
-    text-align: center;
-    transition: transform 200ms var(--site-ease);
+    gap: 0.6rem;
+    border: 1px solid var(--site-accent);
+    color: var(--site-accent);
+    padding: 0.8rem 1.5rem;
+    font-stretch: 108%;
+    font-weight: 560;
+    line-height: 1.2;
+    transition:
+      background-color 220ms var(--site-ease),
+      color 220ms var(--site-ease);
   }
 
-  .stack-tile:hover {
-    transform: translateY(-4px);
+  .cta:hover {
+    background-color: var(--site-accent);
+    color: var(--site-bg);
   }
 
-  .stack-icon {
-    width: 2.75rem;
-    height: 2.75rem;
-    /*
-     * --brand comes from the element's style attribute and is missing on the
-     * three entries with no brand, which then sit at the muted tone. --brand-mix
-     * is what the reveal below animates, and it rests at 100%, so a browser that
-     * runs no animation at all still gets the full colour.
-     */
-    color: color-mix(
-      in oklab,
-      var(--brand, var(--site-muted)) var(--brand-mix),
-      var(--site-muted)
-    );
+  /* ---- Header ---------------------------------------------------------- */
+
+  /*
+   * Translucent rather than opaque, so the page shows through it, with the
+   * hairline and the padding driven by scroll position further down.
+   */
+  .site-head {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    /* Opaque enough to carry the header on its own: backdrop-filter is a
+     * refinement on top, not the thing keeping the text legible. */
+    background-color: color-mix(in oklab, var(--site-bg) 88%, transparent);
+    backdrop-filter: blur(14px) saturate(150%);
+    /* The resting state for a browser with no scroll-driven animations, which
+     * then keeps a permanent hairline rather than none at all. */
+    border-bottom: 1px solid var(--site-hairline);
   }
 
-  .stack-name {
-    font-size: 0.875rem;
+  .head-inner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    /* The fallback is load-bearing: --head-pad is only ever set by the
+     * head-settle keyframes, so anywhere that animation does not run the
+     * property is unset and the header would otherwise collapse to zero. */
+    padding-block: var(--head-pad, 0.85rem);
+  }
+
+  .brand {
+    font-stretch: 112%;
+    font-weight: 620;
+    font-size: 0.9375rem;
+    letter-spacing: -0.01em;
+    transition: color 200ms var(--site-ease);
+  }
+
+  .brand:hover {
+    color: var(--site-accent);
+  }
+
+  /*
+   * Nav hover: a rule drawn under the label rather than a colour change alone.
+   * A pseudo-element scaled from the left, so nothing in the row reflows.
+   */
+  .nav-link {
+    position: relative;
+    font-size: 0.9375rem;
     color: var(--site-muted);
     transition: color 200ms var(--site-ease);
   }
 
-  .stack-tile:hover .stack-name {
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: -0.3rem;
+    height: 1px;
+    background-color: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 260ms var(--site-ease);
+  }
+
+  .nav-link:hover {
     color: var(--site-fg);
+  }
+
+  .nav-link:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* ---- Hero ------------------------------------------------------------ */
+
+  .hero {
+    padding-block: clamp(2.5rem, 5vw, 4.5rem) clamp(4rem, 8vw, 7rem);
+  }
+
+  /*
+   * Name and portrait, bottom-aligned against each other.
+   *
+   * `end` alignment is the whole composition: the portrait's lower edge sits on
+   * the baseline of "Cvetković", so the two read as one block rather than as an
+   * avatar placed next to a heading.
+   */
+  .hero-head {
+    display: grid;
+    gap: clamp(2rem, 4vw, 3rem);
+  }
+
+  @media (min-width: 64rem) {
+    .hero-head {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      column-gap: 3.5rem;
+    }
+  }
+
+  /* The positioning line and the CTA, under a rule that spans the hero. */
+  .hero-foot {
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    border-top: 1px solid var(--site-hairline);
+    padding-top: clamp(1.75rem, 3vw, 2.75rem);
+    display: grid;
+    gap: 2rem;
+  }
+
+  @media (min-width: 64rem) {
+    .hero-foot {
+      grid-template-columns: minmax(0, 36rem) auto;
+      column-gap: 4rem;
+      justify-content: space-between;
+      align-items: start;
+    }
+  }
+
+  .hero-lead {
+    font-size: clamp(1.1875rem, 1.9vw, 1.4375rem);
+    line-height: 1.55;
+    letter-spacing: -0.01em;
+    color: var(--site-muted);
+  }
+
+  /*
+   * The portrait: the photograph, at 288px at the top end, and nothing around
+   * it but the hairline on its own edge.
+   *
+   * A second hairline used to sit 10px off the image as a frame, with the
+   * domain captioned inside it. Both are gone. The frame was decoration around
+   * a photograph that did not need any, and the caption was the site telling a
+   * reader the address of the page they are already on.
+   */
+  .portrait {
+    position: relative;
+    margin: 0;
+    width: 10.5rem;
+  }
+
+  @media (min-width: 40rem) {
+    .portrait {
+      width: 13rem;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .portrait {
+      width: 18rem;
+    }
+  }
+
+  .portrait-frame {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--site-surface);
+  }
+
+  /* An inset rule rather than a border, so it sits over the image edge and
+   * cannot add to the box. */
+  .portrait-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--site-fg) 14%, transparent);
+    pointer-events: none;
+  }
+
+  .portrait-frame img {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* Held slightly back from full saturation at rest, so it belongs to a
+     * near-monochrome page, and released on hover. */
+    filter: saturate(0.82) contrast(1.02);
+    transition:
+      transform 700ms var(--site-ease),
+      filter 700ms var(--site-ease);
+  }
+
+  .portrait:hover .portrait-frame img {
+    transform: scale(1.04);
+    filter: none;
+  }
+
+  /* ---- 404 ------------------------------------------------------------- */
+
+  /*
+   * The 404 page borrows the hero's shape rather than inventing one: the same
+   * measure, type set large on the left, a rule under it, and the same CTA.
+   * Someone who lands here has still arrived at this site, and it should look
+   * like it.
+   *
+   * The height is what keeps the footer at the bottom of the window on a page
+   * with four lines of content in it. svh rather than vh so a mobile browser's
+   * collapsing toolbar does not push the footer out of reach.
+   */
+  .notfound {
+    display: flex;
+    align-items: center;
+    min-height: 58svh;
+    padding-block: clamp(4rem, 9vw, 7rem);
+  }
+
+  /* The status code, as the small piece of metadata it is. The heading beside
+   * it is what actually tells the reader what happened. */
+  .notfound-status {
+    font-stretch: 112%;
+    font-weight: 620;
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    font-variant-numeric: tabular-nums;
+    color: var(--site-muted);
+  }
+
+  .notfound-heading {
+    margin-top: 0.75rem;
+    font-stretch: 118%;
+    font-weight: 660;
+    font-size: clamp(2.25rem, 6.5vw, 4.5rem);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+  }
+
+  .notfound-body {
+    margin-top: clamp(1.5rem, 3vw, 2.25rem);
+    border-top: 1px solid var(--site-hairline);
+    padding-top: clamp(1.25rem, 2.5vw, 1.75rem);
+    max-width: 34rem;
+    font-size: clamp(1.0625rem, 1.5vw, 1.1875rem);
+    color: var(--site-muted);
+  }
+
+  /* ---- Skills ---------------------------------------------------------- */
+
+  /*
+   * The stack as rows of names rather than a grid of chips.
+   *
+   * The brief is explicit that the technology names should carry visual weight
+   * themselves, so they set at body size with the mark small beside each one,
+   * flowing across the row. The group name holds the left, the row is closed by
+   * a hairline, and the marks keep their own brand colours - the one place
+   * colour is allowed in beyond the accent, and it is borrowed rather than
+   * invented.
+   */
+  .skill-row {
+    border-bottom: 1px solid var(--site-hairline);
+    padding-block: 1.5rem;
+    display: grid;
+    row-gap: 0.9rem;
+  }
+
+  .skill-row:first-child {
+    padding-top: 0;
+  }
+
+  @media (min-width: 48rem) {
+    .skill-row {
+      grid-template-columns: 10rem minmax(0, 1fr);
+      column-gap: 2.5rem;
+      row-gap: 0;
+      align-items: baseline;
+    }
+  }
+
+  .skill-group {
+    font-stretch: 112%;
+    font-weight: 620;
+    font-size: 1.0625rem;
+    letter-spacing: -0.01em;
+    color: var(--site-muted);
+  }
+
+  .skill-items {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 2.25rem;
+    row-gap: 1rem;
+  }
+
+  .tech {
+    --brand-mix: 100%;
+
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.55rem;
+    font-stretch: 104%;
+    font-weight: 520;
+    letter-spacing: -0.01em;
+    color: var(--site-fg);
+    transition: transform 200ms var(--site-ease);
+  }
+
+  /*
+   * The lift is the whole hover state. An accent rule under the name was here
+   * too, borrowed from .link, and it had to go: these are spans, not links, so
+   * an underline on hover promises a destination that does not exist.
+   */
+  .tech:hover {
+    transform: translateY(-2px);
+  }
+
+  .tech-icon {
+    width: 1.0625rem;
+    height: 1.0625rem;
+    flex-shrink: 0;
+    /* Nudged down so the mark's optical centre sits on the text baseline. */
+    transform: translateY(0.13em);
+    /*
+     * --brand comes from the element's style attribute and is missing on the
+     * three entries with no brand, which then sit at the muted tone.
+     * --brand-mix is what the reveal below animates, and it rests at 100%, so a
+     * browser that runs no animation at all still gets the full colour.
+     */
+    color: color-mix(in oklab, var(--brand, var(--site-muted)) var(--brand-mix), var(--site-muted));
+  }
+
+  /* ---- Experience and Education ---------------------------------------- */
+
+  /*
+   * The dated entries. Employment is genuinely a sequence, so the period is the
+   * structure and takes both the left column and the largest type in the
+   * section - which is also why there is no numbering anywhere on this page.
+   * The years already are the numbers.
+   */
+  .entry {
+    /*
+     * Wide enough for "2023 - 2024" set at 28px with tabular figures, which is
+     * the longest period either section can hold. Education overrides it, since
+     * its dates set at body size and a 12rem column beside them is a hole.
+     */
+    --entry-date: 12rem;
+
+    position: relative;
+    border-bottom: 1px solid var(--site-hairline);
+    padding-block: 1.75rem 2rem;
+    display: grid;
+    row-gap: 0.6rem;
+  }
+
+  @media (min-width: 48rem) {
+    .entry {
+      grid-template-columns: var(--entry-date) minmax(0, 1fr);
+      column-gap: 2.5rem;
+      row-gap: 0;
+    }
+  }
+
+  /*
+   * The subtle timeline interaction: the rule closing each entry fills with the
+   * accent from the left on hover. It is the only hover state in the section,
+   * it moves nothing, and it reads as the entry being picked out of the
+   * sequence rather than as a card lighting up.
+   */
+  .entry::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: -1px;
+    height: 1px;
+    background-color: var(--site-accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 420ms var(--site-ease);
+  }
+
+  .entry:hover::after {
+    transform: scaleX(1);
+  }
+
+  .entry-period {
+    font-stretch: 112%;
+    font-weight: 620;
+    font-size: clamp(1.375rem, 2.4vw, 1.75rem);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    color: var(--site-muted);
+  }
+
+  /* The role he holds now, which is the one place the accent earns a second use. */
+  .entry-period[data-current] {
+    color: var(--site-accent);
+  }
+
+  .entry-title {
+    font-stretch: 112%;
+    font-weight: 620;
+    font-size: clamp(1.25rem, 1.8vw, 1.5rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .entry-role {
+    font-size: 0.9375rem;
+    color: var(--site-muted);
+  }
+
+  /*
+   * The bullets under a role, marked with a hairline rather than a disc. A dash
+   * set on the baseline of the first line keeps the left edge of the text flush
+   * with everything above it, which a list marker would not.
+   */
+  .bullets > li {
+    position: relative;
+    padding-left: 1.5rem;
+  }
+
+  .bullets > li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.85em;
+    width: 0.7rem;
+    height: 1px;
+    background-color: color-mix(in oklab, var(--site-fg) 35%, transparent);
+  }
+
+  /*
+   * Education, same skeleton with the weight taken out of it: the period drops
+   * to body size and the entries close up. Consistent with Experience, quieter
+   * than it, which is the order the brief asks for.
+   */
+  .entry-lite {
+    --entry-date: 8rem;
+
+    padding-block: 1.25rem 1.4rem;
+  }
+
+  .entry-lite .entry-period {
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+  }
+
+  .entry-lite .entry-title {
+    font-size: 1.125rem;
+  }
+
+  /* ---- Projects -------------------------------------------------------- */
+
+  /*
+   * A row per project, not a card: title and description hold the column, tags
+   * and links sit in a fixed aside on the right. It reads well at three entries
+   * and it reads well at nine, which is the point - the section is a frame
+   * waiting for content rather than a layout built around having exactly three.
+   */
+  .project {
+    border-bottom: 1px solid var(--site-hairline);
+    padding-block: 1.75rem 2rem;
+    display: grid;
+    row-gap: 1.25rem;
+  }
+
+  @media (min-width: 64rem) {
+    .project {
+      grid-template-columns: minmax(0, 1fr) 16rem;
+      column-gap: 3rem;
+      row-gap: 0;
+      align-items: start;
+    }
+  }
+
+  /*
+   * The placeholder state, for as long as the entries are still TODO.
+   *
+   * Every project row is real markup with real structure, but an unfilled one
+   * holds back: the title sets at the muted tone rather than at full contrast,
+   * so the section reads as three reserved slots instead of three projects that
+   * failed to say anything. The moment a title stops being a TODO the row goes
+   * to full strength with no other change.
+   */
+  .project[data-placeholder] .project-title {
+    color: var(--site-muted);
+    font-weight: 560;
+  }
+
+  .project[data-placeholder] .project-aside {
+    opacity: 0.7;
+  }
+
+  .project-title {
+    font-stretch: 112%;
+    font-weight: 620;
+    font-size: clamp(1.25rem, 1.8vw, 1.5rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .project-aside {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  /*
+   * Flush to the section's right edge once the aside has a column of its own.
+   * Left-aligned inside a 16rem track it sat in the middle of the row with air
+   * on both sides, which read as something that had not been positioned.
+   */
+  @media (min-width: 64rem) {
+    .project-aside {
+      align-items: flex-end;
+    }
+
+    .project-tags {
+      justify-content: flex-end;
+    }
+  }
+
+  /* Outlined and square rather than a filled pill, so a row of them reads as
+   * metadata rather than as a set of buttons. */
+  .tag {
+    border: 1px solid var(--site-hairline);
+    padding: 0.1rem 0.5rem;
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    color: var(--site-muted);
+    transition:
+      border-color 200ms var(--site-ease),
+      color 200ms var(--site-ease);
+  }
+
+  .project:hover .tag {
+    border-color: color-mix(in oklab, var(--site-fg) 30%, transparent);
+    color: var(--site-fg);
+  }
+
+  /* ---- Services -------------------------------------------------------- */
+
+  /*
+   * Two columns of hairline-topped rows. The rules do not cross the gap, which
+   * is what keeps four of them from reading as a 2x2 grid of cards.
+   */
+  .svc-grid {
+    display: grid;
+  }
+
+  @media (min-width: 48rem) {
+    .svc-grid {
+      grid-template-columns: 1fr 1fr;
+      column-gap: 3.5rem;
+    }
+  }
+
+  .svc {
+    border-top: 1px solid var(--site-hairline);
+    padding-block: 1.5rem 1.75rem;
+    transition: border-color 260ms var(--site-ease);
+  }
+
+  .svc:hover {
+    border-color: var(--site-accent);
+  }
+
+  .svc-title {
+    font-stretch: 112%;
+    font-weight: 620;
+    font-size: 1.3125rem;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    transition: color 200ms var(--site-ease);
+  }
+
+  .svc:hover .svc-title {
+    color: var(--site-accent);
+  }
+
+  /* ---- Contact --------------------------------------------------------- */
+
+  .contact-intro {
+    font-size: clamp(1.125rem, 1.7vw, 1.375rem);
+    line-height: 1.55;
+    letter-spacing: -0.01em;
+    max-width: 34rem;
+  }
+
+  /*
+   * The address: the primary way to reach him, so a step up from the two
+   * profile links under it, and no more than that.
+   *
+   * It was set at display size, up to 46px, on the reasoning that the page
+   * should end on something loud. It was the wrong reasoning. An email address
+   * is a thing you read, copy and type, not a headline, and at that size it
+   * stopped looking like an address at all. 24px keeps it first among the three
+   * channels without shouting.
+   *
+   * `anywhere` on the wrap so a 20-character address still breaks rather than
+   * pushing a narrow phone sideways.
+   */
+  .mail {
+    display: inline-block;
+    margin-top: 0.4rem;
+    font-stretch: 106%;
+    font-weight: 580;
+    font-size: 1.5rem;
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+    /* Accent, like every other link on the page. It read as the odd one out at
+     * full text colour: the most important link in the section was the only one
+     * not coloured as a link. Size carries the emphasis instead. */
+    color: var(--site-accent);
+    /* The same two stacked rules as .link. */
+    background-image:
+      linear-gradient(var(--site-accent), var(--site-accent)),
+      linear-gradient(
+        color-mix(in oklab, var(--site-accent) 30%, transparent),
+        color-mix(in oklab, var(--site-accent) 30%, transparent)
+      );
+    background-position:
+      0 100%,
+      0 100%;
+    background-repeat: no-repeat;
+    background-size:
+      0% 1px,
+      100% 1px;
+    transition: background-size 300ms var(--site-ease);
+  }
+
+  .mail:hover {
+    background-size:
+      100% 1px,
+      100% 1px;
+  }
+
+  .channels {
+    display: grid;
+    row-gap: 1.5rem;
+    margin-top: clamp(2rem, 3.5vw, 2.75rem);
+    border-top: 1px solid var(--site-hairline);
+    padding-top: 1.75rem;
+  }
+
+  @media (min-width: 40rem) {
+    .channels {
+      grid-template-columns: 1fr 1fr;
+      column-gap: 3rem;
+    }
+  }
+
+  .channel-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--site-muted);
   }
 }
 
@@ -344,27 +1096,45 @@
 
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 
 /*
- * The load sequence: portrait and name together, then the positioning line,
- * then the call to action. Time-based rather than scroll-driven, because the
+ * The hero load sequence, which is the one orchestrated moment on the page:
+ * first name, last name, portrait, then the rule and everything under it, each
+ * a beat behind the last. Time-based rather than scroll-driven, because the
  * hero is in view at first paint and a view() timeline would sit at 100%.
+ *
+ * The delay is a custom property set inline per element, so the order of the
+ * sequence is readable in the markup instead of being spread across nth-child
+ * rules here.
  */
 @media (prefers-reduced-motion: no-preference) {
-  .enter,
-  .enter-stagger > * {
+  .enter {
     animation: reveal 700ms var(--site-ease) both;
+    animation-delay: var(--enter-delay, 0ms);
   }
 
-  .enter-stagger > *:nth-child(2) {
-    animation-delay: 140ms;
+  /* The name arrives out of focus as well as from below. Only the two name
+   * lines carry it - a blur on body copy would read as a rendering fault. */
+  .enter-name {
+    animation: reveal-name 900ms var(--site-ease) both;
+    animation-delay: var(--enter-delay, 0ms);
+  }
+}
+
+@keyframes reveal-name {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+    filter: blur(10px);
   }
 
-  .enter-stagger > *:nth-child(3) {
-    animation-delay: 280ms;
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
   }
 }
 
@@ -393,10 +1163,10 @@
   initial-value: 100%;
 }
 
-@keyframes stack-in {
+@keyframes tech-in {
   from {
     opacity: 0;
-    transform: translateY(22px) scale(0.8);
+    transform: translateY(14px);
     --brand-mix: 0%;
   }
 
@@ -407,16 +1177,30 @@
   }
 }
 
+/* The header's own scroll-linked state, driven by the root scroller. */
+@property --head-pad {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0.85rem;
+}
+
+@keyframes head-settle {
+  from {
+    --head-pad: 1.15rem;
+    border-bottom-color: transparent;
+  }
+
+  to {
+    --head-pad: 0.7rem;
+    border-bottom-color: var(--site-hairline);
+  }
+}
+
 /*
- * Scroll-driven rather than timed, because the stack is well below the fold:
- * the chips rise and take on their brand colours as the row arrives, left to
- * right, and the position in the scroll drives the progress. It is the same
- * gesture as the hero load sequence, one section later, which is why it is a
- * stagger and not eleven separate entrances.
- *
- * The stagger is the animation-range, not a delay - animation-delay has no
- * meaning on a scroll timeline. Ranges cover up to six entries, the largest
- * group having five.
+ * Scroll-driven rather than timed, because everything below the hero is below
+ * the fold: a section rises as it arrives and the position in the scroll drives
+ * the progress. Entries inside a section stagger through animation-range rather
+ * than a delay, since animation-delay has no meaning on a scroll timeline.
  *
  * Longhands throughout: the `animation` shorthand resets animation-timeline and
  * animation-range to their initial values, so writing it here would silently
@@ -432,32 +1216,67 @@
       animation-range: entry 5% entry 45%;
     }
 
-    .stack-tile {
-      animation-name: stack-in;
+    /* Items within a section, each a little behind the one above it. */
+    .reveal-item {
+      animation-name: reveal-up;
+      animation-timing-function: var(--site-ease);
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry 6% entry 46%;
+    }
+
+    .reveal-item:nth-child(2) {
+      animation-range: entry 12% entry 52%;
+    }
+
+    .reveal-item:nth-child(3) {
+      animation-range: entry 18% entry 58%;
+    }
+
+    .reveal-item:nth-child(n + 4) {
+      animation-range: entry 24% entry 64%;
+    }
+
+    /*
+     * The marks fill in left to right as their row arrives, taking on their
+     * brand colours as they go. Ranges cover up to six entries, the largest
+     * group having five, and they count within a row rather than across the
+     * section, which is why the tiles sit directly inside the <dd>.
+     */
+    .tech {
+      animation-name: tech-in;
       animation-timing-function: var(--site-ease);
       animation-fill-mode: both;
       animation-timeline: view();
       animation-range: entry 5% entry 45%;
     }
 
-    .stack-tile:nth-child(2) {
-      animation-range: entry 12% entry 52%;
+    .tech:nth-child(2) {
+      animation-range: entry 11% entry 51%;
     }
 
-    .stack-tile:nth-child(3) {
-      animation-range: entry 19% entry 59%;
+    .tech:nth-child(3) {
+      animation-range: entry 17% entry 57%;
     }
 
-    .stack-tile:nth-child(4) {
-      animation-range: entry 26% entry 66%;
+    .tech:nth-child(4) {
+      animation-range: entry 23% entry 63%;
     }
 
-    .stack-tile:nth-child(5) {
-      animation-range: entry 33% entry 73%;
+    .tech:nth-child(5) {
+      animation-range: entry 29% entry 69%;
     }
 
-    .stack-tile:nth-child(n + 6) {
-      animation-range: entry 40% entry 80%;
+    .tech:nth-child(n + 6) {
+      animation-range: entry 35% entry 75%;
+    }
+
+    .site-head {
+      animation-name: head-settle;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(root);
+      animation-range: 0 7.5rem;
     }
   }
 }

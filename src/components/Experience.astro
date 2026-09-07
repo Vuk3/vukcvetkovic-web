@@ -14,30 +14,34 @@ const dict = getDict(lang);
 ---
 
 {/*
-  The period leads each entry rather than being appended to the company after a
-  middle dot. Employment is genuinely a sequence, so the dates are the structure
-  and earn a column of their own — which also retires the hairline spine, since
-  the column of years already draws that line.
+  The heaviest section on the page, and the only one besides Projects that takes
+  a full-contrast rule across the column rather than hanging its label in the
+  margin.
+
+  The period leads each entry and carries the largest type in the section, up to
+  34px. Employment is genuinely a sequence, so the years are the structure - and
+  they are also why nothing on this page is numbered 01 / 02 / 03. A date is a
+  better index than a counter.
+
+  Hovering an entry fills the rule that closes it with the accent, from the left.
+  It is the section's only hover state and it moves nothing.
 */}
-<Section id="experience" label={dict.experience.label} tone={tone}>
-  <ol class="space-y-8">
+<Section id="experience" label={dict.experience.label} width="timeline" tone={tone} head="rule">
+  <ol>
     {
       site.experience.map((role) => {
         const copy = dict.experience.roles[role.id];
         return (
-          <li class="sm:grid sm:grid-cols-[5rem_1fr] sm:gap-x-5">
-            <p
-              class:list={[
-                'display pt-0.5 text-[15px]',
-                role.current ? 'text-accent' : 'text-muted',
-              ]}
-            >
+          <li class="entry reveal-item">
+            {/* Empty string rather than the boolean: Astro renders `false` as
+                data-current="false", which [data-current] would still match. */}
+            <p class="entry-period" data-current={role.current ? '' : undefined}>
               {role.period}
             </p>
-            <div class="mt-1 sm:mt-0">
-              <h3 class="display text-[1.25rem]">{role.company}</h3>
-              <p class="text-[15px] text-muted">{copy.role}</p>
-              <ul class="measure mt-2 space-y-1.5">
+            <div>
+              <h3 class="entry-title">{role.company}</h3>
+              <p class="entry-role">{copy.role}</p>
+              <ul class="bullets measure mt-3 space-y-2">
                 {copy.bullets.map((bullet) => (
                   <li>{bullet}</li>
                 ))}

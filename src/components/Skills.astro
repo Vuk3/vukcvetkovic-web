@@ -1,11 +1,18 @@
 ---
 /**
- * The stack as a grid of marks: the group name on the left, its logos beside it.
+ * The stack as rows of names: the group on the left, its technologies flowing
+ * across the row beside it.
+ *
+ * It was a grid of 44px logo tiles with the name captioned underneath, which
+ * made every technology an identical chip. The names set at reading size now
+ * with the mark small beside each one, so the technologies read as part of the
+ * page's typography - which is what they are, since this is the section a
+ * visiting engineer actually scans.
  *
  * Each row is its own stagger, so the marks fill in group by group as the
- * section is scrolled into view rather than all at once. The nth-child ranges in
- * global.css count within a row, which is why the tiles sit directly inside the
- * <dd>.
+ * section is scrolled into view rather than all at once. The nth-child ranges
+ * in global.css count within a row, which is why the items sit directly inside
+ * the <dd>.
  */
 import type { Lang } from '../i18n/types';
 import { getDict } from '../i18n/utils';
@@ -22,20 +29,18 @@ const { lang, tone } = Astro.props;
 const dict = getDict(lang);
 ---
 
-<Section id="skills" label={dict.skills.label} tone={tone}>
-  <dl class="space-y-8">
+<Section id="skills" label={dict.skills.label} width="skills" tone={tone}>
+  <dl>
     {
       site.skillGroups.map((group) => (
-        <div class="sm:flex sm:gap-6">
-          <dt class="display text-[15px] text-muted sm:w-24 sm:shrink-0 sm:pt-4">
-            {dict.skills.groups[group.id].name}
-          </dt>
-          <dd class="mt-4 flex flex-wrap gap-x-8 gap-y-7 sm:mt-0">
+        <div class="skill-row">
+          <dt class="skill-group">{dict.skills.groups[group.id].name}</dt>
+          <dd class="skill-items">
             {group.items.map((item) => (
-              <div class="stack-tile">
-                <TechIcon name={item} class="stack-icon" />
-                <span class="stack-name">{item}</span>
-              </div>
+              <span class="tech">
+                <TechIcon name={item} class="tech-icon" />
+                <span>{item}</span>
+              </span>
             ))}
           </dd>
         </div>

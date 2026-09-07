@@ -17,58 +17,55 @@ const dict = getDict(lang);
 /** Profile URLs read better without the scheme. */
 const bare = (url: string) => url.replace(/^https?:\/\//, '').replace(/\/$/, '');
 
-const entries = [
-  {
-    label: dict.contact.emailLabel,
-    href: `mailto:${site.email}`,
-    text: site.email,
-    external: false,
-    brand: null,
-  },
+const channels = [
   {
     label: dict.contact.linkedinLabel,
     href: site.links.linkedin,
     text: bare(site.links.linkedin),
-    external: true,
     brand: 'linkedin' as const,
   },
   {
     label: dict.contact.githubLabel,
     href: site.links.github,
     text: bare(site.links.github),
-    external: true,
     brand: 'github' as const,
   },
 ];
 ---
 
-<Section id="contact" label={dict.contact.label} tone={tone}>
-  <p class="measure text-muted">{dict.contact.intro}</p>
+{/*
+  The page's conclusion, and the only place the type gets loud again after the
+  hero: the address itself sets at up to 48px, which makes it the thing the eye
+  lands on and removes any question about what the reader is meant to do here.
+  The two profiles follow it as small labelled links, under a rule, because they
+  are where someone goes to check rather than to make contact.
+*/}
+<Section id="contact" label={dict.contact.label} width="contact" tone={tone}>
+  <div class="reveal">
+    <p class="contact-intro">{dict.contact.intro}</p>
 
-  <dl class="mt-5 space-y-2.5">
-    {
-      entries.map((entry) => (
-        <div class="sm:flex sm:gap-5">
-          <dt class="display flex items-center gap-2 text-[15px] text-muted sm:w-24 sm:shrink-0">
-            {entry.brand ? (
-              <BrandIcon name={entry.brand} class="size-3.5 shrink-0" />
-            ) : (
-              <Mail class="size-3.5 shrink-0" aria-hidden="true" />
-            )}
-            {entry.label}
-          </dt>
-          <dd>
-            <a
-              href={entry.href}
-              target={entry.external ? '_blank' : undefined}
-              rel={entry.external ? 'me noopener' : undefined}
-              class="link"
-            >
-              {entry.text}
+    <div class="mt-10">
+      <p class="channel-label">
+        <Mail class="size-3.5 shrink-0" aria-hidden="true" />
+        {dict.contact.emailLabel}
+      </p>
+      <a href={`mailto:${site.email}`} class="mail">{site.email}</a>
+    </div>
+
+    <ul class="channels">
+      {
+        channels.map((channel) => (
+          <li>
+            <p class="channel-label">
+              <BrandIcon name={channel.brand} class="size-3.5 shrink-0" />
+              {channel.label}
+            </p>
+            <a href={channel.href} target="_blank" rel="me noopener" class="link mt-1 inline-block">
+              {channel.text}
             </a>
-          </dd>
-        </div>
-      ))
-    }
-  </dl>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
 </Section>
