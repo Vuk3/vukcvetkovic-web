@@ -1,4 +1,5 @@
 import type { Dict, Lang } from "./i18n/types";
+import type { TechName } from "./tech";
 
 /**
  * Facts, not copy.
@@ -19,7 +20,11 @@ type ProjectId = keyof Dict["projects"]["items"];
 
 interface SkillGroup {
   id: SkillGroupId;
-  items: string[];
+  /**
+   * Typed against the mark registry in src/tech.ts, so a technology listed here
+   * with no icon behind it fails `astro check` rather than rendering a gap.
+   */
+  items: TechName[];
 }
 
 interface Role {

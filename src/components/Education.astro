@@ -1,29 +1,56 @@
 ---
-import type { Lang } from "../i18n/types";
-import { getDict } from "../i18n/utils";
-import { site } from "../site";
-import Section from "./Section.astro";
+import { Image } from 'astro:assets';
+import elfak from '../assets/elfak.webp';
+import type { Lang } from '../i18n/types';
+import { getDict } from '../i18n/utils';
+import { site } from '../site';
+import Section, { type SectionTone } from './Section.astro';
 
 interface Props {
   lang: Lang;
+  tone?: SectionTone;
 }
 
-const { lang } = Astro.props;
+const { lang, tone } = Astro.props;
 const dict = getDict(lang);
+
+// Displayed size in CSS pixels, matching the stack marks so the two sections
+// carry logos at one size. 1x, 2x and 3x are emitted from the 597px source.
+const crestSize = 44;
 ---
 
 {/* Same date column as Experience, since both are dated sequences. */}
-<Section id="education" label={dict.education.label}>
-  <ol class="space-y-6">
+<Section id="education" label={dict.education.label} tone={tone}>
+  <ol class="space-y-5">
     {
       site.education.map((degree) => {
         const copy = dict.education.degrees[degree.id];
         return (
-          <li class="sm:grid sm:grid-cols-[6.5rem_1fr] sm:gap-x-6">
-            <p class="display pt-0.5 text-[13px] text-muted">{degree.period}</p>
-            <div class="mt-1 sm:mt-0">
-              <h3 class="display text-[1.0625rem]">{copy.degree}</h3>
-              <p class="text-[13px] text-muted">{copy.school}</p>
+          <li class="sm:grid sm:grid-cols-[5rem_1fr] sm:gap-x-5">
+            <p class="display pt-0.5 text-[15px] text-muted">{degree.period}</p>
+            <div class="mt-1 flex items-start gap-4 sm:mt-0">
+              {/*
+                Decorative, so the alt is empty: the school is named in the line
+                directly beside it and a screen reader announcing the crest as
+                well would just read the same thing twice.
+
+                The crest is navy on transparent, which disappears against the
+                dark theme, so it sits on its own white disc. The artwork is a
+                circle already, so the disc reads as part of the seal rather
+                than as a plate someone put behind it.
+              */}
+              <Image
+                src={elfak}
+                alt=""
+                width={crestSize}
+                densities={[1, 2, 3]}
+                loading="lazy"
+                class="mt-1 w-11 shrink-0 rounded-full bg-white"
+              />
+              <div>
+                <h3 class="display text-[1.25rem]">{copy.degree}</h3>
+                <p class="text-[15px] text-muted">{copy.school}</p>
+              </div>
             </div>
           </li>
         );

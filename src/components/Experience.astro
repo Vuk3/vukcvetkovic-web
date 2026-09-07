@@ -2,13 +2,14 @@
 import type { Lang } from '../i18n/types';
 import { getDict } from '../i18n/utils';
 import { site } from '../site';
-import Section from './Section.astro';
+import Section, { type SectionTone } from './Section.astro';
 
 interface Props {
   lang: Lang;
+  tone?: SectionTone;
 }
 
-const { lang } = Astro.props;
+const { lang, tone } = Astro.props;
 const dict = getDict(lang);
 ---
 
@@ -18,25 +19,25 @@ const dict = getDict(lang);
   and earn a column of their own — which also retires the hairline spine, since
   the column of years already draws that line.
 */}
-<Section id="experience" label={dict.experience.label}>
-  <ol class="space-y-10">
+<Section id="experience" label={dict.experience.label} tone={tone}>
+  <ol class="space-y-8">
     {
       site.experience.map((role) => {
         const copy = dict.experience.roles[role.id];
         return (
-          <li class="sm:grid sm:grid-cols-[6.5rem_1fr] sm:gap-x-6">
+          <li class="sm:grid sm:grid-cols-[5rem_1fr] sm:gap-x-5">
             <p
               class:list={[
-                'display pt-0.5 text-[13px]',
+                'display pt-0.5 text-[15px]',
                 role.current ? 'text-accent' : 'text-muted',
               ]}
             >
               {role.period}
             </p>
             <div class="mt-1 sm:mt-0">
-              <h3 class="display text-[1.0625rem]">{role.company}</h3>
-              <p class="text-[13px] text-muted">{copy.role}</p>
-              <ul class="mt-3 max-w-[34rem] space-y-2">
+              <h3 class="display text-[1.25rem]">{role.company}</h3>
+              <p class="text-[15px] text-muted">{copy.role}</p>
+              <ul class="measure mt-2 space-y-1.5">
                 {copy.bullets.map((bullet) => (
                   <li>{bullet}</li>
                 ))}

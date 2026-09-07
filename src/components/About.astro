@@ -1,13 +1,14 @@
 ---
 import type { Lang } from '../i18n/types';
 import { getDict } from '../i18n/utils';
-import Section from './Section.astro';
+import Section, { type SectionTone } from './Section.astro';
 
 interface Props {
   lang: Lang;
+  tone?: SectionTone;
 }
 
-const { lang } = Astro.props;
+const { lang, tone } = Astro.props;
 const dict = getDict(lang);
 ---
 
@@ -16,14 +17,14 @@ const dict = getDict(lang);
   was the same size, so nothing told the eye where to start reading. Its measure
   is narrower to compensate for the bigger size.
 */}
-<Section id="about" label={dict.about.label}>
-  <div class="space-y-4">
+<Section id="about" label={dict.about.label} tone={tone}>
+  <div class="space-y-3">
     {
       dict.about.paragraphs.map((paragraph, index) =>
         index === 0 ? (
-          <p class="max-w-[30rem] text-xl leading-[1.5]">{paragraph}</p>
+          <p class="measure text-[1.5rem] leading-[1.5]">{paragraph}</p>
         ) : (
-          <p class="max-w-[36rem]">{paragraph}</p>
+          <p class="measure">{paragraph}</p>
         ),
       )
     }

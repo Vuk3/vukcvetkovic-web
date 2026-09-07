@@ -24,11 +24,11 @@ const portrait = Object.values(portraits)[0]?.default;
 // Displayed size in CSS pixels, and the only knob for it — the placeholder
 // follows it too. 1x, 2x and 3x variants are emitted, so the source's short edge
 // should be at least three times this. Sharp crops a non-square source to centre.
-const portraitSize = 128;
+const portraitSize = 168;
 ---
 
 {/* No scroll reveal here: the hero is in view at first paint and animates on load. */}
-<section class="shell section-grid hero-grid pt-16">
+<section class="shell section-grid hero-grid pt-14 pb-16">
   {
     portrait ? (
       <Image
@@ -54,12 +54,12 @@ const portraitSize = 128;
   }
 
   <div class="enter-stagger">
-    <h1 class="display-name text-[2.75rem] sm:text-[3.75rem]">{site.name}</h1>
-    <p class="mt-5 max-w-[34rem] text-lg text-muted">{dict.hero.positioning}</p>
+    <h1 class="display-name text-[3.25rem] sm:text-[4.75rem]">{site.name}</h1>
+    <p class="measure mt-5 text-[1.375rem] leading-[1.6] text-muted">{dict.hero.positioning}</p>
 
-    <p class="mt-8">
-      <a href={`mailto:${site.email}`} class="link inline-flex items-center gap-2">
-        <Mail class="size-4" aria-hidden="true" />
+    <p class="mt-6">
+      <a href={`mailto:${site.email}`} class="link inline-flex items-center gap-2 text-lg">
+        <Mail class="size-5" aria-hidden="true" />
         {dict.hero.cta}
       </a>
     </p>

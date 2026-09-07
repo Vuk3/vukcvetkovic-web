@@ -20,8 +20,12 @@ const options = locales.map((locale) => ({
 }));
 ---
 
-{/* A native disclosure, so the menu opens and closes without any script. */}
-<details class="group relative" data-lang-menu>
+{/*
+  A native disclosure, so the menu opens and closes without any script. The
+  `data-menu` hook is what the layout's one dismissal listener looks for, which
+  handles Escape and clicking past it for every disclosure on the page.
+*/}
+<details class="group relative" data-menu>
   <summary
     class="flex cursor-pointer list-none items-center gap-1 text-[11px] tracking-wider text-muted uppercase transition-colors duration-150 hover:text-fg [&::-webkit-details-marker]:hidden"
   >
@@ -63,23 +67,3 @@ const options = locales.map((locale) => ({
   </nav>
 </details>
 
-<script>
-  // A native <details> has no light dismiss: it stays open when you click past it
-  // or press Escape. Restoring those two is the only reason this ships any JS.
-  const menu = document.querySelector('details[data-lang-menu]');
-
-  if (menu instanceof HTMLDetailsElement) {
-    document.addEventListener('pointerdown', (event) => {
-      if (menu.open && event.target instanceof Node && !menu.contains(event.target)) {
-        menu.open = false;
-      }
-    });
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && menu.open) {
-        menu.open = false;
-        menu.querySelector('summary')?.focus();
-      }
-    });
-  }
-</script>

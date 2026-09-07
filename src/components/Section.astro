@@ -5,22 +5,33 @@
  * The heading used to be a tracked-out uppercase label. It is sentence case in
  * the display width now: an ALL-CAPS eyebrow over every section is decoration
  * pretending to be structure, and it made every block look the same weight.
- * Position and width carry the hierarchy here, which is why the size can stay
- * small without the heading reading as a caption.
  *
- * Sections are separated by whitespace alone — no cards, no rules.
+ * Sections are separated by tone rather than by whitespace alone - see
+ * `.section-band` in global.css. Spacing is padding rather than a top margin so
+ * that two banded sections meet cleanly, with no strip of the ground showing
+ * through between them.
  */
+/**
+ * `base` is the page ground, `band` the alternating tone, `close` the tinted one
+ * that ends the page. Home.astro assigns them, so the whole rhythm is readable
+ * in one place, and every section component forwards this through.
+ */
+export type SectionTone = 'base' | 'band' | 'close';
+
 interface Props {
   id: string;
   label: string;
+  tone?: SectionTone;
 }
 
-const { id, label } = Astro.props;
+const { id, label, tone = 'base' } = Astro.props;
+
+const toneClass = { base: '', band: 'section-band', close: 'section-close' }[tone];
 ---
 
-<section id={id} class="mt-24">
-  <div class="shell section-grid">
-    <h2 class="display text-sm lg:pt-1.5">{label}</h2>
+<section id={id} class:list={['py-14', toneClass]}>
+  <div class="shell section-grid reveal">
+    <h2 class="display text-[1.0625rem] lg:pt-2">{label}</h2>
     <div>
       <slot />
     </div>

@@ -1,0 +1,40 @@
+---
+/**
+ * One mark from the stack, rendered from src/tech.ts.
+ *
+ * Filled brand marks and stroked outlines come through the same element, so the
+ * only difference between them is which attributes get set. The brand colour is
+ * handed over as a custom property rather than as `color` directly, which lets
+ * the stylesheet decide when it arrives - see `.stack-icon` in global.css,
+ * where it fades in from the muted tone as the section is scrolled into view.
+ *
+ * `light-dark()` reads the `color-scheme` that the .dark class sets, so one
+ * declaration covers both themes. Where it is unsupported the property is
+ * invalid at computed-value time and the icon inherits the text colour, which
+ * is the correct fallback rather than a broken one.
+ */
+import { getTechIcon, type TechName } from '../tech';
+
+interface Props {
+  name: TechName;
+  class?: string;
+}
+
+const { name, class: className } = Astro.props;
+const icon = getTechIcon(name);
+const brand = icon.hex ? `--brand: light-dark(${icon.hex}, ${icon.darkHex ?? icon.hex})` : undefined;
+---
+
+<svg
+  viewBox="0 0 24 24"
+  aria-hidden="true"
+  class={className}
+  style={brand}
+  fill={icon.stroked ? 'none' : 'currentColor'}
+  stroke={icon.stroked ? 'currentColor' : undefined}
+  stroke-width={icon.stroked ? 2 : undefined}
+  stroke-linecap={icon.stroked ? 'round' : undefined}
+  stroke-linejoin={icon.stroked ? 'round' : undefined}
+>
+  <path d={icon.path}></path>
+</svg>

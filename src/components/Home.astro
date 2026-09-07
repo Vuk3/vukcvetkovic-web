@@ -20,19 +20,20 @@ interface Props {
 const { lang } = Astro.props;
 ---
 
-<Hero lang={lang} />
-<About lang={lang} />
-<Skills lang={lang} />
-<Experience lang={lang} />
-<Education lang={lang} />
-<Projects lang={lang} />
-
 {/*
-  The two sections aimed at someone deciding whether to write to him sit
-  together on the surface tone, which gives the page a second half rather than
-  one uninterrupted sheet. They share a single band, so the tone changes once.
+  Tones alternate straight down the page, with no two neighbours sharing one.
+  Experience and Education did share a tone, on the grounds that they are the
+  same kind of dated list, but the two then read as one long block and the
+  boundary between them disappeared.
+
+  Contact takes the third tone, the tinted one, which is the page ending rather
+  than another step in the alternation.
 */}
-<div class="band mt-24 py-20">
-  <Services lang={lang} />
-  <Contact lang={lang} />
-</div>
+<Hero lang={lang} />
+<About lang={lang} tone="band" />
+<Skills lang={lang} />
+<Experience lang={lang} tone="band" />
+<Education lang={lang} />
+<Projects lang={lang} tone="band" />
+<Services lang={lang} />
+<Contact lang={lang} tone="close" />

@@ -4,13 +4,14 @@ import type { Lang } from '../i18n/types';
 import { getDict } from '../i18n/utils';
 import { site } from '../site';
 import BrandIcon from './BrandIcon.astro';
-import Section from './Section.astro';
+import Section, { type SectionTone } from './Section.astro';
 
 interface Props {
   lang: Lang;
+  tone?: SectionTone;
 }
 
-const { lang } = Astro.props;
+const { lang, tone } = Astro.props;
 const dict = getDict(lang);
 
 /** Profile URLs read better without the scheme. */
@@ -41,14 +42,14 @@ const entries = [
 ];
 ---
 
-<Section id="contact" label={dict.contact.label}>
-  <p class="max-w-[34rem] text-muted">{dict.contact.intro}</p>
+<Section id="contact" label={dict.contact.label} tone={tone}>
+  <p class="measure text-muted">{dict.contact.intro}</p>
 
-  <dl class="mt-6 space-y-3">
+  <dl class="mt-5 space-y-2.5">
     {
       entries.map((entry) => (
-        <div class="sm:flex sm:gap-6">
-          <dt class="display flex items-center gap-2 text-[13px] text-muted sm:w-32 sm:shrink-0">
+        <div class="sm:flex sm:gap-5">
+          <dt class="display flex items-center gap-2 text-[15px] text-muted sm:w-24 sm:shrink-0">
             {entry.brand ? (
               <BrandIcon name={entry.brand} class="size-3.5 shrink-0" />
             ) : (

@@ -30,9 +30,22 @@
   --site-bg: #faf9f7;
   --site-surface: #f1efeb;
   --site-fg: #1c1b19;
-  --site-muted: #6d6b66;
+  /* Darkened from #6d6b66 when the bands came in: on the deepest band the old
+   * value fell to 4.44:1, under AA. It clears 4.8:1 on all three tones now. */
+  --site-muted: #67655f;
   --site-hairline: #e4e1db;
   --site-accent: #0d5c5c;
+
+  /*
+   * The two band tones, kept separate from --site-surface so the step between
+   * sections can be tuned without also darkening every chip and inset.
+   *
+   * The step is deliberately large enough to read at a glance. An earlier pass
+   * used the surface tone here and the boundary was invisible, which is the
+   * whole reason the page felt like one uninterrupted sheet.
+   */
+  --site-band: #efeae1;
+  --site-close: #e4edeb;
 
   /* One easing curve for the whole site, so nothing moves in a different way. */
   --site-ease: cubic-bezier(0.4, 0, 0.2, 1);
@@ -47,6 +60,10 @@
   --site-muted: #94918b;
   --site-hairline: #2a2926;
   --site-accent: #5fc2b7;
+
+  /* Lighter than the ground here, since a band cannot go darker than #0f0f0f. */
+  --site-band: #1c1c1a;
+  --site-close: #142220;
 }
 
 /*
@@ -60,6 +77,8 @@
 
   --color-bg: var(--site-bg);
   --color-surface: var(--site-surface);
+  --color-band: var(--site-band);
+  --color-close: var(--site-close);
   --color-fg: var(--site-fg);
   --color-muted: var(--site-muted);
   --color-hairline: var(--site-hairline);
@@ -76,7 +95,8 @@
     background-color: var(--site-bg);
     color: var(--site-fg);
     font-family: var(--font-sans);
-    font-size: 1rem;
+    /* 17px base, up from 16px: the page read as small print at the old scale. */
+    font-size: 1.0625rem;
     line-height: 1.7;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
@@ -138,24 +158,43 @@
   .shell {
     margin-inline: auto;
     width: 100%;
-    max-width: 58rem;
+    max-width: 64rem;
     padding-inline: 1.5rem;
   }
 
   /*
-   * A tonal band. The page was one flat sheet of off-white from the header to
-   * the footer, which read as monotonous however carefully the type was set, so
-   * the last two sections sit on the surface tone instead. It introduces no new
-   * colour, only one already in the palette, and the sections inside it keep
-   * their own rhythm: the first one drops its top margin so the band starts
-   * cleanly rather than opening with a gap.
+   * The measure for running prose, in one place.
+   *
+   * There were six of these before, between 34rem and 36rem, set per component
+   * with no relationship to each other, and all of them stopped well short of
+   * the column they sat in. 44rem is 704px, which is 86% of the content column
+   * and lands around 80 characters at the 17px body size. Wider reads fast and
+   * loses the line, narrower is what made the page look like a column of text
+   * pinned to the left of a wide empty page.
    */
-  .band {
-    background-color: var(--site-surface);
+  .measure {
+    max-width: 44rem;
   }
 
-  .band > section:first-child {
-    margin-top: 0;
+  /*
+   * Section tones.
+   *
+   * Sections alternate between the ground and a band tone, edge to edge, so
+   * scrolling the page moves through visible blocks rather than one unbroken
+   * sheet. The tone is what separates one section from the next now, which is
+   * why sections use vertical padding rather than a top margin: two adjacent
+   * bands have to meet with no gap of ground showing between them.
+   *
+   * Contact closes the page on a third tone, the only one carrying any hue,
+   * pulled towards the accent. It marks the end of the page and it is the one
+   * section where the reader is being asked to do something.
+   */
+  .section-band {
+    background-color: var(--site-band);
+  }
+
+  .section-close {
+    background-color: var(--site-close);
   }
 
   /*
@@ -176,8 +215,14 @@
 
   @media (min-width: 64rem) {
     .section-grid {
-      grid-template-columns: 10rem 1fr;
-      column-gap: 2.5rem;
+      /*
+       * 8rem, down from 11rem, and a 2rem gap rather than 3rem. The label
+       * column was reserving 224px of a 976px row for words like "Skills" and
+       * then the content beside it capped itself again, which is what left the
+       * text sitting in the left third of a wide page.
+       */
+      grid-template-columns: 8rem 1fr;
+      column-gap: 2rem;
       row-gap: 0;
     }
   }
@@ -226,21 +271,75 @@
       100% 1px,
       100% 1px;
   }
+
+  /*
+   * The stack, as a grid of marks rather than a row of text chips.
+   *
+   * This is the one place colour is allowed in beyond the accent, and it is
+   * borrowed rather than invented - each mark carries its own brand colour. At
+   * 44px they are the loudest thing on the page after the name, which is the
+   * point: the stack is the section a visiting engineer actually scans.
+   */
+  .stack-tile {
+    --brand-mix: 100%;
+
+    display: flex;
+    width: 5rem;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7rem;
+    text-align: center;
+    transition: transform 200ms var(--site-ease);
+  }
+
+  .stack-tile:hover {
+    transform: translateY(-4px);
+  }
+
+  .stack-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    /*
+     * --brand comes from the element's style attribute and is missing on the
+     * three entries with no brand, which then sit at the muted tone. --brand-mix
+     * is what the reveal below animates, and it rests at 100%, so a browser that
+     * runs no animation at all still gets the full colour.
+     */
+    color: color-mix(
+      in oklab,
+      var(--brand, var(--site-muted)) var(--brand-mix),
+      var(--site-muted)
+    );
+  }
+
+  .stack-name {
+    font-size: 0.875rem;
+    color: var(--site-muted);
+    transition: color 200ms var(--site-ease);
+  }
+
+  .stack-tile:hover .stack-name {
+    color: var(--site-fg);
+  }
 }
 
 /*
- * Motion is one moment, not a habit.
+ * Motion.
  *
- * There was a fade-and-rise on every section here, on a view() timeline. It is
- * gone: an entrance on each section as you scroll is the default treatment of
- * every generated page, and it makes reading feel gated behind an animation.
- * What is left is the load sequence below, plus transitions that answer
- * something the reader did — a hover, the theme toggle, a navigation.
+ * A per-section reveal was built here twice and removed twice, on the grounds
+ * that an entrance on every section is the generated-page default. That was the
+ * wrong call: it is what Vuk asked for, three times, and the page reads as a
+ * static sheet of paper without it. It is back, and it moves far enough to be
+ * seen - 28px, not 5px.
+ *
+ * Everything is CSS. Scroll position drives the reveals through view()
+ * timelines, so there is no observer and no library, and a browser without
+ * scroll-driven animations simply shows the content.
  */
 @keyframes reveal {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(20px);
   }
 
   to {
@@ -257,15 +356,109 @@
 @media (prefers-reduced-motion: no-preference) {
   .enter,
   .enter-stagger > * {
-    animation: reveal 500ms var(--site-ease) both;
+    animation: reveal 700ms var(--site-ease) both;
   }
 
   .enter-stagger > *:nth-child(2) {
-    animation-delay: 80ms;
+    animation-delay: 140ms;
   }
 
   .enter-stagger > *:nth-child(3) {
-    animation-delay: 160ms;
+    animation-delay: 280ms;
+  }
+}
+
+/* Every section arrives the same way, which is why it is one keyframe. */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/*
+ * The stack reveal.
+ *
+ * Registered so it interpolates: an unregistered custom property jumps at the
+ * midpoint instead of easing, which would make the colour snap on.
+ */
+@property --brand-mix {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 100%;
+}
+
+@keyframes stack-in {
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.8);
+    --brand-mix: 0%;
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+    --brand-mix: 100%;
+  }
+}
+
+/*
+ * Scroll-driven rather than timed, because the stack is well below the fold:
+ * the chips rise and take on their brand colours as the row arrives, left to
+ * right, and the position in the scroll drives the progress. It is the same
+ * gesture as the hero load sequence, one section later, which is why it is a
+ * stagger and not eleven separate entrances.
+ *
+ * The stagger is the animation-range, not a delay - animation-delay has no
+ * meaning on a scroll timeline. Ranges cover up to six entries, the largest
+ * group having five.
+ *
+ * Longhands throughout: the `animation` shorthand resets animation-timeline and
+ * animation-range to their initial values, so writing it here would silently
+ * undo the timeline on the line below.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation-name: reveal-up;
+      animation-timing-function: var(--site-ease);
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry 5% entry 45%;
+    }
+
+    .stack-tile {
+      animation-name: stack-in;
+      animation-timing-function: var(--site-ease);
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry 5% entry 45%;
+    }
+
+    .stack-tile:nth-child(2) {
+      animation-range: entry 12% entry 52%;
+    }
+
+    .stack-tile:nth-child(3) {
+      animation-range: entry 19% entry 59%;
+    }
+
+    .stack-tile:nth-child(4) {
+      animation-range: entry 26% entry 66%;
+    }
+
+    .stack-tile:nth-child(5) {
+      animation-range: entry 33% entry 73%;
+    }
+
+    .stack-tile:nth-child(n + 6) {
+      animation-range: entry 40% entry 80%;
+    }
   }
 }
 

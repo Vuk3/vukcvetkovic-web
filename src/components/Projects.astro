@@ -2,19 +2,20 @@
 import type { Lang } from '../i18n/types';
 import { getDict } from '../i18n/utils';
 import { site } from '../site';
-import Section from './Section.astro';
+import Section, { type SectionTone } from './Section.astro';
 
 interface Props {
   lang: Lang;
+  tone?: SectionTone;
 }
 
-const { lang } = Astro.props;
+const { lang, tone } = Astro.props;
 const dict = getDict(lang);
 ---
 
-<Section id="projects" label={dict.projects.label}>
+<Section id="projects" label={dict.projects.label} tone={tone}>
   {/* Two columns once the content track is wide enough for two short blocks. */}
-  <ul class="grid gap-8 lg:grid-cols-2 lg:gap-x-10">
+  <ul class="grid gap-7 lg:grid-cols-2 lg:gap-x-8">
     {
       site.projects.map((project) => {
         const copy = dict.projects.items[project.id];
@@ -25,17 +26,17 @@ const dict = getDict(lang);
 
         return (
           <li>
-            <h3 class="display text-[1.0625rem]">{copy.title}</h3>
-            <p class="mt-1 text-muted">{copy.description}</p>
+            <h3 class="display text-[1.25rem]">{copy.title}</h3>
+            <p class="measure mt-1 text-muted">{copy.description}</p>
 
             <ul class="mt-3 flex flex-wrap gap-1.5">
               {project.tech.map((tech) => (
-                <li class="rounded bg-surface px-2 py-0.5 text-[13px]">{tech}</li>
+                <li class="rounded bg-surface px-2 py-0.5 text-[15px]">{tech}</li>
               ))}
             </ul>
 
             {links.length > 0 && (
-              <ul class="mt-3 flex flex-wrap gap-4 text-[13px]">
+              <ul class="mt-3 flex flex-wrap gap-4 text-[15px]">
                 {links.map((link) => (
                   <li>
                     <a href={link.href} target="_blank" rel="noopener" class="link">

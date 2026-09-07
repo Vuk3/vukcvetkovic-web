@@ -85,7 +85,18 @@ const xDefault = new URL(localizePath(Astro.url.pathname, 'en'), siteUrl).href;
     <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0f0f0f" media="(prefers-color-scheme: dark)" />
 
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {/*
+      Vuk's own V mark, cropped in tight from the master in src/assets. The 32px
+      file is the one a browser tab actually uses, resized ahead of time rather
+      than left to the browser to squeeze down from 512 - that downscale is what
+      makes a large favicon look soft in the tab strip.
+
+      The petrol SVG that used to sit here is gone. Two icons in two different
+      designs would show up as two different marks depending on the browser.
+    */}
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="512x512" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
   </head>
 
@@ -106,5 +117,47 @@ const xDefault = new URL(localizePath(Astro.url.pathname, 'en'), siteUrl).href;
     </main>
 
     <Footer lang={lang} />
+
+    <script>
+      // A native <details> has no light dismiss: it stays open when you click
+      // past it, when you press Escape, and when you follow a link inside it.
+      // That last one matters for the section menu, where the link is an anchor
+      // on the same page, so nothing navigates and the panel would sit there
+      // over the section it just jumped to.
+      //
+      // One listener for every disclosure on the page rather than one per
+      // component, which is why this lives in the layout.
+      const menus = document.querySelectorAll<HTMLDetailsElement>('details[data-menu]');
+
+      const closeAll = (except?: Node) => {
+        menus.forEach((menu) => {
+          if (menu.open && menu !== except) menu.open = false;
+        });
+      };
+
+      document.addEventListener('pointerdown', (event) => {
+        const target = event.target;
+        if (!(target instanceof Node)) return;
+
+        const inside = [...menus].find((menu) => menu.contains(target));
+        closeAll(inside);
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+
+        const open = [...menus].find((menu) => menu.open);
+        if (!open) return;
+
+        open.open = false;
+        open.querySelector('summary')?.focus();
+      });
+
+      menus.forEach((menu) => {
+        menu.addEventListener('click', (event) => {
+          if (event.target instanceof Element && event.target.closest('a')) menu.open = false;
+        });
+      });
+    </script>
   </body>
 </html>

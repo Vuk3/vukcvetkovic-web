@@ -1,4 +1,5 @@
 ---
+import { Menu, X } from '@lucide/astro';
 import type { Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
 import { site } from '../site';
@@ -29,7 +30,7 @@ const sections = [
 
 <header class="sticky top-0 z-40 border-b border-hairline bg-bg">
   <div class="shell flex items-center gap-4 py-3">
-    <a href={home} class="display text-sm transition-colors duration-150 hover:text-accent">
+    <a href={home} class="display text-base transition-colors duration-150 hover:text-accent">
       {site.name}
     </a>
 
@@ -41,7 +42,7 @@ const sections = [
             <li>
               <a
                 href={`${home}#${section.id}`}
-                class="text-[13px] text-muted transition-colors duration-150 hover:text-fg"
+                class="text-[15px] text-muted transition-colors duration-150 hover:text-fg"
               >
                 {section.label}
               </a>
@@ -51,9 +52,44 @@ const sections = [
       </ul>
     </nav>
 
-    <div class="ml-auto flex items-center gap-2 lg:ml-4">
+    <div class="ml-auto flex items-center gap-3 lg:ml-4">
       <ThemeToggle lang={lang} />
       <LangSwitcher lang={lang} />
+
+      {/*
+        The same list again, behind a disclosure, for everything below lg. It is
+        a native <details>, so it opens and closes with no script of its own, and
+        the panel is absolutely positioned against the sticky header rather than
+        against the <details>, which is what lets it span the full width.
+
+        No landmark around this list: the desktop <nav> above already carries one
+        named "Sections", and a second landmark with the same name only gives a
+        screen reader two identical entries to choose between.
+      */}
+      <details class="group static lg:hidden" data-menu>
+        <summary
+          aria-label={dict.nav.sections}
+          class="flex cursor-pointer list-none items-center text-muted transition-colors duration-150 hover:text-fg [&::-webkit-details-marker]:hidden"
+        >
+          <Menu class="size-5 group-open:hidden" aria-hidden="true" />
+          <X class="hidden size-5 group-open:block" aria-hidden="true" />
+        </summary>
+
+        <ul class="absolute inset-x-0 top-full border-b border-hairline bg-bg py-2">
+          {
+            sections.map((section) => (
+              <li>
+                <a
+                  href={`${home}#${section.id}`}
+                  class="shell block py-2.5 text-muted transition-colors duration-150 hover:text-fg"
+                >
+                  {section.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </details>
     </div>
   </div>
 </header>

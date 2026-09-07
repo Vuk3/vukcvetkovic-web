@@ -1,28 +1,41 @@
 ---
+/**
+ * The stack as a grid of marks: the group name on the left, its logos beside it.
+ *
+ * Each row is its own stagger, so the marks fill in group by group as the
+ * section is scrolled into view rather than all at once. The nth-child ranges in
+ * global.css count within a row, which is why the tiles sit directly inside the
+ * <dd>.
+ */
 import type { Lang } from '../i18n/types';
 import { getDict } from '../i18n/utils';
 import { site } from '../site';
-import Section from './Section.astro';
+import Section, { type SectionTone } from './Section.astro';
+import TechIcon from './TechIcon.astro';
 
 interface Props {
   lang: Lang;
+  tone?: SectionTone;
 }
 
-const { lang } = Astro.props;
+const { lang, tone } = Astro.props;
 const dict = getDict(lang);
 ---
 
-<Section id="skills" label={dict.skills.label}>
-  <dl class="space-y-5">
+<Section id="skills" label={dict.skills.label} tone={tone}>
+  <dl class="space-y-8">
     {
       site.skillGroups.map((group) => (
         <div class="sm:flex sm:gap-6">
-          <dt class="display text-[13px] text-muted sm:w-32 sm:shrink-0 sm:pt-1">
+          <dt class="display text-[15px] text-muted sm:w-24 sm:shrink-0 sm:pt-4">
             {dict.skills.groups[group.id].name}
           </dt>
-          <dd class="mt-2 flex flex-wrap gap-1.5 sm:mt-0">
+          <dd class="mt-4 flex flex-wrap gap-x-8 gap-y-7 sm:mt-0">
             {group.items.map((item) => (
-              <span class="rounded bg-surface px-2 py-0.5 text-[13px]">{item}</span>
+              <div class="stack-tile">
+                <TechIcon name={item} class="stack-icon" />
+                <span class="stack-name">{item}</span>
+              </div>
             ))}
           </dd>
         </div>
