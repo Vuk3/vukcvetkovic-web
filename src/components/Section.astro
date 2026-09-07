@@ -1,0 +1,22 @@
+---
+/**
+ * A homepage section: a small uppercase label, then content.
+ * Sections are separated by whitespace and the label alone — no cards,
+ * no borders, no headings competing with the h1 in the hero.
+ */
+interface Props {
+  id: string;
+  label: string;
+}
+
+const { id, label } = Astro.props;
+---
+
+<section id={id} class="reveal mt-20">
+  <h2 class="font-heading text-xs font-medium tracking-[0.14em] text-muted uppercase">
+    {label}
+  </h2>
+  <div class="mt-5">
+    <slot />
+  </div>
+</section>

@@ -1,0 +1,65 @@
+---
+import { Mail } from '@lucide/astro';
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+import type { Lang } from '../i18n/types';
+import { getDict } from '../i18n/utils';
+import { site } from '../site';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = getDict(lang);
+
+// Globbed rather than imported directly: a missing portrait yields an empty
+// object instead of a build error, so the placeholder can stand in for it.
+const portraits = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/portrait.{webp,avif,png,jpg,jpeg}',
+  { eager: true },
+);
+const portrait = Object.values(portraits)[0]?.default;
+---
+
+<section class="reveal pt-16">
+  <div class="flex flex-col gap-6 sm:flex-row sm:items-start">
+    {
+      portrait ? (
+        <Image
+          src={portrait}
+          alt={dict.hero.portraitAlt}
+          width={96}
+          height={96}
+          loading="eager"
+          class="size-24 shrink-0 rounded-lg object-cover"
+        />
+      ) : (
+        <div
+          role="img"
+          aria-label={dict.hero.portraitAlt}
+          class="flex size-24 shrink-0 items-center justify-center rounded-lg bg-surface p-2 text-center text-[10px] leading-tight text-muted"
+        >
+          {dict.hero.portraitPlaceholder}
+        </div>
+      )
+    }
+
+    <div>
+      <h1 class="font-heading text-4xl leading-[1.05] font-semibold tracking-tight sm:text-5xl">
+        {site.name}
+      </h1>
+      <p class="mt-4 max-w-[34rem] text-muted">{dict.hero.positioning}</p>
+    </div>
+  </div>
+
+  <p class="mt-8">
+    <a
+      href={`mailto:${site.email}`}
+      class="link inline-flex items-center gap-2"
+    >
+      <Mail class="size-4" aria-hidden="true" />
+      {dict.hero.cta}
+    </a>
+  </p>
+</section>

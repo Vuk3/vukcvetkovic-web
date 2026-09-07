@@ -1,0 +1,60 @@
+---
+import type { Lang } from '../i18n/types';
+import { getDict, localizePath } from '../i18n/utils';
+import { site } from '../site';
+import LangSwitcher from './LangSwitcher.astro';
+import ThemeToggle from './ThemeToggle.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = getDict(lang);
+
+// Absolute, locale-aware hrefs so the header keeps working once other pages
+// (a blog, say) exist and the sections are no longer on the current URL.
+const home = localizePath('/', lang);
+
+const sections = [
+  { id: 'about', label: dict.nav.about },
+  { id: 'skills', label: dict.nav.skills },
+  { id: 'experience', label: dict.nav.experience },
+  { id: 'projects', label: dict.nav.projects },
+  { id: 'services', label: dict.nav.services },
+  { id: 'contact', label: dict.nav.contact },
+];
+---
+
+<header class="sticky top-0 z-40 border-b border-hairline bg-bg">
+  <div class="mx-auto flex w-full max-w-[42.5rem] items-center gap-4 px-6 py-3">
+    <a
+      href={home}
+      class="font-heading text-sm font-medium tracking-tight transition-colors duration-150 hover:text-accent"
+    >
+      {site.name}
+    </a>
+
+    <nav aria-label={dict.nav.sections} class="ml-auto hidden md:block">
+      <ul class="flex items-center gap-3.5">
+        {
+          sections.map((section) => (
+            <li>
+              <a
+                href={`${home}#${section.id}`}
+                class="text-[13px] text-muted transition-colors duration-150 hover:text-fg"
+              >
+                {section.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="ml-auto flex items-center gap-2 md:ml-4">
+      <ThemeToggle lang={lang} />
+      <LangSwitcher lang={lang} />
+    </div>
+  </div>
+</header>

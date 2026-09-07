@@ -1,0 +1,62 @@
+---
+import { ArrowUpRight } from '@lucide/astro';
+import type { Lang } from '../i18n/types';
+import { getDict } from '../i18n/utils';
+import { site } from '../site';
+import Section from './Section.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = getDict(lang);
+
+/** Profile URLs read better without the scheme. */
+const bare = (url: string) => url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+
+const entries = [
+  {
+    label: dict.contact.emailLabel,
+    href: `mailto:${site.email}`,
+    text: site.email,
+    external: false,
+  },
+  {
+    label: dict.contact.linkedinLabel,
+    href: site.links.linkedin,
+    text: bare(site.links.linkedin),
+    external: true,
+  },
+  {
+    label: dict.contact.githubLabel,
+    href: site.links.github,
+    text: bare(site.links.github),
+    external: true,
+  },
+];
+---
+
+<Section id="contact" label={dict.contact.label}>
+  <p class="max-w-[34rem] text-muted">{dict.contact.intro}</p>
+
+  <dl class="mt-6 space-y-3">
+    {
+      entries.map((entry) => (
+        <div class="sm:flex sm:gap-6">
+          <dt class="text-[13px] text-muted sm:w-32 sm:shrink-0">{entry.label}</dt>
+          <dd>
+            <a
+              href={entry.href}
+              rel={entry.external ? 'me noopener' : undefined}
+              class="link inline-flex items-center gap-1"
+            >
+              {entry.text}
+              {entry.external && <ArrowUpRight class="size-3.5" aria-hidden="true" />}
+            </a>
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+</Section>

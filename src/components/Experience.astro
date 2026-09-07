@@ -1,0 +1,36 @@
+---
+import type { Lang } from '../i18n/types';
+import { getDict } from '../i18n/utils';
+import { site } from '../site';
+import Section from './Section.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = getDict(lang);
+---
+
+<Section id="experience" label={dict.experience.label}>
+  <ol class="space-y-8 border-l border-hairline pl-6">
+    {
+      site.experience.map((role) => {
+        const copy = dict.experience.roles[role.id];
+        return (
+          <li>
+            <h3 class="font-heading text-base font-medium">{copy.role}</h3>
+            <p class="mt-0.5 text-[13px] text-muted">
+              {role.company} · {role.period}
+            </p>
+            <ul class="mt-2 list-disc space-y-1 pl-4 marker:text-muted">
+              {copy.bullets.map((bullet) => (
+                <li>{bullet}</li>
+              ))}
+            </ul>
+          </li>
+        );
+      })
+    }
+  </ol>
+</Section>

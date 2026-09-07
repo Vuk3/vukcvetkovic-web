@@ -1,0 +1,85 @@
+---
+import { Check, ChevronDown, Languages } from '@lucide/astro';
+import { locales, type Lang } from '../i18n/types';
+import { getDict, localizePath } from '../i18n/utils';
+import { languageNames } from '../site';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = getDict(lang);
+
+// Plain links to the same page in each locale — the disclosure only hides them.
+const options = locales.map((locale) => ({
+  locale,
+  href: localizePath(Astro.url.pathname, locale),
+  name: languageNames[locale],
+  isCurrent: locale === lang,
+}));
+---
+
+{/* A native disclosure, so the menu opens and closes without any script. */}
+<details class="group relative" data-lang-menu>
+  <summary
+    class="flex cursor-pointer list-none items-center gap-1 text-[11px] tracking-wider text-muted uppercase transition-colors duration-150 hover:text-fg [&::-webkit-details-marker]:hidden"
+  >
+    <Languages class="size-4" aria-hidden="true" />
+    <span class="sr-only">{dict.nav.language}</span>
+    {lang}
+    <ChevronDown
+      class="size-3 transition-transform duration-150 group-open:rotate-180"
+      aria-hidden="true"
+    />
+  </summary>
+
+  <nav aria-label={dict.nav.language} class="absolute right-0 z-50 mt-2 border border-hairline bg-bg">
+    <ul class="min-w-36 py-1">
+      {
+        options.map((option) => (
+          <li>
+            <a
+              href={option.href}
+              hreflang={option.locale}
+              lang={option.locale}
+              aria-current={option.isCurrent ? 'page' : undefined}
+              class:list={[
+                'flex items-center gap-2 px-3 py-1.5 text-[13px] transition-colors duration-150',
+                option.isCurrent ? 'text-accent' : 'text-muted hover:text-fg',
+              ]}
+            >
+              {option.isCurrent ? (
+                <Check class="size-3.5 shrink-0" aria-hidden="true" />
+              ) : (
+                <span class="size-3.5 shrink-0" aria-hidden="true" />
+              )}
+              {option.name}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</details>
+
+<script>
+  // A native <details> has no light dismiss: it stays open when you click past it
+  // or press Escape. Restoring those two is the only reason this ships any JS.
+  const menu = document.querySelector('details[data-lang-menu]');
+
+  if (menu instanceof HTMLDetailsElement) {
+    document.addEventListener('pointerdown', (event) => {
+      if (menu.open && event.target instanceof Node && !menu.contains(event.target)) {
+        menu.open = false;
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && menu.open) {
+        menu.open = false;
+        menu.querySelector('summary')?.focus();
+      }
+    });
+  }
+</script>

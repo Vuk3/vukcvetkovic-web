@@ -1,0 +1,16 @@
+---
+import Home from '../../components/Home.astro';
+import { prefixedLocales } from '../../i18n/types';
+import { resolveLang } from '../../i18n/utils';
+import Base from '../../layouts/Base.astro';
+
+export function getStaticPaths() {
+  return prefixedLocales.map((lang) => ({ params: { lang } }));
+}
+
+const lang = resolveLang(Astro.params.lang);
+---
+
+<Base lang={lang}>
+  <Home lang={lang} />
+</Base>

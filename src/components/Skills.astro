@@ -1,0 +1,32 @@
+---
+import type { Lang } from '../i18n/types';
+import { getDict } from '../i18n/utils';
+import { site } from '../site';
+import Section from './Section.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = getDict(lang);
+---
+
+<Section id="skills" label={dict.skills.label}>
+  <dl class="space-y-5">
+    {
+      site.skillGroups.map((group) => (
+        <div class="sm:flex sm:gap-6">
+          <dt class="text-[13px] text-muted sm:w-32 sm:shrink-0 sm:pt-1">
+            {dict.skills.groups[group.id].name}
+          </dt>
+          <dd class="mt-2 flex flex-wrap gap-1.5 sm:mt-0">
+            {group.items.map((item) => (
+              <span class="rounded bg-surface px-2 py-0.5 text-[13px]">{item}</span>
+            ))}
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+</Section>

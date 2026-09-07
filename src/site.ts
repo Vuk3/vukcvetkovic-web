@@ -1,0 +1,114 @@
+import type { Dict, Lang } from './i18n/types';
+
+/**
+ * Facts, not copy.
+ *
+ * Anything identical in every language — the name, email, social URLs,
+ * employers, dates, technology labels — lives here so it is maintained once
+ * instead of four times. Prose lives in src/i18n/{en,sr,fr,de}.ts.
+ *
+ * The `id` of each entry is its key in the dictionaries, and the id types below
+ * are derived from the dictionary itself: adding an entry here without adding
+ * its copy to en.ts (and therefore to every locale) is a type error.
+ */
+
+type SkillGroupId = keyof Dict['skills']['groups'];
+type RoleId = keyof Dict['experience']['roles'];
+type ProjectId = keyof Dict['projects']['items'];
+
+interface SkillGroup {
+  id: SkillGroupId;
+  items: string[];
+}
+
+interface Role {
+  id: RoleId;
+  company: string;
+  period: string;
+}
+
+interface Project {
+  id: ProjectId;
+  tech: string[];
+  /** Omit or leave empty to hide a link. */
+  links: { live?: string; source?: string };
+}
+
+/** Grouped skills. Group names are translated; the entries are proper nouns. */
+const skillGroups: SkillGroup[] = [
+  {
+    id: 'backend',
+    items: ['.NET', 'C#', 'NestJS', 'Node.js', 'TypeScript'],
+  },
+  {
+    id: 'frontend',
+    items: ['React', 'TypeScript', 'Astro'],
+  },
+  {
+    id: 'cloud',
+    items: ['AWS'],
+  },
+];
+
+/** Roles, newest first. TODO: fill in every company and period. */
+const experience: Role[] = [
+  {
+    id: 'roleOne',
+    company: 'TODO: Company',
+    period: 'TODO: 20XX — Present',
+  },
+  {
+    id: 'roleTwo',
+    company: 'TODO: Company',
+    period: 'TODO: 20XX — 20XX',
+  },
+];
+
+/** Projects in display order. TODO: fill in tech tags and links. */
+const projects: Project[] = [
+  {
+    id: 'projectOne',
+    tech: ['TODO: tech', 'TODO: tech'],
+    links: {},
+  },
+  {
+    id: 'projectTwo',
+    tech: ['TODO: tech', 'TODO: tech'],
+    links: {},
+  },
+  {
+    id: 'projectThree',
+    tech: ['TODO: tech', 'TODO: tech'],
+    links: {},
+  },
+];
+
+export const site = {
+  name: 'Vuk Cvetković',
+  domain: 'vukcvetkovic.com',
+  url: 'https://vukcvetkovic.com',
+
+  /** TODO: the address you want published on vukcvetkovic.com. */
+  email: 'TODO@vukcvetkovic.com',
+
+  /** TODO: your profile URLs. */
+  links: {
+    linkedin: 'https://www.linkedin.com/in/TODO',
+    github: 'https://github.com/TODO',
+  },
+
+  /** Open Graph image served from /public. TODO: add public/og.png at 1200×630. */
+  ogImage: '/og.png',
+
+  skillGroups,
+  experience,
+  projects,
+};
+
+/** Autonyms — shown in their own language in every locale, so never translated. */
+export const languageNames: Record<Lang, string> = {
+  en: 'English',
+  sr: 'Srpski',
+  fr: 'Français',
+  de: 'Deutsch',
+};

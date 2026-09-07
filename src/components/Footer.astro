@@ -1,0 +1,25 @@
+---
+import type { Lang } from '../i18n/types';
+import { getDict } from '../i18n/utils';
+import { site } from '../site';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = getDict(lang);
+
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-hairline">
+  <div
+    class="mx-auto flex w-full max-w-[42.5rem] items-center justify-between gap-4 px-6 py-8 text-[13px] text-muted"
+  >
+    <p>&copy; {year} {site.name}</p>
+    <a href="#main" class="transition-colors duration-150 hover:text-fg">
+      {dict.footer.backToTop}
+    </a>
+  </div>
+</footer>

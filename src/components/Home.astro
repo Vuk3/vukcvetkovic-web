@@ -1,0 +1,28 @@
+---
+/**
+ * The homepage body, shared by / and /[lang]/ so the two routes cannot drift.
+ * Section order is fixed here.
+ */
+import type { Lang } from '../i18n/types';
+import About from './About.astro';
+import Contact from './Contact.astro';
+import Experience from './Experience.astro';
+import Hero from './Hero.astro';
+import Projects from './Projects.astro';
+import Services from './Services.astro';
+import Skills from './Skills.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<Hero lang={lang} />
+<About lang={lang} />
+<Skills lang={lang} />
+<Experience lang={lang} />
+<Projects lang={lang} />
+<Services lang={lang} />
+<Contact lang={lang} />

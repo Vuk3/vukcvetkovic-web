@@ -1,0 +1,18 @@
+---
+import type { Lang } from '../i18n/types';
+import { getDict } from '../i18n/utils';
+import Section from './Section.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = getDict(lang);
+---
+
+<Section id="about" label={dict.about.label}>
+  <div class="space-y-4">
+    {dict.about.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+  </div>
+</Section>

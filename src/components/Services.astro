@@ -1,0 +1,25 @@
+---
+import type { Lang } from '../i18n/types';
+import { getDict } from '../i18n/utils';
+import Section from './Section.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = getDict(lang);
+---
+
+<Section id="services" label={dict.services.label}>
+  <ul class="space-y-6">
+    {
+      dict.services.items.map((item) => (
+        <li>
+          <h3 class="font-heading text-base font-medium">{item.title}</h3>
+          <p class="mt-1 text-muted">{item.description}</p>
+        </li>
+      ))
+    }
+  </ul>
+</Section>

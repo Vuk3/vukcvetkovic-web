@@ -1,0 +1,154 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter-tight/wght.css';
+
+/* Dark mode by class on <html>, not prefers-color-scheme, so the toggle wins. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Palette. Near-monochrome with exactly one accent.
+ * Dark mode is a separate design, not an inversion: the accent is lightened and
+ * desaturated so it stays readable on a dark ground (7.7:1 vs 5.8:1 on light).
+ */
+:root {
+  color-scheme: light;
+
+  --site-bg: #faf9f7;
+  --site-surface: #f1efeb;
+  --site-fg: #1c1b19;
+  --site-muted: #6d6b66;
+  --site-hairline: #e4e1db;
+  --site-accent: #a34527;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --site-bg: #0f0f0f;
+  --site-surface: #1a1a19;
+  --site-fg: #ebe9e5;
+  --site-muted: #94918b;
+  --site-hairline: #2a2926;
+  --site-accent: #e3906d;
+}
+
+/*
+ * `inline` so utilities emit var(--site-*) directly and therefore follow the
+ * .dark override at runtime instead of being resolved at build time.
+ */
+@theme inline {
+  --font-heading: 'Inter Tight Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  --color-bg: var(--site-bg);
+  --color-surface: var(--site-surface);
+  --color-fg: var(--site-fg);
+  --color-muted: var(--site-muted);
+  --color-hairline: var(--site-hairline);
+  --color-accent: var(--site-accent);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--site-bg);
+    color: var(--site-fg);
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-heading);
+    text-wrap: balance;
+  }
+
+  /* Sticky header clearance for in-page anchors. */
+  :target {
+    scroll-margin-top: 6rem;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--site-accent);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+
+  ::selection {
+    background-color: var(--site-accent);
+    color: var(--site-bg);
+  }
+}
+
+@layer components {
+  /* The one accent use that repeats: content links and the CTA. */
+  .link {
+    color: var(--site-accent);
+    border-bottom: 1px solid color-mix(in oklab, var(--site-accent) 35%, transparent);
+    padding-bottom: 1px;
+    transition:
+      color 150ms,
+      border-color 150ms;
+  }
+
+  .link:hover {
+    border-bottom-color: var(--site-accent);
+  }
+}
+
+/*
+ * Fade-and-rise on scroll.
+ *
+ * Scroll-driven only — no observer, no library. Browsers without
+ * animation-timeline never match the @supports block, so content is simply
+ * visible, which is also the reduced-motion outcome.
+ *
+ * Note: a view() timeline is driven by scroll position, so animation-duration
+ * is ignored; animation-range sets how far the element travels instead. The
+ * easing curve still applies across that range.
+ */
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal 400ms cubic-bezier(0.4, 0, 0.2, 1) both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+}

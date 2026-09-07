@@ -1,0 +1,108 @@
+---
+import Footer from '../components/Footer.astro';
+import Nav from '../components/Nav.astro';
+import { locales, ogLocales, type Lang } from '../i18n/types';
+import { getDict, localizePath } from '../i18n/utils';
+import { site } from '../site';
+import '../styles/global.css';
+
+interface Props {
+  lang: Lang;
+  /** Overrides the locale's default title — for future pages such as a blog. */
+  title?: string;
+  description?: string;
+}
+
+const { lang, title, description } = Astro.props;
+const dict = getDict(lang);
+
+const pageTitle = title ?? dict.meta.title;
+const pageDescription = description ?? dict.meta.description;
+
+// `Astro.site` is set in astro.config.mjs; the fallback only satisfies types.
+const siteUrl = Astro.site ?? new URL(site.url);
+
+const canonical = new URL(localizePath(Astro.url.pathname, lang), siteUrl);
+const ogImage = new URL(site.ogImage, siteUrl);
+
+const alternates = locales.map((locale) => ({
+  hreflang: locale,
+  href: new URL(localizePath(Astro.url.pathname, locale), siteUrl).href,
+}));
+const xDefault = new URL(localizePath(Astro.url.pathname, 'en'), siteUrl).href;
+---
+
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    {/* Must run before first paint, and must not be bundled, or it flashes. */}
+    <script is:inline>
+      (() => {
+        try {
+          const stored = localStorage.getItem('theme');
+          const dark =
+            stored === 'dark' ||
+            (stored === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.classList.toggle('dark', dark);
+        } catch {
+          /* Storage unavailable (private mode); fall through to light. */
+        }
+      })();
+    </script>
+
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <meta name="author" content={site.name} />
+    <link rel="canonical" href={canonical.href} />
+
+    {alternates.map((alt) => <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />)}
+    <link rel="alternate" hreflang="x-default" href={xDefault} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.domain} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:locale" content={ogLocales[lang]} />
+    {
+      locales
+        .filter((locale) => locale !== lang)
+        .map((locale) => <meta property="og:locale:alternate" content={ogLocales[locale]} />)
+    }
+    <meta property="og:image" content={ogImage.href} />
+    <meta property="og:image:alt" content={dict.meta.ogImageAlt} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={ogImage.href} />
+    <meta name="twitter:image:alt" content={dict.meta.ogImageAlt} />
+
+    <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f0f0f" media="(prefers-color-scheme: dark)" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+  </head>
+
+  <body>
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:bg-surface focus:px-3 focus:py-2 focus:text-fg"
+    >
+      {dict.nav.skipToContent}
+    </a>
+
+    <Nav lang={lang} />
+
+    <main id="main" class="mx-auto w-full max-w-[42.5rem] px-6 pb-24">
+      <slot />
+    </main>
+
+    <Footer lang={lang} />
+  </body>
+</html>
