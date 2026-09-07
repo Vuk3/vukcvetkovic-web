@@ -1,4 +1,5 @@
 // @ts-check
+import cloudflare from '@astrojs/cloudflare';
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
@@ -8,7 +9,8 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   site: 'https://vukcvetkovic.com',
 
-  // Static output for Cloudflare Pages — no adapter.
+  // Every page is prerendered. The adapter below only shapes the output for
+  // Cloudflare, it does not turn any route into an on-demand one.
   output: 'static',
 
   i18n: {
@@ -27,6 +29,17 @@ export default defineConfig({
       },
     }),
   ],
+
+  /*
+   * `imageService: 'compile'` is the whole reason this adapter is here.
+   *
+   * Left to itself, Cloudflare's build resolved images through a runtime
+   * /_image endpoint and then deployed static assets with nothing behind that
+   * route, so every variant 404ed in production while a local build was fine.
+   * 'compile' puts sharp back in the build: variants are written into /_astro
+   * with content hashes, cached forever, and no image touches the runtime.
+   */
+  adapter: cloudflare({ imageService: 'compile' }),
 
   vite: {
     plugins: [tailwindcss()],

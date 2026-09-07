@@ -1,0 +1,19 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"compatibility_date": "2026-09-07",
+	"compatibility_flags": ["global_fetch_strictly_public"],
+	"name": "vukcvetkovic-web",
+	"main": "@astrojs/cloudflare/entrypoints/server",
+	// This file is the input, not what ships. At build time the adapter writes
+	// dist/client/wrangler.json with the directory relative to itself and points
+	// wrangler at it, so the path here only matters if wrangler is invoked
+	// directly. dist/client is where the site actually lands, next to the
+	// _headers and .assetsignore the adapter injects.
+	"assets": {
+		"directory": "./dist/client",
+		"binding": "ASSETS"
+	},
+	"observability": {
+		"enabled": true
+	}
+}

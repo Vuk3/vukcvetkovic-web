@@ -4,6 +4,10 @@ dist/
 # generated types
 .astro/
 
+# local wrangler state: miniflare sqlite caches for kv, d1, r2, images and
+# observability. machine specific, regenerated on every local run.
+.wrangler/
+
 # dependencies
 node_modules/
 
