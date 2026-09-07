@@ -131,7 +131,7 @@ export const site = {
   domain: "vukcvetkovic.com",
   url: "https://vukcvetkovic.com",
 
-  email: "vuk.cvetkovic11@gmail.com",
+  email: "vuk@vukcvetkovic.com",
 
   links: {
     linkedin: "https://www.linkedin.com/in/vuk3/",
