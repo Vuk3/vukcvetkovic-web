@@ -1,155 +1,158 @@
 /**
- * French copy - placeholders, not translations.
+ * French copy.
  *
- * Every value is the English string from en.ts prefixed with `TODO:`.
- * Replace the text and drop the prefix as you translate.
+ * Formal address (vous) throughout, and the typographic apostrophe rather than
+ * the straight one, which is correct French and also saves escaping it inside
+ * these single-quoted strings.
  *
  * Typed as `Dict`, so this file must keep exactly the keys en.ts has.
  */
-import type { Dict } from './types';
+import type { Dict } from "./types";
 
 const fr: Dict = {
   meta: {
-    title: 'TODO: Vuk Cvetković - Backend developer',
+    title: "Vuk Cvetković - Développeur backend",
     description:
-      'TODO: Backend developer in Niš, Serbia. Services in NestJS and Node.js, event-driven infrastructure on AWS, and the React interfaces in front of them.',
-    ogImageAlt: 'TODO: Vuk Cvetković, backend developer',
+      "Développeur backend à Niš, en Serbie. Des services en NestJS et Node.js, une infrastructure événementielle sur AWS, et les interfaces React devant.",
+    ogImageAlt: "Vuk Cvetković, développeur backend",
   },
 
   nav: {
-    skipToContent: 'TODO: Skip to content',
-    sections: 'TODO: Sections',
-    about: 'TODO: About',
-    skills: 'TODO: Skills',
-    experience: 'TODO: Experience',
-    education: 'TODO: Education',
-    projects: 'TODO: Projects',
-    services: 'TODO: Services',
-    contact: 'TODO: Contact',
-    themeToggle: 'TODO: Toggle dark theme',
-    language: 'TODO: Language',
+    skipToContent: "Aller au contenu",
+    sections: "Sections",
+    about: "À propos",
+    skills: "Compétences",
+    experience: "Expérience",
+    education: "Formation",
+    projects: "Projets",
+    services: "Services",
+    contact: "Contact",
+    themeToggle: "Changer de thème",
+    language: "Langue",
   },
 
   hero: {
     positioning:
-      'TODO: Backend developer at Ncoded Solutions, in Niš. I build services in NestJS and Node.js, and in .NET where a client already runs it, then put them on AWS: containers, queues, and the events that pass between them.',
-    cta: 'TODO: Contact me',
-    portraitAlt: 'TODO: Portrait of Vuk Cvetković',
-    portraitPlaceholder: 'TODO: portrait',
+      "Développeur backend chez Ncoded Solutions, à Niš. Je construis des services en NestJS et Node.js, et en .NET quand un client y est déjà, puis je les fais tourner sur AWS : conteneurs, files d’attente et les événements qui circulent entre eux.",
+    cta: "Me contacter",
+    portraitAlt: "Portrait de Vuk Cvetković",
+    portraitPlaceholder: "portrait",
   },
 
   about: {
-    label: 'TODO: About',
+    label: "À propos",
     paragraphs: [
-      'TODO: Most of my work sits on the backend. I design APIs and the services behind them, mainly in NestJS and Node.js, and carry the same work through to the React interfaces on top of them when a project needs it.',
-      'TODO: I care about systems that are still understandable after the first release: clear boundaries between services, types that describe the domain rather than restate the database, and infrastructure a small team can operate without ceremony. Most of what I build runs on AWS.',
-      'TODO: I am based in Niš, Serbia. I started on the full-stack side, building .NET Web API services behind ASP.NET MVC sites, and have moved steadily towards the backend and the infrastructure under it. Alongside the work I am finishing a master’s in software engineering.',
+      "L’essentiel de mon travail se situe côté backend. Je conçois des API et les services derrière, surtout en NestJS et Node.js, et je poursuis le même travail jusqu’aux interfaces React au-dessus quand le projet le demande.",
+      "Je tiens aux systèmes qui restent compréhensibles après la première mise en production : des frontières nettes entre les services, des types qui décrivent le domaine plutôt que de répéter la base de données, et une infrastructure qu’une petite équipe peut exploiter sans cérémonie. L’essentiel de ce que je construis tourne sur AWS.",
+      "Je vis à Niš, en Serbie. J’ai commencé du côté full-stack, en construisant des services .NET Web API derrière des sites ASP.NET MVC, puis je me suis déplacé vers le backend et l’infrastructure en dessous. En parallèle, je termine un master en génie logiciel.",
     ],
   },
 
   skills: {
-    label: 'TODO: Skills',
+    label: "Compétences",
     groups: {
-      backend: { name: 'TODO: Backend' },
-      frontend: { name: 'TODO: Frontend' },
-      data: { name: 'TODO: Data' },
-      cloud: { name: 'TODO: Cloud & DevOps' },
+      backend: { name: "Backend" },
+      frontend: { name: "Frontend" },
+      data: { name: "Données" },
+      cloud: { name: "Cloud et DevOps" },
     },
   },
 
   experience: {
-    label: 'TODO: Experience',
+    label: "Expérience",
     roles: {
       ncoded: {
-        role: 'TODO: Backend developer',
+        role: "Développeur backend",
         bullets: [
-          'TODO: Backend services in NestJS and Node.js: REST APIs, JWT authentication, role-based access control and third-party integrations, over both SQL and document databases.',
-          'TODO: The same work in .NET where a client already runs it, structured with Clean Architecture so the business logic stays separable from the framework around it.',
-          'TODO: The AWS side: S3, ECS, EC2, Lambda, Route 53 and EventBridge, covering deployments and the event-driven paths between services.',
+          "Des services backend en NestJS et Node.js : API REST, authentification JWT, contrôle d’accès par rôles et intégrations tierces, sur des bases SQL comme documentaires.",
+          "Le même travail en .NET quand un client y est déjà, structuré en Clean Architecture pour que la logique métier reste séparable du framework autour.",
+          "Le côté AWS : S3, ECS, EC2, Lambda, Route 53 et EventBridge, ce qui couvre les déploiements et les chemins événementiels entre les services.",
         ],
       },
       novateq: {
-        role: 'TODO: Full-stack developer',
+        role: "Développeur full-stack",
         bullets: [
-          'TODO: Backend services in .NET Web API and the company site in ASP.NET MVC, adapted to what individual clients needed.',
-          'TODO: Kept the Sportsbook platform stable by working through incoming issues, and reviewed casino game projects to learn how that side is built.',
+          "Des services backend en .NET Web API et le site de l’entreprise en ASP.NET MVC, adaptés tous les deux aux besoins de chaque client.",
+          "Maintien de la plateforme Sportsbook en traitant les incidents remontés, et revue de projets de jeux de casino pour comprendre comment ce côté se construit.",
         ],
       },
     },
   },
 
   education: {
-    label: 'TODO: Education',
+    label: "Formation",
     degrees: {
       master: {
-        degree: 'TODO: MSc, Software Engineering',
+        degree: "Master, génie logiciel",
+        school: "Faculté de génie électronique, Université de Niš",
       },
       bachelor: {
-        degree: 'TODO: BSc, Computing and Informatics',
+        degree: "Licence, informatique",
+        school: "Faculté de génie électronique, Université de Niš",
       },
     },
   },
 
   projects: {
-    label: 'TODO: Projects',
-    liveLabel: 'TODO: Live',
-    sourceLabel: 'TODO: Source',
+    label: "Projets",
+    liveLabel: "En ligne",
+    sourceLabel: "Code source",
     items: {
       projectOne: {
-        title: 'TODO: Project name',
+        title: "TODO: Project name",
         description:
-          'TODO: one or two sentences: what it does, who it is for, and what was interesting to build.',
+          "TODO: one or two sentences: what it does, who it is for, and what was interesting to build.",
       },
       projectTwo: {
-        title: 'TODO: Project name',
+        title: "TODO: Project name",
         description:
-          'TODO: one or two sentences: what it does, who it is for, and what was interesting to build.',
+          "TODO: one or two sentences: what it does, who it is for, and what was interesting to build.",
       },
       projectThree: {
-        title: 'TODO: Project name',
+        title: "TODO: Project name",
         description:
-          'TODO: one or two sentences: what it does, who it is for, and what was interesting to build.',
+          "TODO: one or two sentences: what it does, who it is for, and what was interesting to build.",
       },
     },
   },
 
   services: {
-    label: 'TODO: What I can help with',
+    label: "Ce sur quoi je peux aider",
     items: [
       {
-        title: 'TODO: Backend and API development',
+        title: "Développement backend et API",
         description:
-          'TODO: Services and APIs in NestJS, Node.js or .NET: data modelling, authentication, third-party integrations, and the tests that keep them honest.',
+          "Des services et des API en NestJS, Node.js ou .NET : modélisation des données, authentification, intégrations tierces, et les tests qui les tiennent honnêtes.",
       },
       {
-        title: 'TODO: Full-stack product work',
+        title: "Travail produit full-stack",
         description:
-          'TODO: A feature taken from schema to screen: the API, the React front end, and the typed contract between them.',
+          "Une fonctionnalité menée du schéma à l’écran : l’API, le front React, et le contrat typé entre les deux.",
       },
       {
-        title: 'TODO: AWS architecture and deployment',
+        title: "Architecture et déploiement AWS",
         description:
-          'TODO: Setting up cloud infrastructure or tightening what already runs: environments, CI/CD pipelines, and a review of cost and reliability.',
+          "Mettre en place une infrastructure cloud ou resserrer celle qui tourne déjà : environnements, pipelines CI/CD, et une revue du coût et de la fiabilité.",
       },
       {
-        title: 'TODO: Technical review and consulting',
+        title: "Revue technique et conseil",
         description:
-          'TODO: A second pair of eyes on an existing codebase or architecture: code review, a refactoring plan, and an honest answer on whether a rewrite is worth it.',
+          "Un deuxième regard sur un code ou une architecture existants : revue de code, plan de refactorisation, et une réponse honnête sur l’intérêt d’une réécriture.",
       },
     ],
   },
 
   contact: {
-    label: 'TODO: Contact',
+    label: "Contact",
     intro:
-      'TODO: Email is the fastest way to reach me. If you have a project in mind, a rough description of the problem is enough to start.',
-    emailLabel: 'TODO: Email',
-    linkedinLabel: 'TODO: LinkedIn',
-    githubLabel: 'TODO: GitHub',
+      "L’e-mail est le moyen le plus rapide de me joindre. Si vous avez un projet en tête, une description sommaire du problème suffit pour commencer.",
+    emailLabel: "E-mail",
+    linkedinLabel: "LinkedIn",
+    githubLabel: "GitHub",
   },
 
   footer: {
-    backToTop: 'TODO: Back to top',
+    backToTop: "Haut de page",
   },
 };
 

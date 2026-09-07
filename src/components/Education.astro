@@ -1,8 +1,8 @@
 ---
-import type { Lang } from '../i18n/types';
-import { getDict } from '../i18n/utils';
-import { site } from '../site';
-import Section from './Section.astro';
+import type { Lang } from "../i18n/types";
+import { getDict } from "../i18n/utils";
+import { site } from "../site";
+import Section from "./Section.astro";
 
 interface Props {
   lang: Lang;
@@ -16,17 +16,18 @@ const dict = getDict(lang);
 <Section id="education" label={dict.education.label}>
   <ol class="space-y-6">
     {
-      site.education.map((degree) => (
-        <li class="sm:grid sm:grid-cols-[6.5rem_1fr] sm:gap-x-6">
-          <p class="display pt-0.5 text-[13px] text-muted">{degree.period}</p>
-          <div class="mt-1 sm:mt-0">
-            <h3 class="display text-[1.0625rem]">
-              {dict.education.degrees[degree.id].degree}
-            </h3>
-            <p class="text-[13px] text-muted">{degree.school}</p>
-          </div>
-        </li>
-      ))
+      site.education.map((degree) => {
+        const copy = dict.education.degrees[degree.id];
+        return (
+          <li class="sm:grid sm:grid-cols-[6.5rem_1fr] sm:gap-x-6">
+            <p class="display pt-0.5 text-[13px] text-muted">{degree.period}</p>
+            <div class="mt-1 sm:mt-0">
+              <h3 class="display text-[1.0625rem]">{copy.degree}</h3>
+              <p class="text-[13px] text-muted">{copy.school}</p>
+            </div>
+          </li>
+        );
+      })
     }
   </ol>
 </Section>

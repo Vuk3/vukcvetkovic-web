@@ -1,8 +1,9 @@
 /**
- * German copy - placeholders, not translations.
+ * German copy.
  *
- * Every value is the English string from en.ts prefixed with `TODO:`.
- * Replace the text and drop the prefix as you translate.
+ * Formal address (Sie) throughout, and technology names left in English with
+ * German compounds hyphenated around them, which is how they are written in
+ * German technical prose: Backend-Services, REST-APIs, React-Oberflächen.
  *
  * Typed as `Dict`, so this file must keep exactly the keys en.ts has.
  */
@@ -10,90 +11,92 @@ import type { Dict } from './types';
 
 const de: Dict = {
   meta: {
-    title: 'TODO: Vuk Cvetković - Backend developer',
+    title: 'Vuk Cvetković - Backend-Entwickler',
     description:
-      'TODO: Backend developer in Niš, Serbia. Services in NestJS and Node.js, event-driven infrastructure on AWS, and the React interfaces in front of them.',
-    ogImageAlt: 'TODO: Vuk Cvetković, backend developer',
+      'Backend-Entwickler in Niš, Serbien. Services in NestJS und Node.js, ereignisgetriebene Infrastruktur auf AWS und die React-Oberflächen davor.',
+    ogImageAlt: 'Vuk Cvetković, Backend-Entwickler',
   },
 
   nav: {
-    skipToContent: 'TODO: Skip to content',
-    sections: 'TODO: Sections',
-    about: 'TODO: About',
-    skills: 'TODO: Skills',
-    experience: 'TODO: Experience',
-    education: 'TODO: Education',
-    projects: 'TODO: Projects',
-    services: 'TODO: Services',
-    contact: 'TODO: Contact',
-    themeToggle: 'TODO: Toggle dark theme',
-    language: 'TODO: Language',
+    skipToContent: 'Zum Inhalt springen',
+    sections: 'Abschnitte',
+    about: 'Über mich',
+    skills: 'Kenntnisse',
+    experience: 'Erfahrung',
+    education: 'Ausbildung',
+    projects: 'Projekte',
+    services: 'Leistungen',
+    contact: 'Kontakt',
+    themeToggle: 'Design wechseln',
+    language: 'Sprache',
   },
 
   hero: {
     positioning:
-      'TODO: Backend developer at Ncoded Solutions, in Niš. I build services in NestJS and Node.js, and in .NET where a client already runs it, then put them on AWS: containers, queues, and the events that pass between them.',
-    cta: 'TODO: Contact me',
-    portraitAlt: 'TODO: Portrait of Vuk Cvetković',
-    portraitPlaceholder: 'TODO: portrait',
+      'Backend-Entwickler bei Ncoded Solutions, in Niš. Ich baue Services in NestJS und Node.js, und in .NET, wenn ein Kunde damit schon arbeitet, und bringe sie dann auf AWS: Container, Queues und die Events, die dazwischen laufen.',
+    cta: 'Kontakt aufnehmen',
+    portraitAlt: 'Porträt von Vuk Cvetković',
+    portraitPlaceholder: 'Porträt',
   },
 
   about: {
-    label: 'TODO: About',
+    label: 'Über mich',
     paragraphs: [
-      'TODO: Most of my work sits on the backend. I design APIs and the services behind them, mainly in NestJS and Node.js, and carry the same work through to the React interfaces on top of them when a project needs it.',
-      'TODO: I care about systems that are still understandable after the first release: clear boundaries between services, types that describe the domain rather than restate the database, and infrastructure a small team can operate without ceremony. Most of what I build runs on AWS.',
-      'TODO: I am based in Niš, Serbia. I started on the full-stack side, building .NET Web API services behind ASP.NET MVC sites, and have moved steadily towards the backend and the infrastructure under it. Alongside the work I am finishing a master’s in software engineering.',
+      'Der größte Teil meiner Arbeit liegt im Backend. Ich entwerfe APIs und die Services dahinter, überwiegend in NestJS und Node.js, und führe dieselbe Arbeit bis zu den React-Oberflächen darüber weiter, wenn ein Projekt das braucht.',
+      'Mir liegt an Systemen, die auch nach dem ersten Release noch verständlich sind: klare Grenzen zwischen Services, Typen, die die Domäne beschreiben statt die Datenbank zu wiederholen, und eine Infrastruktur, die ein kleines Team ohne Zeremonie betreiben kann. Das meiste, was ich baue, läuft auf AWS.',
+      'Ich lebe in Niš, Serbien. Angefangen habe ich auf der Full-Stack-Seite, mit .NET-Web-API-Services hinter ASP.NET-MVC-Seiten, und habe mich stetig zum Backend und der Infrastruktur darunter bewegt. Nebenher beende ich einen Master in Software Engineering.',
     ],
   },
 
   skills: {
-    label: 'TODO: Skills',
+    label: 'Kenntnisse',
     groups: {
-      backend: { name: 'TODO: Backend' },
-      frontend: { name: 'TODO: Frontend' },
-      data: { name: 'TODO: Data' },
-      cloud: { name: 'TODO: Cloud & DevOps' },
+      backend: { name: 'Backend' },
+      frontend: { name: 'Frontend' },
+      data: { name: 'Daten' },
+      cloud: { name: 'Cloud & DevOps' },
     },
   },
 
   experience: {
-    label: 'TODO: Experience',
+    label: 'Erfahrung',
     roles: {
       ncoded: {
-        role: 'TODO: Backend developer',
+        role: 'Backend-Entwickler',
         bullets: [
-          'TODO: Backend services in NestJS and Node.js: REST APIs, JWT authentication, role-based access control and third-party integrations, over both SQL and document databases.',
-          'TODO: The same work in .NET where a client already runs it, structured with Clean Architecture so the business logic stays separable from the framework around it.',
-          'TODO: The AWS side: S3, ECS, EC2, Lambda, Route 53 and EventBridge, covering deployments and the event-driven paths between services.',
+          'Backend-Services in NestJS und Node.js: REST-APIs, JWT-Authentifizierung, rollenbasierte Zugriffskontrolle und Integrationen von Drittanbietern, über SQL- wie Dokumentdatenbanken.',
+          'Dieselbe Arbeit in .NET, wenn ein Kunde damit schon arbeitet, mit Clean Architecture strukturiert, damit die Geschäftslogik vom umgebenden Framework trennbar bleibt.',
+          'Die AWS-Seite: S3, ECS, EC2, Lambda, Route 53 und EventBridge, also Deployments und die ereignisgetriebenen Wege zwischen den Services.',
         ],
       },
       novateq: {
-        role: 'TODO: Full-stack developer',
+        role: 'Full-Stack-Entwickler',
         bullets: [
-          'TODO: Backend services in .NET Web API and the company site in ASP.NET MVC, adapted to what individual clients needed.',
-          'TODO: Kept the Sportsbook platform stable by working through incoming issues, and reviewed casino game projects to learn how that side is built.',
+          'Backend-Services in .NET Web API und die Unternehmensseite in ASP.NET MVC, beides angepasst an das, was einzelne Kunden brauchten.',
+          'Die Sportsbook-Plattform stabil gehalten, indem ich eingehende Störungen abgearbeitet habe, und Casino-Spielprojekte durchgesehen, um zu lernen, wie diese Seite gebaut wird.',
         ],
       },
     },
   },
 
   education: {
-    label: 'TODO: Education',
+    label: 'Ausbildung',
     degrees: {
       master: {
-        degree: 'TODO: MSc, Software Engineering',
+        degree: 'Master, Software Engineering',
+        school: 'Fakultät für Elektronik, Universität Niš',
       },
       bachelor: {
-        degree: 'TODO: BSc, Computing and Informatics',
+        degree: 'Bachelor, Informatik',
+        school: 'Fakultät für Elektronik, Universität Niš',
       },
     },
   },
 
   projects: {
-    label: 'TODO: Projects',
-    liveLabel: 'TODO: Live',
-    sourceLabel: 'TODO: Source',
+    label: 'Projekte',
+    liveLabel: 'Live',
+    sourceLabel: 'Quellcode',
     items: {
       projectOne: {
         title: 'TODO: Project name',
@@ -114,42 +117,42 @@ const de: Dict = {
   },
 
   services: {
-    label: 'TODO: What I can help with',
+    label: 'Womit ich helfen kann',
     items: [
       {
-        title: 'TODO: Backend and API development',
+        title: 'Backend- und API-Entwicklung',
         description:
-          'TODO: Services and APIs in NestJS, Node.js or .NET: data modelling, authentication, third-party integrations, and the tests that keep them honest.',
+          'Services und APIs in NestJS, Node.js oder .NET: Datenmodellierung, Authentifizierung, Integrationen von Drittanbietern und die Tests, die das Ganze ehrlich halten.',
       },
       {
-        title: 'TODO: Full-stack product work',
+        title: 'Full-Stack-Produktarbeit',
         description:
-          'TODO: A feature taken from schema to screen: the API, the React front end, and the typed contract between them.',
+          'Ein Feature vom Schema bis zum Bildschirm: die API, das React-Frontend und der typisierte Vertrag dazwischen.',
       },
       {
-        title: 'TODO: AWS architecture and deployment',
+        title: 'AWS-Architektur und Deployment',
         description:
-          'TODO: Setting up cloud infrastructure or tightening what already runs: environments, CI/CD pipelines, and a review of cost and reliability.',
+          'Cloud-Infrastruktur aufsetzen oder das Bestehende nachziehen: Umgebungen, CI/CD-Pipelines und eine Durchsicht von Kosten und Zuverlässigkeit.',
       },
       {
-        title: 'TODO: Technical review and consulting',
+        title: 'Technische Durchsicht und Beratung',
         description:
-          'TODO: A second pair of eyes on an existing codebase or architecture: code review, a refactoring plan, and an honest answer on whether a rewrite is worth it.',
+          'Ein zweites Paar Augen auf bestehenden Code oder eine bestehende Architektur: Code-Review, ein Refactoring-Plan und eine ehrliche Antwort darauf, ob sich eine Neuentwicklung lohnt.',
       },
     ],
   },
 
   contact: {
-    label: 'TODO: Contact',
+    label: 'Kontakt',
     intro:
-      'TODO: Email is the fastest way to reach me. If you have a project in mind, a rough description of the problem is enough to start.',
-    emailLabel: 'TODO: Email',
-    linkedinLabel: 'TODO: LinkedIn',
-    githubLabel: 'TODO: GitHub',
+      'Per E-Mail erreichen Sie mich am schnellsten. Wenn Sie ein Projekt im Kopf haben, genügt eine grobe Beschreibung des Problems für den Anfang.',
+    emailLabel: 'E-Mail',
+    linkedinLabel: 'LinkedIn',
+    githubLabel: 'GitHub',
   },
 
   footer: {
-    backToTop: 'TODO: Back to top',
+    backToTop: 'Nach oben',
   },
 };
 
