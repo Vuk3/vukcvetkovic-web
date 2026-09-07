@@ -20,6 +20,11 @@ const portraits = import.meta.glob<{ default: ImageMetadata }>(
   { eager: true },
 );
 const portrait = Object.values(portraits)[0]?.default;
+
+// Displayed size in CSS pixels, and the only knob for it — the placeholder
+// follows it too. 1x, 2x and 3x variants are emitted, so the source's short edge
+// should be at least three times this. Sharp crops a non-square source to centre.
+const portraitSize = 128;
 ---
 
 <section class="reveal pt-16">
@@ -29,16 +34,19 @@ const portrait = Object.values(portraits)[0]?.default;
         <Image
           src={portrait}
           alt={dict.hero.portraitAlt}
-          width={96}
-          height={96}
+          width={portraitSize}
+          height={portraitSize}
+          densities={[1, 2, 3]}
+          quality={90}
           loading="eager"
-          class="size-24 shrink-0 rounded-lg object-cover"
+          class="shrink-0 rounded-lg object-cover"
         />
       ) : (
         <div
           role="img"
           aria-label={dict.hero.portraitAlt}
-          class="flex size-24 shrink-0 items-center justify-center rounded-lg bg-surface p-2 text-center text-[10px] leading-tight text-muted"
+          style={`width:${portraitSize}px;height:${portraitSize}px`}
+          class="flex shrink-0 items-center justify-center rounded-lg bg-surface p-2 text-center text-[10px] leading-tight text-muted"
         >
           {dict.hero.portraitPlaceholder}
         </div>
