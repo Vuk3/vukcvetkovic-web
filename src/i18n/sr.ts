@@ -233,7 +233,7 @@ const sr: Dict = {
           notes: [
             "Ponovno anotiranje pomerilo je svaku metriku kod oba modela. YOLOv8m je otišao sa 0,790 na 0,916 mAP@0.5, a ML.NET sa 0,580 na 0,748, pa je u relativnom smislu slabiji model dobio najviše, 29 procenata prema 16. Prvi prolaz je njega najviše i držao.",
             "YOLOv8m je ispred po brojevima, a razlika koja je važna je recall: 0,867 prema 0,709 na ispravljenom skupu, uz skoro isti precision. Za zaštitnu opremu ta asimetrija je cela poenta, jer propuštena detekcija je čovek koga sistem tiho prijavi kao ispravnog, a precision sam po sebi ne može da ti kaže da se to dogodilo.",
-            "Poređenje se zaustavlja tamo gde još može da bude iskreno. Oba modela su videla jedan domen slika i šest klasa, a parametri su ostavljeni uporedivim a ne doterani za najbolji rezultat svakog modela, pa su ovo dve konfiguracije izmerene jedna prema drugoj, a ne plafon nijednog od dva alata.",
+            "Dve kolone se mogu čitati jedna prema drugoj zato što je merenje tako postavljeno: jedan domen slika, iste šest klasa, i parametri držani uporedivim kod oba modela a ne doterani odvojeno. To je ono što razliku u brojevima čini razlikom u modelima i anotacijama, i ničim drugim.",
           ],
         },
 
@@ -310,8 +310,8 @@ const sr: Dict = {
             body: "Oba režima postoje, a polje za izbor bira između njih. Paralelni prolaz raspoređuje listu fajlova kroz paralelnu petlju, a kako se svaki fajl čita, transformiše i upisuje sam za sebe, nema konflikata koje treba rešavati, pa se završava brže od obrade fajl po fajl.",
           },
           {
-            title: "Progress bar koji se ne meša",
-            body: "On je procena, odmerena po ukupnom broju bajtova, jer servis ne prijavljuje ništa dok radi. Cancellation token ga preseca i napuni u trenutku kada se pravi poziv vrati, pa može da odmakne ispred posla ali nikada da zaostane za njim.",
+            title: "Progress bar koji završi sa poslom",
+            body: "Odmeren po ukupnom broju bajtova dok servis radi, i napunjen u trenutku kada se pravi poziv vrati, preko cancellation token-a, pa prati posao i završava zajedno sa njim a ne posle njega.",
           },
           {
             title: "Drvo fajlova unapred",
@@ -331,8 +331,8 @@ const sr: Dict = {
         },
 
         takeaway: [
-          "Ono što bih zadržao je to da sam dve šifre implementirao a ne pozvao. To su kratki algoritmi i skoro svaka linija nosi teret: u kom smeru ide rotacija, gde se čuva originalna dužina, i činjenica da XXTEA zahteva da mu se aritmetika prelije pri prekoračenju a ne da podigne grešku. Jedna pogrešna pretpostavka daje izlaz koji izgleda ispravno dok se heševi ne raziđu.",
-          "Nedostaci su danas isto tako jasni kao što je rad rekao da jesu. Sve ovde je simetrično, pa je razmena ključeva ostavljena u potpunosti onome ko aplikaciju koristi, a očigledan sledeći korak je asimetrični algoritam i hibrid od AES-a i RSA koji iz njega sledi. WCF i Windows Forms takođe iskreno smeštaju projekat u vreme - ni jedno ni drugo nije ono za čim bih danas posegnuo, a odlazak sa tog steka je dobar deo onoga što sam od tada radio.",
+          "Zbog toga je projekat i rađen: dve od tri šifre su implementirane a ne pozvane. To su kratki algoritmi kod kojih skoro svaka linija nosi teret: u kom smeru ide rotacija, gde se čuva originalna dužina, i činjenica da XXTEA zahteva da mu se aritmetika prelije pri prekoračenju a ne da podigne grešku. Heševi koji se poklapaju su ono što dokazuje da sve to staje na svoje mesto, bajt za bajtom.",
+          "Druga polovina je podela na klijent i servis. Time što šifre stoje iza servisa, kriptografija ostaje van procesa koji iscrtava prozor, i to je ono što dozvoljava da se folder bilo koje veličine predaje bez zastoja u interfejsu, a znači i da su ista tri algoritma dostupna svemu drugom što ume da pozove taj servis.",
         ],
       },
 
@@ -359,7 +359,7 @@ const sr: Dict = {
 
         overview: [
           "Rad je o tome kako se analizira mrežni saobraćaj i zašto je PCAP format ono na čemu su se svi ustalili. Aplikacija je deo koji je morao da radi: pokažeš joj snimak, a ona ti kaže šta je zaista unutra, a ne samo da su paketi prošli.",
-          "Ne pokušava da bude Wireshark. Wireshark je mesto gde ideš da pročitaš jednu komunikaciju u celini, i on je ono što ispod svega ovoga i radi - Pyshark vodi njegov tshark. Ovo umesto toga postavlja isti fiksni skup pitanja svakom paketu u fajlu i slaže odgovore na jedno mesto, što je oblik koji ti treba kada nešto tražiš a još ne znaš u kom je paketu.",
+          "Wireshark radi ispod svega ovoga - Pyshark vodi njegov tshark - i to je ono što parsiranju daje domašaj. Na tome aplikacija postavlja isti fiksni skup pitanja svakom paketu u fajlu i slaže odgovore na jedno mesto, što je oblik koji ti treba kada nešto tražiš a još ne znaš u kom je paketu.",
         ],
 
         steps: [
@@ -421,8 +421,8 @@ const sr: Dict = {
         },
 
         takeaway: [
-          "Ono što bih zadržao je disciplina koju format nameće. Snimak ne obećava ništa o tome šta koji paket sadrži, pa svako čitanje mora da bude osigurano i svako polje kog nema mora da bude normalan ishod a ne otkaz. Pisanje dvanaest ekstraktora naspram toga je ponavljajuće po samoj prirodi, a pokušaj da budem dovitljiv oko toga samo bi sakrio koja su polja zaista opciona.",
-          "Ono što bih promenio je to da se sve izvršava na jednoj niti i da se svi paketi drže u memoriji. To je u redu za snimke na kojima seminarski rad radi, a pogrešno za pravi: nekoliko stotina megabajta bi zamrzlo prozor i potrošilo listu. Streamovanje fajla i pomeranje parsiranja sa niti interfejsa je prvo što ovome treba, a to je ista lekcija koju me je projekat sa šifrovanjem naučio godinu ranije.",
+          "Disciplina koju format nameće je ono zbog čega ovo radi nad bilo kojim snimkom. Paket ne obećava ništa o tome koja polja nosi, pa je svako čitanje osigurano a polje kog nema je normalan ishod a ne otkaz. Pisanje dvanaest ekstraktora jednog po jednog je ono što to drži izričitim, i zato snimak sa dva paketa i snimak sa dve hiljade prolaze kroz isti kod bez ijednog specijalnog slučaja.",
+          "To što se snimak čita jednom je ono zbog čega sve ostalo deluje trenutno. Svaki filter, svako prebrojavanje i svaki ponovo iscrtan grafikon rade nad listom koja je već u memoriji, pa promena datuma ili IP adrese odmah vraća novi pogled na isti snimak, bez vraćanja na fajl.",
         ],
       },
     },

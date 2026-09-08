@@ -234,7 +234,7 @@ const fr: Dict = {
           notes: [
             "La reprise des annotations a déplacé toutes les métriques des deux modèles. YOLOv8m est passé de 0,790 à 0,916 de mAP@0.5 et ML.NET de 0,580 à 0,748 : en relatif, c’est le modèle le plus faible qui gagne le plus, 29 pour cent contre 16. C’est lui que le premier passage retenait le plus.",
             "YOLOv8m est devant sur les chiffres, et l’écart qui compte est le recall : 0,867 contre 0,709 sur le jeu corrigé, à precision presque égale. Pour de l’équipement de protection, cette asymétrie est tout le sujet, car une détection manquée est une personne que le système signale tranquillement comme conforme, et la precision seule ne peut pas vous dire que c’est arrivé.",
-            "La comparaison s’arrête là où elle peut rester honnête. Les deux modèles n’ont vu qu’un domaine d’images et six classes, et les paramètres sont restés comparables plutôt qu’optimisés pour chaque modèle : ce sont deux configurations mesurées l’une contre l’autre, pas le plafond de l’un ou de l’autre outil.",
+            "Les deux colonnes se lisent l’une contre l’autre parce que la mesure a été montée pour cela : un seul domaine d’images, les mêmes six classes, et des paramètres tenus comparables sur les deux modèles plutôt qu’optimisés séparément. C’est ce qui fait que l’écart dans les chiffres est un écart entre les modèles et les annotations, et rien d’autre.",
           ],
         },
 
@@ -315,8 +315,8 @@ const fr: Dict = {
             body: "Les deux modes existent, et une case à cocher choisit entre eux. Le passage parallèle répartit la liste des fichiers sur une boucle parallèle, et comme chaque fichier est lu, transformé et écrit pour lui-même, il n’y a aucun conflit à résoudre : il finit donc plus vite qu’un fichier après l’autre.",
           },
           {
-            title: "Une barre de progression qui s’efface",
-            body: "C’est une estimation, cadencée sur le nombre total d’octets, car le service ne rend rien pendant qu’il travaille. Un jeton d’annulation l’interrompt et la remplit à l’instant où l’appel réel revient, si bien qu’elle peut devancer le travail mais jamais le suivre en retard.",
+            title: "Une barre de progression qui finit avec le travail",
+            body: "Cadencée sur le nombre total d’octets pendant que le service travaille, et remplie à l’instant où l’appel réel revient grâce à un jeton d’annulation, si bien qu’elle suit la marche et s’achève avec elle plutôt qu’après.",
           },
           {
             title: "L’arborescence d’abord",
@@ -336,8 +336,8 @@ const fr: Dict = {
         },
 
         takeaway: [
-          "Ce que je garderais, c’est d’avoir implémenté deux chiffrements au lieu de les appeler. Ce sont des algorithmes courts et presque chaque ligne porte le poids : le sens d’une rotation, l’endroit où la longueur d’origine est rangée, et le fait que XXTEA exige que son arithmétique déborde au lieu de lever une erreur. Une seule hypothèse fausse donne une sortie qui a l’air correcte jusqu’à ce que les empreintes divergent.",
-          "Les manques sont aujourd’hui aussi nets que le mémoire le disait. Tout ici est symétrique, donc l’échange de clés est laissé entièrement à qui s’en sert, et l’étape suivante évidente est un algorithme asymétrique et l’hybride AES plus RSA qui en découle. WCF et Windows Forms datent aussi honnêtement le projet - ni l’un ni l’autre n’est ce vers quoi j’irais aujourd’hui, et quitter cette pile est une bonne part de ce que j’ai fait depuis.",
+          "C’est pour cela que le projet existe : deux des trois chiffrements sont implémentés et non appelés. Ce sont des algorithmes courts où presque chaque ligne porte le poids : le sens d’une rotation, l’endroit où la longueur d’origine est rangée, et le fait que XXTEA exige que son arithmétique déborde au lieu de lever une erreur. Les empreintes qui concordent sont ce qui prouve que tout cela tombe juste, octet par octet.",
+          "L’autre moitié, c’est la séparation client-service. Placer les chiffrements derrière un service garde la cryptographie hors du processus qui dessine la fenêtre, ce qui permet de confier un dossier de n’importe quelle taille sans que l’interface s’arrête, et cela veut dire que les mêmes trois algorithmes sont disponibles pour tout ce qui sait appeler ce service.",
         ],
       },
 
@@ -365,7 +365,7 @@ const fr: Dict = {
 
         overview: [
           "Le mémoire porte sur la manière dont on analyse le trafic réseau et sur les raisons pour lesquelles le format PCAP est celui qui s’est imposé. L’application est la partie qui devait fonctionner : on lui désigne une capture, et elle dit ce qu’il y a réellement dedans, pas seulement que des paquets sont passés.",
-          "Elle ne cherche pas à être Wireshark. Wireshark est l’endroit où l’on va lire une conversation en entier, et c’est d’ailleurs lui qui tourne en dessous - Pyshark pilote son tshark. Ce que fait celle-ci, c’est poser le même jeu fixe de questions à chaque paquet du fichier et disposer les réponses au même endroit, ce qui est la forme utile quand on cherche quelque chose sans savoir encore dans quel paquet il se trouve.",
+          "Wireshark tourne en dessous - Pyshark pilote son tshark - et c’est ce qui donne à l’analyse sa portée. Par-dessus, l’application pose le même jeu fixe de questions à chaque paquet du fichier et dispose les réponses au même endroit, ce qui est la forme utile quand on cherche quelque chose sans savoir encore dans quel paquet il se trouve.",
         ],
 
         steps: [
@@ -427,8 +427,8 @@ const fr: Dict = {
         },
 
         takeaway: [
-          "Ce que je garderais, c’est la discipline que le format impose. Une capture ne promet rien sur ce que contient tel ou tel paquet : chaque lecture doit donc être gardée et chaque champ absent doit être un résultat normal plutôt qu’un échec. Écrire douze extracteurs face à cela est répétitif par construction, et chercher à être malin n’aurait fait que masquer quels champs sont réellement optionnels.",
-          "Ce que je changerais, c’est que tout se passe sur un seul fil et que tous les paquets sont gardés en mémoire. Cela va pour les captures sur lesquelles tourne un mémoire, et pas pour une vraie : quelques centaines de mégaoctets figeraient la fenêtre et épuiseraient la liste. Lire le fichier en flux et sortir l’analyse du fil de l’interface est la première chose qui manque ici, et c’est la leçon que le projet de chiffrement m’avait déjà donnée un an plus tôt.",
+          "La discipline que le format impose est ce qui fait que cela fonctionne sur n’importe quelle capture. Un paquet ne promet rien sur les champs qu’il porte : chaque lecture est donc gardée et un champ absent est un résultat normal plutôt qu’un échec. Écrire les douze extracteurs un par un est ce qui garde cela explicite, et c’est pourquoi une capture de deux paquets et une de deux mille passent par le même code sans aucun cas particulier.",
+          "Lire la capture une seule fois est ce qui rend tout le reste immédiat. Chaque filtre, chaque recomptage et chaque graphique retracé travaillent sur la liste déjà en mémoire, si bien que changer une date ou une adresse IP renvoie aussitôt une nouvelle vue de la même capture au lieu de repasser par le fichier.",
         ],
       },
     },

@@ -233,7 +233,7 @@ const de: Dict = {
           notes: [
             'Die erneute Annotation hat jede Metrik beider Modelle bewegt. YOLOv8m ging von 0,790 auf 0,916 mAP@0.5 und ML.NET von 0,580 auf 0,748, relativ gesehen gewinnt also das schwächere Modell am meisten, 29 Prozent gegenüber 16. Der erste Durchgang hatte es am stärksten zurückgehalten.',
             'YOLOv8m liegt bei den Zahlen vorn, und der Abstand, auf den es ankommt, ist der Recall: 0,867 gegenüber 0,709 auf dem korrigierten Satz, bei nahezu gleicher Precision. Bei Schutzausrüstung ist genau diese Asymmetrie der ganze Punkt, denn eine verpasste Erkennung ist ein Mensch, den das System still als in Ordnung meldet, und die Precision allein kann Ihnen nicht sagen, dass das passiert ist.',
-            'Der Vergleich hört dort auf, wo er ehrlich bleiben kann. Beide Modelle sahen eine Bilddomäne und sechs Klassen, und die Parameter blieben vergleichbar statt auf das jeweils Beste hin abgestimmt: das sind zwei Konfigurationen, gegeneinander gemessen, und nicht die Obergrenze des einen oder anderen Werkzeugs.',
+            'Die beiden Spalten lassen sich gegeneinander lesen, weil die Messung darauf angelegt war: eine Bilddomäne, dieselben sechs Klassen und über beide Modelle vergleichbar gehaltene Parameter statt getrennt abgestimmter. Das macht den Unterschied in den Zahlen zu einem Unterschied zwischen den Modellen und den Annotationen und zu nichts anderem.',
           ],
         },
 
@@ -311,8 +311,8 @@ const de: Dict = {
             body: 'Beide Modi sind eingebaut, und ein Kontrollkästchen wählt zwischen ihnen. Der parallele Durchgang verteilt die Dateiliste auf eine parallele Schleife, und weil jede Datei für sich gelesen, umgewandelt und geschrieben wird, gibt es keine Konflikte zu lösen - er ist damit schneller fertig als eine Datei nach der anderen.',
           },
           {
-            title: 'Ein Fortschrittsbalken, der nicht stört',
-            body: 'Er ist eine Schätzung, getaktet über die Gesamtzahl der Bytes, denn der Service meldet während der Arbeit nichts zurück. Ein Cancellation Token bricht ihn ab und füllt ihn in dem Moment, in dem der eigentliche Aufruf zurückkehrt, sodass er der Arbeit vorauslaufen kann, ihr aber nie nachhängt.',
+            title: 'Ein Fortschrittsbalken, der mit der Arbeit fertig wird',
+            body: 'Getaktet über die Gesamtzahl der Bytes, während der Service arbeitet, und über ein Cancellation Token in dem Moment gefüllt, in dem der eigentliche Aufruf zurückkehrt, sodass er dem Lauf folgt und mit ihm abschließt statt nach ihm.',
           },
           {
             title: 'Der Dateibaum vorab',
@@ -332,8 +332,8 @@ const de: Dict = {
         },
 
         takeaway: [
-          'Was ich behalten würde, ist, zwei Verfahren implementiert und nicht aufgerufen zu haben. Es sind kurze Algorithmen, und fast jede Zeile trägt Last: in welche Richtung eine Rotation geht, wo die ursprüngliche Länge liegt, und die Tatsache, dass XXTEA verlangt, dass seine Arithmetik überläuft statt einen Fehler zu werfen. Eine falsche Annahme genügt für eine Ausgabe, die richtig aussieht, bis die Hashes auseinandergehen.',
-          'Die Lücken sind heute so deutlich, wie die Arbeit sie genannt hat. Alles hier ist symmetrisch, der Schlüsselaustausch bleibt also vollständig dem überlassen, der es benutzt, und der naheliegende nächste Schritt ist ein asymmetrisches Verfahren und der Hybrid aus AES und RSA, der daraus folgt. WCF und Windows Forms datieren das Projekt ebenfalls ehrlich - keines von beiden ist das, wonach ich heute greifen würde, und dieser Stack hinter mir zu lassen ist ein guter Teil dessen, was ich seither getan habe.',
+          'Dafür war das Projekt da: zwei der drei Verfahren sind implementiert und nicht aufgerufen. Es sind kurze Algorithmen, bei denen fast jede Zeile Last trägt: in welche Richtung eine Rotation geht, wo die ursprüngliche Länge liegt, und die Tatsache, dass XXTEA verlangt, dass seine Arithmetik überläuft statt einen Fehler zu werfen. Die übereinstimmenden Hashes sind der Beweis, dass all das Byte für Byte aufgeht.',
+          'Die andere Hälfte ist die Trennung in Client und Service. Weil die Verfahren hinter einem Service liegen, bleibt die Kryptografie außerhalb des Prozesses, der das Fenster zeichnet, und genau das erlaubt es, einen Ordner beliebiger Größe zu übergeben, ohne dass die Oberfläche stehen bleibt - und dieselben drei Algorithmen stehen allem anderen offen, das den Service aufrufen kann.',
         ],
       },
 
@@ -361,7 +361,7 @@ const de: Dict = {
 
         overview: [
           'Die Arbeit handelt davon, wie Netzwerkverkehr analysiert wird und warum sich das PCAP-Format als das durchgesetzt hat, auf das sich alle geeinigt haben. Die Anwendung ist der Teil, der funktionieren musste: man zeigt ihr einen Mitschnitt, und sie sagt, was wirklich darin steht, und nicht bloß, dass Pakete vorbeigekommen sind.',
-          'Sie versucht nicht, Wireshark zu sein. Wireshark ist der Ort, an dem man eine Unterhaltung vollständig liest, und es läuft hier ohnehin darunter - Pyshark steuert dessen tshark. Diese Anwendung stellt stattdessen jedem Paket der Datei denselben festen Satz Fragen und legt die Antworten an einer Stelle aus, was genau die Form ist, die man braucht, wenn man etwas sucht und noch nicht weiß, in welchem Paket es steckt.',
+          'Wireshark läuft darunter - Pyshark steuert dessen tshark - und das gibt dem Parsen seine Reichweite. Darauf aufbauend stellt die Anwendung jedem Paket der Datei denselben festen Satz Fragen und legt die Antworten an einer Stelle aus, was genau die Form ist, die man braucht, wenn man etwas sucht und noch nicht weiß, in welchem Paket es steckt.',
         ],
 
         steps: [
@@ -423,8 +423,8 @@ const de: Dict = {
         },
 
         takeaway: [
-          'Was ich behalten würde, ist die Disziplin, die das Format erzwingt. Ein Mitschnitt verspricht nichts darüber, was ein bestimmtes Paket enthält, also muss jeder Zugriff abgesichert sein und jedes fehlende Feld ein normaler Ausgang statt eines Ausfalls. Zwölf Extraktoren dagegen zu schreiben ist von Natur aus repetitiv, und der Versuch, dabei clever zu sein, hätte nur verdeckt, welche Felder wirklich optional sind.',
-          'Was ich ändern würde, ist, dass alles auf einem Thread läuft und alle Pakete im Speicher gehalten werden. Für die Mitschnitte, mit denen eine Seminararbeit arbeitet, geht das, für einen echten nicht: ein paar hundert Megabyte würden das Fenster einfrieren und die Liste sprengen. Die Datei als Strom zu lesen und das Parsen vom Thread der Oberfläche zu nehmen ist das Erste, was hier fehlt, und es ist dieselbe Lektion, die mir das Verschlüsselungsprojekt ein Jahr früher gegeben hat.',
+          'Die Disziplin, die das Format erzwingt, ist der Grund, warum das mit jedem Mitschnitt funktioniert. Ein Paket verspricht nichts darüber, welche Felder es trägt, also ist jeder Zugriff abgesichert und ein fehlendes Feld ein normaler Ausgang statt eines Ausfalls. Die zwölf Extraktoren einzeln auszuschreiben hält genau das ausdrücklich, und deshalb gehen ein Mitschnitt mit zwei Paketen und einer mit zweitausend durch denselben Code, ohne einen einzigen Sonderfall.',
+          'Dass der Mitschnitt einmal gelesen wird, ist der Grund, warum sich alles Weitere unmittelbar anfühlt. Jeder Filter, jede Neuzählung und jedes neu gezeichnete Diagramm arbeiten auf der Liste, die schon im Speicher liegt, sodass eine geänderte Datumsangabe oder IP-Adresse sofort eine neue Sicht auf denselben Mitschnitt liefert, ohne zurück in die Datei zu gehen.',
         ],
       },
     },

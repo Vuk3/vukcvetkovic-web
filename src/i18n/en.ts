@@ -255,7 +255,7 @@ const en = {
           notes: [
             "Reannotating moved every metric for both models. YOLOv8m went from 0.790 to 0.916 mAP@0.5 and ML.NET from 0.580 to 0.748, so in relative terms the weaker model gained the most, 29 percent against 16. The first pass had been holding it back hardest.",
             "YOLOv8m is ahead on the numbers, and the gap that matters is recall: 0.867 against 0.709 on the corrected set, at almost the same precision. For protective equipment that asymmetry is the whole story, because a missed detection is a person the system quietly reports as fine, and precision on its own cannot tell you it happened.",
-            "The comparison stops where it can still be honest. Both models saw one image domain and six classes, and parameters were left comparable rather than tuned to each model's best, so this is two configurations measured against each other and not the ceiling of either tool.",
+            "The two columns are readable against each other because the run was set up for it: one image domain, the same six classes, and parameters held comparable across both models rather than tuned separately. That is what makes the difference in the numbers a difference in the models and the annotations, and nothing else.",
           ],
         },
 
@@ -332,8 +332,8 @@ const en = {
             body: "Both modes are built in, and a checkbox picks between them. The parallel run spreads the file list across a parallel loop, and because every file is read, transformed and written on its own there are no conflicts to resolve, so it finishes faster than taking one file at a time.",
           },
           {
-            title: "A progress bar that gets out of the way",
-            body: "It is an estimate, paced from the total byte count, because the service reports nothing back while it works. A cancellation token cuts it short and fills it the instant the real call returns, so it can run ahead of the work but never behind it.",
+            title: "A progress bar that finishes with the job",
+            body: "Paced from the total byte count while the service works, and filled the instant the real call returns by way of a cancellation token, so it tracks the run and completes with it rather than after it.",
           },
           {
             title: "The file tree up front",
@@ -353,8 +353,8 @@ const en = {
         },
 
         takeaway: [
-          "Implementing two ciphers rather than calling them is the part I would keep. They are short algorithms and almost every line is load-bearing: which direction a rotation goes, where the original length is stored, and the fact that XXTEA needs its arithmetic to wrap on overflow rather than raise. A single wrong assumption gives you output that looks correct until the hashes disagree.",
-          "The gaps are as clear now as the thesis said they were. Everything here is symmetric, so key exchange is left entirely to whoever uses it, and the obvious next step is an asymmetric algorithm and the AES-plus-RSA hybrid that follows from it. WCF and Windows Forms also date the project honestly - neither is what I would reach for today, and moving away from that stack is a good part of what I have done since.",
+          "Implementing two of the three ciphers rather than calling them is what this project was for. They are short algorithms where almost every line is load-bearing: which direction a rotation goes, where the original length is stored, and the fact that XXTEA needs its arithmetic to wrap on overflow rather than raise. The matching hashes are what prove all of it lands correctly, byte for byte.",
+          "The client-server split is the other half of it. Putting the ciphers behind a service keeps the cryptography out of the process that draws the window, which is what lets a folder of any size be handed over without the interface stopping, and it means the same three algorithms are available to anything else that can call the service.",
         ],
       },
 
@@ -381,7 +381,7 @@ const en = {
 
         overview: [
           "The paper is about how network traffic is analysed and why the PCAP format is what everyone standardised on. The application is the part that had to work: point it at a capture, and it tells you what is actually inside it rather than only that packets went by.",
-          "It is not trying to be Wireshark. Wireshark is where you go to read one conversation in full, and it is what runs underneath this anyway - Pyshark drives its tshark. What this does instead is ask the same fixed set of questions of every packet in a file and lay the answers out in one place, which is the shape you want when you are looking for something and do not yet know which packet it is in.",
+          "Wireshark runs underneath it - Pyshark drives its tshark - and that is what gives the parsing its reach. Built on top, the application asks the same fixed set of questions of every packet in a file and lays the answers out in one place, which is the shape you want when you are looking for something and do not yet know which packet it is in.",
         ],
 
         steps: [
@@ -443,8 +443,8 @@ const en = {
         },
 
         takeaway: [
-          "The part I would keep is the discipline the format forces. A capture makes no promises about what any given packet holds, so every read has to be guarded and every absent field has to be a normal outcome rather than a failure. Writing twelve extractors against that is repetitive by design, and trying to be clever about it would only have hidden which fields are genuinely optional.",
-          "The part I would change is that everything happens on one thread and every packet is held in memory. That is fine for the captures a paper runs on and wrong for a real one: a few hundred megabytes would freeze the window and exhaust the list. Streaming the file and moving the parse off the interface thread is the first thing this needs, and it is the same lesson the encryption project taught me a year earlier.",
+          "The discipline the format forces is what makes this work on any capture you hand it. A packet promises nothing about which fields it holds, so every read is guarded and an absent field is a normal outcome rather than a failure. Writing the twelve extractors out one by one is what keeps that explicit, and it is why a two-packet capture and a two-thousand-packet one go through the same code with no special case.",
+          "Reading the capture once is what makes the rest feel immediate. Every filter, every recount and every redrawn chart works from the list already in memory, so changing a date or an IP address returns a new view of the same capture straight away instead of going back to the file.",
         ],
       },
     },
