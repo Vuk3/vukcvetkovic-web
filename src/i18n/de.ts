@@ -13,7 +13,7 @@ const de: Dict = {
   meta: {
     title: 'Vuk Cvetković - Backend-Entwickler',
     description:
-      'Backend-Entwickler in Niš, Serbien. Services in Node.js (NestJS, Express), ereignisgetriebene Infrastruktur auf AWS und die React-Oberflächen davor.',
+      'Backend-Entwickler in Niš, Serbien. Ich baue Services in Node.js (NestJS, Express), ereignisgetriebene Infrastruktur auf AWS und die React-Oberflächen davor.',
     ogImageAlt: 'Vuk Cvetković, Backend-Entwickler',
   },
 

@@ -12,7 +12,7 @@ const en = {
   meta: {
     title: "Vuk Cvetković - Backend developer",
     description:
-      "Backend developer in Niš, Serbia. Services in Node.js (NestJS, Express), event-driven infrastructure on AWS, and the React interfaces in front of them.",
+      "Backend developer in Niš, Serbia. I build services in Node.js (NestJS, Express), event-driven infrastructure on AWS, and the React interfaces in front of them.",
     ogImageAlt: "Vuk Cvetković, backend developer",
   },
 
