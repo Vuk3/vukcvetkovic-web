@@ -1,0 +1,82 @@
+# vukcvetkovic.com - documentation
+
+**This is where the detail lives.** [AGENTS.md](../AGENTS.md) at the root carries the
+working rules and always loads. This page is the map: what the site is, where each kind of
+change belongs, and the index of the three deep-dives below.
+
+Each deep-dive is written to be **self-sufficient**. Paste its link into a prompt and an
+agent has the mechanism, the failure modes, the open items and the paths to the code
+without reading anything else.
+
+## What this is
+
+A personal site for Vuk Cvetković, backend developer in Niš: a single-page CV at the root
+plus a project write-up section, in **four languages** (English, Serbian, French, German).
+
+- **Astro 7**, `output: 'static'`. Every route is prerendered - `dist/server` builds empty
+  and nothing runs at request time.
+- **Tailwind 4** via `@tailwindcss/vite`, driven entirely from CSS. There is no
+  `tailwind.config`: the theme is declared with `@theme inline` inside
+  [src/styles/global.css](../src/styles/global.css).
+- **Cloudflare** through `@astrojs/cloudflare`, whose only job here is `imageService:
+  'compile'` and the assets shape. Nothing in the repository runs the deploy.
+- **16 pages**, 4 locales, 1 project. One CSS file, three woff2 faces, five webp variants,
+  and **no JavaScript file at all**.
+
+## Where things are
+
+| I need to change… | Go to |
+| --- | --- |
+| **copy in any language** | [src/i18n/](../src/i18n/) - rules in its [CLAUDE.md](../src/i18n/CLAUDE.md), mechanism in [content-and-i18n.md](./content-and-i18n.md) |
+| a name, URL, date, employer or technology label | [src/site.ts](../src/site.ts) - [content-and-i18n.md](./content-and-i18n.md#1-the-split-facts-versus-prose) |
+| **add a project** | [content-and-i18n.md §Adding a project](./content-and-i18n.md#5-adding-a-project) |
+| add a technology to a stack or skill list | [src/tech.ts](../src/tech.ts) - [content-and-i18n.md §Adding a technology](./content-and-i18n.md#adding-a-technology) |
+| **add a language** | [content-and-i18n.md §Adding a locale](./content-and-i18n.md#6-adding-a-locale) - six places, two of them unchecked |
+| a route, a URL shape, a 404, the sitemap or robots.txt | [routing-and-deploy.md](./routing-and-deploy.md) |
+| the Cloudflare or image configuration | [routing-and-deploy.md §Cloudflare](./routing-and-deploy.md#5-cloudflare-and-what-actually-ships) |
+| **colour, type, spacing or layout width** | [design-system.md](./design-system.md) |
+| a section's shape or tone | [Section.astro](../src/components/Section.astro) - [design-system.md §Sections](./design-system.md#3-sections-width-head-tone-space) |
+| an animation | [design-system.md §Motion](./design-system.md#5-motion) |
+| a component's markup | [src/components/](../src/components/) - rules in its [CLAUDE.md](../src/components/CLAUDE.md) |
+| a page or a `getStaticPaths` | [src/pages/](../src/pages/) - rules in [src/CLAUDE.md](../src/CLAUDE.md) |
+
+## The deep-dives
+
+- **[Content and i18n](./content-and-i18n.md)** - the facts-versus-prose split between
+  [src/site.ts](../src/site.ts) and the four dictionaries, how `Dict` is derived from
+  English so a missing key fails the build, the [src/tech.ts](../src/tech.ts) mark registry
+  that types every technology name, and the recipes for adding a project, a role, a
+  technology and a locale. **Read the locale section before touching
+  [astro.config.mjs](../astro.config.mjs)** - it is the one registration the compiler
+  cannot check, and the failure is silent.
+
+- **[Routing and deploy](./routing-and-deploy.md)** - why every route exists twice, why
+  `build.format` is `'preserve'` and what that couples to, how Cloudflare resolves a 404,
+  what lands in `dist/`, and the sitemap/canonical trailing-slash disagreement.
+
+- **[Design system](./design-system.md)** - the `--site-*` token path into Tailwind and why
+  `@theme inline` is load-bearing, the `.shell-*` measure family, the three section head
+  shapes, theming through a class rather than a media query, and the motion system: the
+  `enter` load sequence, the scroll-driven `reveal` family, and the two registered custom
+  properties they depend on.
+
+## Rules for these pages
+
+Rules for editing this documentation, so it stays worth reading:
+
+1. **Verify every claim against the code.** Prose that contradicts a file is worse than no
+   prose. The linked file is the authority, never this page.
+2. **Describe the present tense.** No "changed from X" in a behavioural claim. Dates live
+   on changelog lines only.
+3. **Link with relative paths** so a reader can click through, and check they resolve.
+4. **Record the surprising, not the obvious.** A table restating what the code plainly says
+   earns nothing. The reason each page exists is the thing that would cost an hour to
+   rediscover.
+5. **Say what fails and how.** For each guard: does it throw, warn, or silently fall back?
+   Silent is the one worth a warning marker.
+6. **Every deep-dive opens with a "what I need to change → what to touch" table** and ends
+   with a changelog: one dated line per change, appended at the bottom, never nested. It
+   says *what changed*, not how the thing works - if a reader has to read the changelog to
+   learn current behaviour, the body has failed and the body is what to fix.
+7. **Do not document what the code structure or git history already records.** Three
+   deep-dives is the right number for a site this size. A fourth needs a reason.

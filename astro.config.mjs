@@ -44,6 +44,40 @@ export default defineConfig({
         defaultLocale: 'en',
         locales: { en: 'en', sr: 'sr', fr: 'fr', de: 'de' },
       },
+
+      /*
+       * The sitemap emits a bare URL where the page's own canonical tag carries
+       * a trailing slash, so the two disagreed on all twelve entries.
+       *
+       * The integration adds the slash itself in exactly one case, `build.format
+       * === 'directory'`. It is 'preserve' here for the sake of the 404 pages,
+       * which drops it into the branch that leaves the URL alone, and Astro's
+       * own `trailingSlash` does not help: only 'never' is read, and 'always'
+       * falls through the same way. So the slash has to be added here.
+       *
+       * `links` carries the hreflang alternates and holds the same bare strings,
+       * so it needs the same treatment - otherwise every page keeps pointing its
+       * alternates at the unslashed form.
+       *
+       * The extension test is the one `localizePath` uses, so both sides settle
+       * on the same rule: a trailing slash for a directory route, nothing for
+       * anything that looks like a file.
+       */
+      serialize(item) {
+        /**
+         * The root URL already ends in a slash, so the check for one is not
+         * redundant - without it the home entry came out as `https://host//`.
+         *
+         * @param {string} url
+         */
+        const withSlash = (url) =>
+          url.endsWith('/') || /\.[a-z0-9]+$/i.test(url) ? url : `${url}/`;
+
+        item.url = withSlash(item.url);
+        item.links = item.links?.map((link) => ({ ...link, url: withSlash(link.url) }));
+
+        return item;
+      },
     }),
   ],
 
