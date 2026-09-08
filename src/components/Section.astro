@@ -1,75 +1,53 @@
 ---
 /**
- * A homepage section: a heading, then content, in one of three shapes.
+ * A section: a heading on a rule, then content.
  *
- * Every section used to be the same shape at the same width, which is most of
- * what made the page read as a CV rendered in a browser. The two things that
- * vary now are the width (`width`, see the .shell-* family in global.css) and
- * the shape of the head (`head`), and neither is decorative:
+ * The shape is one shape now, and the variety comes from what a section puts
+ * inside it. Four head shapes and a sticky label column were tried and thrown
+ * out for the same reason: they spent 12rem of every measure on a caption and
+ * left the content to spread thinly across what was left, which is what made
+ * the page read as a document.
  *
- *   rail       The label hangs in the left margin on a corner bracket, with
- *              the content beside it. The default, and because each section
- *              sits at its own width the bracket lands at a different x each
- *              time - that shift is the page's rhythm.
- *   rule       A full-contrast rule across the whole column with the label on
- *              it, for the sections whose content wants the full width.
- *   statement  The label sets as a large phrase across the top. For Services,
- *              whose label is a sentence ("What I can help with") rather than
- *              a word and cannot hang in an 11rem margin.
+ * So the heading is a real heading at real size, the rule closes the head off
+ * from the content, and the content is a grid of cards - which is what carries
+ * the page.
  *
- * Tone is separate again: only About and Projects are banded, and Contact
- * closes on the tinted tone. Sections on the ground are separated by their
- * head and their spacing instead.
+ *   width   The measure, from the .shell-* family in global.css.
+ *   tone    Ground, the band, or the ink panel. Spent twice on the homepage:
+ *           one banded section and the close.
+ *   space   `lite` is the quieter rhythm, which Education uses.
+ *
+ * The `aside` slot is for what a section wants beside its heading - the link
+ * out to the full project index. It is optional and most sections have none.
  */
-export type SectionTone = 'base' | 'band' | 'close';
-export type SectionHead = 'rail' | 'rule' | 'statement';
+export type SectionTone = 'base' | 'band' | 'panel';
 
 /** Keys of the .shell-* width family in global.css. */
-export type SectionWidth = 'about' | 'skills' | 'timeline' | 'projects' | 'services' | 'contact';
+export type SectionWidth = 'text' | 'wide' | 'timeline' | 'projects' | 'contact';
 
 interface Props {
   id: string;
   label: string;
   width: SectionWidth;
   tone?: SectionTone;
-  head?: SectionHead;
-  /** `lite` is the quieter rhythm, which Education uses. */
   space?: 'full' | 'lite';
 }
 
-const { id, label, width, tone = 'base', head = 'rail', space = 'full' } = Astro.props;
+const { id, label, width, tone = 'base', space = 'full' } = Astro.props;
 
-const toneClass = { base: '', band: 'section-band', close: 'section-close' }[tone];
+const toneClass = { base: '', band: 'section-band', panel: 'panel' }[tone];
 const spaceClass = space === 'lite' ? 'sec-lite' : 'sec';
 const widthClass = `shell-${width}`;
 ---
 
 <section id={id} class:list={[spaceClass, toneClass]}>
-  <div class:list={['shell', widthClass, head === 'rail' && 'sec-grid']}>
-    {
-      head === 'rail' && (
-        <div class="sec-rail reveal">
-          <h2 class="sec-label">{label}</h2>
-        </div>
-      )
-    }
+  <div class:list={['shell', widthClass]}>
+    <div class="sec-head reveal">
+      <h2 class="sec-label">{label}</h2>
+      <slot name="aside" />
+    </div>
 
-    {
-      head === 'rule' && (
-        <div class="sec-rule reveal">
-          <h2 class="sec-label">{label}</h2>
-        </div>
-      )
-    }
-
-    {head === 'statement' && <h2 class="sec-statement reveal">{label}</h2>}
-
-    <div
-      class:list={[
-        head === 'rule' && 'sec-body',
-        head === 'statement' && 'sec-body sec-body-wide',
-      ]}
-    >
+    <div class="sec-body">
       <slot />
     </div>
   </div>

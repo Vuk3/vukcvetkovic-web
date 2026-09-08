@@ -5,6 +5,8 @@ import { Image } from 'astro:assets';
 import type { Lang } from '../i18n/types';
 import { getDict } from '../i18n/utils';
 import { site } from '../site';
+import BrandIcon from './BrandIcon.astro';
+import TechIcon from './TechIcon.astro';
 
 interface Props {
   lang: Lang;
@@ -21,40 +23,103 @@ const portraits = import.meta.glob<{ default: ImageMetadata }>(
 );
 const portrait = Object.values(portraits)[0]?.default;
 
-// Intrinsic width in CSS pixels for the largest rendering, which is 288px at
-// lg. 1x and 2x variants are emitted, so the source's short edge should be at
-// least 576px - the 730px master clears it without being upscaled. The
-// displayed size is CSS, not this number: see .portrait in global.css.
-const portraitWidth = 288;
+/*
+ * The master's own dimensions, handed over whole.
+ *
+ * The card frames the photograph at its own 3:4, so nothing is cropped: no arm
+ * cut off at the frame and, on a phone, no head cut in half. That was the cost
+ * of stretching the column and covering it, and it is not a cost worth paying.
+ * One 730-wide variant is emitted, which is 2x at the largest rendering.
+ */
+const portraitWidth = 730;
+const portraitHeight = 976;
 
 /*
  * The name on two lines, split off the single string in site.ts rather than
  * hardcoded here, so the name is still stated in exactly one place.
  *
  * Two lines is what buys the size: on one line "Vuk Cvetković" runs out of
- * measure around 60px, and at 132px stacked it is the masthead the page was
- * missing. It stays one <h1> with one accessible name.
+ * measure around 60px. It stays one <h1> with one accessible name.
  */
 const [firstName, ...restOfName] = site.name.split(' ');
 const lastName = restOfName.join(' ');
+
+/*
+ * The role, taken from the current role in Experience rather than written out
+ * again here. It is the same fact, and the hero is not the place for a second
+ * copy of it that can drift.
+ */
+const role = dict.experience.roles.ncoded.role;
+
+/*
+ * The stack, as the first thing under the fold-line rather than only in Skills.
+ *
+ * It is the same list Skills sets out grouped further down, flattened here, so
+ * the hero answers what he works with using content the page already holds - no
+ * new copy, and nothing about it to keep in sync.
+ */
+const stack = site.skillGroups.flatMap((group) => group.items);
+
+const profiles = [
+  { label: dict.contact.linkedinLabel, href: site.links.linkedin, brand: 'linkedin' as const },
+  { label: dict.contact.githubLabel, href: site.links.github, brand: 'github' as const },
+];
 ---
 
-{/* No scroll reveal here: the hero is in view at first paint and animates on load. */}
+{/*
+  No scroll reveal anywhere in here - the hero is in view at first paint and
+  runs the load sequence instead.
+*/}
 <section class="hero">
   <div class="shell shell-hero">
-    <div class="hero-head">
-      <h1 class="display-name">
-        <span class="enter-name">{firstName}</span>
-        <span class="enter-name" style="--enter-delay:120ms">{lastName}</span>
-      </h1>
+    <div class="hero-grid">
+      <div>
+        <p class="hero-role enter">{role}</p>
+
+        <h1 class="display-name">
+          <span class="enter-name">{firstName}</span>
+          <span class="enter-name" style="--enter-delay:110ms">{lastName}</span>
+        </h1>
+
+        <div class="enter" style="--enter-delay:380ms">
+          <p class="hero-lead">{dict.hero.positioning}</p>
+
+          <div class="hero-actions">
+            <a href={`mailto:${site.email}`} class="cta">
+              <Mail class="size-[1.05rem]" aria-hidden="true" />
+              {dict.hero.cta}
+            </a>
+
+            {
+              profiles.map((profile) => (
+                <a href={profile.href} target="_blank" rel="me noopener" class="cta-ghost">
+                  <BrandIcon name={profile.brand} class="size-[0.95rem] shrink-0" />
+                  {profile.label}
+                </a>
+              ))
+            }
+          </div>
+
+          <ul class="hero-chips">
+            {
+              stack.map((tech) => (
+                <li class="chip">
+                  <TechIcon name={tech} class="chip-icon" />
+                  {tech}
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
 
       {/*
-        The portrait's lower edge lands on the baseline of the last name (see
-        `align-items: end` on .hero-head), which is what makes the two read as
-        one block rather than as an avatar beside a heading. Nothing else is in
-        this box, so nothing can push the image off that baseline.
+        The portrait, as a card the size of the column - so the photograph is
+        part of the composition rather than an avatar dropped beside a heading.
+        The card is what integrates it: same border, same radius and same tone
+        as everything else on the page.
       */}
-      <div class="portrait enter" style="--enter-delay:300ms">
+      <figure class="portrait enter enter-portrait" style="--enter-delay:240ms">
         <div class="portrait-frame">
           {
             portrait ? (
@@ -62,9 +127,8 @@ const lastName = restOfName.join(' ');
                 src={portrait}
                 alt={dict.hero.portraitAlt}
                 width={portraitWidth}
-                height={portraitWidth}
-                densities={[1, 2]}
-                quality={90}
+                height={portraitHeight}
+                quality={86}
                 loading="eager"
                 fetchpriority="high"
               />
@@ -72,25 +136,14 @@ const lastName = restOfName.join(' ');
               <div
                 role="img"
                 aria-label={dict.hero.portraitAlt}
-                class="flex aspect-square items-center justify-center bg-surface p-2 text-center text-[11px] leading-tight text-muted"
+                class="flex h-full items-center justify-center p-2 text-center text-[11px] leading-tight text-muted"
               >
                 {dict.hero.portraitPlaceholder}
               </div>
             )
           }
         </div>
-      </div>
-    </div>
-
-    <div class="hero-foot enter" style="--enter-delay:440ms">
-      <p class="hero-lead">{dict.hero.positioning}</p>
-
-      <p class="hero-cta">
-        <a href={`mailto:${site.email}`} class="cta">
-          <Mail class="size-[1.05rem]" aria-hidden="true" />
-          {dict.hero.cta}
-        </a>
-      </p>
+      </figure>
     </div>
   </div>
 </section>

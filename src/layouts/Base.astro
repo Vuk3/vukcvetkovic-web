@@ -101,8 +101,18 @@ const xDefault = new URL(localizePath(Astro.url.pathname, 'en'), siteUrl).href;
     <meta name="twitter:image" content={ogImage.href} />
     <meta name="twitter:image:alt" content={dict.meta.ogImageAlt} />
 
-    <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0f0f0f" media="(prefers-color-scheme: dark)" />
+    {/*
+      These match --site-panel-bg, not --site-bg: the browser chrome sits
+      directly above the header, and the header is the ink panel in both themes,
+      so matching the page ground would put a light strip over a dark bar.
+
+      ⚠️ They duplicate the token in both themes and have to be changed with it.
+      They also key on the media query rather than the .dark class, so a manual
+      toggle does not move the chrome - see open item 1 in
+      docs/design-system.md.
+    */}
+    <meta name="theme-color" content="#14161a" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14171c" media="(prefers-color-scheme: dark)" />
 
     {/*
       Vuk's own V mark, cropped in tight from the master in src/assets. The 32px
@@ -122,7 +132,7 @@ const xDefault = new URL(localizePath(Astro.url.pathname, 'en'), siteUrl).href;
   <body>
     <a
       href="#main"
-      class="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:bg-surface focus:px-3 focus:py-2 focus:text-fg"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-site focus:border focus:border-hairline focus:bg-card focus:px-3 focus:py-2 focus:text-fg"
     >
       {dict.nav.skipToContent}
     </a>
@@ -177,6 +187,60 @@ const xDefault = new URL(localizePath(Astro.url.pathname, 'en'), siteUrl).href;
           if (event.target instanceof Element && event.target.closest('a')) menu.open = false;
         });
       });
+    </script>
+
+    <script>
+      // The active-section indicator, and the one thing on this site that CSS
+      // could not do. A nav link cannot be styled from the section it points
+      // at: the two are in different subtrees, and `:target` only knows what
+      // was clicked, not what is on screen.
+      //
+      // So: an observer with a band across the upper third of the viewport. A
+      // section is current while its box crosses that band, which is roughly
+      // where a reader is looking, and `aria-current="location"` carries the
+      // state - announced as well as drawn. Styling is in global.css, on
+      // .nav-link and .nav-row.
+      //
+      // The links are absolute (`/#about`), so this runs on every page and
+      // simply observes nothing where the sections do not exist.
+      const sectionLinks = document.querySelectorAll<HTMLElement>('[data-section-link]');
+
+      if (sectionLinks.length > 0) {
+        const byId = new Map<string, HTMLElement[]>();
+
+        sectionLinks.forEach((link) => {
+          const id = link.dataset.sectionLink;
+          if (!id) return;
+          byId.set(id, [...(byId.get(id) ?? []), link]);
+        });
+
+        const mark = (activeId: string) => {
+          byId.forEach((links, id) => {
+            links.forEach((link) => {
+              if (id === activeId) link.setAttribute('aria-current', 'location');
+              else link.removeAttribute('aria-current');
+            });
+          });
+        };
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) mark(entry.target.id);
+            });
+          },
+          // A band from 28% to 45% down the viewport. Narrow enough that only
+          // one section is in it at a time, low enough that a section counts as
+          // current once it is genuinely being read rather than as its first
+          // pixel appears.
+          { rootMargin: '-28% 0px -55% 0px' },
+        );
+
+        byId.forEach((_links, id) => {
+          const section = document.getElementById(id);
+          if (section) observer.observe(section);
+        });
+      }
     </script>
   </body>
 </html>

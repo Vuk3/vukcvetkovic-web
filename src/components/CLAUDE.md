@@ -20,19 +20,37 @@ request.
 
 ## Go through Section.astro
 
-[Section.astro](./Section.astro) owns the four things that make a section: `width`, `head`,
-`tone`, `space`. A homepage or project-page section is `<Section …>` with content inside,
-never a hand-rolled `<section>` with its own wrapper.
+[Section.astro](./Section.astro) owns what makes a section: `width`, `tone`, `space`, and an
+optional `aside` slot for what sits beside the heading. A homepage or project-page section
+is `<Section …>` with content inside, never a hand-rolled `<section>` with its own wrapper.
 
 - **`width` is a key of the `.shell-*` family** in
   [global.css](../styles/global.css). Adding a width means adding both the CSS class and the
   `SectionWidth` union member. `hero` is deliberately not in that union - it is applied
   directly by the header, hero, footer and 404.
-- **`tone` is spent twice on the homepage and three times on a project page.** It is not
-  decoration for a new section: the head shape and the width are what separate sections
-  from each other. Do not reintroduce alternating bands.
-- `head="rule"` is for content that wants the full column, `head="statement"` for a label
-  that is a sentence rather than a word.
+- **`tone` is spent twice on the homepage and twice on a project page.** It is not
+  decoration for a new section: the measure and the cards are what separate sections from
+  each other. Do not reintroduce alternating bands.
+- **There is no `head` prop, and adding one back is a step backwards.** Four head shapes and
+  a sticky label column were built and removed: they spent about 12rem of every measure on a
+  caption and left the content spreading thinly across the rest, which is what made the page
+  read as a document.
+
+## Build a section out of cards
+
+`.card` is the page's unit - a service, a role, a degree, a project, a channel, a step, the
+results table, a stage of the request diagram. Add `.card-hover` **only** where the whole
+card is a link, and pair it with `.stretch` on the title so the click target is the card
+while the accessible name stays the title.
+
+- ⚠️ **`.stretch` covers everything underneath it.** Any link that has to stay clickable
+  inside a stretched card needs `.above`.
+- ⚠️ **A grid of cards stretches to the tallest of them.** Where the content per item is
+  uneven - Skills, a project's stack - use rows inside one card (`.stack-card` /
+  `.stack-row`) instead. A card per group left Data showing two chips over 200 points of
+  nothing.
+- `.chip` is a technology name with its mark; `.tag` a year or a short label. Both come from
+  the stylesheet, not from utilities.
 
 ## Conventions
 
@@ -60,18 +78,18 @@ Decided by one question: is the element in view at first paint?
 |---|---|
 | in view at first paint (hero, page heads, 404) | `enter`, ordered with an inline `style="--enter-delay:…"` |
 | a block arriving on scroll | `reveal` |
-| a repeated item that should stagger within its list | `reveal-item` |
+| a repeated card that should stagger within its grid | `reveal-item` |
 
 `reveal-item` staggers by `nth-child`, so it goes on the `<li>` directly inside the list.
-Wrapping the items in another element resets the count. The same is true of the technology
-tiles, which is why they sit directly inside `<dd class="skill-items">`.
+Wrapping the items in another element resets the count.
 
 Full mechanics, including the two `@property` registrations and the longhands-only rule:
 [docs/design-system.md §Motion](../../docs/design-system.md#5-motion).
 
 ## Accessibility details already decided
 
-- Icons are `aria-hidden="true"` when a text label sits beside them.
+- Icons are `aria-hidden="true"` when a text label sits beside them, and the diagram's
+  connectors are `aria-hidden` too - they are drawing, not content.
 - The Education crest has `alt=""` - the school is named in the line next to it, and
   announcing the crest as well reads the same thing twice.
 - The mobile menu carries **no landmark**. The desktop `<nav>` already has one named

@@ -20,8 +20,9 @@ plus a project write-up section, in **four languages** (English, Serbian, French
   [src/styles/global.css](../src/styles/global.css).
 - **Cloudflare** through `@astrojs/cloudflare`, whose only job here is `imageService:
   'compile'` and the assets shape. Nothing in the repository runs the deploy.
-- **28 pages**, 4 locales, 4 projects. One CSS file, three woff2 faces, five webp variants,
-  and **no JavaScript file at all**.
+- **28 pages**, 4 locales, 4 projects. One CSS file, three woff2 faces, a handful of webp
+  variants, and **no JavaScript file at all** - three small inline blocks cover the theme
+  toggle, menu dismissal and the active-section indicator.
 
 ## Where things are
 
@@ -35,7 +36,9 @@ plus a project write-up section, in **four languages** (English, Serbian, French
 | a route, a URL shape, a 404, the sitemap or robots.txt | [routing-and-deploy.md](./routing-and-deploy.md) |
 | the Cloudflare or image configuration | [routing-and-deploy.md §Cloudflare](./routing-and-deploy.md#5-cloudflare-and-what-actually-ships) |
 | **colour, type, spacing or layout width** | [design-system.md](./design-system.md) |
-| a section's shape or tone | [Section.astro](../src/components/Section.astro) - [design-system.md §Sections](./design-system.md#3-sections-width-head-tone-space) |
+| a section's width or tone | [Section.astro](../src/components/Section.astro) - [design-system.md §Sections](./design-system.md#3-sections-and-the-card) |
+| **how a card, chip or pill looks** | [design-system.md §Sections](./design-system.md#3-sections-and-the-card) |
+| the request diagram on a project page | [ProjectFlow.astro](../src/components/ProjectFlow.astro) - [design-system.md §The request diagram](./design-system.md#6-the-request-diagram) |
 | an animation | [design-system.md §Motion](./design-system.md#5-motion) |
 | a component's markup | [src/components/](../src/components/) - rules in its [CLAUDE.md](../src/components/CLAUDE.md) |
 | a page or a `getStaticPaths` | [src/pages/](../src/pages/) - rules in [src/CLAUDE.md](../src/CLAUDE.md) |
@@ -55,10 +58,10 @@ plus a project write-up section, in **four languages** (English, Serbian, French
   what lands in `dist/`, and the sitemap/canonical trailing-slash disagreement.
 
 - **[Design system](./design-system.md)** - the `--site-*` token path into Tailwind and why
-  `@theme inline` is load-bearing, the `.shell-*` measure family, the three section head
-  shapes, theming through a class rather than a media query, and the motion system: the
-  `enter` load sequence, the scroll-driven `reveal` family, and the two registered custom
-  properties they depend on.
+  `@theme inline` is load-bearing, `.panel` as the one inverted block, the `.shell-*`
+  measure family, `.card` as the page's unit and the grid-stretch trap that shaped it, the
+  request diagram, theming through a class rather than a media query, and the motion
+  system: the `enter` load sequence and the scroll-driven `reveal` family.
 
 ## Rules for these pages
 

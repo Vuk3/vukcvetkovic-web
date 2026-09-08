@@ -13,27 +13,17 @@ const dict = getDict(lang);
 ---
 
 {/*
-  The one section whose label is a sentence rather than a word, so it is the one
-  section that sets its label as a statement across the top instead of hanging
-  it in the margin. That is a fact about the content deciding the layout, which
-  is also why this section looks unlike any other on the page.
-
-  Two columns of hairline-topped rows. The rules stop at the column gap, which
-  is what keeps four of them from reading as a 2x2 grid of cards.
+  Four cards, two up. The label is a sentence rather than a word ("What I can
+  help with"), which the section head takes in its stride - it is a heading, so
+  it wraps and sets at the same size as every other one.
 */}
-<Section
-  id="services"
-  label={dict.services.label}
-  width="services"
-  tone={tone}
-  head="statement"
->
+<Section id="services" label={dict.services.label} width="wide" tone={tone}>
   <ul class="svc-grid">
     {
       dict.services.items.map((item) => (
-        <li class="svc reveal-item">
+        <li class="card reveal-item">
           <h3 class="svc-title">{item.title}</h3>
-          <p class="mt-2 text-muted">{item.description}</p>
+          <p class="mt-2.5 text-muted">{item.description}</p>
         </li>
       ))
     }

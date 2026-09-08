@@ -2,9 +2,9 @@
 /**
  * The /projects/ index, shared by the four locales.
  *
- * One row per project, on the same dated skeleton Experience uses: the year in
- * the left column, everything else beside it. It reads at one entry and at
- * nine, and the row is the link, so the page needs no cards to be clickable.
+ * One card per project, in the same two-up grid the homepage uses for the three
+ * it does not feature - so a project looks the same wherever it is listed. The
+ * whole card is the link, so the page needs no separate call to action per row.
  */
 import type { Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
@@ -29,43 +29,36 @@ const index = dict.projects.index;
 
 <div class="sec-lite">
   <div class="shell shell-projects">
-    {/* The list opens on a full-contrast rule, the way a `rule` section head does. */}
-    <ol class="border-t border-fg">
+    <ol class="svc-grid">
       {
         site.projects.map((project) => {
           const copy = dict.projects.items[project.id];
           const href = localizePath(`/projects/${project.slug}/`, lang);
 
           return (
-            <li class="entry entry-index reveal-item">
-              <p class="entry-period">{project.year}</p>
-
+            <li class="card card-hover project reveal-item">
               <div>
-                <h2 class="entry-title">
-                  <a href={href} class="entry-link">
+                <p class="tag">{project.year}</p>
+
+                <h2 class="project-title">
+                  <a href={href} class="entry-link stretch">
                     {copy.title}
                   </a>
                 </h2>
 
-                <p class="measure mt-2 text-muted">{copy.description}</p>
-
-                {project.tech.length > 0 && (
-                  <ul class="project-tags mt-5">
-                    {project.tech.map((tech) => (
-                      <li class="tag">
-                        <TechIcon name={tech} class="tag-icon" />
-                        {tech}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-
-                <p class="mt-5">
-                  <a href={href} class="link">
-                    {dict.projects.view}
-                  </a>
-                </p>
+                <p class="mt-2.5 text-muted">{copy.description}</p>
               </div>
+
+              {project.tech.length > 0 && (
+                <ul class="project-tags mt-auto pt-5">
+                  {project.tech.map((tech) => (
+                    <li class="tag">
+                      <TechIcon name={tech} class="tag-icon" />
+                      {tech}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </li>
           );
         })

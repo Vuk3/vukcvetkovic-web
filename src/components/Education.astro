@@ -15,53 +15,50 @@ const { lang, tone } = Astro.props;
 const dict = getDict(lang);
 
 // Displayed size in CSS pixels. 1x, 2x and 3x are emitted from the 597px source.
-const crestSize = 40;
+const crestSize = 44;
 ---
 
 {/*
-  The same skeleton as Experience with the weight taken out of it: the label goes
-  back into the margin, the period drops to body size, the entries close up and
-  the section's vertical rhythm is the quieter one. Consistent with the section
-  above it, lighter than it.
+  Two cards side by side, and deliberately the quietest block on the page: no
+  connector between them, no bullets, and the shorter vertical rhythm. It is a
+  fact about him that belongs here and should not compete with Projects.
 */}
 <Section
   id="education"
   label={dict.education.label}
   width="timeline"
   tone={tone}
-  head="rail"
   space="lite"
 >
-  <ol>
+  <ol class="edu-grid">
     {
       site.education.map((degree) => {
         const copy = dict.education.degrees[degree.id];
         return (
-          <li class="entry entry-lite reveal-item">
-            <p class="entry-period">{degree.period}</p>
-            <div class="flex items-start gap-4">
-              {/*
-                Decorative, so the alt is empty: the school is named in the line
-                directly beside it and a screen reader announcing the crest as
-                well would just read the same thing twice.
+          <li class="card reveal-item flex items-start gap-4">
+            {/*
+              Decorative, so the alt is empty: the school is named in the line
+              directly beside it and a screen reader announcing the crest as
+              well would just read the same thing twice.
 
-                The crest is navy on transparent, which disappears against the
-                dark theme, so it sits on its own white disc. The artwork is a
-                circle already, so the disc reads as part of the seal rather
-                than as a plate someone put behind it.
-              */}
-              <Image
-                src={elfak}
-                alt=""
-                width={crestSize}
-                densities={[1, 2, 3]}
-                loading="lazy"
-                class="mt-0.5 w-10 shrink-0 rounded-full bg-white"
-              />
-              <div>
-                <h3 class="entry-title">{copy.degree}</h3>
-                <p class="entry-role">{copy.school}</p>
-              </div>
+              The crest is navy on transparent, which disappears against the
+              dark theme, so it sits on its own white disc. The artwork is a
+              circle already, so the disc reads as part of the seal rather than
+              as a plate someone put behind it.
+            */}
+            <Image
+              src={elfak}
+              alt=""
+              width={crestSize}
+              densities={[1, 2, 3]}
+              loading="lazy"
+              class="mt-0.5 w-11 shrink-0 rounded-full bg-white"
+            />
+
+            <div>
+              <h3 class="edu-degree">{copy.degree}</h3>
+              <p class="mt-1 text-[15px] text-muted">{copy.school}</p>
+              <p class="tag mt-3">{degree.period}</p>
             </div>
           </li>
         );

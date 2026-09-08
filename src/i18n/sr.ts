@@ -152,12 +152,16 @@ const sr: Dict = {
         domain: "Lična zaštitna oprema na gradilištu",
 
         flow: {
-          before: ["Slika, multipart/form-data", "NestJS gateway"],
+          before: ["React front end", "Slika, multipart/form-data", "NestJS gateway"],
           branches: [
             ["FastAPI servis", "Ultralytics YOLOv8m"],
             ["ASP.NET Core servis", "ML.NET model"],
           ],
-          after: ["Jedan JSON format", "Okviri, klase, pouzdanost"],
+          after: [
+            "NestJS gateway",
+            "Jedan JSON format: okviri, klase, pouzdanost",
+            "React front end",
+          ],
         },
 
         overview: [

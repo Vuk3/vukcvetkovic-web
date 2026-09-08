@@ -10,28 +10,26 @@ interface Props {
 
 const { lang, tone } = Astro.props;
 const dict = getDict(lang);
+
+/* The opening paragraph is set large across the column and the rest run in two
+ * columns under it. Splitting the array here rather than indexing in the
+ * markup keeps the two layouts separate. */
+const [lead, ...rest] = dict.about.paragraphs;
 ---
 
 {/*
-  The narrowest section on the page apart from Contact, which is the point: 560
-  points of prose beside the rail, around 66 characters, on a tone of its own.
-  After the full-width hero it reads as the page drawing breath.
+  Editorial rather than a card: the opening statement at display size, the rest
+  in two columns beneath it.
 
-  The opening paragraph is set larger than the rest. Every paragraph on the page
-  was the same size, so nothing told the eye where to start reading.
+  Nothing here is boxed. About is the one section on the page that is pure
+  prose, and what sets it apart from its neighbours is exactly that - after a
+  hero of chips and before a grid of cards, a run of text at reading size is the
+  break.
 */}
-<Section id="about" label={dict.about.label} width="about" tone={tone}>
-  <div class="reveal space-y-4">
-    {
-      dict.about.paragraphs.map((paragraph, index) =>
-        index === 0 ? (
-          <p class="text-[clamp(1.1875rem,1.7vw,1.375rem)] leading-[1.55] tracking-[-0.01em]">
-            {paragraph}
-          </p>
-        ) : (
-          <p>{paragraph}</p>
-        ),
-      )
-    }
+<Section id="about" label={dict.about.label} width="text" tone={tone}>
+  <p class="about-lead reveal">{lead}</p>
+
+  <div class="about-grid reveal mt-8">
+    {rest.map((paragraph) => <p class="text-muted">{paragraph}</p>)}
   </div>
 </Section>

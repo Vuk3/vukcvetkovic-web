@@ -152,12 +152,16 @@ const de: Dict = {
         domain: 'Persönliche Schutzausrüstung auf der Baustelle',
 
         flow: {
-          before: ['Bild, multipart/form-data', 'NestJS-Gateway'],
+          before: ['React-Frontend', 'Bild, multipart/form-data', 'NestJS-Gateway'],
           branches: [
             ['FastAPI-Service', 'Ultralytics YOLOv8m'],
             ['ASP.NET-Core-Service', 'ML.NET-Modell'],
           ],
-          after: ['Ein JSON-Format', 'Rahmen, Klassen, Konfidenz'],
+          after: [
+            'NestJS-Gateway',
+            'Ein JSON-Format: Rahmen, Klassen, Konfidenz',
+            'React-Frontend',
+          ],
         },
 
         overview: [

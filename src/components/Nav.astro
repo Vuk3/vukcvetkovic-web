@@ -13,8 +13,8 @@ interface Props {
 const { lang } = Astro.props;
 const dict = getDict(lang);
 
-// Absolute, locale-aware hrefs so the header keeps working once other pages
-// (a blog, say) exist and the sections are no longer on the current URL.
+// Absolute, locale-aware hrefs so the header keeps working from a project page,
+// where the sections are not on the current URL.
 const home = localizePath('/', lang);
 
 const sections = [
@@ -29,26 +29,39 @@ const sections = [
 ---
 
 {/*
-  Translucent with a blur rather than an opaque bar, so the page runs under it.
-  The hairline and the padding are driven by scroll position - see .site-head
-  and the head-settle keyframes in global.css - which is pure CSS on a scroll()
-  timeline, so the header still costs no JavaScript. Where that is unsupported
-  it simply stays at the settled height with its hairline showing.
+  The header takes the ink panel, which is the one device on this site that
+  re-declares the palette rather than styling its own contents - so the bar is a
+  different surface from the page in both themes, and the wordmark, the rail,
+  the two controls and the phone menu inside it all come out correct without a
+  single header-specific colour. It is the same block that closes the page, so
+  the two ends are bracketed in ink.
+
+  Translucent with a blur, so the page still runs under it. The hairline and the
+  padding are driven by scroll position - see .site-head and the head-settle
+  keyframes in global.css - which is pure CSS on a scroll() timeline. Where that
+  is unsupported it simply stays at the settled height with its hairline
+  showing.
 
   It sits on the hero's measure, so the wordmark shares a left edge with the
-  name underneath it.
+  name underneath it, and the seven labels sit in a pill rail of their own -
+  which is what keeps them reading as one control rather than as seven links
+  loose in the header.
+
+  `data-section-link` is the hook the layout's observer uses to mark which
+  section is on screen. Both lists carry it, so the desktop row and the phone
+  menu are marked together and the state is set once.
 */}
-<header class="site-head">
+<header class="site-head panel">
   <div class="shell shell-hero head-inner">
     <a href={home} class="brand">{site.name}</a>
 
     {/* Seven labels need more room than md gives, especially in German. */}
     <nav aria-label={dict.nav.sections} class="ml-auto hidden lg:block">
-      <ul class="flex items-center gap-5">
+      <ul class="nav-rail">
         {
           sections.map((section) => (
             <li>
-              <a href={`${home}#${section.id}`} class="nav-link">
+              <a href={`${home}#${section.id}`} class="nav-link" data-section-link={section.id}>
                 {section.label}
               </a>
             </li>
@@ -57,7 +70,7 @@ const sections = [
       </ul>
     </nav>
 
-    <div class="ml-auto flex items-center gap-3 lg:ml-7">
+    <div class="ml-auto flex items-center gap-2 lg:ml-6">
       <ThemeToggle lang={lang} />
       <LangSwitcher lang={lang} />
 
@@ -74,7 +87,7 @@ const sections = [
       <details class="group static lg:hidden" data-menu>
         <summary
           aria-label={dict.nav.sections}
-          class="flex cursor-pointer list-none items-center text-muted transition-colors duration-150 hover:text-fg [&::-webkit-details-marker]:hidden"
+          class="head-btn size-9 cursor-pointer list-none [&::-webkit-details-marker]:hidden"
         >
           <Menu class="size-5 group-open:hidden" aria-hidden="true" />
           <X class="hidden size-5 group-open:block" aria-hidden="true" />
@@ -86,7 +99,8 @@ const sections = [
               <li>
                 <a
                   href={`${home}#${section.id}`}
-                  class="shell shell-hero block py-2.5 text-muted transition-colors duration-150 hover:text-fg"
+                  class="shell shell-hero nav-row py-2.5"
+                  data-section-link={section.id}
                 >
                   {section.label}
                 </a>

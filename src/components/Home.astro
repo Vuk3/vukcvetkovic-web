@@ -21,26 +21,25 @@ const { lang } = Astro.props;
 ---
 
 {/*
-  Tone is used twice on the page, not on every other section.
+  Tone is spent twice on the page, not on every other section.
 
   Sections used to alternate ground and band all the way down, and strict
   alternation turned out to be its own kind of uniformity: eight blocks of equal
   weight, each starting and ending the same way. What separates a section from
-  its neighbour now is the shape of its head and its width - see Section.astro -
-  which leaves tone free to do something a band should do, which is set two
-  sections apart from the rest.
+  its neighbour now is its measure and what it puts in its cards, which leaves
+  tone free to do the thing a tone should do - set a section apart from the
+  rest.
 
-  So About is banded, because it is the narrowest column on the page and wants
-  to read as the page drawing breath after the hero, and Projects is banded
-  because it is the one section still waiting for its content. Contact takes the
-  third tone, the tinted one, which is the page ending rather than another step
-  in an alternation.
+  So Projects is banded, because it is the section the page is for and a step in
+  the ground is what lets a reader find it by scrolling. And Contact takes the
+  ink panel, which is the page ending rather than another step in an
+  alternation, and the same block the hero opens on.
 */}
 <Hero lang={lang} />
-<About lang={lang} tone="band" />
+<About lang={lang} />
 <Skills lang={lang} />
 <Experience lang={lang} />
 <Education lang={lang} />
 <Projects lang={lang} tone="band" />
 <Services lang={lang} />
-<Contact lang={lang} tone="close" />
+<Contact lang={lang} tone="panel" />

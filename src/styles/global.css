@@ -6,7 +6,7 @@
  * The wdth build (62-125%) rather than wght alone, because the contrast between
  * display and text here is width, not a second typeface: headings run expanded
  * and heavy, text runs at normal width. Costs 90KB latin against 35KB, which is
- * the whole type system for this site.
+ * the whole type system for this site - no second family is loaded.
  */
 @import '@fontsource-variable/archivo/wdth.css';
 
@@ -14,72 +14,118 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * Palette. Near-monochrome with exactly one accent.
+ * Palette. Near-monochrome, one accent, and a card tone that lifts off the
+ * ground.
  *
- * The ground stays the warm off-white the brief asked for, but the accent is a
- * deep petrol green rather than the clay tone it started as: warm ground with a
- * warm terracotta accent is the single most recognisable generated-page palette
- * going, and a cold accent on a warm ground reads as a decision instead.
+ * The accent is cobalt, and it is borrowed rather than invented: it is the navy
+ * of the suit in the portrait, which is the one photograph on the site. That is
+ * why it sits with the image instead of arguing with it.
  *
  * Dark mode is a separate design, not an inversion - the accent is lightened
- * until it carries on a dark ground (9.1:1 there against 8.5:1 on light).
+ * until it carries on a dark ground (8.2:1 there against 8.0:1 on light).
  */
 :root {
   color-scheme: light;
 
-  --site-bg: #faf9f7;
-  --site-surface: #f1efeb;
-  --site-fg: #1c1b19;
-  /* Darkened from #6d6b66 when the bands came in: on the deepest band the old
-   * value fell to 4.44:1, under AA. It clears 4.8:1 on all three tones now. */
-  --site-muted: #67655f;
-  --site-hairline: #e4e1db;
-  --site-accent: #0d5c5c;
+  --site-bg: #f2f2f0;
+  --site-fg: #14161a;
+  /* 5.2:1 on the card tone, which is the lightest ground it has to clear. */
+  --site-muted: #5c6068;
+  --site-hairline: #dedcd7;
+  --site-accent: #2331c8;
 
   /*
-   * The two band tones, kept separate from --site-surface so the step between
-   * sections can be tuned without also darkening every chip and inset.
+   * The card. Cards do the structural work on this page: a section is a heading
+   * and then a set of them, which is what keeps the page dense instead of
+   * spreading a handful of lines across a screen of nothing.
    *
-   * Only two sections are banded now, About and Projects, rather than every
-   * other one. Strict alternation is itself a kind of uniformity: it gave the
-   * page eight equal blocks, which is most of what made it read as a document.
-   * The rules and the shifting rail carry the boundaries instead, and the tone
-   * is kept for the two sections that genuinely want to sit apart.
+   * Lighter than the ground here, so a card reads as sitting on the page. The
+   * inset is for a block *inside* a card - a stack list, a figure - and goes
+   * the other way, back towards the ground.
    */
-  --site-band: #f1ede6;
-  --site-close: #e4edeb;
+  --site-card: #fbfbfa;
+  --site-inset: #eeedea;
+  --site-band: #eceae6;
+
+  /*
+   * A single, very quiet shadow, used only on cards and only to lift them off
+   * the ground by a hair. Anything heavier and a page of cards turns into a
+   * dashboard.
+   */
+  --site-lift: 0 1px 2px color-mix(in oklab, #14161a 5%, transparent);
+  --site-lift-hover: 0 6px 20px color-mix(in oklab, #14161a 8%, transparent);
+
+  /*
+   * The ink panel. A block that carries the whole token system re-declared, so
+   * anything placed in it comes out correct without knowing it is on dark. See
+   * `.panel`.
+   */
+  --site-panel-bg: #101318;
+  --site-panel-card: #1a1e25;
+  --site-panel-inset: #21262e;
+  --site-panel-fg: #f0f1f2;
+  --site-panel-muted: #a5aab4;
+  --site-panel-hairline: #2c313a;
+  --site-panel-accent: #9aa8ff;
 
   /* One easing curve for the whole site, so nothing moves in a different way. */
   --site-ease: cubic-bezier(0.4, 0, 0.2, 1);
 
-  /*
-   * The gutter, once, for every measure on the page. 20px on a phone, opening
-   * to 48px on a desktop, which is the range the brief asks for.
-   */
-  --site-pad: clamp(1.25rem, 4vw, 3rem);
+  /* The gutter, once, for every measure on the page. */
+  --site-pad: clamp(1.125rem, 3.5vw, 2.5rem);
 
-  /* The left margin that carries a section label. See .sec-rail. */
-  --site-rail: 11rem;
+  --site-radius: 8px;
+  --site-radius-card: 18px;
+  --site-radius-pill: 999px;
 }
 
 .dark {
   color-scheme: dark;
 
-  --site-bg: #0f0f0f;
-  --site-surface: #1a1a19;
-  --site-fg: #ebe9e5;
-  --site-muted: #94918b;
-  --site-hairline: #2a2926;
-  --site-accent: #5fc2b7;
+  --site-bg: #0d0f12;
+  --site-fg: #eceef1;
+  --site-muted: #9a9fa9;
+  --site-hairline: #262a31;
+  --site-accent: #92a3ff;
 
-  /* Lighter than the ground here, since a band cannot go darker than #0f0f0f. */
-  --site-band: #1a1a18;
-  --site-close: #132220;
+  --site-card: #171b21;
+  --site-inset: #1d222a;
+  /*
+   * A band *recesses* on a dark page while a card lifts, which is the opposite
+   * of light mode and is what gives dark mode a legible ladder: band, ground,
+   * card, inset, panel. Lightening it instead put it within a hair of the card
+   * tone and the whole page flattened out.
+   */
+  --site-band: #08090c;
+
+  /* Barely there on a dark ground: the border is what separates a card from the
+   * page here, not a shadow. */
+  --site-lift: 0 1px 2px color-mix(in oklab, #000 25%, transparent);
+  --site-lift-hover: 0 8px 26px color-mix(in oklab, #000 45%, transparent);
+
+  /*
+   * ⚠️ In dark mode these have to stay clear of `--site-card`, not merely
+   * differ from `--site-bg`.
+   *
+   * The panel and the card were both #14171c, so the header, every card and the
+   * banded sections all landed on one tone and the page read as a single flat
+   * surface with borders drawn on it. The panel is the *lifted* surface here -
+   * two steps above the ground, one above a card - which is what makes the
+   * header a bar and the close a block rather than three more cards.
+   */
+  --site-panel-bg: #202530;
+  --site-panel-card: #29303c;
+  --site-panel-inset: #313945;
+  --site-panel-fg: #eff1f4;
+  --site-panel-muted: #a8aeba;
+  --site-panel-hairline: #3b4351;
+  --site-panel-accent: #a2b1ff;
 }
 
 /*
- * `inline` so utilities emit var(--site-*) directly and therefore follow the
- * .dark override at runtime instead of being resolved at build time.
+ * `inline` so utilities emit var(--site-*) directly and therefore follow both
+ * the .dark override and the .panel override at runtime, instead of being
+ * resolved at build time.
  */
 @theme inline {
   --font-sans:
@@ -87,13 +133,16 @@
     Arial, sans-serif;
 
   --color-bg: var(--site-bg);
-  --color-surface: var(--site-surface);
+  --color-card: var(--site-card);
+  --color-inset: var(--site-inset);
   --color-band: var(--site-band);
-  --color-close: var(--site-close);
   --color-fg: var(--site-fg);
   --color-muted: var(--site-muted);
   --color-hairline: var(--site-hairline);
   --color-accent: var(--site-accent);
+
+  --radius-site: var(--site-radius);
+  --radius-card: var(--site-radius-card);
 }
 
 @layer base {
@@ -106,11 +155,12 @@
     background-color: var(--site-bg);
     color: var(--site-fg);
     font-family: var(--font-sans);
-    /* 17px base, up from 16px: the page read as small print at the old scale. */
     font-size: 1.0625rem;
-    line-height: 1.7;
+    line-height: 1.65;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* Nothing on the page is allowed to open a horizontal scrollbar. */
+    overflow-x: hidden;
   }
 
   h1,
@@ -126,13 +176,13 @@
 
   /* Sticky header clearance for in-page anchors. */
   :target {
-    scroll-margin-top: 6rem;
+    scroll-margin-top: 4.5rem;
   }
 
   :focus-visible {
     outline: 2px solid var(--site-accent);
     outline-offset: 3px;
-    border-radius: 1px;
+    border-radius: var(--site-radius);
   }
 
   ::selection {
@@ -143,40 +193,31 @@
 
 @layer components {
   /*
-   * The display voice: the same family pushed out on the width axis and up on
-   * the weight axis. It goes on type doing structural work - the name, section
-   * headings, dates - never on anything meant to be read as prose, where the
-   * expanded width would slow reading down.
-   */
-  .display {
-    font-stretch: 112%;
-    font-weight: 620;
-    letter-spacing: -0.015em;
-  }
-
-  /*
+   * The display voice - the same family pushed out on the width axis and up on
+   * the weight axis - is set per rule rather than through one shared utility.
+   * It goes on type doing structural work: the name, section headings, card
+   * titles. Never on anything meant to be read as prose, where the expanded
+   * width would slow reading down.
+   *
    * The name, and the one place the page is allowed to be loud.
    *
    * It sets on two lines, one word each, because that is what buys the size:
    * "Vuk Cvetković" on a single line caps out around 60px before it runs out of
-   * measure, and 132px is the whole reason the hero now reads as a masthead
-   * rather than as the top of a CV.
+   * measure.
    *
-   * Leading is 0.92 rather than tighter because the second line carries a ć: at
-   * 0.86 its accent collided with the baseline of the line above.
+   * Leading is 0.88 rather than tighter because the second line carries a ć: at
+   * 0.84 its accent collided with the baseline of the line above.
    */
   .display-name {
-    font-stretch: 118%;
-    font-weight: 660;
-    letter-spacing: -0.04em;
-    line-height: 0.92;
-    /*
-     * Measured rather than guessed: at the 140px cap "Cvetković" sets 730 wide
-     * in the 808 the column gives it, and at every step down to 320 the ratio
-     * only improves. Neither line wraps at any width, which matters because a
-     * single word has nowhere to wrap to and would simply overhang the page.
-     */
-    font-size: clamp(2.75rem, 9.5vw, 8.75rem);
+    font-stretch: 122%;
+    font-weight: 680;
+    letter-spacing: -0.045em;
+    line-height: 0.88;
+    /* 11vw rather than 8.2: on a 390 phone the name was setting at 41px, which
+     * is a heading rather than a masthead. It holds two lines without wrapping
+     * at every width - "Cvetković" is the long one, and it is measured against
+     * the gutter, not guessed. */
+    font-size: clamp(3rem, 11vw, 7rem);
   }
 
   .display-name > span {
@@ -184,13 +225,8 @@
   }
 
   /*
-   * The measure, as a family rather than a single number.
-   *
-   * Every section used to sit in the same 1024px column, which is the other
-   * half of why the page read as a document: nothing about the width told you
-   * that a run of prose and a grid of logos are different kinds of content.
-   * Each section now names its own width and `.shell` centres it, so the page
-   * has a rhythm of edges instead of one long trough.
+   * The measure, as a family rather than a single number. Each section names its
+   * own width, so the page has a rhythm of edges instead of one long trough.
    *
    * The named width is the *content* width. Padding is added outside it, so
    * changing the gutter never changes a measure.
@@ -203,170 +239,154 @@
   }
 
   .shell-hero {
-    --shell: 72rem; /* 1152px - the widest thing on the page, and the page's outer edge. */
+    --shell: 75rem; /* 1200px - the page's outer edge, which the header shares. */
   }
 
-  .shell-about {
-    --shell: 49rem; /* 784px: 560px of prose beside the rail, around 66 characters. */
+  .shell-wide {
+    --shell: 72rem; /* 1152px - most of the page. */
   }
 
-  .shell-skills {
-    --shell: 66rem; /* 1056px */
+  .shell-text {
+    --shell: 68rem;
   }
 
   .shell-timeline {
-    --shell: 58rem; /* 928px - Experience and Education, which share a shape. */
+    --shell: 68rem;
   }
 
   .shell-projects {
-    --shell: 69rem; /* 1104px */
-  }
-
-  .shell-services {
-    --shell: 66rem; /* 1056px */
+    --shell: 72rem;
   }
 
   .shell-contact {
-    --shell: 50rem; /* 800px */
+    --shell: 72rem;
   }
 
   /*
-   * The measure for running prose, in one place.
-   *
-   * 42rem is 672px, which lands around 75 characters at the 17px body size.
-   * It only ever caps a paragraph sitting in a column wider than itself, which
-   * after the width pass above is just the bullets and descriptions.
+   * The measure for running prose. 38rem is around 68 characters at the body
+   * size, and it only ever caps a paragraph sitting in a column wider than
+   * itself.
    */
   .measure {
-    max-width: 42rem;
+    max-width: 38rem;
+  }
+
+  /* ---- The card, which is the page's unit --------------------------------
+   *
+   * One class, used everywhere: a service, a role, a project, a channel, a
+   * group of technologies. Border and tone rather than a heavy shadow, one
+   * radius, and a hover that lifts 2px and takes the accent on its border -
+   * enough to say a thing is a target, quiet enough that a grid of six does not
+   * flash.
+   */
+  .card {
+    position: relative;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-card);
+    background-color: var(--site-card);
+    box-shadow: var(--site-lift);
+    padding: clamp(1.25rem, 2vw, 1.75rem);
+    transition:
+      border-color 240ms var(--site-ease),
+      box-shadow 240ms var(--site-ease),
+      transform 240ms var(--site-ease);
+  }
+
+  .card-hover:hover {
+    border-color: color-mix(in oklab, var(--site-accent) 55%, var(--site-hairline));
+    box-shadow: var(--site-lift-hover);
+    transform: translateY(-2px);
+  }
+
+  /* A block inside a card: the stack list, a figure. It goes back towards the
+   * ground rather than further from it, so the nesting reads as depth. */
+  .inset {
+    border-radius: calc(var(--site-radius-card) - 6px);
+    background-color: var(--site-inset);
+    padding: clamp(1rem, 1.6vw, 1.35rem);
   }
 
   /*
-   * Section tones. Two banded sections and the tinted close, no alternation.
+   * The panel: a block that re-declares the palette rather than styling its own
+   * contents.
    *
-   * Contact closes the page on the third tone, the only one carrying any hue,
-   * pulled towards the accent. It marks the end of the page and it is the one
-   * section where the reader is being asked to do something.
+   * Because `@theme inline` maps every Tailwind colour to a var(--site-*),
+   * overriding the tokens here is enough: `.card`, `.link`, `.tag`,
+   * `text-muted` and everything else inside come out correct with no
+   * panel-specific rules anywhere.
    */
+  .panel {
+    --site-bg: var(--site-panel-bg);
+    --site-card: var(--site-panel-card);
+    --site-inset: var(--site-panel-inset);
+    --site-band: var(--site-panel-inset);
+    --site-fg: var(--site-panel-fg);
+    --site-muted: var(--site-panel-muted);
+    --site-hairline: var(--site-panel-hairline);
+    --site-accent: var(--site-panel-accent);
+
+    background-color: var(--site-bg);
+    color: var(--site-fg);
+  }
+
+  /* ---- Sections -------------------------------------------------------- */
+
+  /*
+   * Vertical rhythm, kept tight on purpose. The page is dense: a section is a
+   * heading and then a block of cards, and the air between two of them should
+   * read as a break rather than as the page having run out.
+   */
+  .sec {
+    padding-block: clamp(2.75rem, 4.5vw, 4.5rem);
+  }
+
+  .sec-lite {
+    padding-block: clamp(2.25rem, 3.5vw, 3.25rem);
+  }
+
   .section-band {
     background-color: var(--site-band);
   }
 
-  .section-close {
-    background-color: var(--site-close);
-  }
-
   /*
-   * Vertical rhythm. `-lite` is Education, which the brief wants a shade
-   * quieter.
+   * The section head: a real heading at real size, with the label on the left
+   * and whatever the section wants to put beside it - a link out, a count - on
+   * the right.
    *
-   * Padding rather than a top margin, so two banded sections could meet with no
-   * strip of the ground showing between them - and kept under 6rem because
-   * where two sections both sit on the ground their paddings add up. At 7.5rem
-   * the gap between Skills and Experience came to 240 points of nothing, which
-   * read as the page having run out rather than as breathing room.
+   * The heading carries the weight, so a section announces itself instead of
+   * being introduced by a caption. The rule under it closes the head off from
+   * the cards.
    */
-  .sec {
-    padding-block: clamp(3.5rem, 6vw, 5.5rem);
+  .sec-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    border-bottom: 1px solid var(--site-hairline);
+    padding-bottom: clamp(0.9rem, 1.5vw, 1.25rem);
   }
 
-  .sec-lite {
-    padding-block: clamp(2.75rem, 4.5vw, 4rem);
-  }
-
-  /*
-   * The rail: a section label hung in the left margin on a corner bracket.
-   *
-   * Two hairlines meeting at the top left of the content, with the label
-   * right-aligned into the corner. It is the one structural device the page
-   * repeats, and because each section sits at its own width the bracket lands
-   * at a different x every time, which is where the rhythm comes from. It also
-   * marks where a section starts without needing a band to do it.
-   *
-   * Below lg the bracket flattens to a single rule with the label under it.
-   */
-  .sec-grid {
-    display: grid;
-    row-gap: 1.75rem;
-  }
-
-  .sec-rail {
-    border-top: 1px solid var(--site-hairline);
-    padding-top: 0.9rem;
-  }
-
-  @media (min-width: 64rem) {
-    .sec-grid {
-      grid-template-columns: var(--site-rail) minmax(0, 1fr);
-      column-gap: 3rem;
-      row-gap: 0;
-    }
-
-    .sec-rail {
-      border-right: 1px solid var(--site-hairline);
-      padding-right: 1.5rem;
-      padding-bottom: 0.5rem;
-      text-align: right;
-    }
-  }
-
-  /*
-   * The label itself. Modest in size on purpose: the hierarchy in each section
-   * is carried by its content - a 34px date, a 24px company name - and a label
-   * competing with those is what an ALL-CAPS eyebrow over every block does.
-   * Sentence case in the display width, sitting on a rule, is enough.
-   */
   .sec-label {
-    font-stretch: 112%;
-    font-weight: 620;
-    font-size: clamp(1.125rem, 1.5vw, 1.25rem);
-    line-height: 1.25;
-    letter-spacing: -0.02em;
+    font-stretch: 114%;
+    font-weight: 650;
+    font-size: clamp(1.625rem, 3vw, 2.375rem);
+    line-height: 1.05;
+    letter-spacing: -0.035em;
   }
 
-  /*
-   * The other head: a full-width rule with the label on it, for the two
-   * sections whose content wants the whole column - the dated entries in
-   * Experience and the project rows. Full contrast rather than the hairline
-   * tone, so it does not read as one more of the many content rules below it.
-   */
-  .sec-rule {
-    border-top: 1px solid var(--site-fg);
-    padding-top: 0.9rem;
-  }
-
-  /* The gap between a head that spans the column and the content under it. */
   .sec-body {
-    margin-top: clamp(1.75rem, 3vw, 2.5rem);
+    margin-top: clamp(1.5rem, 2.5vw, 2.25rem);
   }
 
-  .sec-body-wide {
-    margin-top: clamp(2.25rem, 4vw, 3.5rem);
-  }
+  /* ---- Links, buttons, chips ------------------------------------------- */
 
   /*
-   * And the third: Services, whose label is a phrase rather than a word ("What
-   * I can help with", 25 characters in French). A phrase cannot hang in an
-   * 11rem margin, so it sets as a statement across the top instead. The label
-   * being a sentence is a fact about the content, so the section that owns it
-   * gets a shape of its own.
-   */
-  .sec-statement {
-    font-stretch: 110%;
-    font-weight: 620;
-    font-size: clamp(1.5rem, 2.6vw, 2.125rem);
-    line-height: 1.15;
-    letter-spacing: -0.03em;
-    max-width: 30rem;
-  }
-
-  /*
-   * The one accent use that repeats: content links and the CTA.
-   *
-   * The faint rule is always present, so a link still looks like a link. Hover
-   * draws a solid one across it from the left - two stacked backgrounds rather
-   * than a border, because only background-size can be animated directionally.
-   * Nothing about it changes the box, so no line ever reflows on hover.
+   * Content links. The faint rule is always present, so a link still looks like
+   * a link. Hover draws a solid one across it from the left - two stacked
+   * backgrounds rather than a border, because only background-size can be
+   * animated directionally. Nothing about it changes the box, so no line ever
+   * reflows on hover.
    */
   .link {
     color: var(--site-accent);
@@ -374,8 +394,8 @@
     background-image:
       linear-gradient(var(--site-accent), var(--site-accent)),
       linear-gradient(
-        color-mix(in oklab, var(--site-accent) 35%, transparent),
-        color-mix(in oklab, var(--site-accent) 35%, transparent)
+        color-mix(in oklab, var(--site-accent) 32%, transparent),
+        color-mix(in oklab, var(--site-accent) 32%, transparent)
       );
     background-position:
       0 100%,
@@ -394,46 +414,166 @@
   }
 
   /*
-   * The call to action, which is the only filled thing on the page.
-   *
-   * Square, on a 1px accent rule, inverting on hover. It was a text link with
-   * an envelope beside it before, indistinguishable from the three links in
-   * Contact, and the hero's one instruction should not have to be looked for.
+   * The call to action, and the only filled thing on the page. Solid accent at
+   * rest, because the hero's one instruction should not have to be looked for.
    */
   .cta {
     display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.55rem;
     border: 1px solid var(--site-accent);
-    color: var(--site-accent);
-    padding: 0.8rem 1.5rem;
-    font-stretch: 108%;
-    font-weight: 560;
+    border-radius: var(--site-radius-pill);
+    background-color: var(--site-accent);
+    color: var(--site-bg);
+    padding: 0.8rem 1.6rem;
+    font-stretch: 106%;
+    font-weight: 570;
     line-height: 1.2;
     transition:
-      background-color 220ms var(--site-ease),
-      color 220ms var(--site-ease);
+      background-color 200ms var(--site-ease),
+      color 200ms var(--site-ease),
+      transform 200ms var(--site-ease);
   }
 
   .cta:hover {
-    background-color: var(--site-accent);
-    color: var(--site-bg);
+    background-color: transparent;
+    color: var(--site-accent);
+    transform: translateY(-1px);
+  }
+
+  /* The same shape, outlined: the secondary action beside it. */
+  .cta-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-pill);
+    background-color: var(--site-card);
+    padding: 0.8rem 1.4rem;
+    font-size: 0.9375rem;
+    font-weight: 520;
+    line-height: 1.2;
+    transition:
+      border-color 200ms var(--site-ease),
+      color 200ms var(--site-ease),
+      transform 200ms var(--site-ease);
+  }
+
+  .cta-ghost:hover {
+    border-color: color-mix(in oklab, var(--site-accent) 55%, var(--site-hairline));
+    color: var(--site-accent);
+    transform: translateY(-1px);
+  }
+
+  /*
+   * A chip: one technology name with its mark. This is the page's smallest
+   * repeated object and it appears in the hero, on every project and in every
+   * stack list, which is most of what gives the page its texture.
+   *
+   * The marks keep their own brand colours - the one place colour is allowed in
+   * beyond the accent, and it is borrowed rather than invented.
+   */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-pill);
+    background-color: var(--site-card);
+    padding: 0.4rem 0.85rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: -0.005em;
+    white-space: nowrap;
+    transition:
+      border-color 200ms var(--site-ease),
+      transform 200ms var(--site-ease);
+  }
+
+  .chip:hover {
+    border-color: color-mix(in oklab, var(--site-fg) 28%, transparent);
+    transform: translateY(-2px);
+  }
+
+  .chip-icon {
+    width: 1.0625rem;
+    height: 1.0625rem;
+    flex-shrink: 0;
+    /*
+     * --brand comes from the element's style attribute and is missing on the
+     * entries with no brand, which then sit at the muted tone.
+     */
+    color: var(--brand, var(--site-muted));
+  }
+
+  /* Chips inside an inset, which is already a tone off the card: they take the
+   * card tone back so they do not disappear into it. */
+  .inset .chip {
+    background-color: var(--site-card);
+  }
+
+  /* A small square-ish tag with no mark, for a year or a count. Tabular so a
+   * row of them lines up. */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-pill);
+    padding: 0.15rem 0.7rem;
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    font-variant-numeric: tabular-nums;
+    color: var(--site-muted);
+  }
+
+  .tag-icon {
+    width: 0.8125rem;
+    height: 0.8125rem;
+    flex-shrink: 0;
+    color: var(--brand, currentColor);
+  }
+
+  /* A label above a value, inside a card. The label is doing work - "2026" on
+   * its own could be anything. */
+  .meta-label {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--site-muted);
+  }
+
+  .meta-value {
+    margin-top: 0.2rem;
+    font-stretch: 106%;
+    font-weight: 560;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
   }
 
   /* ---- Header ---------------------------------------------------------- */
 
   /*
-   * Translucent rather than opaque, so the page shows through it, with the
-   * hairline and the padding driven by scroll position further down.
+   * Translucent with a blur rather than an opaque bar, so the page runs under
+   * it. The hairline and the padding are driven by scroll position - see the
+   * head-settle keyframes - which is pure CSS on a scroll() timeline.
    */
   .site-head {
     position: sticky;
     top: 0;
     z-index: 40;
-    /* Opaque enough to carry the header on its own: backdrop-filter is a
-     * refinement on top, not the thing keeping the text legible. */
-    background-color: color-mix(in oklab, var(--site-bg) 88%, transparent);
-    backdrop-filter: blur(14px) saturate(150%);
+    /*
+     * The panel's own ground, because the header carries `.panel` (see
+     * Nav.astro) - so this one declaration is a dark bar on a light page and a
+     * lifted one on a dark page, with no theme branch anywhere.
+     *
+     * 96% rather than the 88% the rest of the site's translucency uses: the
+     * lower the alpha, the more of a *light* page mixes up into it, and at 88%
+     * the ink bar came out a washed charcoal. Four percent is enough to see the
+     * page move underneath without paying for it in the bar's own colour.
+     */
+    background-color: color-mix(in oklab, var(--site-bg) 96%, transparent);
+    backdrop-filter: blur(16px) saturate(160%);
     /* The resting state for a browser with no scroll-driven animations, which
      * then keeps a permanent hairline rather than none at all. */
     border-bottom: 1px solid var(--site-hairline);
@@ -450,10 +590,10 @@
   }
 
   .brand {
-    font-stretch: 112%;
-    font-weight: 620;
-    font-size: 0.9375rem;
-    letter-spacing: -0.01em;
+    font-stretch: 114%;
+    font-weight: 640;
+    font-size: clamp(1.0625rem, 1.4vw, 1.25rem);
+    letter-spacing: -0.025em;
     transition: color 200ms var(--site-ease);
   }
 
@@ -462,168 +602,239 @@
   }
 
   /*
-   * Nav hover: a rule drawn under the label rather than a colour change alone.
-   * A pseudo-element scaled from the left, so nothing in the row reflows.
+   * The nav row sits in a pill of its own, which is what keeps seven labels
+   * reading as one control rather than as seven links loose in the header.
    */
-  .nav-link {
-    position: relative;
-    font-size: 0.9375rem;
-    color: var(--site-muted);
-    transition: color 200ms var(--site-ease);
+  .nav-rail {
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-pill);
+    background-color: color-mix(in oklab, var(--site-card) 70%, transparent);
+    padding: 0.25rem;
   }
 
-  .nav-link::after {
-    content: '';
-    position: absolute;
-    inset-inline: 0;
-    bottom: -0.3rem;
-    height: 1px;
-    background-color: currentColor;
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 260ms var(--site-ease);
+  /*
+   * Hover and the active-section state are the same device: the label's own
+   * pill fills in. The section you are actually in keeps it, in the accent, and
+   * `aria-current="location"` carries that - set by the observer in the layout,
+   * so the state is announced as well as drawn.
+   */
+  .nav-link {
+    display: block;
+    border-radius: var(--site-radius-pill);
+    padding: 0.3rem 0.7rem;
+    font-size: 0.875rem;
+    line-height: 1.3;
+    color: var(--site-muted);
+    transition:
+      color 180ms var(--site-ease),
+      background-color 180ms var(--site-ease);
   }
 
   .nav-link:hover {
+    background-color: var(--site-inset);
     color: var(--site-fg);
   }
 
-  .nav-link:hover::after {
-    transform: scaleX(1);
+  .nav-link[aria-current='location'] {
+    background-color: color-mix(in oklab, var(--site-accent) 14%, transparent);
+    color: var(--site-accent);
+  }
+
+  /* The same state in the phone menu, where the labels are stacked rows and a
+   * pill on each would read as a list of buttons. */
+  .nav-row {
+    display: block;
+    border-left: 2px solid transparent;
+    color: var(--site-muted);
+    transition:
+      color 150ms var(--site-ease),
+      border-color 150ms var(--site-ease);
+  }
+
+  .nav-row:hover {
+    color: var(--site-fg);
+  }
+
+  .nav-row[aria-current='location'] {
+    border-left-color: var(--site-accent);
+    color: var(--site-fg);
+  }
+
+  /* The two icon controls in the header, sized as real targets. */
+  .head-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-pill);
+    background-color: var(--site-card);
+    color: var(--site-muted);
+    transition:
+      color 180ms var(--site-ease),
+      border-color 180ms var(--site-ease);
+  }
+
+  .head-btn:hover {
+    border-color: color-mix(in oklab, var(--site-fg) 25%, transparent);
+    color: var(--site-fg);
   }
 
   /* ---- Hero ------------------------------------------------------------ */
 
   .hero {
-    padding-block: clamp(2.5rem, 5vw, 4.5rem) clamp(4rem, 8vw, 7rem);
+    padding-block: clamp(1.75rem, 3vw, 3rem) clamp(2.5rem, 4.5vw, 4.5rem);
   }
 
   /*
-   * Name and portrait, bottom-aligned against each other.
+   * Two columns: the name and everything under it on the left, the portrait on
+   * the right.
    *
-   * `end` alignment is the whole composition: the portrait's lower edge sits on
-   * the baseline of "Cvetković", so the two read as one block rather than as an
-   * avatar placed next to a heading.
+   * The portrait is a card at the photograph's own 3:4, so nothing is cropped -
+   * no arm cut off at the frame, and on a phone the whole head is in the
+   * picture. It was covering a stretched column before and losing both.
    */
-  .hero-head {
+  .hero-grid {
     display: grid;
-    gap: clamp(2rem, 4vw, 3rem);
+    gap: clamp(1.75rem, 3.5vw, 3rem);
   }
 
   @media (min-width: 64rem) {
-    .hero-head {
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: end;
-      column-gap: 3.5rem;
+    .hero-grid {
+      grid-template-columns: minmax(0, 1fr) clamp(19rem, 31vw, 25rem);
+      align-items: center;
     }
   }
 
-  /* The positioning line and the CTA, under a rule that spans the hero. */
-  .hero-foot {
-    margin-top: clamp(2.5rem, 5vw, 4rem);
-    border-top: 1px solid var(--site-hairline);
-    padding-top: clamp(1.75rem, 3vw, 2.75rem);
-    display: grid;
-    gap: 2rem;
+  .hero-role {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: clamp(1rem, 1.8vw, 1.5rem);
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-pill);
+    background-color: var(--site-card);
+    padding: 0.35rem 0.95rem 0.35rem 0.75rem;
+    font-size: 0.9375rem;
+    font-weight: 520;
+    letter-spacing: -0.005em;
   }
 
-  @media (min-width: 64rem) {
-    .hero-foot {
-      grid-template-columns: minmax(0, 36rem) auto;
-      column-gap: 4rem;
-      justify-content: space-between;
-      align-items: start;
-    }
+  /* A filled dot, which is the one thing on the page that says "currently". */
+  .hero-role::before {
+    content: '';
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background-color: var(--site-accent);
   }
 
   .hero-lead {
-    font-size: clamp(1.1875rem, 1.9vw, 1.4375rem);
-    line-height: 1.55;
-    letter-spacing: -0.01em;
+    margin-top: clamp(1.25rem, 2.2vw, 1.75rem);
+    max-width: 36rem;
+    font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
+    line-height: 1.6;
     color: var(--site-muted);
   }
 
+  .hero-actions {
+    margin-top: clamp(1.5rem, 2.5vw, 2rem);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
   /*
-   * The portrait: the photograph, at 288px at the top end, and nothing around
-   * it but the hairline on its own edge.
+   * The stack, in the hero, as chips.
    *
-   * A second hairline used to sit 10px off the image as a frame, with the
-   * domain captioned inside it. Both are gone. The frame was decoration around
-   * a photograph that did not need any, and the caption was the site telling a
-   * reader the address of the page they are already on.
+   * It is the fastest answer to the question a recruiter or a client opens this
+   * page with, and it is the same list Skills sets out in full further down -
+   * so the hero says what he works with without a word of new copy.
+   */
+  .hero-chips {
+    margin-top: clamp(1.75rem, 3vw, 2.5rem);
+    border-top: 1px solid var(--site-hairline);
+    padding-top: clamp(1.25rem, 2vw, 1.5rem);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  /*
+   * The portrait, as a card at the image's own proportions.
+   *
+   * The two profile links sit in the card under the photograph, so the hero's
+   * ways of reaching him are all in one place: the CTA on the left, these on
+   * the right.
    */
   .portrait {
-    position: relative;
     margin: 0;
-    width: 10.5rem;
-  }
-
-  @media (min-width: 40rem) {
-    .portrait {
-      width: 13rem;
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .portrait {
-      width: 18rem;
-    }
+    overflow: hidden;
+    line-height: 0;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-card);
+    background-color: var(--site-card);
+    box-shadow: var(--site-lift);
   }
 
   .portrait-frame {
     position: relative;
     overflow: hidden;
-    background-color: var(--site-surface);
-  }
-
-  /* An inset rule rather than a border, so it sits over the image edge and
-   * cannot add to the box. */
-  .portrait-frame::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--site-fg) 14%, transparent);
-    pointer-events: none;
+    /* The photograph's own ratio, so the frame never crops it. */
+    aspect-ratio: 3 / 4;
+    background-color: var(--site-inset);
   }
 
   .portrait-frame img {
     display: block;
     width: 100%;
-    height: auto;
-    /* Held slightly back from full saturation at rest, so it belongs to a
-     * near-monochrome page, and released on hover. */
-    filter: saturate(0.82) contrast(1.02);
+    height: 100%;
+    object-fit: cover;
+    /* Held slightly back from full saturation at rest, so a photograph belongs
+     * to a near-monochrome page, and released on hover. */
+    filter: saturate(0.88) contrast(1.02);
     transition:
-      transform 700ms var(--site-ease),
-      filter 700ms var(--site-ease);
+      transform 800ms var(--site-ease),
+      filter 800ms var(--site-ease);
   }
 
   .portrait:hover .portrait-frame img {
-    transform: scale(1.04);
+    transform: scale(1.03);
     filter: none;
+  }
+
+  /* A light photograph is a bright rectangle on a dark page, so it is brought
+   * down to sit with the ground rather than glow against it. */
+  .dark .portrait-frame img {
+    filter: saturate(0.88) brightness(0.9) contrast(1.04);
+  }
+
+  .dark .portrait:hover .portrait-frame img {
+    filter: brightness(0.97);
   }
 
   /* ---- 404 ------------------------------------------------------------- */
 
   /*
-   * The 404 page borrows the hero's shape rather than inventing one: the same
-   * measure, type set large on the left, a rule under it, and the same CTA.
-   * Someone who lands here has still arrived at this site, and it should look
-   * like it.
+   * The 404 borrows the hero's shape rather than inventing one: type set large
+   * on the left, a rule under it, the same CTA. Someone who lands here has
+   * still arrived at this site, and it should look like it.
    *
-   * The height is what keeps the footer at the bottom of the window on a page
-   * with four lines of content in it. svh rather than vh so a mobile browser's
-   * collapsing toolbar does not push the footer out of reach.
+   * svh rather than vh so a mobile browser's collapsing toolbar does not push
+   * the footer out of reach.
    */
   .notfound {
     display: flex;
     align-items: center;
-    min-height: 58svh;
-    padding-block: clamp(4rem, 9vw, 7rem);
+    min-height: 56svh;
+    padding-block: clamp(3.5rem, 7vw, 6rem);
   }
 
-  /* The status code, as the small piece of metadata it is. The heading beside
-   * it is what actually tells the reader what happened. */
   .notfound-status {
     font-stretch: 112%;
     font-weight: 620;
@@ -639,7 +850,7 @@
     font-weight: 660;
     font-size: clamp(2.25rem, 6.5vw, 4.5rem);
     line-height: 0.98;
-    letter-spacing: -0.035em;
+    letter-spacing: -0.04em;
   }
 
   .notfound-body {
@@ -651,406 +862,447 @@
     color: var(--site-muted);
   }
 
-  /* ---- Skills ---------------------------------------------------------- */
+  /* ---- About ----------------------------------------------------------- */
 
   /*
-   * The stack as rows of names rather than a grid of chips.
-   *
-   * The brief is explicit that the technology names should carry visual weight
-   * themselves, so they set at body size with the mark small beside each one,
-   * flowing across the row. The group name holds the left, the row is closed by
-   * a hairline, and the marks keep their own brand colours - the one place
-   * colour is allowed in beyond the accent, and it is borrowed rather than
-   * invented.
+   * The opening paragraph set large across the column, the other two in two
+   * columns under it. It reads as an editorial opening rather than as three
+   * equal paragraphs in a narrow trough, and it fills the width the rest of the
+   * page uses.
    */
-  .skill-row {
-    border-bottom: 1px solid var(--site-hairline);
-    padding-block: 1.5rem;
+  .about-grid {
     display: grid;
-    row-gap: 0.9rem;
+    gap: clamp(1.5rem, 2.5vw, 2rem);
   }
 
-  .skill-row:first-child {
-    padding-top: 0;
-  }
-
-  @media (min-width: 48rem) {
-    .skill-row {
-      grid-template-columns: 10rem minmax(0, 1fr);
-      column-gap: 2.5rem;
-      row-gap: 0;
-      align-items: baseline;
+  @media (min-width: 56rem) {
+    .about-grid {
+      grid-template-columns: 1fr 1fr;
+      column-gap: clamp(2.5rem, 5vw, 4rem);
     }
   }
 
-  .skill-group {
-    font-stretch: 112%;
+  .about-lead {
+    font-stretch: 104%;
+    font-size: clamp(1.3125rem, 2.4vw, 1.875rem);
+    line-height: 1.35;
+    letter-spacing: -0.025em;
+  }
+
+  /* ---- Skills, and the stack on a project page ------------------------- */
+
+  /*
+   * One card, one row per group: the group name held in a column on the left,
+   * its technologies flowing across the rest of the row as chips.
+   *
+   * A card per group was the obvious shape and it was wrong. Cards in a grid
+   * stretch to the tallest of them, so a group of five set the height and the
+   * group of two beside it came out as a box with 200 points of nothing under
+   * two chips - which is exactly the emptiness this pass is meant to remove.
+   * Rows cannot do that: each one is as tall as its own contents, and the four
+   * of them fill the card.
+   *
+   * The stack on a project page is the same object with the groups named by
+   * service rather than by category, so it renders through the same rules -
+   * which is also why the two never drift apart.
+   */
+  .stack-card {
+    /* The rows carry the padding, so a hairline between two of them can run the
+     * full width of the card. */
+    padding: 0;
+  }
+
+  .stack-row {
+    display: grid;
+    row-gap: 0.85rem;
+    border-top: 1px solid var(--site-hairline);
+    padding: clamp(1rem, 1.6vw, 1.35rem) clamp(1.125rem, 2vw, 1.75rem);
+  }
+
+  .stack-row:first-child {
+    border-top: 0;
+  }
+
+  @media (min-width: 44rem) {
+    .stack-row {
+      grid-template-columns: 11rem minmax(0, 1fr);
+      column-gap: 2rem;
+      row-gap: 0;
+      align-items: center;
+    }
+  }
+
+  .stack-name {
+    font-stretch: 110%;
     font-weight: 620;
     font-size: 1.0625rem;
-    letter-spacing: -0.01em;
-    color: var(--site-muted);
-  }
-
-  .skill-items {
-    display: flex;
-    flex-wrap: wrap;
-    column-gap: 2.25rem;
-    row-gap: 1rem;
-  }
-
-  .tech {
-    --brand-mix: 100%;
-
-    display: inline-flex;
-    align-items: baseline;
-    gap: 0.55rem;
-    font-stretch: 104%;
-    font-weight: 520;
-    letter-spacing: -0.01em;
-    color: var(--site-fg);
-    transition: transform 200ms var(--site-ease);
-  }
-
-  /*
-   * The lift is the whole hover state. An accent rule under the name was here
-   * too, borrowed from .link, and it had to go: these are spans, not links, so
-   * an underline on hover promises a destination that does not exist.
-   */
-  .tech:hover {
-    transform: translateY(-2px);
-  }
-
-  .tech-icon {
-    width: 1.0625rem;
-    height: 1.0625rem;
-    flex-shrink: 0;
-    /* Nudged down so the mark's optical centre sits on the text baseline. */
-    transform: translateY(0.13em);
-    /*
-     * --brand comes from the element's style attribute and is missing on the
-     * three entries with no brand, which then sit at the muted tone.
-     * --brand-mix is what the reveal below animates, and it rests at 100%, so a
-     * browser that runs no animation at all still gets the full colour.
-     */
-    color: color-mix(in oklab, var(--brand, var(--site-muted)) var(--brand-mix), var(--site-muted));
-  }
-
-  /* ---- Experience and Education ---------------------------------------- */
-
-  /*
-   * The dated entries. Employment is genuinely a sequence, so the period is the
-   * structure and takes both the left column and the largest type in the
-   * section - which is also why there is no numbering anywhere on this page.
-   * The years already are the numbers.
-   */
-  .entry {
-    /*
-     * Wide enough for "2023 - 2024" set at 28px with tabular figures, which is
-     * the longest period either section can hold. Education overrides it, since
-     * its dates set at body size and a 12rem column beside them is a hole.
-     */
-    --entry-date: 12rem;
-
-    position: relative;
-    border-bottom: 1px solid var(--site-hairline);
-    padding-block: 1.75rem 2rem;
-    display: grid;
-    row-gap: 0.6rem;
-  }
-
-  @media (min-width: 48rem) {
-    .entry {
-      grid-template-columns: var(--entry-date) minmax(0, 1fr);
-      column-gap: 2.5rem;
-      row-gap: 0;
-    }
-  }
-
-  /*
-   * The subtle timeline interaction: the rule closing each entry fills with the
-   * accent from the left on hover. It is the only hover state in the section,
-   * it moves nothing, and it reads as the entry being picked out of the
-   * sequence rather than as a card lighting up.
-   */
-  .entry::after {
-    content: '';
-    position: absolute;
-    inset-inline: 0;
-    bottom: -1px;
-    height: 1px;
-    background-color: var(--site-accent);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 420ms var(--site-ease);
-  }
-
-  .entry:hover::after {
-    transform: scaleX(1);
-  }
-
-  .entry-period {
-    font-stretch: 112%;
-    font-weight: 620;
-    font-size: clamp(1.375rem, 2.4vw, 1.75rem);
-    line-height: 1.1;
-    letter-spacing: -0.03em;
-    font-variant-numeric: tabular-nums;
-    color: var(--site-muted);
-  }
-
-  /* The role he holds now, which is the one place the accent earns a second use. */
-  .entry-period[data-current] {
-    color: var(--site-accent);
-  }
-
-  .entry-title {
-    font-stretch: 112%;
-    font-weight: 620;
-    font-size: clamp(1.25rem, 1.8vw, 1.5rem);
-    line-height: 1.2;
+    line-height: 1.3;
     letter-spacing: -0.02em;
   }
 
-  .entry-role {
-    font-size: 0.9375rem;
+  .stack-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  /* The label over the summary stack in the featured project card. */
+  .stack-label {
+    font-size: 0.8125rem;
+    letter-spacing: 0.01em;
     color: var(--site-muted);
   }
 
+  /* ---- Experience ------------------------------------------------------ */
+
   /*
-   * The bullets under a role, marked with a hairline rather than a disc. A dash
-   * set on the baseline of the first line keeps the left edge of the text flush
-   * with everything above it, which a list marker would not.
+   * A card per role, with the period as a pill at the top and the work as
+   * bullets under the company. Employment is a sequence, and the connector
+   * between two cards is what says so - a short vertical rule in the gap,
+   * rather than a full timeline axis with a column of its own to pay for.
+   */
+  .role-list {
+    display: grid;
+    row-gap: clamp(1.5rem, 2.5vw, 2rem);
+  }
+
+  .role + .role::before {
+    content: '';
+    position: absolute;
+    left: clamp(1.75rem, 2.5vw, 2.25rem);
+    top: calc(-1 * clamp(1.5rem, 2.5vw, 2rem) - 1px);
+    height: clamp(1.5rem, 2.5vw, 2rem);
+    width: 1px;
+    background-color: var(--site-hairline);
+  }
+
+  .role-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+  }
+
+  .role-company {
+    font-stretch: 114%;
+    font-weight: 640;
+    font-size: clamp(1.375rem, 2.2vw, 1.75rem);
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+  }
+
+  .role-title {
+    margin-top: 0.15rem;
+    font-size: 1.0625rem;
+    color: var(--site-muted);
+  }
+
+  /* The period, and the one place the accent marks a fact rather than a link:
+   * the role he holds now. */
+  .role-period {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-pill);
+    padding: 0.2rem 0.8rem;
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.01em;
+    color: var(--site-muted);
+  }
+
+  .role[data-current] .role-period {
+    border-color: color-mix(in oklab, var(--site-accent) 45%, transparent);
+    background-color: color-mix(in oklab, var(--site-accent) 12%, transparent);
+    color: var(--site-accent);
+  }
+
+  /*
+   * The bullets, marked with a hairline rather than a disc. A dash set on the
+   * baseline of the first line keeps the left edge of the text flush with
+   * everything above it, which a list marker would not.
    */
   .bullets > li {
     position: relative;
-    padding-left: 1.5rem;
+    padding-left: 1.4rem;
   }
 
   .bullets > li::before {
     content: '';
     position: absolute;
     left: 0;
-    top: 0.85em;
-    width: 0.7rem;
+    top: 0.8em;
+    width: 0.65rem;
     height: 1px;
-    background-color: color-mix(in oklab, var(--site-fg) 35%, transparent);
+    background-color: color-mix(in oklab, var(--site-accent) 65%, transparent);
   }
+
+  /* ---- Education ------------------------------------------------------- */
 
   /*
-   * Education, same skeleton with the weight taken out of it: the period drops
-   * to body size and the entries close up. Consistent with Experience, quieter
-   * than it, which is the order the brief asks for.
+   * Two cards side by side, and deliberately the quietest block on the page: no
+   * connector, no bullets, the shorter rhythm. It belongs on the page and
+   * should not compete with Projects for attention.
    */
-  .entry-lite {
-    --entry-date: 8rem;
-
-    padding-block: 1.25rem 1.4rem;
+  .edu-grid {
+    display: grid;
+    gap: clamp(0.875rem, 1.5vw, 1.25rem);
   }
 
-  .entry-lite .entry-period {
-    font-size: 1.0625rem;
-    line-height: 1.6;
-    letter-spacing: -0.01em;
+  @media (min-width: 48rem) {
+    .edu-grid {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
-  .entry-lite .entry-title {
-    font-size: 1.125rem;
+  .edu-degree {
+    font-stretch: 110%;
+    font-weight: 620;
+    font-size: 1.1875rem;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
   }
 
   /* ---- Projects -------------------------------------------------------- */
 
   /*
-   * Two projects to a row, on the same device Services uses: cells opened by a
-   * hairline, with the rules stopping at the column gap so a 2x2 does not read
-   * as four boxes. One full-width row each was right while there were two
-   * projects and turned the section into a long ladder at four.
+   * One project is given the room, the rest share a row.
    *
-   * Two named columns rather than `auto-fit`, which is the same choice
-   * .svc-grid makes and for a better reason than symmetry: at this section's
-   * 69rem, auto-fit on any floor small enough to be safe on a narrow screen
-   * packs *three* columns in, and three columns is the one count four projects
-   * cannot fill. Two is the shape, so two is what the stylesheet says.
+   * The featured card is the largest object on the page: title at display size,
+   * the tagline that says what the thing is, the description, and the stack in
+   * an inset beside it. Everything about it is a step up from the three under
+   * it, which is what makes the section read as a showcase rather than as the
+   * first row of a list.
    */
-  .project-grid {
+  .project-featured {
+    padding: clamp(1.5rem, 2.6vw, 2.5rem);
+  }
+
+  .project-featured-grid {
     display: grid;
+    gap: clamp(1.5rem, 2.5vw, 2.25rem);
+  }
+
+  @media (min-width: 60rem) {
+    .project-featured-grid {
+      grid-template-columns: minmax(0, 1fr) 19rem;
+      column-gap: clamp(2rem, 4vw, 3.5rem);
+      align-items: start;
+    }
+  }
+
+  .project-featured-title {
+    margin-top: 0.9rem;
+    font-stretch: 116%;
+    font-weight: 650;
+    font-size: clamp(1.75rem, 3.4vw, 2.625rem);
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+  }
+
+  .project-tagline {
+    margin-top: clamp(0.75rem, 1.4vw, 1.125rem);
+    max-width: 32rem;
+    font-size: clamp(1.0625rem, 1.6vw, 1.25rem);
+    line-height: 1.45;
+    letter-spacing: -0.012em;
+    color: var(--site-muted);
+  }
+
+  /* The other three, as cards in a row. */
+  .project-grid {
+    margin-top: clamp(0.875rem, 1.5vw, 1.25rem);
+    display: grid;
+    gap: clamp(0.875rem, 1.5vw, 1.25rem);
   }
 
   @media (min-width: 48rem) {
     .project-grid {
       grid-template-columns: 1fr 1fr;
-      column-gap: 3.5rem;
     }
   }
 
-  /*
-   * A cell, not a card: no border, no fill, no radius. The top rule opens it and
-   * the type does the rest, which is what keeps a grid of four in the same
-   * language as the hairline rows everywhere else on the page.
-   */
+  @media (min-width: 68rem) {
+    .project-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  /* Flex so the tags and the link sit on the floor of the card, which is what
+   * lines three cards up along their feet however long the descriptions run. */
   .project {
     display: flex;
     flex-direction: column;
-    border-top: 1px solid var(--site-hairline);
-    padding-block: 1.5rem 1.75rem;
-    transition: border-color 260ms var(--site-ease);
-  }
-
-  .project:hover {
-    border-color: var(--site-accent);
-  }
-
-  /*
-   * Pushes the tags and links to the bottom of the cell, so two cells side by
-   * side line up along their feet however long the descriptions run.
-   *
-   * Everything stays left-aligned. The tags used to be pushed to the section's
-   * right edge, which was right while the aside had a 16rem track of its own on
-   * a full-width row, and is wrong in a cell: there is no far edge to sit
-   * against any more, only the next cell.
-   */
-  .project-aside {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    align-items: flex-start;
-    margin-top: auto;
-    padding-top: 1.25rem;
   }
 
   .project-title {
+    margin-top: 0.7rem;
     font-stretch: 112%;
-    font-weight: 620;
-    font-size: clamp(1.25rem, 1.8vw, 1.5rem);
+    font-weight: 630;
+    font-size: 1.3125rem;
     line-height: 1.2;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.025em;
+  }
+
+  .project-aside {
+    margin-top: auto;
+    padding-top: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    align-items: flex-start;
   }
 
   .project-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem;
-  }
-
-  /* Outlined and square rather than a filled pill, so a row of them reads as
-   * metadata rather than as a set of buttons. */
-  .tag {
-    display: inline-flex;
-    align-items: center;
     gap: 0.35rem;
-    border: 1px solid var(--site-hairline);
-    padding: 0.1rem 0.5rem;
-    font-size: 0.8125rem;
-    line-height: 1.6;
-    color: var(--site-muted);
-    transition:
-      border-color 200ms var(--site-ease),
-      color 200ms var(--site-ease);
-  }
-
-  .project:hover .tag {
-    border-color: color-mix(in oklab, var(--site-fg) 30%, transparent);
-    color: var(--site-fg);
   }
 
   /*
-   * The mark inside a tag. Smaller than the one in the skills rows and centred
-   * rather than sat on the baseline, because a tag is a box aligning its
-   * contents rather than a run of text.
-   *
-   * It takes its brand colour outright, with no reveal to fade in and no muted
-   * resting state: a tag row is already small and quiet, and the marks are what
-   * makes a stack scannable at this size. `currentColor` is the fallback for the
-   * entries that have no brand, so those follow the label from muted to full
-   * contrast as the row is hovered.
+   * A card title that is also a link. It stays at text colour rather than
+   * taking the accent and its rule, because a heading underlined in cobalt
+   * reads as a button; the accent arrives on hover, with the card's own border.
    */
-  .tag-icon {
-    width: 0.8125rem;
-    height: 0.8125rem;
-    flex-shrink: 0;
-    color: var(--brand, currentColor);
+  .entry-link {
+    color: inherit;
+    transition: color 200ms var(--site-ease);
+  }
+
+  .card-hover:hover .entry-link,
+  .entry-link:hover {
+    color: var(--site-accent);
+  }
+
+  /*
+   * The whole card is the target, not just the title: the link is stretched
+   * over the card with a pseudo-element, so a click anywhere on it navigates
+   * while the accessible name stays the title alone. Anything that has to stay
+   * clickable inside a stretched card - an outbound link - is lifted above it.
+   */
+  .stretch::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  .above {
+    position: relative;
+    z-index: 1;
   }
 
   /* ---- Services -------------------------------------------------------- */
 
-  /*
-   * Two columns of hairline-topped rows. The rules do not cross the gap, which
-   * is what keeps four of them from reading as a 2x2 grid of cards.
-   */
   .svc-grid {
     display: grid;
+    gap: clamp(0.875rem, 1.5vw, 1.25rem);
   }
 
-  @media (min-width: 48rem) {
+  @media (min-width: 52rem) {
     .svc-grid {
       grid-template-columns: 1fr 1fr;
-      column-gap: 3.5rem;
     }
-  }
-
-  .svc {
-    border-top: 1px solid var(--site-hairline);
-    padding-block: 1.5rem 1.75rem;
-    transition: border-color 260ms var(--site-ease);
-  }
-
-  .svc:hover {
-    border-color: var(--site-accent);
   }
 
   .svc-title {
     font-stretch: 112%;
-    font-weight: 620;
-    font-size: 1.3125rem;
+    font-weight: 630;
+    font-size: 1.25rem;
     line-height: 1.25;
-    letter-spacing: -0.02em;
-    transition: color 200ms var(--site-ease);
-  }
-
-  .svc:hover .svc-title {
-    color: var(--site-accent);
+    letter-spacing: -0.025em;
   }
 
   /* ---- Contact --------------------------------------------------------- */
 
   .contact-intro {
-    font-size: clamp(1.125rem, 1.7vw, 1.375rem);
-    line-height: 1.55;
-    letter-spacing: -0.01em;
     max-width: 34rem;
+    font-size: clamp(1.0625rem, 1.5vw, 1.1875rem);
+    line-height: 1.6;
+    color: var(--site-muted);
   }
 
   /*
-   * The address: the primary way to reach him, so a step up from the two
-   * profile links under it, and no more than that.
+   * Three channels as three equal cards.
    *
-   * It was set at display size, up to 46px, on the reasoning that the page
-   * should end on something loud. It was the wrong reasoning. An email address
-   * is a thing you read, copy and type, not a headline, and at that size it
-   * stopped looking like an address at all. 24px keeps it first among the three
-   * channels without shouting.
+   * The email used to sit in a card of its own beside the other two, at display
+   * size, and it came out as a slab with an address adrift in it. Three cards of
+   * one size read as three ways to reach him, which is what they are - and the
+   * email is still first, and the only one whose address takes the accent, so
+   * the order is legible without one of them being three times the size.
+   */
+  .channels {
+    margin-top: clamp(1.5rem, 2.5vw, 2rem);
+    display: grid;
+    gap: clamp(0.75rem, 1.25vw, 1rem);
+  }
+
+  @media (min-width: 44rem) {
+    .channels {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .channels {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .channel {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: clamp(1rem, 1.6vw, 1.25rem);
+  }
+
+  .channel-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--site-radius-pill);
+    background-color: var(--site-inset);
+    color: var(--site-fg);
+    transition: color 200ms var(--site-ease);
+  }
+
+  .card-hover:hover .channel-mark {
+    color: var(--site-accent);
+  }
+
+  /*
+   * The address, and the loudest thing in the close - which is a step above the
+   * two profile URLs beside it and nothing more than that. It has been set at
+   * 2.875rem, 2.25rem and 1.75rem, and every one of them was too big: an email
+   * address is a thing you read, copy and type, and past this size it stops
+   * looking like one.
    *
-   * `anywhere` on the wrap so a 20-character address still breaks rather than
-   * pushing a narrow phone sideways.
+   * `anywhere` on the wrap so it still breaks rather than pushing a narrow
+   * phone sideways.
    */
   .mail {
     display: inline-block;
-    margin-top: 0.4rem;
-    font-stretch: 106%;
-    font-weight: 580;
-    font-size: 1.5rem;
+    margin-top: 0.15rem;
+    font-stretch: 108%;
+    font-weight: 600;
+    /* One step over the two URLs beside it and no more. Flat rather than a
+     * clamp: 19px is already the smallest size that reads as the primary
+     * channel, so there is nothing to scale down to. */
+    font-size: 1.1875rem;
     line-height: 1.35;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.015em;
     overflow-wrap: anywhere;
-    /* Accent, like every other link on the page. It read as the odd one out at
-     * full text colour: the most important link in the section was the only one
-     * not coloured as a link. Size carries the emphasis instead. */
     color: var(--site-accent);
-    /* The same two stacked rules as .link. */
     background-image:
       linear-gradient(var(--site-accent), var(--site-accent)),
       linear-gradient(
-        color-mix(in oklab, var(--site-accent) 30%, transparent),
-        color-mix(in oklab, var(--site-accent) 30%, transparent)
+        color-mix(in oklab, var(--site-accent) 28%, transparent),
+        color-mix(in oklab, var(--site-accent) 28%, transparent)
       );
     background-position:
       0 100%,
@@ -1068,41 +1320,68 @@
       100% 1px;
   }
 
-  .channels {
-    display: grid;
-    row-gap: 1.5rem;
-    margin-top: clamp(2rem, 3.5vw, 2.75rem);
+  /* The two profile URLs. Same size as the address, at text colour, so the
+   * accent is the only thing marking the email out. */
+  .channel-value {
+    margin-top: 0.15rem;
+    font-weight: 520;
+    letter-spacing: -0.01em;
+    overflow-wrap: anywhere;
+  }
+
+  /* ---- Footer ---------------------------------------------------------- */
+
+  /*
+   * The footer takes the panel tone, so every page ends in ink - the homepage
+   * under its contact block, a project page under its takeaway, the 404 under
+   * four lines of type. Where a panelled section sits directly above it the two
+   * share a ground and only the hairline separates them, which reads as one
+   * closing block rather than two.
+   */
+  .site-foot {
     border-top: 1px solid var(--site-hairline);
-    padding-top: 1.75rem;
   }
 
-  @media (min-width: 40rem) {
-    .channels {
-      grid-template-columns: 1fr 1fr;
-      column-gap: 3rem;
-    }
-  }
-
-  .channel-label {
+  /*
+   * Two rows on a phone, one line on a desktop, with the wordmark leading. The
+   * name is set in the display voice rather than tucked into the copyright
+   * line: it is the last thing on the page and it may as well be his name.
+   */
+  .foot-inner {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.8125rem;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    padding-block: clamp(1.5rem, 2.5vw, 2rem);
+  }
+
+  .foot-name {
+    font-stretch: 112%;
+    font-weight: 620;
+    font-size: 1.0625rem;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+  }
+
+  .foot-note {
+    margin-top: 0.1rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    font-variant-numeric: tabular-nums;
     color: var(--site-muted);
   }
 
   /* ---- Project pages --------------------------------------------------- */
 
   /*
-   * The head of a project page, and of the index.
-   *
-   * It speaks in the hero's voice at a smaller scale: title in the display
-   * width, one line of lead under it, then the metadata on hairlines. It stops
-   * well short of the homepage's 140px, because that size belongs to the name
-   * and a second masthead would leave the site with two front doors.
+   * The head of a project page, and of the index. It speaks in the hero's voice
+   * at a smaller scale, and stops well short of the homepage's masthead -
+   * that size belongs to the name, and a second one would leave the site with
+   * two front doors.
    */
   .page-head {
-    padding-block: clamp(4rem, 7vw, 6rem) clamp(2.5rem, 5vw, 3.5rem);
+    padding-block: clamp(2.5rem, 4.5vw, 4rem) clamp(1.75rem, 3vw, 2.5rem);
   }
 
   /* The way back out, with the arrow leaning towards where it goes. */
@@ -1128,118 +1407,175 @@
   }
 
   .page-title {
-    margin-top: clamp(1.25rem, 2.5vw, 1.75rem);
-    font-stretch: 116%;
-    font-weight: 650;
-    font-size: clamp(2.125rem, 5.5vw, 4rem);
+    margin-top: clamp(1rem, 2vw, 1.5rem);
+    font-stretch: 118%;
+    font-weight: 660;
+    font-size: clamp(2rem, 5vw, 3.5rem);
     line-height: 1.02;
-    letter-spacing: -0.035em;
+    letter-spacing: -0.04em;
   }
 
   .page-lead {
-    margin-top: clamp(1.125rem, 2.2vw, 1.625rem);
+    margin-top: clamp(1rem, 2vw, 1.375rem);
     max-width: 38rem;
-    font-size: clamp(1.125rem, 1.8vw, 1.4375rem);
+    font-size: clamp(1.0625rem, 1.7vw, 1.375rem);
     line-height: 1.5;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.012em;
     color: var(--site-muted);
   }
 
-  /*
-   * Three labelled cells rather than one line of values joined by dots. The
-   * label is doing work here - "2026" on its own could be anything - and a
-   * dotted string would make the reader guess which value is which.
-   */
+  /* Three labelled cells rather than one line of values joined by dots: the
+   * label is doing work, and a dotted string would make the reader guess which
+   * value is which. */
   .page-meta {
-    margin-top: clamp(2rem, 4vw, 3rem);
+    margin-top: clamp(1.5rem, 3vw, 2.25rem);
     display: grid;
-    row-gap: 1.25rem;
+    gap: 0.75rem;
   }
 
   @media (min-width: 48rem) {
     .page-meta {
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      column-gap: 2.5rem;
     }
   }
 
   .page-meta-cell {
-    border-top: 1px solid var(--site-hairline);
-    padding-top: 0.85rem;
+    padding: 0.9rem 1.1rem;
   }
 
-  .page-meta-label {
-    font-size: 0.8125rem;
-    color: var(--site-muted);
-  }
-
-  .page-meta-value {
-    margin-top: 0.15rem;
-    font-stretch: 106%;
-    font-weight: 560;
-    line-height: 1.45;
-    letter-spacing: -0.01em;
-  }
+  /* ---- The request diagram --------------------------------------------- */
 
   /*
-   * The request diagram.
+   * A chain of stages with a fork in the middle, drawn entirely in CSS.
    *
-   * A centred chain of stages with a fork in the middle, drawn entirely with
-   * 1px pseudo-elements: a stem in each gap, and at the fork a bar that fans
-   * out to the two branches and another that gathers them back in. Nothing is
-   * boxed, so it stays in the same language as the rest of the page and takes
-   * the theme with it.
+   * It was 1px hairlines and square boxes, which said the right thing and
+   * looked like a whiteboard. The lines are 2px and carry an arrowhead now, the
+   * stages are the page's own cards, and the two hubs are on the accent - so
+   * the diagram reads as the drawing it is meant to be while every label stays
+   * selectable text and the whole thing follows the theme. No SVG, no image, no
+   * library.
    *
-   * The number of branches is a fact about the project, not about the diagram,
-   * so `--flow-n` is set inline from the markup and the fork reads it. It is
-   * only the bars that need the count - the columns come from an implicit grid
-   * flowing across, which takes however many branches there are.
-   *
-   * Below 40rem the fork collapses: the branches stack and the bars are
-   * dropped, which leaves one honest vertical chain instead of a diagram
-   * squeezed into 320 points.
+   *   --flow-gap  The height of a connector, which is also the row gap. The
+   *               line, the arrowhead and the fork bars all measure off it, so
+   *               the geometry cannot come apart.
    */
+  .flow-wrap {
+    /* The diagram is centred on its own measure rather than the section's: past
+     * about 620 points the fork's two branches drift so far apart that the bar
+     * between them stops reading as a join. */
+    max-width: 44rem;
+    margin-inline: auto;
+    padding-block: clamp(0.5rem, 1.5vw, 1.25rem);
+  }
+
   .flow {
-    --flow-gap: clamp(1.75rem, 4vw, 2.5rem);
-    --flow-col-gap: clamp(1.5rem, 6vw, 5rem);
-    --flow-line: color-mix(in oklab, var(--site-fg) 22%, transparent);
+    --flow-gap: clamp(2rem, 3.5vw, 2.75rem);
+    --flow-col-gap: clamp(1rem, 3vw, 2.5rem);
+    --flow-line: color-mix(in oklab, var(--site-accent) 45%, transparent);
 
     display: grid;
     justify-items: center;
-    text-align: center;
     row-gap: var(--flow-gap);
-    padding-block: clamp(0.5rem, 2vw, 1.5rem);
   }
 
-  .flow > li {
+  .flow-stage,
+  .flow-fork,
+  .flow-branch {
     position: relative;
   }
 
-  /* A stem in every gap between stages. */
-  .flow > li + li::before {
-    content: '';
+  .flow-stage {
+    max-width: 100%;
+  }
+
+  /*
+   * A connector: the line, and the arrowhead at the end of it.
+   *
+   * It sits in the gap *above* the stage it belongs to, which is why every
+   * stage but the first one carries one. The line fades in from the stage above
+   * rather than starting at full strength, so a chain of five does not read as
+   * a ladder.
+   */
+  .flow-in {
     position: absolute;
     left: 50%;
     top: calc(-1 * var(--flow-gap));
-    width: 1px;
+    width: 2px;
     height: var(--flow-gap);
-    background-color: var(--flow-line);
+    transform: translateX(-50%);
+    background: linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--site-accent) 12%, transparent),
+      var(--flow-line)
+    );
   }
 
+  /* The head. Two borders on a rotated square, so it is one element and it
+   * scales with the line's own colour. */
+  .flow-in::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -1px;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-right: 2px solid var(--flow-line);
+    border-bottom: 2px solid var(--flow-line);
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  /* A stage. Three shapes, and which one a stage gets comes from its position
+   * in the chain rather than from the copy - see ProjectFlow.astro. */
   .flow-node {
+    display: inline-block;
+    text-align: center;
+  }
+
+  /*
+   * The hub: the stage the fork fans out of, and the one it gathers back into.
+   * The largest thing in the diagram and the only one on the accent, because it
+   * is the single address either end of the chain talks to.
+   */
+  .flow-hub {
+    border: 1px solid color-mix(in oklab, var(--site-accent) 40%, transparent);
+    border-radius: var(--site-radius-card);
+    background-color: color-mix(in oklab, var(--site-accent) 9%, var(--site-card));
+    box-shadow: var(--site-lift);
+    padding: 0.85rem 1.6rem;
+    font-stretch: 112%;
+    font-weight: 640;
+    font-size: clamp(1.0625rem, 1.8vw, 1.3125rem);
+    line-height: 1.25;
+    letter-spacing: -0.025em;
+    color: var(--site-fg);
+  }
+
+  /* The two ends of the chain: where a request starts and where the answer
+   * lands. A filled pill, so the diagram has a visible beginning and end. */
+  .flow-terminal {
+    border-radius: var(--site-radius-pill);
+    background-color: var(--site-fg);
+    padding: 0.55rem 1.35rem;
+    font-stretch: 108%;
+    font-weight: 600;
+    font-size: 1.0625rem;
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+    color: var(--site-bg);
+  }
+
+  /*
+   * Everything in between: the payload in flight. Dashed, because it is data
+   * crossing a boundary rather than a process sitting somewhere - which is the
+   * one distinction a reader of this diagram actually needs.
+   */
+  .flow-relay {
+    border: 1px dashed color-mix(in oklab, var(--site-fg) 28%, transparent);
+    border-radius: var(--site-radius-pill);
+    padding: 0.35rem 1rem;
     font-size: 0.9375rem;
     line-height: 1.4;
     color: var(--site-muted);
-  }
-
-  /* The two stages either side of the fork: what fans out, and what gathers in. */
-  .flow-node-key {
-    font-stretch: 110%;
-    font-weight: 620;
-    font-size: clamp(1.125rem, 2vw, 1.4375rem);
-    line-height: 1.2;
-    letter-spacing: -0.02em;
-    color: var(--site-fg);
   }
 
   .flow-fork {
@@ -1252,38 +1588,41 @@
     row-gap: var(--flow-gap);
   }
 
-  .flow-branch {
-    position: relative;
+  .flow-branch-card {
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-card);
+    background-color: var(--site-card);
+    box-shadow: var(--site-lift);
+    padding: 0.95rem 1.25rem;
+    text-align: center;
+    transition:
+      border-color 240ms var(--site-ease),
+      transform 240ms var(--site-ease);
   }
 
-  .flow-branch::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: calc(-1 * var(--flow-gap));
-    width: 1px;
-    height: var(--flow-gap);
-    background-color: var(--flow-line);
+  .flow-branch-card:hover {
+    border-color: color-mix(in oklab, var(--site-accent) 50%, var(--site-hairline));
+    transform: translateY(-2px);
   }
 
   .flow-service {
     display: block;
-    font-stretch: 108%;
-    font-weight: 600;
+    font-stretch: 110%;
+    font-weight: 620;
     font-size: 1.0625rem;
     line-height: 1.3;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
   }
 
   .flow-model {
     display: block;
-    margin-top: 0.15rem;
+    margin-top: 0.2rem;
     font-size: 0.9375rem;
     line-height: 1.4;
     color: var(--site-muted);
   }
 
-  @media (min-width: 40rem) {
+  @media (min-width: 48rem) {
     /*
      * An implicit grid flowing across rather than a named column list, so the
      * fork takes two branches or four without the stylesheet knowing which.
@@ -1298,31 +1637,47 @@
     }
 
     /*
-     * The stem out of the fanning-out stage now stops halfway, where the bar
-     * takes over, and the same on the way back in. Both branches get a half
-     * stem at each end - the `+ .flow-branch` override is there because the
-     * single-column rule above it is the more specific selector.
+     * At the fork the connector is split in two: half a line from the hub down
+     * to the bar, then half a line from the bar down into each branch - which
+     * is the half that keeps the arrowhead. The same on the way back up, where
+     * the out-stems are plain and the head arrives on the next stage's own
+     * connector.
      */
     .flow-fork::before,
-    .flow-fork + li::before,
-    .flow-branch::before,
-    .flow-branch + .flow-branch::before {
+    .flow-branch .flow-in,
+    .flow-branch::after,
+    .flow-fork + .flow-stage .flow-in {
       height: calc(var(--flow-gap) / 2);
     }
 
-    .flow-fork + li::before,
-    .flow-branch::before,
-    .flow-branch + .flow-branch::before {
+    /* The hub's own half, above the fan-out bar. */
+    .flow-fork::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: calc(-1 * var(--flow-gap));
+      width: 2px;
+      transform: translateX(-50%);
+      background: linear-gradient(
+        to bottom,
+        color-mix(in oklab, var(--site-accent) 12%, transparent),
+        var(--flow-line)
+      );
+    }
+
+    .flow-branch .flow-in,
+    .flow-fork + .flow-stage .flow-in {
       top: calc(var(--flow-gap) / -2);
     }
 
+    /* The plain stem out of each branch, down to the gather-in bar. */
     .flow-branch::after {
       content: '';
       position: absolute;
       left: 50%;
       bottom: calc(var(--flow-gap) / -2);
-      width: 1px;
-      height: calc(var(--flow-gap) / 2);
+      width: 2px;
+      transform: translateX(-50%);
       background-color: var(--flow-line);
     }
 
@@ -1334,8 +1689,7 @@
      * gap of G, one column is (100% - (N-1)G) / N wide, so the first stem sits
      * at half of that and the last one mirrors it. Ignoring the gap term left
      * 20 points of bar hanging in the air at each end at the widest gap, which
-     * reads as a diagram that did not quite line up. For two branches this is
-     * the 25% - G/4 the fork used to hardcode.
+     * reads as a diagram that did not quite line up.
      */
     .flow-branches::before,
     .flow-branches::after {
@@ -1347,45 +1701,63 @@
       position: absolute;
       left: var(--flow-stem);
       right: var(--flow-stem);
-      height: 1px;
+      height: 2px;
+      border-radius: 2px;
       background-color: var(--flow-line);
     }
 
     .flow-branches::before {
-      top: calc(var(--flow-gap) / -2);
+      top: calc(var(--flow-gap) / -2 - 1px);
     }
 
     .flow-branches::after {
-      bottom: calc(var(--flow-gap) / -2);
+      bottom: calc(var(--flow-gap) / -2 - 1px);
     }
   }
 
   /*
-   * The two dated skeletons this site already has, at two more widths: five
-   * numbered steps need less of a left column than "2023 - 2024" does, and the
-   * index rows need a little more than Education's.
+   * The numbered steps of a request. The one numbered list on the site, because
+   * it is the one place the order is the content.
    */
-  .entry-step {
-    --entry-date: 5rem;
+  .step-list {
+    display: grid;
+    gap: clamp(0.875rem, 1.5vw, 1.25rem);
   }
 
-  .entry-index {
-    --entry-date: 7rem;
+  @media (min-width: 52rem) {
+    .step-list {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
-  /*
-   * A title that is also a link. It stays at text colour rather than taking the
-   * accent and its rule, because a 24px heading underlined in petrol reads as a
-   * button; the accent arrives on hover, and the row's own rule fills at the
-   * same time.
-   */
-  .entry-link {
-    color: inherit;
-    transition: color 200ms var(--site-ease);
+  .step {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 1.1rem;
+    align-items: start;
   }
 
-  .entry-link:hover {
+  .step-n {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--site-radius-pill);
+    background-color: var(--site-inset);
+    font-stretch: 110%;
+    font-weight: 630;
+    font-size: 0.9375rem;
+    font-variant-numeric: tabular-nums;
     color: var(--site-accent);
+  }
+
+  .step-title {
+    font-stretch: 110%;
+    font-weight: 620;
+    font-size: 1.125rem;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
   }
 
   /*
@@ -1393,12 +1765,12 @@
    *
    * A table, because this is tabular data and any other shape would be
    * decoration laid over it. Figures are right-aligned and tabular so the
-   * decimal points line up down each column, the head is closed with a full
-   * contrast rule, and the whole thing scrolls inside its own box rather than
-   * pushing the page sideways on a phone.
+   * decimal points line up down each column, and the whole thing scrolls inside
+   * its own box rather than pushing the page sideways on a phone.
    */
   .metrics-wrap {
     overflow-x: auto;
+    padding: clamp(0.5rem, 1.2vw, 1rem);
   }
 
   .metrics {
@@ -1416,8 +1788,13 @@
     white-space: nowrap;
   }
 
+  .metrics tbody tr:last-child th,
+  .metrics tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
   .metrics thead th {
-    border-bottom-color: var(--site-fg);
+    border-bottom-color: color-mix(in oklab, var(--site-fg) 45%, transparent);
     padding-bottom: 0.55rem;
     font-stretch: 106%;
     font-weight: 560;
@@ -1431,26 +1808,15 @@
     letter-spacing: -0.01em;
     text-align: left;
   }
-
-  .metrics th:first-child,
-  .metrics td:first-child {
-    padding-left: 0;
-  }
-
-  .metrics th:last-child,
-  .metrics td:last-child {
-    padding-right: 0;
-  }
 }
 
 /*
  * Motion.
  *
  * A per-section reveal was built here twice and removed twice, on the grounds
- * that an entrance on every section is the generated-page default. That was the
- * wrong call: it is what Vuk asked for, three times, and the page reads as a
- * static sheet of paper without it. It is back, and it moves far enough to be
- * seen - 28px, not 5px.
+ * that an entrance on every section is a generated-page default. That was the
+ * wrong call: it is what Vuk asked for, and the page reads as a static sheet of
+ * paper without it. It moves far enough to be seen - 28px, not 5px.
  *
  * Everything is CSS. Scroll position drives the reveals through view()
  * timelines, so there is no observer and no library, and a browser without
@@ -1470,9 +1836,9 @@
 
 /*
  * The hero load sequence, which is the one orchestrated moment on the page:
- * first name, last name, portrait, then the rule and everything under it, each
- * a beat behind the last. Time-based rather than scroll-driven, because the
- * hero is in view at first paint and a view() timeline would sit at 100%.
+ * name, then the portrait, then everything under the name, each a beat behind
+ * the last. Time-based rather than scroll-driven, because the hero is in view
+ * at first paint and a view() timeline would sit at 100%.
  *
  * The delay is a custom property set inline per element, so the order of the
  * sequence is readable in the markup instead of being spread across nth-child
@@ -1488,6 +1854,13 @@
    * lines carry it - a blur on body copy would read as a rendering fault. */
   .enter-name {
     animation: reveal-name 900ms var(--site-ease) both;
+    animation-delay: var(--enter-delay, 0ms);
+  }
+
+  /* The photograph rises inside its own card rather than sliding up the page:
+   * the card is already there, and what arrives is the picture in it. */
+  .enter-portrait .portrait-frame img {
+    animation: reveal-portrait 1100ms var(--site-ease) both;
     animation-delay: var(--enter-delay, 0ms);
   }
 }
@@ -1506,6 +1879,18 @@
   }
 }
 
+@keyframes reveal-portrait {
+  from {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* Every section arrives the same way, which is why it is one keyframe. */
 @keyframes reveal-up {
   from {
@@ -1519,32 +1904,6 @@
   }
 }
 
-/*
- * The stack reveal.
- *
- * Registered so it interpolates: an unregistered custom property jumps at the
- * midpoint instead of easing, which would make the colour snap on.
- */
-@property --brand-mix {
-  syntax: '<percentage>';
-  inherits: true;
-  initial-value: 100%;
-}
-
-@keyframes tech-in {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-    --brand-mix: 0%;
-  }
-
-  to {
-    opacity: 1;
-    transform: none;
-    --brand-mix: 100%;
-  }
-}
-
 /* The header's own scroll-linked state, driven by the root scroller. */
 @property --head-pad {
   syntax: '<length>';
@@ -1554,7 +1913,7 @@
 
 @keyframes head-settle {
   from {
-    --head-pad: 1.15rem;
+    --head-pad: 1.1rem;
     border-bottom-color: transparent;
   }
 
@@ -1567,35 +1926,33 @@
 /*
  * Scroll-driven rather than timed, because everything below the hero is below
  * the fold: a section rises as it arrives and the position in the scroll drives
- * the progress. Entries inside a section stagger through animation-range rather
+ * the progress. Cards inside a section stagger through animation-range rather
  * than a delay, since animation-delay has no meaning on a scroll timeline.
  *
  * ⚠️ Every range is measured in `cover`, and that is the whole reason these are
  * visible. The obvious phase to reach for is `entry`, but `entry` is measured in
  * the *element's own height*: it runs from the moment the element's top edge
- * reaches the bottom of the screen to the moment its bottom edge does. A section
- * label sitting on a rule is about 50px tall and a technology chip about 28px,
- * so on `entry` the whole animation started and finished inside 28 to 50 pixels
- * of scrolling, down at the very bottom edge of the screen where nobody is
- * looking. It was running correctly and could not be seen.
+ * reaches the bottom of the screen to the moment its bottom edge does. A chip is
+ * about 34px tall, so on `entry` the whole animation started and finished inside
+ * 34 pixels of scrolling, down at the very bottom edge of the screen where
+ * nobody is looking. It was running correctly and could not be seen.
  *
- * `cover` spans the element's height *plus* the viewport's, so even a 28px chip
- * gets a screen's worth of runway rather than 28 pixels of it.
+ * `cover` spans the element's height *plus* the viewport's, so even a short card
+ * gets a screen's worth of runway.
  *
  * ⚠️ And the offsets into it are **pixels, not percentages**, which matters for
  * a reason that is not obvious. A percentage of `cover` grows with the viewport,
  * while the amount of page below any element is a fixed pixel quantity - so the
- * last revealed thing on a page (Contact here, a takeaway on a project page) has
- * only `its own height + whatever follows it` of travel available, about 500px.
- * `cover 30%` is 375px on a laptop and 600px on a 1800px monitor, so the same
- * range that finishes on a laptop runs out of page on a tall screen and leaves
- * the section sitting permanently a few pixels low and slightly transparent.
- * In pixels the margin is the same on a 667px phone and a 1800px monitor.
+ * last revealed thing on a page has only `its own height + whatever follows it`
+ * of travel available, about 500px. `cover 30%` is 375px on a laptop and 600px
+ * on a 1800px monitor, so the same range that finishes on a laptop runs out of
+ * page on a tall screen and leaves the section sitting permanently a few pixels
+ * low and slightly transparent. In pixels the margin is the same on a 667px
+ * phone and a 1800px monitor.
  *
- * So: nothing moves for the first 80px after an element peeks in, the motion
- * runs over the next 240px, and every range on the site finishes with slack -
- * 48px in the tightest case, which is the sixth chip in the last stack row of a
- * project page. Push any end value further and check that case first.
+ * So: nothing moves for the first 60px after an element peeks in, the motion
+ * runs over the next 240px, and every range on the site finishes with slack.
+ * Push any end value further and check the last card on a project page first.
  *
  * Longhands throughout: the `animation` shorthand resets animation-timeline and
  * animation-range to their initial values, so writing it here would silently
@@ -1608,67 +1965,28 @@
       animation-timing-function: var(--site-ease);
       animation-fill-mode: both;
       animation-timeline: view();
-      animation-range: cover 80px cover 320px;
+      animation-range: cover 60px cover 300px;
     }
 
-    /* Items within a section, each a little behind the one above it. */
+    /* Cards within a section, each a little behind the one above it. */
     .reveal-item {
       animation-name: reveal-up;
       animation-timing-function: var(--site-ease);
       animation-fill-mode: both;
       animation-timeline: view();
-      animation-range: cover 90px cover 330px;
+      animation-range: cover 70px cover 310px;
     }
 
     .reveal-item:nth-child(2) {
-      animation-range: cover 140px cover 380px;
+      animation-range: cover 110px cover 350px;
     }
 
     .reveal-item:nth-child(3) {
-      animation-range: cover 190px cover 430px;
+      animation-range: cover 150px cover 390px;
     }
 
     .reveal-item:nth-child(n + 4) {
-      animation-range: cover 240px cover 480px;
-    }
-
-    /*
-     * The marks fill in left to right as their row arrives, taking on their
-     * brand colours as they go. Ranges cover up to six entries, the largest
-     * group having five, and they count within a row rather than across the
-     * section, which is why the tiles sit directly inside the <dd>.
-     *
-     * These are the entries that suffered worst on `entry`: a chip is about 28px
-     * tall, so the six staggered ranges were all crammed into 28px of scrolling
-     * and the row arrived already finished. On `cover` the same stagger spreads
-     * over 280px of scrolling and reads as a row filling in left to right.
-     */
-    .tech {
-      animation-name: tech-in;
-      animation-timing-function: var(--site-ease);
-      animation-fill-mode: both;
-      animation-timeline: view();
-      animation-range: cover 80px cover 320px;
-    }
-
-    .tech:nth-child(2) {
-      animation-range: cover 120px cover 360px;
-    }
-
-    .tech:nth-child(3) {
-      animation-range: cover 160px cover 400px;
-    }
-
-    .tech:nth-child(4) {
-      animation-range: cover 200px cover 440px;
-    }
-
-    .tech:nth-child(5) {
-      animation-range: cover 240px cover 480px;
-    }
-
-    .tech:nth-child(n + 6) {
-      animation-range: cover 280px cover 520px;
+      animation-range: cover 190px cover 430px;
     }
 
     .site-head {

@@ -196,6 +196,13 @@ Two shapes are not free-form:
   connecting bars can find the first and last stems. What is fixed is the **topology**: one
   fan-out and one gather-in. A project that forks twice, or not at all, needs the component
   changed rather than the data.
+
+  ⚠️ **Position decides how a stage is drawn, so the order of these arrays is design and
+  not just sequence.** The outer end of each run is a filled terminal, the stage beside the
+  fork is the accent hub, and anything between them is a dashed relay - the payload in
+  flight. Object detection uses three entries each way for exactly that reason: front end,
+  request, gateway, then gateway, response, front end, which draws the round trip. A run of
+  two collapses to a terminal and a hub, which is what the other three projects want.
 - **The results table splits down the middle: numbers in
   [src/site.ts](../src/site.ts), every word in the dictionaries.** See §5.1.
 

@@ -167,12 +167,16 @@ const en = {
         domain: "Personal protective equipment on site",
 
         flow: {
-          before: ["Image, multipart/form-data", "NestJS gateway"],
+          before: ["React front end", "Image, multipart/form-data", "NestJS gateway"],
           branches: [
             ["FastAPI service", "Ultralytics YOLOv8m"],
             ["ASP.NET Core service", "ML.NET model"],
           ],
-          after: ["One JSON shape", "Boxes, classes, confidence"],
+          after: [
+            "NestJS gateway",
+            "One JSON shape: boxes, classes, confidence",
+            "React front end",
+          ],
         },
 
         overview: [

@@ -1,17 +1,21 @@
 ---
 /**
- * Two projects to a row, each a cell opened by a hairline.
+ * A showcase, not a list: the first project takes a card of its own, the rest
+ * share a row of three.
  *
- * A cell rather than a card - no border, no fill - which is the same device
- * Services uses, so a grid of four stays in the same language as the hairline
- * rows everywhere else. The grid is `auto-fit`, so the count is never wired in:
- * it goes one up on a phone and two up here, and a fifth project just fills the
- * next cell. See `.project-grid` in global.css.
+ * The featured card is the largest object on the page - the title at display
+ * size, the tagline that says what the thing is, the description, and the full
+ * summary stack in an inset beside it. That inset is as close as this section
+ * gets to a picture, and it is an honest one: six technology names with their
+ * marks say more about what the system is than a screenshot of an upload form
+ * would.
  *
- * The homepage carries the summary. Each cell links to the project's own page
- * under /projects/, where the architecture, the results and the full stack
- * live, which is what keeps this section short enough to scan.
+ * Order comes from `site.projects`, so which project is featured is decided
+ * where the projects are, not here. Each card links to the project's own page
+ * under /projects/, where the architecture, the results and the grouped stack
+ * live.
  */
+import { ArrowRight, ArrowUpRight } from '@lucide/astro';
 import type { Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
 import { site } from '../site';
@@ -25,31 +29,94 @@ interface Props {
 
 const { lang, tone } = Astro.props;
 const dict = getDict(lang);
+
+const [featured, ...rest] = site.projects;
+const featuredCopy = dict.projects.items[featured.id];
+const featuredPage = localizePath(`/projects/${featured.slug}/`, lang);
+
+/** Live and source, dropping whichever has no URL yet. */
+const outboundLinks = (links: { live?: string; source?: string }) =>
+  [
+    { href: links.live, label: dict.projects.liveLabel },
+    { href: links.source, label: dict.projects.sourceLabel },
+  ].filter((link): link is { href: string; label: string } => Boolean(link.href));
+
+const featuredLinks = outboundLinks(featured.links);
 ---
 
-<Section id="projects" label={dict.projects.label} width="projects" tone={tone} head="rule">
+<Section id="projects" label={dict.projects.label} width="projects" tone={tone}>
+  <a slot="aside" href={localizePath('/projects/', lang)} class="cta-ghost">
+    {dict.projects.all}
+    <ArrowRight class="size-[0.95rem] shrink-0" aria-hidden="true" />
+  </a>
+
+  {/*
+    `stretch` makes the whole card the target while the accessible name stays
+    the title alone; the outbound links inside are lifted above it with
+    `above`, or they would be covered by it.
+  */}
+  <article class="card card-hover project-featured reveal">
+    <div class="project-featured-grid">
+      <div>
+        <p class="tag">{featured.year}</p>
+
+        <h3 class="project-featured-title">
+          <a href={featuredPage} class="entry-link stretch">{featuredCopy.title}</a>
+        </h3>
+
+        <p class="project-tagline">{featuredCopy.tagline}</p>
+
+        <p class="measure mt-5 text-muted">{featuredCopy.description}</p>
+
+        <p class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
+          <span class="link">{dict.projects.view}</span>
+          {
+            featuredLinks.map((link) => (
+              <a href={link.href} target="_blank" rel="noopener" class="link above">
+                {link.label}
+                <ArrowUpRight class="ml-1 inline size-[0.9rem] align-[-0.05em]" aria-hidden="true" />
+              </a>
+            ))
+          }
+        </p>
+      </div>
+
+      <div class="inset">
+        <p class="stack-label">{dict.projects.detail.stack}</p>
+
+        <ul class="mt-3 flex flex-wrap gap-2">
+          {
+            featured.tech.map((tech) => (
+              <li class="chip">
+                <TechIcon name={tech} class="chip-icon" />
+                {tech}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </article>
+
   <ul class="project-grid">
     {
-      site.projects.map((project) => {
+      rest.map((project) => {
         const copy = dict.projects.items[project.id];
         const page = localizePath(`/projects/${project.slug}/`, lang);
-
-        const links = [
-          { href: project.links.live, label: dict.projects.liveLabel, external: true },
-          { href: project.links.source, label: dict.projects.sourceLabel, external: true },
-        ].filter((link): link is { href: string; label: string; external: boolean } =>
-          Boolean(link.href),
-        );
+        const links = outboundLinks(project.links);
 
         return (
-          <li class="project reveal-item">
+          <li class="card card-hover project reveal-item">
             <div>
+              <p class="tag">{project.year}</p>
+
               <h3 class="project-title">
-                <a href={page} class="entry-link">
+                <a href={page} class="entry-link stretch">
                   {copy.title}
                 </a>
               </h3>
-              <p class="measure mt-2 text-muted">{copy.description}</p>
+
+              <p class="mt-2.5 text-[15px] text-muted">{copy.description}</p>
             </div>
 
             <div class="project-aside">
@@ -64,28 +131,18 @@ const dict = getDict(lang);
                 </ul>
               )}
 
-              <ul class="flex flex-wrap gap-5 text-[15px]">
-                <li>
-                  <a href={page} class="link">
-                    {dict.projects.view}
-                  </a>
-                </li>
+              <p class="flex flex-wrap items-center gap-x-5 gap-y-1 text-[15px]">
+                <span class="link">{dict.projects.view}</span>
                 {links.map((link) => (
-                  <li>
-                    <a href={link.href} target="_blank" rel="noopener" class="link">
-                      {link.label}
-                    </a>
-                  </li>
+                  <a href={link.href} target="_blank" rel="noopener" class="link above">
+                    {link.label}
+                  </a>
                 ))}
-              </ul>
+              </p>
             </div>
           </li>
         );
       })
     }
   </ul>
-
-  <p class="reveal mt-7">
-    <a href={localizePath('/projects/', lang)} class="link">{dict.projects.all}</a>
-  </p>
 </Section>

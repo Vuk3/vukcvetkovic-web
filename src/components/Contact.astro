@@ -17,55 +17,74 @@ const dict = getDict(lang);
 /** Profile URLs read better without the scheme. */
 const bare = (url: string) => url.replace(/^https?:\/\//, '').replace(/\/$/, '');
 
+/*
+ * Three channels, one shape. Email leads because it is the one he asks people
+ * to use, and it is the only value that takes the accent - which is what puts
+ * it first without making its card three times the size of the others.
+ */
 const channels = [
+  {
+    label: dict.contact.emailLabel,
+    href: `mailto:${site.email}`,
+    text: site.email,
+    external: false,
+  },
   {
     label: dict.contact.linkedinLabel,
     href: site.links.linkedin,
     text: bare(site.links.linkedin),
     brand: 'linkedin' as const,
+    external: true,
   },
   {
     label: dict.contact.githubLabel,
     href: site.links.github,
     text: bare(site.links.github),
     brand: 'github' as const,
+    external: true,
   },
 ];
 ---
 
 {/*
-  The page's conclusion, and the only place the type gets loud again after the
-  hero: the address itself sets at up to 48px, which makes it the thing the eye
-  lands on and removes any question about what the reader is meant to do here.
-  The two profiles follow it as small labelled links, under a rule, because they
-  are where someone goes to check rather than to make contact.
+  The close, on the ink panel - the one tone the page keeps for its ending, and
+  the reason it runs into the footer as a single lifted block rather than
+  stopping on one more strip of the ground.
+
+  Nothing in here knows it is on dark: `.panel` re-declares the palette tokens,
+  so `.card`, `.link` and `.mail` come out correct on their own.
 */}
 <Section id="contact" label={dict.contact.label} width="contact" tone={tone}>
-  <div class="reveal">
-    <p class="contact-intro">{dict.contact.intro}</p>
+  <p class="contact-intro reveal">{dict.contact.intro}</p>
 
-    <div class="mt-10">
-      <p class="channel-label">
-        <Mail class="size-3.5 shrink-0" aria-hidden="true" />
-        {dict.contact.emailLabel}
-      </p>
-      <a href={`mailto:${site.email}`} class="mail">{site.email}</a>
-    </div>
+  <ul class="channels">
+    {
+      channels.map((channel) => (
+        <li class="card card-hover channel reveal-item">
+          <span class="channel-mark">
+            {channel.brand ? (
+              <BrandIcon name={channel.brand} class="size-[1.05rem]" />
+            ) : (
+              <Mail class="size-[1.05rem]" aria-hidden="true" />
+            )}
+          </span>
 
-    <ul class="channels">
-      {
-        channels.map((channel) => (
-          <li>
-            <p class="channel-label">
-              <BrandIcon name={channel.brand} class="size-3.5 shrink-0" />
-              {channel.label}
-            </p>
-            <a href={channel.href} target="_blank" rel="me noopener" class="link mt-1 inline-block">
+          <span class="min-w-0">
+            <span class="meta-label block">{channel.label}</span>
+
+            {/* The whole card is the target; the accessible name stays the
+                address or the URL alone. */}
+            <a
+              href={channel.href}
+              target={channel.external ? '_blank' : undefined}
+              rel={channel.external ? 'me noopener' : undefined}
+              class:list={[channel.brand ? 'channel-value entry-link' : 'mail', 'stretch']}
+            >
               {channel.text}
             </a>
-          </li>
-        ))
-      }
-    </ul>
-  </div>
+          </span>
+        </li>
+      ))
+    }
+  </ul>
 </Section>

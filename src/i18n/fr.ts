@@ -153,12 +153,16 @@ const fr: Dict = {
         domain: "Équipements de protection individuelle sur chantier",
 
         flow: {
-          before: ["Image, multipart/form-data", "Passerelle NestJS"],
+          before: ["Front end React", "Image, multipart/form-data", "Passerelle NestJS"],
           branches: [
             ["Service FastAPI", "Ultralytics YOLOv8m"],
             ["Service ASP.NET Core", "Modèle ML.NET"],
           ],
-          after: ["Un seul format JSON", "Cadres, classes, confiance"],
+          after: [
+            "Passerelle NestJS",
+            "Un seul format JSON : cadres, classes, confiance",
+            "Front end React",
+          ],
         },
 
         overview: [

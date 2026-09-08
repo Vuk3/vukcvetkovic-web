@@ -14,39 +14,39 @@ const dict = getDict(lang);
 ---
 
 {/*
-  The heaviest section on the page, and the only one besides Projects that takes
-  a full-contrast rule across the column rather than hanging its label in the
-  margin.
+  A card per role: the company at the top with its period as a pill beside it,
+  the title under it, and the work as bullets.
 
-  The period leads each entry and carries the largest type in the section, up to
-  34px. Employment is genuinely a sequence, so the years are the structure - and
-  they are also why nothing on this page is numbered 01 / 02 / 03. A date is a
-  better index than a counter.
+  Employment is a sequence, and the short rule in the gap between two cards is
+  what says so. A full timeline axis was tried and cost a column of its own for
+  two dates, which is exactly the kind of space this page cannot afford.
 
-  Hovering an entry fills the rule that closes it with the accent, from the left.
-  It is the section's only hover state and it moves nothing.
+  The period of the role he holds now takes the accent, which is the one place
+  on the page the accent marks a fact rather than a link.
 */}
-<Section id="experience" label={dict.experience.label} width="timeline" tone={tone} head="rule">
-  <ol>
+<Section id="experience" label={dict.experience.label} width="timeline" tone={tone}>
+  <ol class="role-list">
     {
       site.experience.map((role) => {
         const copy = dict.experience.roles[role.id];
         return (
-          <li class="entry reveal-item">
-            {/* Empty string rather than the boolean: Astro renders `false` as
-                data-current="false", which [data-current] would still match. */}
-            <p class="entry-period" data-current={role.current ? '' : undefined}>
-              {role.period}
-            </p>
-            <div>
-              <h3 class="entry-title">{role.company}</h3>
-              <p class="entry-role">{copy.role}</p>
-              <ul class="bullets measure mt-3 space-y-2">
-                {copy.bullets.map((bullet) => (
-                  <li>{bullet}</li>
-                ))}
-              </ul>
+          /* Empty string rather than the boolean: Astro renders `false` as
+             data-current="false", which [data-current] would still match. */
+          <li class="card role reveal-item" data-current={role.current ? '' : undefined}>
+            <div class="role-head">
+              <div>
+                <h3 class="role-company">{role.company}</h3>
+                <p class="role-title">{copy.role}</p>
+              </div>
+
+              <p class="role-period">{role.period}</p>
             </div>
+
+            <ul class="bullets mt-5 space-y-2.5 text-muted">
+              {copy.bullets.map((bullet) => (
+                <li>{bullet}</li>
+              ))}
+            </ul>
           </li>
         );
       })

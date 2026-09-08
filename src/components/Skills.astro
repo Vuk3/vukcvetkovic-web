@@ -1,18 +1,17 @@
 ---
 /**
- * The stack as rows of names: the group on the left, its technologies flowing
- * across the row beside it.
+ * One card, one row per group: the group name on the left, its technologies
+ * flowing across the row as chips.
  *
- * It was a grid of 44px logo tiles with the name captioned underneath, which
- * made every technology an identical chip. The names set at reading size now
- * with the mark small beside each one, so the technologies read as part of the
- * page's typography - which is what they are, since this is the section a
- * visiting engineer actually scans.
+ * It was a grid of logo tiles, then rows of names flowing across, then bare
+ * columns, then a card per group - and that last one is the instructive
+ * failure. Cards in a grid stretch to the tallest of them, so Backend's five
+ * entries set the height and Data's two came out as a box with a screen of
+ * nothing under them. Rows cannot do that, so the section is now as dense as
+ * what it describes.
  *
- * Each row is its own stagger, so the marks fill in group by group as the
- * section is scrolled into view rather than all at once. The nth-child ranges
- * in global.css count within a row, which is why the items sit directly inside
- * the <dd>.
+ * The same rules render the grouped stack on a project page (see
+ * ProjectDetail.astro), which is why the two cannot drift apart.
  */
 import type { Lang } from '../i18n/types';
 import { getDict } from '../i18n/utils';
@@ -29,17 +28,17 @@ const { lang, tone } = Astro.props;
 const dict = getDict(lang);
 ---
 
-<Section id="skills" label={dict.skills.label} width="skills" tone={tone}>
-  <dl>
+<Section id="skills" label={dict.skills.label} width="wide" tone={tone}>
+  <dl class="card stack-card reveal">
     {
       site.skillGroups.map((group) => (
-        <div class="skill-row">
-          <dt class="skill-group">{dict.skills.groups[group.id].name}</dt>
-          <dd class="skill-items">
+        <div class="stack-row">
+          <dt class="stack-name">{dict.skills.groups[group.id].name}</dt>
+          <dd class="stack-chips">
             {group.items.map((item) => (
-              <span class="tech">
-                <TechIcon name={item} class="tech-icon" />
-                <span>{item}</span>
+              <span class="chip">
+                <TechIcon name={item} class="chip-icon" />
+                {item}
               </span>
             ))}
           </dd>
