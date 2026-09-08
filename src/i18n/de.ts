@@ -132,6 +132,9 @@ const de: Dict = {
       data: 'Datensatz',
       client: 'Client',
       service: 'Service',
+      interface: 'Oberfläche',
+      capture: 'Mitschnitt lesen',
+      charts: 'Diagramme',
     },
 
     items: {
@@ -331,6 +334,97 @@ const de: Dict = {
         takeaway: [
           'Was ich behalten würde, ist, zwei Verfahren implementiert und nicht aufgerufen zu haben. Es sind kurze Algorithmen, und fast jede Zeile trägt Last: in welche Richtung eine Rotation geht, wo die ursprüngliche Länge liegt, und die Tatsache, dass XXTEA verlangt, dass seine Arithmetik überläuft statt einen Fehler zu werfen. Eine falsche Annahme genügt für eine Ausgabe, die richtig aussieht, bis die Hashes auseinandergehen.',
           'Die Lücken sind heute so deutlich, wie die Arbeit sie genannt hat. Alles hier ist symmetrisch, der Schlüsselaustausch bleibt also vollständig dem überlassen, der es benutzt, und der naheliegende nächste Schritt ist ein asymmetrisches Verfahren und der Hybrid aus AES und RSA, der daraus folgt. WCF und Windows Forms datieren das Projekt ebenfalls ehrlich - keines von beiden ist das, wonach ich heute greifen würde, und dieser Stack hinter mir zu lassen ist ein guter Teil dessen, was ich seither getan habe.',
+        ],
+      },
+
+      networkTrafficAnalyzer: {
+        title: 'Network Traffic Analyzer',
+        tagline:
+          'Ein Mitschnitt einmal gelesen, dann zwölf Fragen an jedes Paket darin gestellt.',
+        description:
+          'Eine Seminararbeit über Verkehrsanalyse, mit einer Desktop-Anwendung, die sie vorführt. Sie öffnet einen .pcapng-Mitschnitt über Pyshark, geht jedes Paket Schicht für Schicht durch und holt heraus, was jedes Protokoll trägt - HTTP-Header, DNS-Anfragen, TCP-Flags, FTP-Zugangsdaten - in einen aufklappbaren Baum, samt einem Diagramm der Protokollverteilung.',
+        metaTitle: 'Network Traffic Analyzer - Vuk Cvetković',
+        metaDescription:
+          'Ein Projekt aus einer Seminararbeit in Python: eine Tkinter-Anwendung, die .pcapng-Mitschnitte über Pyshark liest, zwölf Protokolle je Paket auswertet und die Protokollverteilung zeichnet.',
+        context: 'Seminararbeit, Fakultät für Elektronik in Niš',
+        domain: 'Analyse von Paketmitschnitten',
+
+        flow: {
+          before: ['Ein .pcapng-Mitschnitt', 'Pyshark, über Wiresharks tshark'],
+          branches: [
+            ['Anwendungsprotokolle', 'HTTP, HTTPS, DNS, FTP, SMTP'],
+            ['Transport und Steuerung', 'TCP, UDP, ICMP, ARP'],
+            ['Adressierung', 'IP, Ethernet'],
+          ],
+          after: ['Eine Zeile je Paket', 'Aufklappbar, und in die Diagramme gezählt'],
+        },
+
+        overview: [
+          'Die Arbeit handelt davon, wie Netzwerkverkehr analysiert wird und warum sich das PCAP-Format als das durchgesetzt hat, auf das sich alle geeinigt haben. Die Anwendung ist der Teil, der funktionieren musste: man zeigt ihr einen Mitschnitt, und sie sagt, was wirklich darin steht, und nicht bloß, dass Pakete vorbeigekommen sind.',
+          'Sie versucht nicht, Wireshark zu sein. Wireshark ist der Ort, an dem man eine Unterhaltung vollständig liest, und es läuft hier ohnehin darunter - Pyshark steuert dessen tshark. Diese Anwendung stellt stattdessen jedem Paket der Datei denselben festen Satz Fragen und legt die Antworten an einer Stelle aus, was genau die Form ist, die man braucht, wenn man etwas sucht und noch nicht weiß, in welchem Paket es steckt.',
+        ],
+
+        steps: [
+          {
+            title: 'Der Mitschnitt wird einmal gelesen',
+            body: 'Ein Dateidialog nimmt eine .pcapng oder .pcap, Pyshark öffnet sie, und alle Pakete wandern in eine Liste im Speicher, bevor die Datei geschlossen wird. Danach liest nichts die Datei erneut, und das macht die Filter günstig: sie laufen über die Liste statt den Mitschnitt neu zu parsen.',
+          },
+          {
+            title: 'Jedes Paket wird Schicht für Schicht durchgegangen',
+            body: 'Die Protokollnamen kommen aus dem Schichtenstapel des Pakets selbst und nicht aus einer Tabelle, sodass ein Paket meldet, was es tatsächlich enthält, und die Zählung am Ende echte Schichten zählt. Danach laufen zwölf Extraktoren der Reihe nach, und jeder fragt zuerst, ob sein Protokoll vorhanden ist, bevor er irgendetwas anfasst.',
+          },
+          {
+            title: 'Jeder Extraktor fragt, bevor er liest',
+            body: 'Ein Feld, das ein Paket nicht trägt, ist kein Fehler, sondern der Normalfall, also prüft jeder Extraktor das Vorhandensein jedes Attributs vor dem Lesen und lässt Fehlendes einfach weg. Deshalb ist der Baum ungleichmäßig: ein HTTP-Paket zeigt ein Dutzend Felder, das nächste zwei, und beides ist richtig.',
+          },
+          {
+            title: 'Was im Klartext liegt, kommt im Klartext heraus',
+            body: 'HTTP-Basic-Zugangsdaten sind base64 und keine Verschlüsselung, also dekodiert der Extraktor sie. FTP schickt Benutzername und Passwort als Text, also kommen die ebenfalls heraus. Das ist die ehrliche Vorführung, die die Arbeit wollte: nicht die Behauptung, diese Protokolle seien unsicher, sondern die dekodierte Zeichenkette, die in einem Baum vor Ihnen steht.',
+          },
+          {
+            title: 'Die Ergebnisse landen in einem Baum und in Diagrammen',
+            body: 'Jedes Paket wird eine Zeile - Zeitstempel, Quell- und Ziel-IP, Länge, Protokollliste - die sich in einen Knoten je Protokoll und ein Blatt je Feld aufklappt. Derselbe Durchgang liefert eine Zählung je Protokoll, die Matplotlib als Kreis- und Balkendiagramm direkt in das Fenster zeichnet.',
+          },
+        ],
+
+        features: [
+          {
+            title: 'Zwölf Protokolle, je Paket',
+            body: 'HTTP, HTTPS, DNS, FTP, SMTP, ARP, ICMP, IP, Ethernet, TCP, UDP und FPP, jedes mit eigenem Extraktor und eigenem Satz Felder.',
+          },
+          {
+            title: 'Filter über fünf Kriterien',
+            body: 'Ein Datums- und Zeitbereich, eine Quell-IP, eine Ziel-IP und eine durch Kommas getrennte Protokollliste. Eine leer gelassene Zeit deckt den ganzen Tag ab, von 00:00:00 bis 23:59:59.',
+          },
+          {
+            title: 'Ein Baum, keine Textwand',
+            body: 'Paket, dann Protokoll, dann Feld. Das Interessante liegt meist drei Klicks tiefer, und nichts zwingt dazu, an den Paketen vorbeizuscrollen, die nicht interessieren.',
+          },
+          {
+            title: 'Protokollverteilung auf einen Blick',
+            body: 'Ein Kreisdiagramm für den Anteil und ein Balkendiagramm für die Anzahl, bei jeder Filteranwendung neu gezeichnet, sodass sichtbar wird, was der Filter tatsächlich entfernt hat.',
+          },
+          {
+            title: 'Zugangsdaten im Klartext, als solche gezeigt',
+            body: 'Dekodierte HTTP-Basic-Authentifizierung und FTP-Benutzernamen und -Passwörter, das kürzestmögliche Argument dafür, diese Protokolle nicht unverschlüsselt zu verwenden.',
+          },
+          {
+            title: 'Beide PCAP-Generationen',
+            body: 'Der Dialog nimmt .pcapng und .pcap. Das neuere Format trägt mehr Metadaten und mehrere Schnittstellen und wird über denselben Code gelesen.',
+          },
+        ],
+
+        dataset: [],
+
+        results: {
+          columns: [],
+          rows: [],
+          notes: [],
+        },
+
+        takeaway: [
+          'Was ich behalten würde, ist die Disziplin, die das Format erzwingt. Ein Mitschnitt verspricht nichts darüber, was ein bestimmtes Paket enthält, also muss jeder Zugriff abgesichert sein und jedes fehlende Feld ein normaler Ausgang statt eines Ausfalls. Zwölf Extraktoren dagegen zu schreiben ist von Natur aus repetitiv, und der Versuch, dabei clever zu sein, hätte nur verdeckt, welche Felder wirklich optional sind.',
+          'Was ich ändern würde, ist, dass alles auf einem Thread läuft und alle Pakete im Speicher gehalten werden. Für die Mitschnitte, mit denen eine Seminararbeit arbeitet, geht das, für einen echten nicht: ein paar hundert Megabyte würden das Fenster einfrieren und die Liste sprengen. Die Datei als Strom zu lesen und das Parsen vom Thread der Oberfläche zu nehmen ist das Erste, was hier fehlt, und es ist dieselbe Lektion, die mir das Verschlüsselungsprojekt ein Jahr früher gegeben hat.',
         ],
       },
     },

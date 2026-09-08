@@ -132,6 +132,9 @@ const sr: Dict = {
       data: "Skup podataka",
       client: "Klijent",
       service: "Servis",
+      interface: "Interfejs",
+      capture: "Čitanje snimka",
+      charts: "Grafikoni",
     },
 
     items: {
@@ -330,6 +333,96 @@ const sr: Dict = {
         takeaway: [
           "Ono što bih zadržao je to da sam dve šifre implementirao a ne pozvao. To su kratki algoritmi i skoro svaka linija nosi teret: u kom smeru ide rotacija, gde se čuva originalna dužina, i činjenica da XXTEA zahteva da mu se aritmetika prelije pri prekoračenju a ne da podigne grešku. Jedna pogrešna pretpostavka daje izlaz koji izgleda ispravno dok se heševi ne raziđu.",
           "Nedostaci su danas isto tako jasni kao što je rad rekao da jesu. Sve ovde je simetrično, pa je razmena ključeva ostavljena u potpunosti onome ko aplikaciju koristi, a očigledan sledeći korak je asimetrični algoritam i hibrid od AES-a i RSA koji iz njega sledi. WCF i Windows Forms takođe iskreno smeštaju projekat u vreme - ni jedno ni drugo nije ono za čim bih danas posegnuo, a odlazak sa tog steka je dobar deo onoga što sam od tada radio.",
+        ],
+      },
+
+      networkTrafficAnalyzer: {
+        title: "Network Traffic Analyzer",
+        tagline: "Snimak saobraćaja pročitan jednom, pa dvanaest pitanja postavljenih svakom paketu u njemu.",
+        description:
+          "Seminarski rad o analizi mrežnog saobraćaja, sa desktop aplikacijom koja to i pokazuje. Otvara .pcapng snimak kroz Pyshark, prolazi kroz svaki paket sloj po sloj i izvlači ono što svaki protokol nosi - HTTP zaglavlja, DNS upite, TCP flags, FTP kredencijale - u drvo koje se širi, uz grafikon kako se protokoli dele.",
+        metaTitle: "Network Traffic Analyzer - Vuk Cvetković",
+        metaDescription:
+          "Projekat iz seminarskog rada u Python-u: Tkinter aplikacija koja čita .pcapng snimke kroz Pyshark, izvlači dvanaest protokola po paketu i prikazuje raspodelu protokola.",
+        context: "Seminarski rad, Elektronski fakultet u Nišu",
+        domain: "Analiza snimljenog mrežnog saobraćaja",
+
+        flow: {
+          before: ["Snimak u .pcapng formatu", "Pyshark, preko Wireshark-ovog tshark-a"],
+          branches: [
+            ["Aplikativni protokoli", "HTTP, HTTPS, DNS, FTP, SMTP"],
+            ["Transport i kontrola", "TCP, UDP, ICMP, ARP"],
+            ["Adresiranje", "IP, Ethernet"],
+          ],
+          after: ["Po jedan red za svaki paket", "Širi se, i ulazi u grafikone"],
+        },
+
+        overview: [
+          "Rad je o tome kako se analizira mrežni saobraćaj i zašto je PCAP format ono na čemu su se svi ustalili. Aplikacija je deo koji je morao da radi: pokažeš joj snimak, a ona ti kaže šta je zaista unutra, a ne samo da su paketi prošli.",
+          "Ne pokušava da bude Wireshark. Wireshark je mesto gde ideš da pročitaš jednu komunikaciju u celini, i on je ono što ispod svega ovoga i radi - Pyshark vodi njegov tshark. Ovo umesto toga postavlja isti fiksni skup pitanja svakom paketu u fajlu i slaže odgovore na jedno mesto, što je oblik koji ti treba kada nešto tražiš a još ne znaš u kom je paketu.",
+        ],
+
+        steps: [
+          {
+            title: "Snimak se čita jednom",
+            body: "Dijalog prima .pcapng ili .pcap, Pyshark ga otvori, i svi paketi se prevuku u listu u memoriji pre nego što se fajl zatvori. Ništa posle toga ne čita fajl ponovo, i to je ono što filtere čini jeftinim: oni se izvršavaju nad listom, a ne parsiraju snimak iznova.",
+          },
+          {
+            title: "Svaki paket se obilazi sloj po sloj",
+            body: "Imena protokola dolaze iz sopstvenog niza slojeva paketa, a ne iz nekakve tabele, pa paket prijavljuje ono što zaista sadrži i zbir na kraju prebrojava stvarne slojeve. Zatim se u nizu izvršava dvanaest ekstraktora, a svaki prvo pita da li je njegov protokol prisutan pre nego što bilo šta dotakne.",
+          },
+          {
+            title: "Svaki ekstraktor pita pre nego što pročita",
+            body: "Polje koje dati paket ne nosi nije greška, to je normalan slučaj, pa svaki ekstraktor proverava da li atribut postoji pre čitanja i prosto preskoči ono čega nema. Zato je drvo neravno: jedan HTTP paket pokaže desetak polja, sledeći dva, i oba su ispravna.",
+          },
+          {
+            title: "Ono što je u čistom tekstu i izlazi kao čist tekst",
+            body: "HTTP Basic kredencijali su base64, a ne šifrovanje, pa ih ekstraktor dekodira. FTP šalje korisničko ime i lozinku kao tekst, pa i oni izađu. To je iskren prikaz koji je rad i tražio: ne tvrdnja da su ti protokoli nesigurni, nego dekodiran string koji ti stoji u drvetu pred očima.",
+          },
+          {
+            title: "Rezultati završavaju u drvetu i u grafikonima",
+            body: "Svaki paket postane jedan red - vreme, izvorna i odredišna IP adresa, dužina, lista protokola - koji se širi u čvor po protokolu i list po polju. Isti prolaz vrati i broj pojavljivanja po protokolu, što Matplotlib iscrta kao pie i bar grafikon ugrađen pravo u prozor.",
+          },
+        ],
+
+        features: [
+          {
+            title: "Dvanaest protokola, po paketu",
+            body: "HTTP, HTTPS, DNS, FTP, SMTP, ARP, ICMP, IP, Ethernet, TCP, UDP i FPP, svaki sa svojim ekstraktorom i svojim skupom polja.",
+          },
+          {
+            title: "Filteri po pet kriterijuma",
+            body: "Opseg datuma i vremena, izvorna IP adresa, odredišna IP adresa i lista protokola razdvojena zapetama. Prazno vreme se vraća na ceo dan, od 00:00:00 do 23:59:59.",
+          },
+          {
+            title: "Drvo, a ne zid teksta",
+            body: "Paket, pa protokol, pa polje. Zanimljiv deo je obično tri klika niže, a ništa te ne tera da skroluješ pored paketa koji te ne zanimaju.",
+          },
+          {
+            title: "Raspodela protokola na prvi pogled",
+            body: "Pie grafikon za udeo i bar grafikon za broj, iscrtani ponovo svaki put kada se primeni filter, pa se vidi šta je filter zaista izbacio.",
+          },
+          {
+            title: "Kredencijali u čistom tekstu, prikazani kao takvi",
+            body: "Dekodirana HTTP Basic autentikacija i FTP korisnička imena i lozinke, što je najkraći mogući argument zašto se ti protokoli ne koriste nešifrovani.",
+          },
+          {
+            title: "Obe generacije PCAP-a",
+            body: "Dijalog prima .pcapng i .pcap. Noviji format nosi više metapodataka i više interfejsa, a čita se kroz isti kod.",
+          },
+        ],
+
+        dataset: [],
+
+        results: {
+          columns: [],
+          rows: [],
+          notes: [],
+        },
+
+        takeaway: [
+          "Ono što bih zadržao je disciplina koju format nameće. Snimak ne obećava ništa o tome šta koji paket sadrži, pa svako čitanje mora da bude osigurano i svako polje kog nema mora da bude normalan ishod a ne otkaz. Pisanje dvanaest ekstraktora naspram toga je ponavljajuće po samoj prirodi, a pokušaj da budem dovitljiv oko toga samo bi sakrio koja su polja zaista opciona.",
+          "Ono što bih promenio je to da se sve izvršava na jednoj niti i da se svi paketi drže u memoriji. To je u redu za snimke na kojima seminarski rad radi, a pogrešno za pravi: nekoliko stotina megabajta bi zamrzlo prozor i potrošilo listu. Streamovanje fajla i pomeranje parsiranja sa niti interfejsa je prvo što ovome treba, a to je ista lekcija koju me je projekat sa šifrovanjem naučio godinu ranije.",
         ],
       },
     },

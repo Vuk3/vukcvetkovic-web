@@ -147,6 +147,9 @@ const en = {
       data: "Dataset",
       client: "Client",
       service: "Service",
+      interface: "Interface",
+      capture: "Capture",
+      charts: "Charts",
     },
 
     items: {
@@ -352,6 +355,96 @@ const en = {
         takeaway: [
           "Implementing two ciphers rather than calling them is the part I would keep. They are short algorithms and almost every line is load-bearing: which direction a rotation goes, where the original length is stored, and the fact that XXTEA needs its arithmetic to wrap on overflow rather than raise. A single wrong assumption gives you output that looks correct until the hashes disagree.",
           "The gaps are as clear now as the thesis said they were. Everything here is symmetric, so key exchange is left entirely to whoever uses it, and the obvious next step is an asymmetric algorithm and the AES-plus-RSA hybrid that follows from it. WCF and Windows Forms also date the project honestly - neither is what I would reach for today, and moving away from that stack is a good part of what I have done since.",
+        ],
+      },
+
+      networkTrafficAnalyzer: {
+        title: "Network Traffic Analyzer",
+        tagline: "A packet capture read once, then asked twelve questions about every packet in it.",
+        description:
+          "A term paper on traffic analysis, with a desktop application to demonstrate it. It opens a .pcapng capture through Pyshark, walks every packet layer by layer, and pulls out what each protocol carries - HTTP headers, DNS queries, TCP flags, FTP credentials - into an expandable tree, alongside a chart of how the protocols divide up.",
+        metaTitle: "Network Traffic Analyzer - Vuk Cvetković",
+        metaDescription:
+          "A term paper project in Python: a Tkinter application that reads .pcapng captures through Pyshark, extracts twelve protocols per packet, and charts the protocol distribution.",
+        context: "Term paper, Faculty of Electronic Engineering in Niš",
+        domain: "Packet capture analysis",
+
+        flow: {
+          before: ["A .pcapng capture", "Pyshark, over Wireshark's tshark"],
+          branches: [
+            ["Application protocols", "HTTP, HTTPS, DNS, FTP, SMTP"],
+            ["Transport and control", "TCP, UDP, ICMP, ARP"],
+            ["Addressing", "IP, Ethernet"],
+          ],
+          after: ["One row per packet", "Expandable, and counted into the charts"],
+        },
+
+        overview: [
+          "The paper is about how network traffic is analysed and why the PCAP format is what everyone standardised on. The application is the part that had to work: point it at a capture, and it tells you what is actually inside it rather than only that packets went by.",
+          "It is not trying to be Wireshark. Wireshark is where you go to read one conversation in full, and it is what runs underneath this anyway - Pyshark drives its tshark. What this does instead is ask the same fixed set of questions of every packet in a file and lay the answers out in one place, which is the shape you want when you are looking for something and do not yet know which packet it is in.",
+        ],
+
+        steps: [
+          {
+            title: "The capture is read once",
+            body: "A file dialog takes a .pcapng or .pcap, Pyshark opens it, and every packet is pulled into a list in memory before the file handle is closed. Nothing reads the file again after that, which is what makes the filters cheap: they re-run over the list rather than re-parsing the capture.",
+          },
+          {
+            title: "Each packet is walked layer by layer",
+            body: "The protocol names come from the packet's own layer stack rather than from a lookup, so a packet reports what it actually contains and the tally at the end counts real layers. Twelve extractors then run in sequence, each one asking whether its protocol is present before it touches anything.",
+          },
+          {
+            title: "Every extractor asks before it reads",
+            body: "A field that a given packet does not carry is not an error, it is the normal case, so every extractor checks each attribute exists before reading it and simply omits what is absent. That is why the tree is uneven: one HTTP packet shows a dozen fields and the next shows two, and both are correct.",
+          },
+          {
+            title: "What is in plain text comes out in plain text",
+            body: "HTTP Basic credentials are base64, not encryption, so the extractor decodes them. FTP sends its username and password as text, so those come out too. That is the honest demonstration the paper wanted: not a claim that these protocols are insecure, but the decoded string sitting in a tree in front of you.",
+          },
+          {
+            title: "The results land in a tree and in charts",
+            body: "Each packet becomes one row - timestamp, source and destination IP, length, protocol list - which expands into a node per protocol and a leaf per field. The same pass returns a count per protocol, which Matplotlib draws as a pie and a bar chart embedded straight into the window.",
+          },
+        ],
+
+        features: [
+          {
+            title: "Twelve protocols, per packet",
+            body: "HTTP, HTTPS, DNS, FTP, SMTP, ARP, ICMP, IP, Ethernet, TCP, UDP and FPP, each with its own extractor and its own set of fields.",
+          },
+          {
+            title: "Filters over five criteria",
+            body: "A date and time range, a source IP, a destination IP, and a comma-separated protocol list. An empty time falls back to the whole day, from 00:00:00 to 23:59:59.",
+          },
+          {
+            title: "A tree, not a wall of text",
+            body: "Packet, then protocol, then field. The interesting part is usually three clicks down, and nothing forces you to scroll past the packets you do not care about.",
+          },
+          {
+            title: "Protocol distribution at a glance",
+            body: "A pie chart for the share and a bar chart for the count, redrawn every time a filter is applied, so you can see what a filter actually removed.",
+          },
+          {
+            title: "Credentials in the clear, shown as such",
+            body: "Decoded HTTP Basic authentication and FTP usernames and passwords, which is the shortest possible argument for why those protocols are not used unencrypted.",
+          },
+          {
+            title: "Both PCAP generations",
+            body: "The dialog accepts .pcapng and .pcap. The newer format carries more metadata and more interfaces, and reads back through the same code.",
+          },
+        ],
+
+        dataset: [],
+
+        results: {
+          columns: [],
+          rows: [],
+          notes: [],
+        },
+
+        takeaway: [
+          "The part I would keep is the discipline the format forces. A capture makes no promises about what any given packet holds, so every read has to be guarded and every absent field has to be a normal outcome rather than a failure. Writing twelve extractors against that is repetitive by design, and trying to be clever about it would only have hidden which fields are genuinely optional.",
+          "The part I would change is that everything happens on one thread and every packet is held in memory. That is fine for the captures a paper runs on and wrong for a real one: a few hundred megabytes would freeze the window and exhaust the list. Streaming the file and moving the parse off the interface thread is the first thing this needs, and it is the same lesson the encryption project taught me a year earlier.",
         ],
       },
     },

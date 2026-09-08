@@ -1,6 +1,6 @@
 # Routing and deploy
 
-Twenty prerendered pages, four locales, two projects, on Cloudflare. Every route exists
+Twenty-four prerendered pages, four locales, three projects, on Cloudflare. Every route exists
 twice - once unprefixed for English and once under `[lang]` for the other three - and the
 whole build is static: `dist/server` comes out **empty** and nothing runs at request time.
 
@@ -61,8 +61,8 @@ there as a page, so a note left in that directory builds as a public HTML page a
 `@astrojs/sitemap` submits it to crawlers. This is why the routing rules live in
 [src/CLAUDE.md](../src/CLAUDE.md) rather than in `src/pages/`. Prefix anything else with `_`
 to keep it out of the route table, and **check the page count**: the build prints it, and it
-should be 8 per locale-independent shape plus one detail page per project per locale - 20
-with two projects today.
+should be four locales times two fixed shapes, plus a 404 and one detail page per project
+per locale - 24 with three projects today.
 
 ---
 
@@ -203,7 +203,7 @@ where `files` would not, and `astro check` passes without it.
 
 ## 6. The sitemap carries a trailing slash by hand
 
-Sixteen URLs: the home page, the project index and one page per project, across four
+Twenty URLs: the home page, the project index and one page per project, across four
 locales, with the 404 pages excluded. Every entry
 ends in a slash, and that agrees with the `<link rel="canonical">` on the page itself - but
 only because the `serialize` hook in [astro.config.mjs](../astro.config.mjs) puts it there.
@@ -267,6 +267,7 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-09-08 - a third project takes the build to 24 pages and the sitemap to 20 URLs.
 - 2026-09-08 - a second project takes the build to 20 pages and the sitemap to 16 URLs.
 - 2026-09-08 - the sitemap emits trailing slashes, matching the canonical tags (§6).
 - 2026-09-08 - first version of this page.

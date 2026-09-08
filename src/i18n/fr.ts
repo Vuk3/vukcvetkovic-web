@@ -132,6 +132,9 @@ const fr: Dict = {
       data: "Jeu de données",
       client: "Client",
       service: "Service",
+      interface: "Interface",
+      capture: "Lecture de la capture",
+      charts: "Graphiques",
     },
 
     items: {
@@ -335,6 +338,97 @@ const fr: Dict = {
         takeaway: [
           "Ce que je garderais, c’est d’avoir implémenté deux chiffrements au lieu de les appeler. Ce sont des algorithmes courts et presque chaque ligne porte le poids : le sens d’une rotation, l’endroit où la longueur d’origine est rangée, et le fait que XXTEA exige que son arithmétique déborde au lieu de lever une erreur. Une seule hypothèse fausse donne une sortie qui a l’air correcte jusqu’à ce que les empreintes divergent.",
           "Les manques sont aujourd’hui aussi nets que le mémoire le disait. Tout ici est symétrique, donc l’échange de clés est laissé entièrement à qui s’en sert, et l’étape suivante évidente est un algorithme asymétrique et l’hybride AES plus RSA qui en découle. WCF et Windows Forms datent aussi honnêtement le projet - ni l’un ni l’autre n’est ce vers quoi j’irais aujourd’hui, et quitter cette pile est une bonne part de ce que j’ai fait depuis.",
+        ],
+      },
+
+      networkTrafficAnalyzer: {
+        title: "Network Traffic Analyzer",
+        tagline:
+          "Une capture lue une seule fois, puis douze questions posées à chacun de ses paquets.",
+        description:
+          "Un mémoire de séminaire sur l’analyse du trafic, avec une application de bureau qui la met en pratique. Elle ouvre une capture .pcapng via Pyshark, parcourt chaque paquet couche par couche et en extrait ce que chaque protocole transporte - en-têtes HTTP, requêtes DNS, drapeaux TCP, identifiants FTP - dans un arbre dépliable, avec un graphique de la répartition des protocoles.",
+        metaTitle: "Network Traffic Analyzer - Vuk Cvetković",
+        metaDescription:
+          "Un projet de mémoire de séminaire en Python : une application Tkinter qui lit des captures .pcapng via Pyshark, extrait douze protocoles par paquet et trace la répartition des protocoles.",
+        context: "Mémoire de séminaire, Faculté de génie électronique de Niš",
+        domain: "Analyse de captures de paquets",
+
+        flow: {
+          before: ["Une capture .pcapng", "Pyshark, via le tshark de Wireshark"],
+          branches: [
+            ["Protocoles applicatifs", "HTTP, HTTPS, DNS, FTP, SMTP"],
+            ["Transport et contrôle", "TCP, UDP, ICMP, ARP"],
+            ["Adressage", "IP, Ethernet"],
+          ],
+          after: ["Une ligne par paquet", "Dépliable, et comptée dans les graphiques"],
+        },
+
+        overview: [
+          "Le mémoire porte sur la manière dont on analyse le trafic réseau et sur les raisons pour lesquelles le format PCAP est celui qui s’est imposé. L’application est la partie qui devait fonctionner : on lui désigne une capture, et elle dit ce qu’il y a réellement dedans, pas seulement que des paquets sont passés.",
+          "Elle ne cherche pas à être Wireshark. Wireshark est l’endroit où l’on va lire une conversation en entier, et c’est d’ailleurs lui qui tourne en dessous - Pyshark pilote son tshark. Ce que fait celle-ci, c’est poser le même jeu fixe de questions à chaque paquet du fichier et disposer les réponses au même endroit, ce qui est la forme utile quand on cherche quelque chose sans savoir encore dans quel paquet il se trouve.",
+        ],
+
+        steps: [
+          {
+            title: "La capture est lue une seule fois",
+            body: "Une boîte de dialogue accepte un .pcapng ou un .pcap, Pyshark l’ouvre, et tous les paquets passent dans une liste en mémoire avant que le fichier ne soit refermé. Rien ne relit le fichier ensuite, et c’est ce qui rend les filtres peu coûteux : ils repassent sur la liste au lieu de réanalyser la capture.",
+          },
+          {
+            title: "Chaque paquet est parcouru couche par couche",
+            body: "Les noms de protocoles viennent de la pile de couches du paquet lui-même et non d’une table, si bien qu’un paquet déclare ce qu’il contient vraiment et que le décompte final compte des couches réelles. Douze extracteurs s’exécutent ensuite l’un après l’autre, chacun demandant d’abord si son protocole est présent avant de toucher à quoi que ce soit.",
+          },
+          {
+            title: "Chaque extracteur demande avant de lire",
+            body: "Un champ qu’un paquet donné ne transporte pas n’est pas une erreur, c’est le cas normal : chaque extracteur vérifie donc l’existence de l’attribut avant de le lire et omet simplement ce qui manque. D’où un arbre irrégulier : un paquet HTTP montre une douzaine de champs, le suivant en montre deux, et les deux sont justes.",
+          },
+          {
+            title: "Ce qui est en clair ressort en clair",
+            body: "Les identifiants HTTP Basic sont du base64, pas du chiffrement, donc l’extracteur les décode. FTP envoie son nom d’utilisateur et son mot de passe en texte, donc ils ressortent aussi. C’est la démonstration honnête que voulait le mémoire : non pas l’affirmation que ces protocoles sont peu sûrs, mais la chaîne décodée posée là, dans un arbre, devant vous.",
+          },
+          {
+            title: "Les résultats arrivent dans un arbre et dans des graphiques",
+            body: "Chaque paquet devient une ligne - horodatage, IP source et destination, longueur, liste de protocoles - qui se déplie en un nœud par protocole et une feuille par champ. Le même passage renvoie un compte par protocole, que Matplotlib trace en camembert et en barres, intégrés directement dans la fenêtre.",
+          },
+        ],
+
+        features: [
+          {
+            title: "Douze protocoles, par paquet",
+            body: "HTTP, HTTPS, DNS, FTP, SMTP, ARP, ICMP, IP, Ethernet, TCP, UDP et FPP, chacun avec son extracteur et son propre jeu de champs.",
+          },
+          {
+            title: "Des filtres sur cinq critères",
+            body: "Une plage de dates et d’heures, une IP source, une IP de destination et une liste de protocoles séparés par des virgules. Une heure laissée vide couvre la journée entière, de 00:00:00 à 23:59:59.",
+          },
+          {
+            title: "Un arbre, pas un mur de texte",
+            body: "Paquet, puis protocole, puis champ. La partie intéressante se trouve d’ordinaire trois clics plus bas, et rien n’oblige à défiler devant les paquets qui n’intéressent pas.",
+          },
+          {
+            title: "La répartition des protocoles d’un coup d’œil",
+            body: "Un camembert pour la part et des barres pour le compte, retracés à chaque application d’un filtre, si bien qu’on voit ce que le filtre a réellement retiré.",
+          },
+          {
+            title: "Des identifiants en clair, montrés comme tels",
+            body: "Authentification HTTP Basic décodée et noms d’utilisateur et mots de passe FTP, soit l’argument le plus court possible pour ne pas utiliser ces protocoles sans chiffrement.",
+          },
+          {
+            title: "Les deux générations de PCAP",
+            body: "La boîte de dialogue accepte .pcapng et .pcap. Le format plus récent porte davantage de métadonnées et plusieurs interfaces, et se relit par le même code.",
+          },
+        ],
+
+        dataset: [],
+
+        results: {
+          columns: [],
+          rows: [],
+          notes: [],
+        },
+
+        takeaway: [
+          "Ce que je garderais, c’est la discipline que le format impose. Une capture ne promet rien sur ce que contient tel ou tel paquet : chaque lecture doit donc être gardée et chaque champ absent doit être un résultat normal plutôt qu’un échec. Écrire douze extracteurs face à cela est répétitif par construction, et chercher à être malin n’aurait fait que masquer quels champs sont réellement optionnels.",
+          "Ce que je changerais, c’est que tout se passe sur un seul fil et que tous les paquets sont gardés en mémoire. Cela va pour les captures sur lesquelles tourne un mémoire, et pas pour une vraie : quelques centaines de mégaoctets figeraient la fenêtre et épuiseraient la liste. Lire le fichier en flux et sortir l’analyse du fil de l’interface est la première chose qui manque ici, et c’est la leçon que le projet de chiffrement m’avait déjà donnée un an plus tôt.",
         ],
       },
     },

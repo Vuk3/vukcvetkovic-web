@@ -31,6 +31,7 @@ import {
   siReact,
   siRoboflow,
   siUltralytics,
+  siWireshark,
 } from 'simple-icons';
 
 interface TechIcon {
@@ -65,6 +66,14 @@ const lucideAppWindow =
   'M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM10 4v4M2 8h20M6 4v4';
 const lucideServer =
   'M4 2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM4 14h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2zM6 6h.01M6 18h.01';
+/* square-mouse-pointer.ts, activity.ts and chart-pie.ts, unaltered - a window
+ * with a cursor in it, a traffic trace, and a pie with a slice out. */
+const lucideSquareMousePointer =
+  'M12.034 12.681a.498.498 0 0 1 .647-.647l9 3.5a.5.5 0 0 1-.033.943l-3.444 1.068a1 1 0 0 0-.66.66l-1.067 3.443a.5.5 0 0 1-.943.033zM21 11V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h6';
+const lucideActivity =
+  'M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2';
+const lucideChartPie =
+  'M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1zM21.21 15.89A10 10 0 1 1 8 2.83';
 
 export const techIcons = {
   NestJS: { path: siNestjs.path, hex: `#${siNestjs.hex}` },
@@ -109,6 +118,22 @@ export const techIcons = {
    */
   WCF: { path: lucideServer, stroked: true, hex: '#512bd4', darkHex: '#8a6cf1' },
   'Windows Forms': { path: lucideAppWindow, stroked: true, hex: '#512bd4', darkHex: '#8a6cf1' },
+
+  /*
+   * The Python analysis tools. Wireshark publishes a mark and a colour and gets
+   * both, lightened for the dark ground the way Python's own blue is.
+   *
+   * The other three take lucide outlines and, unlike the Microsoft group above,
+   * no colour at all - so they sit at the text tone, which is what an entry with
+   * no `hex` does. That is not an omission: Tkinter and Pyshark have no brand to
+   * borrow, and inventing one for them would be the only invented colour in this
+   * file. Matplotlib does have a house blue, but not one published anywhere this
+   * file can cite, and a guessed hex is worse than none.
+   */
+  Wireshark: { path: siWireshark.path, hex: `#${siWireshark.hex}`, darkHex: '#5aaed6' },
+  Tkinter: { path: lucideSquareMousePointer, stroked: true },
+  Pyshark: { path: lucideActivity, stroked: true },
+  Matplotlib: { path: lucideChartPie, stroked: true },
 } satisfies Record<string, TechIcon>;
 
 export type TechName = keyof typeof techIcons;

@@ -231,6 +231,33 @@ const projects: Project[] = [
     },
     links: {},
   },
+  {
+    id: "networkTrafficAnalyzer",
+    slug: "network-traffic-analyzer",
+    year: "2024",
+    tech: ["Python", "Tkinter", "Pyshark", "Matplotlib"],
+    /*
+     * One process, so the groups name jobs rather than services: the window, the
+     * reading of the capture, and the charts drawn from it.
+     *
+     * Wireshark is in the stack without being in `tech` above. Nothing imports
+     * it, but Pyshark shells out to its tshark, so the analysis does not run
+     * without it installed - which makes it a real dependency and a poor
+     * summary chip.
+     */
+    stack: [
+      { id: "interface", items: ["Python", "Tkinter"] },
+      { id: "capture", items: ["Pyshark", "Wireshark"] },
+      { id: "charts", items: ["Matplotlib"] },
+    ],
+    /*
+     * No `results`: this one measures nothing. The paper is a survey of traffic
+     * analysis with an application built to demonstrate it, not a comparison, so
+     * the results section is simply absent from the page rather than padded with
+     * a table that would have to invent its own subject.
+     */
+    links: {},
+  },
 ];
 
 export const site = {
