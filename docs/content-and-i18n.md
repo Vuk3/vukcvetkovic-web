@@ -74,7 +74,7 @@ truth for the shape**: a key that is missing, misspelled, or the wrong kind of v
 
 ⚠️ **Array lengths are not part of that contract.** A locale may carry two paragraphs
 where English carries three, or four service items where English has four titles, and
-nothing errors - the page simply renders fewer. All 37 array paths currently match across
+nothing errors - the page simply renders fewer. All 48 array paths currently match across
 the four locales, and there is no check that keeps them matching. If you add a bullet in
 English, add it in three other files or the page quietly gets shorter in three languages.
 
@@ -125,14 +125,14 @@ Three things about the registry are not obvious from reading it:
   tree-shakes it, so only the marks actually referenced reach the bundle. No image file is
   involved, which is the point: a path taking `currentColor` works in both themes and costs
   no request.
-- **Nine of the 26 entries have no free brand mark** and use a lucide outline quoted as
+- **Nine of the 28 entries have no free brand mark** and use a lucide outline quoted as
   path data instead. Amazon and Microsoft had theirs removed from simple-icons over
   trademark, SQL is a standard rather than a product, and Tkinter, Pyshark and Matplotlib
   simply have none. The four Microsoft ones all take the .NET violet, which keeps them a
   family, and every outline takes a glyph none of the others use. `stroked: true` is what
   switches [TechIcon.astro](../src/components/TechIcon.astro) from a fill to a stroke.
 - **`darkHex` exists because a brand colour that carries on paper can close up on the
-  dark ground** - 19 of the 26 entries need one. `hex` is the light-mode colour and
+  dark ground** - 21 of the 28 entries need one. `hex` is the light-mode colour and
   `darkHex` the substitute. Four entries have **no `hex` at all** and so sit at the text
   tone: `SQL`, `Tkinter`, `Pyshark` and `Matplotlib` have no published colour to borrow,
   and a guessed one would be the only invented value in the file.
@@ -309,6 +309,7 @@ So the whole cost is SEO, it is invisible locally, and the only way to catch it 
 
 ## Changelog
 
+- 2026-09-08 - Easy Breathe added as a fourth project.
 - 2026-09-08 - Network Traffic Analyzer added as a third project, and the first with no
   `results` at all, so the section is skipped rather than padded.
 - 2026-09-08 - Python replaced C# in the backend skill group, and prose now names

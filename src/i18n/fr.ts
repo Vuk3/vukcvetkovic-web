@@ -135,6 +135,8 @@ const fr: Dict = {
       interface: "Interface",
       capture: "Lecture de la capture",
       charts: "Graphiques",
+      mobile: "Application mobile",
+      api: "API",
     },
 
     items: {
@@ -429,6 +431,99 @@ const fr: Dict = {
         takeaway: [
           "La discipline que le format impose est ce qui fait que cela fonctionne sur n’importe quelle capture. Un paquet ne promet rien sur les champs qu’il porte : chaque lecture est donc gardée et un champ absent est un résultat normal plutôt qu’un échec. Écrire les douze extracteurs un par un est ce qui garde cela explicite, et c’est pourquoi une capture de deux paquets et une de deux mille passent par le même code sans aucun cas particulier.",
           "Lire la capture une seule fois est ce qui rend tout le reste immédiat. Chaque filtre, chaque recomptage et chaque graphique retracé travaillent sur la liste déjà en mémoire, si bien que changer une date ou une adresse IP renvoie aussitôt une nouvelle vue de la même capture au lieu de repasser par le fichier.",
+        ],
+      },
+
+      easyBreathe: {
+        title: "Easy Breathe",
+        tagline:
+          "Les relevés publics de pollen en Serbie, ramenés à ceux dont une seule personne a besoin.",
+        description:
+          "Une application mobile posée sur des données publiques ouvertes. L’agence serbe de l’environnement publie les relevés de pollen des stations de tout le pays, et l’application les recopie dans sa propre base selon un calendrier, puis les réduit aux allergènes qu’une personne a sélectionnés dans un rayon qu’elle choisit - sur une carte, par niveau de concentration, et sous forme de notification lorsqu’un niveau monte.",
+        metaTitle: "Easy Breathe - Vuk Cvetković",
+        metaDescription:
+          "Une application React Native et Expo sur une API NestJS : les données ouvertes de pollen en Serbie, recopiées selon un calendrier et filtrées par lieu, rayon et allergènes choisis.",
+        context: "Mémoire de séminaire sur les systèmes d’e-administration, Faculté de génie électronique de Niš",
+        domain: "Données publiques ouvertes, pollen et allergènes",
+
+        flow: {
+          before: ["Cinq points d’accès ouverts", "Alimentation planifiée"],
+          branches: [
+            ["Mensuelle", "Allergènes, types, lieux"],
+            ["Horaire, de 9 h à 12 h", "Pollens, concentrations"],
+          ],
+          after: [
+            "Une base dédoublonnée",
+            "Réduite à un rayon, un jour et vos allergènes",
+          ],
+        },
+
+        overview: [
+          "Les données publiques existent et elles sont bonnes : l’agence serbe de l’environnement publie chaque jour les relevés de pollen des stations de mesure du pays, sous forme d’API ouverte, sans clé ni limite. Ce qu’elle ne fait pas, c’est dire à une personne allergique à l’ambroisie si aujourd’hui est un mauvais jour là où elle se trouve. Cet écart, c’est toute l’application.",
+          "Le travail se partage donc en deux. L’API recopie les données ouvertes dans sa propre base selon un calendrier, parce qu’un téléphone n’a pas à parcourir des centaines de milliers de relevés nationaux pour répondre à une question locale. L’application pose ensuite une seule question à cette copie - qu’y a-t-il dans l’air près de moi, parmi ce à quoi je réagis - et y répond sur une carte, en quatre niveaux, et par une notification.",
+        ],
+
+        steps: [
+          {
+            title: "Les données ouvertes sont recopiées sur deux horloges",
+            body: "Les cinq points d’accès ne changent pas au même rythme, ils ne sont donc pas interrogés au même rythme. Allergènes, types d’allergènes et lieux sont chargés à neuf heures le premier du mois. Pollens et concentrations, qui sont ce qui bouge, sont récupérés toutes les heures entre neuf heures et midi, moment où les relevés du jour apparaissent.",
+          },
+          {
+            title: "L’alimentation se répète sans risque",
+            body: "Chaque chargeur regarde d’abord quels identifiants il détient déjà, ne garde que ceux qui manquent, et insère ceux-là. Un passage horaire qui ne trouve rien de neuf n’écrit donc rien, le même passage peut être rejoué sans dupliquer un relevé, et la fenêtre demandée remonte d’une semaine, ce qui rattrape un relevé publié quelques jours après sa prise.",
+          },
+          {
+            title: "Un lieu et un rayon deviennent un ensemble de stations",
+            body: "Les coordonnées de la personne et son rayon en kilomètres entrent dans une requête géospatiale MongoDB, le rayon étant divisé par celui de la Terre pour obtenir la sphère attendue par la requête. Ce qui revient, c’est chaque station de mesure assez proche pour compter pour cette personne.",
+          },
+          {
+            title: "Les stations et une date donnent les relevés qui comptent",
+            body: "Ces identifiants de stations et la date du jour sélectionnent les enregistrements de pollen de la journée, chacun portant les identifiants des concentrations mesurées avec lui. Ces concentrations sont ensuite récupérées et réduites aux allergènes réellement sélectionnés, si bien que la réponse ne contient que des relevés à la fois proches et pertinents.",
+          },
+          {
+            title: "Chaque relevé reçoit un niveau et un lieu",
+            body: "Un chiffre dans l’air ne veut rien dire seul : chaque concentration est comparée aux marges publiées de son propre allergène et ressort en Low, Normal, High ou Very high. Le relevé est ensuite mis en forme avec l’allergène et la station d’origine, et c’est ce que montrent le marqueur sur la carte et la vue de détail.",
+          },
+        ],
+
+        features: [
+          {
+            title: "Choisissez vos allergènes",
+            body: "Une trentaine sont publiés, et le profil est une sélection multiple sur l’ensemble. Tout ce qui suit - la carte, les niveaux, les notifications - découle de cette liste.",
+          },
+          {
+            title: "Votre rayon, votre intervalle",
+            body: "Le rayon de recherche en kilomètres et la fréquence de vérification en heures, tous deux réglés sur le profil. L’intervalle est là pour que la vérification soit aussi fréquente qu’on le souhaite sans que la batterie en décide autrement.",
+          },
+          {
+            title: "Une carte lisible d’un coup d’œil",
+            body: "Des marqueurs sur les stations de mesure proches, colorés par niveau. Un appui sur l’un d’eux liste lesquels de vos allergènes y ont été mesurés et à quelle hauteur.",
+          },
+          {
+            title: "Quatre niveaux, avec les comptes",
+            body: "Low, Normal, High et Very high, chacun avec le nombre d’allergènes proches à ce niveau. Un appui sur un niveau donne la liste, un appui sur une entrée donne la station, la description et le relevé.",
+          },
+          {
+            title: "Une notification quand ça monte",
+            body: "Une notification push et une alerte dans l’application dès qu’un élément de la liste choisie atteint une forte concentration à proximité, si bien que l’application sert sans être ouverte.",
+          },
+          {
+            title: "Des comptes, simplement",
+            body: "Inscription et connexion par e-mail, avec le profil qui porte les allergènes, le rayon et l’intervalle, si bien que la même sélection suit le compte et non le téléphone.",
+          },
+        ],
+
+        dataset: [],
+
+        results: {
+          columns: [],
+          rows: [],
+          notes: [],
+        },
+
+        takeaway: [
+          "La leçon qui est restée, c’est que des données ouvertes ne sont pas des données utilisables. Cinq points d’accès qui se référencent par identifiants, une échelle nationale et aucun moyen de poser une question géographique : la valeur tient entièrement dans la recopie et dans les jointures. Décider quoi copier, à quelle fréquence, et comment rendre une double copie inoffensive, c’est là qu’était vraiment l’ingénierie.",
+          "L’autre moitié, c’est que la réponse doit arriver sans être demandée. Une personne allergique n’ouvre pas une application pour vérifier : elle veut qu’on le lui dise, dans un rayon et à un intervalle réglés une fois pour toutes. Les notifications push posées sur un backend planifié sont ce qui transforme un jeu de données public en quelque chose qui atteint quelqu’un le jour où cela compte.",
         ],
       },
     },

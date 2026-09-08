@@ -258,6 +258,17 @@ const projects: Project[] = [
      */
     links: {},
   },
+  {
+    id: "easyBreathe",
+    slug: "easy-breathe",
+    year: "2024",
+    tech: ["React Native", "Expo", "NestJS", "MongoDB"],
+    stack: [
+      { id: "mobile", items: ["React Native", "Expo"] },
+      { id: "api", items: ["NestJS", "MongoDB"] },
+    ],
+    links: {},
+  },
 ];
 
 export const site = {

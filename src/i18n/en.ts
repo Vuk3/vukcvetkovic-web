@@ -150,6 +150,8 @@ const en = {
       interface: "Interface",
       capture: "Capture",
       charts: "Charts",
+      mobile: "Mobile app",
+      api: "API",
     },
 
     items: {
@@ -445,6 +447,98 @@ const en = {
         takeaway: [
           "The discipline the format forces is what makes this work on any capture you hand it. A packet promises nothing about which fields it holds, so every read is guarded and an absent field is a normal outcome rather than a failure. Writing the twelve extractors out one by one is what keeps that explicit, and it is why a two-packet capture and a two-thousand-packet one go through the same code with no special case.",
           "Reading the capture once is what makes the rest feel immediate. Every filter, every recount and every redrawn chart works from the list already in memory, so changing a date or an IP address returns a new view of the same capture straight away instead of going back to the file.",
+        ],
+      },
+
+      easyBreathe: {
+        title: "Easy Breathe",
+        tagline: "Serbia's public pollen readings, narrowed to the ones a single person needs to know about.",
+        description:
+          "A mobile app on top of open government data. Serbia's environmental agency publishes pollen measurements from stations across the country, and the app mirrors them into its own database on a schedule, then narrows them to the allergens one person has selected within a radius they choose - on a map, by concentration level, and as a push notification when a level climbs.",
+        metaTitle: "Easy Breathe - Vuk Cvetković",
+        metaDescription:
+          "A React Native and Expo app on a NestJS API: Serbia's open pollen data, seeded on a schedule and filtered by location, radius and the allergens a user selects.",
+        context: "Seminar paper on e-government systems, Faculty of Electronic Engineering in Niš",
+        domain: "Open government data, pollen and allergens",
+
+        flow: {
+          before: ["Five open-data endpoints", "Scheduled seeding"],
+          branches: [
+            ["Monthly", "Allergens, types, locations"],
+            ["Hourly, 9 to 12", "Pollens, concentrations"],
+          ],
+          after: [
+            "One deduplicated database",
+            "Narrowed to a radius, a day and your allergens",
+          ],
+        },
+
+        overview: [
+          "The public data is there and it is good: Serbia's environmental agency publishes daily pollen readings from measuring stations across the country, as an open API with no key and no limit. What it does not do is tell one person with a ragweed allergy whether today is a bad day where they happen to be standing. That gap is the whole app.",
+          "So the work splits in two. The API mirrors the open data into its own database on a schedule, because a phone should not page through hundreds of thousands of national measurements to answer a local question. The app then asks one question against that mirror - what is in the air near me, of the things I react to - and answers it on a map, in four levels, and in a notification.",
+        ],
+
+        steps: [
+          {
+            title: "The open data is mirrored on two clocks",
+            body: "The five endpoints do not change at the same rate, so they are not fetched at the same rate. Allergens, allergen types and locations are seeded at nine on the first of the month. Pollens and concentrations, which are the ones that move, are fetched every hour between nine and noon, which is when the day's measurements appear.",
+          },
+          {
+            title: "Seeding is safe to repeat",
+            body: "Every seeder looks up which ids it already holds, keeps only the ones it does not, and inserts those. So an hourly job that finds nothing new writes nothing, the same run can be repeated without duplicating a measurement, and the window it asks for reaches a week back - which is what picks up a reading published a few days after it was taken.",
+          },
+          {
+            title: "A location and a radius become a set of stations",
+            body: "The user's coordinates and their chosen radius in kilometres go into a MongoDB geospatial query, dividing the radius by the earth's own to get the sphere the query needs. What comes back is every measuring station close enough to matter to that person.",
+          },
+          {
+            title: "Stations and a date become the readings that count",
+            body: "Those station ids and today's date select the day's pollen records, each of which carries the ids of the concentrations measured with it. Those concentrations are then fetched and cut down to the allergens the user actually selected, so the response holds only readings that are both nearby and relevant.",
+          },
+          {
+            title: "Each reading gets a level and a place",
+            body: "A number in the air means nothing on its own, so each concentration is compared against its own allergen's published margins and comes out as Low, Normal, High or Very high. The reading is then formatted with the allergen and the station it came from, which is what the map marker and the detail view show.",
+          },
+        ],
+
+        features: [
+          {
+            title: "Pick your own allergens",
+            body: "Around thirty are published, and the profile is a multiselect over all of them. Everything downstream - the map, the levels, the notifications - follows that list.",
+          },
+          {
+            title: "Your radius, your interval",
+            body: "The radius to search in kilometres and how often to check in hours, both set on the profile. The interval is there so the checking can be as frequent as someone wants without the battery deciding otherwise.",
+          },
+          {
+            title: "A map you can read at a glance",
+            body: "Markers on the measuring stations near you, coloured by level. Tap one and it lists which of your allergens were measured there and how high each was.",
+          },
+          {
+            title: "Four levels, with counts",
+            body: "Low, Normal, High and Very high, each with the number of nearby allergens at that level. Tap a level for the list, tap an entry for the station, the description and the reading.",
+          },
+          {
+            title: "A notification when it climbs",
+            body: "A push notification and an in-app alert when something in the selected list reaches a high concentration nearby, so the app is useful without being opened.",
+          },
+          {
+            title: "Accounts, kept simple",
+            body: "Email sign-up and sign-in, with the profile that holds the allergens, the radius and the interval, so the same selection follows the account rather than the phone.",
+          },
+        ],
+
+        dataset: [],
+
+        results: {
+          columns: [],
+          rows: [],
+          notes: [],
+        },
+
+        takeaway: [
+          "The lesson that carried was that open data is not the same as usable data. Five endpoints that reference each other by id, a national scale, and no way to ask a geographic question means the value is entirely in the mirroring and the joining. Deciding what to copy, how often, and how to make copying it twice harmless is where the engineering actually was.",
+          "The other half is that the answer has to arrive without being asked for. Someone with an allergy does not open an app to check - they want to be told, at a radius and an interval they set once. Push notifications on top of a scheduled backend are what turn a public dataset into something that reaches a person on the day it matters.",
         ],
       },
     },

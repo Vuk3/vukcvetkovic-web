@@ -1,14 +1,14 @@
 ---
 /**
- * One row per project: title and description hold the column, technology tags
- * and links sit in a fixed aside on the right.
+ * Two projects to a row, each a cell opened by a hairline.
  *
- * A row rather than a card, because the section has to read well at one entry
- * and at nine. Nothing about the layout depends on how many there are, and a
- * new project is one entry in src/site.ts plus its copy in the four
- * dictionaries - no layout change.
+ * A cell rather than a card - no border, no fill - which is the same device
+ * Services uses, so a grid of four stays in the same language as the hairline
+ * rows everywhere else. The grid is `auto-fit`, so the count is never wired in:
+ * it goes one up on a phone and two up here, and a fifth project just fills the
+ * next cell. See `.project-grid` in global.css.
  *
- * The homepage carries the summary. Each row links to the project's own page
+ * The homepage carries the summary. Each cell links to the project's own page
  * under /projects/, where the architecture, the results and the full stack
  * live, which is what keeps this section short enough to scan.
  */
@@ -28,7 +28,7 @@ const dict = getDict(lang);
 ---
 
 <Section id="projects" label={dict.projects.label} width="projects" tone={tone} head="rule">
-  <ul>
+  <ul class="project-grid">
     {
       site.projects.map((project) => {
         const copy = dict.projects.items[project.id];

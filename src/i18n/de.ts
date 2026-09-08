@@ -135,6 +135,8 @@ const de: Dict = {
       interface: 'Oberfläche',
       capture: 'Mitschnitt lesen',
       charts: 'Diagramme',
+      mobile: 'Mobile App',
+      api: 'API',
     },
 
     items: {
@@ -425,6 +427,99 @@ const de: Dict = {
         takeaway: [
           'Die Disziplin, die das Format erzwingt, ist der Grund, warum das mit jedem Mitschnitt funktioniert. Ein Paket verspricht nichts darüber, welche Felder es trägt, also ist jeder Zugriff abgesichert und ein fehlendes Feld ein normaler Ausgang statt eines Ausfalls. Die zwölf Extraktoren einzeln auszuschreiben hält genau das ausdrücklich, und deshalb gehen ein Mitschnitt mit zwei Paketen und einer mit zweitausend durch denselben Code, ohne einen einzigen Sonderfall.',
           'Dass der Mitschnitt einmal gelesen wird, ist der Grund, warum sich alles Weitere unmittelbar anfühlt. Jeder Filter, jede Neuzählung und jedes neu gezeichnete Diagramm arbeiten auf der Liste, die schon im Speicher liegt, sodass eine geänderte Datumsangabe oder IP-Adresse sofort eine neue Sicht auf denselben Mitschnitt liefert, ohne zurück in die Datei zu gehen.',
+        ],
+      },
+
+      easyBreathe: {
+        title: 'Easy Breathe',
+        tagline:
+          'Serbiens öffentliche Pollenmessungen, eingegrenzt auf die, die eine einzelne Person braucht.',
+        description:
+          'Eine mobile App auf offenen Verwaltungsdaten. Serbiens Umweltagentur veröffentlicht Pollenmessungen von Stationen im ganzen Land, und die App spiegelt sie nach Zeitplan in ihre eigene Datenbank, um sie dann auf die Allergene einzugrenzen, die eine Person ausgewählt hat, in einem Radius, den sie selbst wählt - auf einer Karte, nach Konzentrationsstufe, und als Push-Nachricht, wenn eine Stufe steigt.',
+        metaTitle: 'Easy Breathe - Vuk Cvetković',
+        metaDescription:
+          'Eine React-Native- und Expo-App auf einer NestJS-API: Serbiens offene Pollendaten, nach Zeitplan gespiegelt und nach Ort, Radius und ausgewählten Allergenen gefiltert.',
+        context: 'Seminararbeit über E-Government-Systeme, Fakultät für Elektronik in Niš',
+        domain: 'Offene Verwaltungsdaten, Pollen und Allergene',
+
+        flow: {
+          before: ['Fünf offene Endpunkte', 'Geplantes Einlesen'],
+          branches: [
+            ['Monatlich', 'Allergene, Typen, Orte'],
+            ['Stündlich, 9 bis 12 Uhr', 'Pollen, Konzentrationen'],
+          ],
+          after: [
+            'Eine Datenbank ohne Duplikate',
+            'Eingegrenzt auf Radius, Tag und Ihre Allergene',
+          ],
+        },
+
+        overview: [
+          'Die öffentlichen Daten sind da und sie sind gut: Serbiens Umweltagentur veröffentlicht täglich Pollenmessungen von Messstationen im ganzen Land, als offene API ohne Schlüssel und ohne Limit. Was sie nicht leistet, ist einer Person mit Ambrosia-Allergie zu sagen, ob heute dort, wo sie gerade steht, ein schlechter Tag ist. Diese Lücke ist die ganze App.',
+          'Die Arbeit teilt sich deshalb in zwei Hälften. Die API spiegelt die offenen Daten nach Zeitplan in ihre eigene Datenbank, denn ein Telefon soll nicht Hunderttausende landesweite Messungen durchblättern, um eine lokale Frage zu beantworten. Die App stellt dieser Spiegelung dann eine einzige Frage - was liegt in der Luft in meiner Nähe, von dem, worauf ich reagiere - und beantwortet sie auf einer Karte, in vier Stufen und in einer Nachricht.',
+        ],
+
+        steps: [
+          {
+            title: 'Die offenen Daten werden nach zwei Uhren gespiegelt',
+            body: 'Die fünf Endpunkte ändern sich nicht im gleichen Tempo, also werden sie auch nicht im gleichen Tempo abgerufen. Allergene, Allergentypen und Orte werden am Ersten des Monats um neun eingelesen. Pollen und Konzentrationen, also das, was sich bewegt, werden stündlich zwischen neun und zwölf geholt, wenn die Messungen des Tages erscheinen.',
+          },
+          {
+            title: 'Das Einlesen lässt sich gefahrlos wiederholen',
+            body: 'Jeder Einleser sieht zuerst nach, welche Ids er schon hält, behält nur die fehlenden und fügt diese ein. Ein stündlicher Lauf, der nichts Neues findet, schreibt also nichts, derselbe Lauf lässt sich ohne doppelte Messung wiederholen, und das angefragte Fenster reicht eine Woche zurück - was eine Messung einfängt, die erst Tage nach der Erhebung veröffentlicht wurde.',
+          },
+          {
+            title: 'Ein Ort und ein Radius werden zu einer Menge Stationen',
+            body: 'Die Koordinaten der Person und ihr gewählter Radius in Kilometern gehen in eine geografische MongoDB-Abfrage, wobei der Radius durch den der Erde geteilt wird, um die von der Abfrage erwartete Kugel zu erhalten. Zurück kommt jede Messstation, die nah genug ist, um für diese Person zu zählen.',
+          },
+          {
+            title: 'Stationen und ein Datum ergeben die Messungen, die zählen',
+            body: 'Diese Stations-Ids und das heutige Datum wählen die Pollendatensätze des Tages aus, von denen jeder die Ids der mit ihm gemessenen Konzentrationen trägt. Diese Konzentrationen werden dann geholt und auf die tatsächlich ausgewählten Allergene gekürzt, sodass die Antwort nur Messungen enthält, die zugleich nah und relevant sind.',
+          },
+          {
+            title: 'Jede Messung bekommt eine Stufe und einen Ort',
+            body: 'Eine Zahl in der Luft sagt allein nichts, also wird jede Konzentration gegen die veröffentlichten Margen ihres eigenen Allergens verglichen und kommt als Low, Normal, High oder Very high heraus. Die Messung wird dann mit dem Allergen und der Station formatiert, von der sie kommt, und genau das zeigen der Kartenmarker und die Detailansicht.',
+          },
+        ],
+
+        features: [
+          {
+            title: 'Eigene Allergene wählen',
+            body: 'Rund dreißig sind veröffentlicht, und das Profil ist eine Mehrfachauswahl über alle. Alles Weitere - Karte, Stufen, Nachrichten - folgt dieser Liste.',
+          },
+          {
+            title: 'Ihr Radius, Ihr Intervall',
+            body: 'Der Suchradius in Kilometern und wie oft geprüft wird in Stunden, beides im Profil eingestellt. Das Intervall ist da, damit die Prüfung so häufig sein kann, wie jemand möchte, ohne dass der Akku darüber entscheidet.',
+          },
+          {
+            title: 'Eine Karte, die man auf einen Blick liest',
+            body: 'Marker auf den Messstationen in der Nähe, nach Stufe eingefärbt. Ein Tippen darauf listet, welche Ihrer Allergene dort gemessen wurden und wie hoch jedes lag.',
+          },
+          {
+            title: 'Vier Stufen, mit Anzahl',
+            body: 'Low, Normal, High und Very high, jede mit der Zahl der nahen Allergene auf dieser Stufe. Ein Tippen auf eine Stufe gibt die Liste, ein Tippen auf einen Eintrag die Station, die Beschreibung und den Messwert.',
+          },
+          {
+            title: 'Eine Nachricht, wenn es steigt',
+            body: 'Eine Push-Nachricht und ein Hinweis in der App, sobald etwas aus der gewählten Liste in der Nähe eine hohe Konzentration erreicht, sodass die App nützt, ohne geöffnet zu werden.',
+          },
+          {
+            title: 'Konten, schlicht gehalten',
+            body: 'Registrierung und Anmeldung per E-Mail, mit dem Profil, das Allergene, Radius und Intervall hält, sodass dieselbe Auswahl dem Konto folgt und nicht dem Telefon.',
+          },
+        ],
+
+        dataset: [],
+
+        results: {
+          columns: [],
+          rows: [],
+          notes: [],
+        },
+
+        takeaway: [
+          'Die Lektion, die geblieben ist: offene Daten sind nicht dasselbe wie nutzbare Daten. Fünf Endpunkte, die sich über Ids gegenseitig referenzieren, ein landesweiter Maßstab und keine Möglichkeit, eine geografische Frage zu stellen - der Wert liegt vollständig im Spiegeln und im Verknüpfen. Zu entscheiden, was kopiert wird, wie oft, und wie zweimaliges Kopieren harmlos bleibt, da lag die eigentliche Ingenieursarbeit.',
+          'Die andere Hälfte ist, dass die Antwort ankommen muss, ohne erfragt zu werden. Wer eine Allergie hat, öffnet keine App zum Nachsehen - er will es gesagt bekommen, in einem Radius und Intervall, das einmal eingestellt wird. Push-Nachrichten auf einem geplant arbeitenden Backend sind das, was einen öffentlichen Datensatz in etwas verwandelt, das eine Person an dem Tag erreicht, an dem es zählt.',
         ],
       },
     },

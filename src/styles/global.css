@@ -860,25 +860,61 @@
   /* ---- Projects -------------------------------------------------------- */
 
   /*
-   * A row per project, not a card: title and description hold the column, tags
-   * and links sit in a fixed aside on the right. It reads well at one entry and
-   * it reads well at nine, which is the point - the section is a frame that
-   * takes whatever is in site.ts rather than a layout built around a count.
+   * Two projects to a row, on the same device Services uses: cells opened by a
+   * hairline, with the rules stopping at the column gap so a 2x2 does not read
+   * as four boxes. One full-width row each was right while there were two
+   * projects and turned the section into a long ladder at four.
+   *
+   * Two named columns rather than `auto-fit`, which is the same choice
+   * .svc-grid makes and for a better reason than symmetry: at this section's
+   * 69rem, auto-fit on any floor small enough to be safe on a narrow screen
+   * packs *three* columns in, and three columns is the one count four projects
+   * cannot fill. Two is the shape, so two is what the stylesheet says.
    */
-  .project {
-    border-bottom: 1px solid var(--site-hairline);
-    padding-block: 1.75rem 2rem;
+  .project-grid {
     display: grid;
-    row-gap: 1.25rem;
   }
 
-  @media (min-width: 64rem) {
-    .project {
-      grid-template-columns: minmax(0, 1fr) 16rem;
-      column-gap: 3rem;
-      row-gap: 0;
-      align-items: start;
+  @media (min-width: 48rem) {
+    .project-grid {
+      grid-template-columns: 1fr 1fr;
+      column-gap: 3.5rem;
     }
+  }
+
+  /*
+   * A cell, not a card: no border, no fill, no radius. The top rule opens it and
+   * the type does the rest, which is what keeps a grid of four in the same
+   * language as the hairline rows everywhere else on the page.
+   */
+  .project {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--site-hairline);
+    padding-block: 1.5rem 1.75rem;
+    transition: border-color 260ms var(--site-ease);
+  }
+
+  .project:hover {
+    border-color: var(--site-accent);
+  }
+
+  /*
+   * Pushes the tags and links to the bottom of the cell, so two cells side by
+   * side line up along their feet however long the descriptions run.
+   *
+   * Everything stays left-aligned. The tags used to be pushed to the section's
+   * right edge, which was right while the aside had a 16rem track of its own on
+   * a full-width row, and is wrong in a cell: there is no far edge to sit
+   * against any more, only the next cell.
+   */
+  .project-aside {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-top: auto;
+    padding-top: 1.25rem;
   }
 
   .project-title {
@@ -889,37 +925,10 @@
     letter-spacing: -0.02em;
   }
 
-  .project-aside {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    align-items: flex-start;
-  }
-
   .project-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.4rem;
-  }
-
-  /*
-   * Flush to the section's right edge once the aside has a column of its own.
-   * Left-aligned inside a 16rem track it sat in the middle of the row with air
-   * on both sides, which read as something that had not been positioned.
-   */
-  /*
-   * Scoped to the aside, not to .project-tags on its own: the same tag row is
-   * reused in the project index, where it sits in the middle of a text column
-   * and a global flex-end sent it off to the far right edge on its own.
-   */
-  @media (min-width: 64rem) {
-    .project-aside {
-      align-items: flex-end;
-    }
-
-    .project-aside .project-tags {
-      justify-content: flex-end;
-    }
   }
 
   /* Outlined and square rather than a filled pill, so a row of them reads as

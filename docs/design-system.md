@@ -294,6 +294,8 @@ class, **a manual toggle does not change the browser chrome colour.** See open i
 
 ## Changelog
 
+- 2026-09-08 - the homepage projects section is a two-column grid of hairline-opened
+  cells (`.project-grid`) rather than one full-width row per project.
 - 2026-09-08 - project tag rows carry their technology marks (`.tag-icon`).
 - 2026-09-08 - the request diagram takes any number of branches, driven by `--flow-n`.
 - 2026-09-08 - first version of this page.

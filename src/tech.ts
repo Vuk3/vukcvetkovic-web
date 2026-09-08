@@ -19,6 +19,7 @@ import {
   siAstro,
   siDocker,
   siDotnet,
+  siExpo,
   siExpress,
   siFastapi,
   siMongodb,
@@ -134,6 +135,16 @@ export const techIcons = {
   Tkinter: { path: lucideSquareMousePointer, stroked: true },
   Pyshark: { path: lucideActivity, stroked: true },
   Matplotlib: { path: lucideChartPie, stroked: true },
+
+  /*
+   * The mobile side. React Native borrows React's own atom, the way ASP.NET
+   * Core borrows the .NET mark: there is no separate published logo, and the
+   * name beside it is what distinguishes the two. Expo's mark is near-black at
+   * #1C2024, so on the dark ground it takes the near-white the page already
+   * uses for Express.
+   */
+  'React Native': { path: siReact.path, hex: '#087ea4', darkHex: `#${siReact.hex}` },
+  Expo: { path: siExpo.path, hex: `#${siExpo.hex}`, darkHex: '#e8e8e8' },
 } satisfies Record<string, TechIcon>;
 
 export type TechName = keyof typeof techIcons;

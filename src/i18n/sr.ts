@@ -135,6 +135,8 @@ const sr: Dict = {
       interface: "Interfejs",
       capture: "Čitanje snimka",
       charts: "Grafikoni",
+      mobile: "Mobilna aplikacija",
+      api: "API",
     },
 
     items: {
@@ -423,6 +425,98 @@ const sr: Dict = {
         takeaway: [
           "Disciplina koju format nameće je ono zbog čega ovo radi nad bilo kojim snimkom. Paket ne obećava ništa o tome koja polja nosi, pa je svako čitanje osigurano a polje kog nema je normalan ishod a ne otkaz. Pisanje dvanaest ekstraktora jednog po jednog je ono što to drži izričitim, i zato snimak sa dva paketa i snimak sa dve hiljade prolaze kroz isti kod bez ijednog specijalnog slučaja.",
           "To što se snimak čita jednom je ono zbog čega sve ostalo deluje trenutno. Svaki filter, svako prebrojavanje i svaki ponovo iscrtan grafikon rade nad listom koja je već u memoriji, pa promena datuma ili IP adrese odmah vraća novi pogled na isti snimak, bez vraćanja na fajl.",
+        ],
+      },
+
+      easyBreathe: {
+        title: "Easy Breathe",
+        tagline: "Javna merenja polena u Srbiji, svedena na ona koja jednom čoveku zaista trebaju.",
+        description:
+          "Mobilna aplikacija nad otvorenim podacima države. Agencija za zaštitu životne sredine objavljuje merenja polena sa stanica širom Srbije, a aplikacija ih po rasporedu preslikava u sopstvenu bazu, pa ih svodi na alergene koje je jedan korisnik izabrao, u radijusu koji je sam odredio - na mapi, po nivou koncentracije, i kao push notifikaciju kada nivo poraste.",
+        metaTitle: "Easy Breathe - Vuk Cvetković",
+        metaDescription:
+          "React Native i Expo aplikacija nad NestJS API-jem: otvoreni podaci o polenu u Srbiji, preslikani po rasporedu i filtrirani po lokaciji, radijusu i alergenima koje korisnik izabere.",
+        context: "Seminarski rad o sistemima e-Uprave, Elektronski fakultet u Nišu",
+        domain: "Otvoreni podaci države, polen i alergeni",
+
+        flow: {
+          before: ["Pet endpointa otvorenih podataka", "Seedovanje po rasporedu"],
+          branches: [
+            ["Mesečno", "Alergeni, tipovi, lokacije"],
+            ["Na sat, od 9 do 12", "Poleni, koncentracije"],
+          ],
+          after: [
+            "Jedna baza, bez duplikata",
+            "Svedena na radijus, dan i tvoje alergene",
+          ],
+        },
+
+        overview: [
+          "Javni podaci postoje i dobri su: Agencija za zaštitu životne sredine svakodnevno objavljuje merenja polena sa mernih stanica širom Srbije, kao otvoreni API bez ključa i bez ograničenja. Ono što ne radi jeste da čoveku alergičnom na ambroziju kaže da li je danas loš dan tamo gde se on baš nalazi. Ta praznina je cela aplikacija.",
+          "Zato se posao deli na dve strane. API preslikava otvorene podatke u sopstvenu bazu po rasporedu, jer telefon ne treba da prolazi kroz stotine hiljada merenja na nivou države da bi odgovorio na lokalno pitanje. Aplikacija onda postavlja jedno pitanje nad tim preslikom - šta je u vazduhu oko mene, od onoga na šta reagujem - i odgovara na mapi, u četiri nivoa, i u notifikaciji.",
+        ],
+
+        steps: [
+          {
+            title: "Otvoreni podaci se preslikavaju po dva sata",
+            body: "Pet endpointa se ne menja istom brzinom, pa se ne ni pribavlja istom brzinom. Alergeni, tipovi alergena i lokacije se seeduju u devet, prvog u mesecu. Poleni i koncentracije, koji su ono što se menja, pribavljaju se na svaki sat između devet i podneva, kada se dnevna merenja i pojave.",
+          },
+          {
+            title: "Seedovanje se bezbedno ponavlja",
+            body: "Svaki seeder prvo pogleda koje id-jeve već ima, zadrži samo one koje nema, i njih ubaci. Tako posao na sat koji ne nađe ništa novo ne upiše ništa, isto pokretanje se može ponoviti bez dupliranja merenja, a prozor koji traži ide nedelju dana unazad - i to je ono što uhvati merenje objavljeno par dana posle nego što je uzeto.",
+          },
+          {
+            title: "Lokacija i radijus postaju skup stanica",
+            body: "Korisnikove koordinate i njegov izabrani radijus u kilometrima ulaze u MongoDB geoprostorni upit, uz deljenje radijusa Zemljinim da bi se dobila sfera koju upit traži. Ono što se vrati je svaka merna stanica dovoljno blizu da tom čoveku bude važna.",
+          },
+          {
+            title: "Stanice i datum postaju merenja koja se računaju",
+            body: "Ti id-jevi stanica i današnji datum izdvajaju dnevne zapise o polenu, a svaki od njih nosi id-jeve koncentracija izmerenih sa njim. Te koncentracije se onda pribave i skrate na alergene koje je korisnik stvarno izabrao, pa odgovor drži samo merenja koja su i blizu i relevantna.",
+          },
+          {
+            title: "Svako merenje dobija nivo i mesto",
+            body: "Broj u vazduhu sam po sebi ne znači ništa, pa se svaka koncentracija poredi sa objavljenim marginama sopstvenog alergena i izađe kao Low, Normal, High ili Very high. Merenje se onda formatira sa alergenom i stanicom sa koje je došlo, a to je ono što marker na mapi i detaljni prikaz prikazuju.",
+          },
+        ],
+
+        features: [
+          {
+            title: "Izaberi svoje alergene",
+            body: "Objavljeno ih je oko trideset, a profil je multiselect nad svima. Sve nizvodno - mapa, nivoi, notifikacije - prati tu listu.",
+          },
+          {
+            title: "Tvoj radijus, tvoj interval",
+            body: "Radijus pretrage u kilometrima i na koliko sati se proverava, oba se postavljaju na profilu. Interval postoji da provera može da bude česta koliko neko želi, a da baterija ne odlučuje umesto njega.",
+          },
+          {
+            title: "Mapa koja se čita na prvi pogled",
+            body: "Markeri na mernim stanicama u tvojoj blizini, obojeni po nivou. Klikneš na jedan i izlista ti koji su tvoji alergeni tu izmereni i koliko je svaki bio visok.",
+          },
+          {
+            title: "Četiri nivoa, sa brojevima",
+            body: "Low, Normal, High i Very high, svaki sa brojem alergena u blizini na tom nivou. Klik na nivo daje listu, klik na unos daje stanicu, opis i izmerenu vrednost.",
+          },
+          {
+            title: "Notifikacija kada poraste",
+            body: "Push notifikacija i poruka u aplikaciji kada nešto sa izabrane liste dostigne visoku koncentraciju u blizini, pa je aplikacija korisna i kada se ne otvori.",
+          },
+          {
+            title: "Nalozi, bez komplikacija",
+            body: "Registracija i prijava preko mejla, sa profilom koji drži alergene, radijus i interval, pa isti izbor prati nalog a ne telefon.",
+          },
+        ],
+
+        dataset: [],
+
+        results: {
+          columns: [],
+          rows: [],
+          notes: [],
+        },
+
+        takeaway: [
+          "Lekcija koja je ostala je da otvoreni podaci nisu isto što i upotrebljivi podaci. Pet endpointa koji se pozivaju jedan na drugi preko id-jeva, razmera na nivou države i nikakav način da se postavi geografsko pitanje znače da je vrednost u potpunosti u preslikavanju i spajanju. Odluka šta kopirati, koliko često, i kako kopiranje dva puta učiniti bezopasnim je mesto gde je inženjerski posao zaista bio.",
+          "Druga polovina je to da odgovor mora da dođe a da se ne traži. Čovek sa alergijom ne otvara aplikaciju da proveri - želi da mu se kaže, u radijusu i intervalu koje postavi jednom. Push notifikacije nad backendom koji radi po rasporedu su ono što javni skup podataka pretvara u nešto što stigne do čoveka onog dana kada mu treba.",
         ],
       },
     },
