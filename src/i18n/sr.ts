@@ -13,7 +13,7 @@ const sr: Dict = {
   meta: {
     title: "Vuk Cvetković - Backend developer",
     description:
-      "Backend developer iz Niša. Servisi u NestJS-u i Node.js-u, event-driven infrastruktura na AWS-u i React interfejsi ispred njih.",
+      "Backend developer iz Niša. Servisi u Node.js-u (NestJS, Express), event-driven infrastruktura na AWS-u i React interfejsi ispred njih.",
     ogImageAlt: "Vuk Cvetković, backend developer",
   },
 
@@ -33,7 +33,7 @@ const sr: Dict = {
 
   hero: {
     positioning:
-      "Backend developer u Ncoded Solutions, u Nišu. Gradim servise u NestJS-u i Node.js-u, i u .NET-u kada ga klijent već koristi, pa ih puštam na AWS: kontejneri, redovi i događaji koji prolaze između njih.",
+      "Backend developer u Ncoded Solutions, u Nišu. Gradim servise u Node.js-u (NestJS, Express), i u .NET-u kada ga klijent već koristi, pa ih puštam na AWS: kontejneri, redovi i događaji koji prolaze između njih.",
     cta: "Kontaktirajte me",
     portraitAlt: "Portret Vuka Cvetkovića",
     portraitPlaceholder: "portret",
@@ -42,7 +42,7 @@ const sr: Dict = {
   about: {
     label: "O meni",
     paragraphs: [
-      "Najveći deo mog posla je na backendu. Projektujem API-je i servise iza njih, pretežno u NestJS-u i Node.js-u, i isti posao vodim do React interfejsa iznad njih kada projektu to treba.",
+      "Najveći deo mog posla je na backendu. Projektujem API-je i servise iza njih, pretežno u Node.js-u (NestJS, Express), i isti posao vodim do React interfejsa iznad njih kada projektu to treba.",
       "Stalo mi je do sistema koji se i posle prvog izdanja mogu razumeti: jasne granice između servisa, tipovi koji opisuju domen a ne prepričavaju bazu, i infrastruktura kojom mali tim može da upravlja bez ceremonije. Najviše toga što gradim radi na AWS-u.",
       "Živim u Nišu. Počeo sam sa full-stack strane, gradeći .NET Web API servise iza ASP.NET MVC sajtova, i postepeno se pomerao ka backendu i infrastrukturi ispod njega. Uz posao završavam master na softverskom inženjerstvu.",
     ],
@@ -64,7 +64,7 @@ const sr: Dict = {
       ncoded: {
         role: "Backend developer",
         bullets: [
-          "Backend servisi u NestJS-u i Node.js-u: REST API-ji, JWT autentikacija, kontrola pristupa po rolama i integracije sa trećim stranama, nad SQL i dokument bazama.",
+          "Backend servisi u Node.js-u (NestJS, Express): REST API-ji, JWT autentikacija, kontrola pristupa po rolama i integracije sa trećim stranama, nad SQL i dokument bazama.",
           "Isti posao u .NET-u kada ga klijent već koristi, po Clean Architecture, tako da poslovna logika ostane odvojiva od okvira oko sebe.",
           "AWS strana: S3, ECS, EC2, Lambda, Route 53 i EventBridge, što pokriva deploy i event-driven putanje između servisa.",
         ],
@@ -107,7 +107,7 @@ const sr: Dict = {
         "Projekti Vuka Cvetkovića, backend developera iz Niša: šta svaki sistem radi, kako je napravljen i šta je iz njega izašlo.",
       heading: "Projekti",
       intro:
-        "Radovi o kojima mogu da pišem u celini, sa arhitekturom i rezultatima umesto sa jednim screenshotom. Za sada jedan, a svaki dobija svoju stranicu.",
+        "Radovi o kojima mogu da pišem u celini, sa arhitekturom i rezultatima umesto sa jednim screenshotom. Svaki dobija svoju stranicu.",
     },
 
     detail: {
@@ -341,7 +341,7 @@ const sr: Dict = {
       {
         title: "Razvoj backenda i API-ja",
         description:
-          "Servisi i API-ji u NestJS-u, Node.js-u ili .NET-u: modelovanje podataka, autentikacija, integracije sa trećim stranama, i testovi koji ih drže u redu.",
+          "Servisi i API-ji u Node.js-u (NestJS, Express) ili .NET-u: modelovanje podataka, autentikacija, integracije sa trećim stranama, i testovi koji ih drže u redu.",
       },
       {
         title: "Full-stack rad na proizvodu",

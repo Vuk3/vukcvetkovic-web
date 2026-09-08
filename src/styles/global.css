@@ -925,6 +925,9 @@
   /* Outlined and square rather than a filled pill, so a row of them reads as
    * metadata rather than as a set of buttons. */
   .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
     border: 1px solid var(--site-hairline);
     padding: 0.1rem 0.5rem;
     font-size: 0.8125rem;
@@ -938,6 +941,24 @@
   .project:hover .tag {
     border-color: color-mix(in oklab, var(--site-fg) 30%, transparent);
     color: var(--site-fg);
+  }
+
+  /*
+   * The mark inside a tag. Smaller than the one in the skills rows and centred
+   * rather than sat on the baseline, because a tag is a box aligning its
+   * contents rather than a run of text.
+   *
+   * It takes its brand colour outright, with no reveal to fade in and no muted
+   * resting state: a tag row is already small and quiet, and the marks are what
+   * makes a stack scannable at this size. `currentColor` is the fallback for the
+   * entries that have no brand, so those follow the label from muted to full
+   * contrast as the row is hovered.
+   */
+  .tag-icon {
+    width: 0.8125rem;
+    height: 0.8125rem;
+    flex-shrink: 0;
+    color: var(--brand, currentColor);
   }
 
   /* ---- Services -------------------------------------------------------- */

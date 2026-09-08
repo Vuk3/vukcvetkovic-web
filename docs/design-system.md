@@ -216,7 +216,9 @@ row arrives. Wrapping them in another element resets the count and breaks the st
 2. ⚠️ **Two custom properties must stay `@property`-registered**, because an unregistered
    one jumps at the midpoint instead of interpolating:
    - `--brand-mix` (`<percentage>`, initial `100%`) fades a technology mark from the muted
-     tone to its brand colour. Unregistered, the colour snaps on.
+     tone to its brand colour. Unregistered, the colour snaps on. Only the skills rows
+     animate it - a mark in a project's `.tag` row takes its brand colour outright, since
+     that row is already small and quiet and has no reveal of its own.
    - `--head-pad` (`<length>`, initial `0.85rem`) drives the header's padding as it settles.
 
 3. ⚠️ **`--head-pad`'s fallback in `.head-inner` is load-bearing.** The `head-settle`
@@ -292,5 +294,6 @@ class, **a manual toggle does not change the browser chrome colour.** See open i
 
 ## Changelog
 
+- 2026-09-08 - project tag rows carry their technology marks (`.tag-icon`).
 - 2026-09-08 - the request diagram takes any number of branches, driven by `--flow-n`.
 - 2026-09-08 - first version of this page.

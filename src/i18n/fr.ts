@@ -13,7 +13,7 @@ const fr: Dict = {
   meta: {
     title: "Vuk Cvetković - Développeur backend",
     description:
-      "Développeur backend à Niš, en Serbie. Des services en NestJS et Node.js, une infrastructure événementielle sur AWS, et les interfaces React devant.",
+      "Développeur backend à Niš, en Serbie. Des services en Node.js (NestJS, Express), une infrastructure événementielle sur AWS, et les interfaces React devant.",
     ogImageAlt: "Vuk Cvetković, développeur backend",
   },
 
@@ -33,7 +33,7 @@ const fr: Dict = {
 
   hero: {
     positioning:
-      "Développeur backend chez Ncoded Solutions, à Niš. Je construis des services en NestJS et Node.js, et en .NET quand un client y est déjà, puis je les fais tourner sur AWS : conteneurs, files d’attente et les événements qui circulent entre eux.",
+      "Développeur backend chez Ncoded Solutions, à Niš. Je construis des services en Node.js (NestJS, Express), et en .NET quand un client y est déjà, puis je les fais tourner sur AWS : conteneurs, files d’attente et les événements qui circulent entre eux.",
     cta: "Me contacter",
     portraitAlt: "Portrait de Vuk Cvetković",
     portraitPlaceholder: "portrait",
@@ -42,7 +42,7 @@ const fr: Dict = {
   about: {
     label: "À propos",
     paragraphs: [
-      "L’essentiel de mon travail se situe côté backend. Je conçois des API et les services derrière, surtout en NestJS et Node.js, et je poursuis le même travail jusqu’aux interfaces React au-dessus quand le projet le demande.",
+      "L’essentiel de mon travail se situe côté backend. Je conçois des API et les services derrière, surtout en Node.js (NestJS, Express), et je poursuis le même travail jusqu’aux interfaces React au-dessus quand le projet le demande.",
       "Je tiens aux systèmes qui restent compréhensibles après la première mise en production : des frontières nettes entre les services, des types qui décrivent le domaine plutôt que de répéter la base de données, et une infrastructure qu’une petite équipe peut exploiter sans cérémonie. L’essentiel de ce que je construis tourne sur AWS.",
       "Je vis à Niš, en Serbie. J’ai commencé du côté full-stack, en construisant des services .NET Web API derrière des sites ASP.NET MVC, puis je me suis déplacé vers le backend et l’infrastructure en dessous. En parallèle, je termine un master en génie logiciel.",
     ],
@@ -64,7 +64,7 @@ const fr: Dict = {
       ncoded: {
         role: "Développeur backend",
         bullets: [
-          "Des services backend en NestJS et Node.js : API REST, authentification JWT, contrôle d’accès par rôles et intégrations tierces, sur des bases SQL comme documentaires.",
+          "Des services backend en Node.js (NestJS, Express) : API REST, authentification JWT, contrôle d’accès par rôles et intégrations tierces, sur des bases SQL comme documentaires.",
           "Le même travail en .NET quand un client y est déjà, structuré en Clean Architecture pour que la logique métier reste séparable du framework autour.",
           "Le côté AWS : S3, ECS, EC2, Lambda, Route 53 et EventBridge, ce qui couvre les déploiements et les chemins événementiels entre les services.",
         ],
@@ -107,7 +107,7 @@ const fr: Dict = {
         "Les projets de Vuk Cvetković, développeur backend à Niš : ce que fait chaque système, comment il est construit, et ce qui en est ressorti.",
       heading: "Projets",
       intro:
-        "Des travaux que je peux détailler entièrement, avec l’architecture et les résultats plutôt qu’une capture d’écran. Un seul pour l’instant, et chacun a sa propre page.",
+        "Des travaux que je peux détailler entièrement, avec l’architecture et les résultats plutôt qu’une capture d’écran. Chacun a sa propre page.",
     },
 
     detail: {
@@ -346,7 +346,7 @@ const fr: Dict = {
       {
         title: "Développement backend et API",
         description:
-          "Des services et des API en NestJS, Node.js ou .NET : modélisation des données, authentification, intégrations tierces, et les tests qui les tiennent honnêtes.",
+          "Des services et des API en Node.js (NestJS, Express) ou .NET : modélisation des données, authentification, intégrations tierces, et les tests qui les tiennent honnêtes.",
       },
       {
         title: "Travail produit full-stack",

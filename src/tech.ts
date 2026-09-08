@@ -80,9 +80,10 @@ export const techIcons = {
   Docker: { path: siDocker.path, hex: `#${siDocker.hex}` },
 
   /*
-   * The project stacks. Nothing here is a listed skill - these are the names a
-   * single project was built on, and they only ever render on that project's
-   * page, which is why they sit in the same registry but not in site.skillGroups.
+   * The project stacks. Python aside, nothing here is a listed skill - these are
+   * the names a single project was built on, and they render on that project's
+   * page and in the tag row that summarises it, which is why they sit in the
+   * same registry without all being in site.skillGroups.
    *
    * Four of the brand colours are too dark to carry on the dark ground and get a
    * lighter pair: Ultralytics is near-navy, NumPy near-black, and OpenCV and

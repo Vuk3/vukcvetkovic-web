@@ -307,6 +307,8 @@ So the whole cost is SEO, it is invisible locally, and the only way to catch it 
 
 ## Changelog
 
+- 2026-09-08 - Python replaced C# in the backend skill group, and prose now names
+  Node.js with NestJS and Express in parentheses rather than listing them as equals.
 - 2026-09-08 - Encryptix added as a second project. The results table moved its words
   into the dictionaries and kept its figures in `site.ts` (§5.1), and `stackGroups` gained
   `client` and `service`.

@@ -12,7 +12,7 @@ const en = {
   meta: {
     title: "Vuk Cvetković - Backend developer",
     description:
-      "Backend developer in Niš, Serbia. Services in NestJS and Node.js, event-driven infrastructure on AWS, and the React interfaces in front of them.",
+      "Backend developer in Niš, Serbia. Services in Node.js (NestJS, Express), event-driven infrastructure on AWS, and the React interfaces in front of them.",
     ogImageAlt: "Vuk Cvetković, backend developer",
   },
 
@@ -32,7 +32,7 @@ const en = {
 
   hero: {
     positioning:
-      "Backend developer at Ncoded Solutions, in Niš. I build services in NestJS and Node.js, and in .NET where a client already runs it, then put them on AWS: containers, queues, and the events that pass between them.",
+      "Backend developer at Ncoded Solutions, in Niš. I build services in Node.js (NestJS, Express), and in .NET where a client already runs it, then put them on AWS: containers, queues, and the events that pass between them.",
     cta: "Contact me",
     portraitAlt: "Portrait of Vuk Cvetković",
     /** Only rendered if src/assets/portrait.* is missing. */
@@ -42,7 +42,7 @@ const en = {
   about: {
     label: "About",
     paragraphs: [
-      "Most of my work sits on the backend. I design APIs and the services behind them, mainly in NestJS and Node.js, and carry the same work through to the React interfaces on top of them when a project needs it.",
+      "Most of my work sits on the backend. I design APIs and the services behind them, mainly in Node.js (NestJS, Express), and carry the same work through to the React interfaces on top of them when a project needs it.",
       "I care about systems that are still understandable after the first release: clear boundaries between services, types that describe the domain rather than restate the database, and infrastructure a small team can operate without ceremony. Most of what I build runs on AWS.",
       "I am based in Niš, Serbia. I started on the full-stack side, building .NET Web API services behind ASP.NET MVC sites, and have moved steadily towards the backend and the infrastructure under it. Alongside the work I am finishing a master’s in software engineering.",
     ],
@@ -64,7 +64,7 @@ const en = {
       ncoded: {
         role: "Backend developer",
         bullets: [
-          "Backend services in NestJS and Node.js: REST APIs, JWT authentication, role-based access control and third-party integrations, over both SQL and document databases.",
+          "Backend services in Node.js (NestJS, Express): REST APIs, JWT authentication, role-based access control and third-party integrations, over both SQL and document databases.",
           "The same work in .NET where a client already runs it, structured with Clean Architecture so the business logic stays separable from the framework around it.",
           "The AWS side: S3, ECS, EC2, Lambda, Route 53 and EventBridge, covering deployments and the event-driven paths between services.",
         ],
@@ -120,7 +120,7 @@ const en = {
         "Projects by Vuk Cvetković, backend developer in Niš: what each system does, how it is built, and what came out of it.",
       heading: "Projects",
       intro:
-        "Work I can write about in full, with the architecture and the results rather than a screenshot. One entry for now, and each gets a page of its own.",
+        "Work I can write about in full, with the architecture and the results rather than a screenshot. Each one gets a page of its own.",
     },
 
     /** Section headings on a project page. */
@@ -363,7 +363,7 @@ const en = {
       {
         title: "Backend and API development",
         description:
-          "Services and APIs in NestJS, Node.js or .NET: data modelling, authentication, third-party integrations, and the tests that keep them honest.",
+          "Services and APIs in Node.js (NestJS, Express) or .NET: data modelling, authentication, third-party integrations, and the tests that keep them honest.",
       },
       {
         title: "Full-stack product work",

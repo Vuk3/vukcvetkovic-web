@@ -106,7 +106,12 @@ export interface Project {
 const skillGroups: SkillGroup[] = [
   {
     id: "backend",
-    items: ["NestJS", "Node.js", "Express", ".NET", "C#"],
+    /*
+     * Python sits where C# used to. C# was the one entry here that only ever
+     * appeared alongside .NET, so it said nothing the entry beside it did not,
+     * while Python is a language of its own on this list and carries a project.
+     */
+    items: ["NestJS", "Node.js", "Express", ".NET", "Python"],
   },
   {
     id: "frontend",
@@ -224,7 +229,7 @@ const projects: Project[] = [
         { values: [150, 44.16, 40.39] },
       ],
     },
-    links: { source: "https://github.com/Vuk3/Encryptix" },
+    links: {},
   },
 ];
 

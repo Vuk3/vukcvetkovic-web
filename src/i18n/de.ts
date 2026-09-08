@@ -13,7 +13,7 @@ const de: Dict = {
   meta: {
     title: 'Vuk Cvetković - Backend-Entwickler',
     description:
-      'Backend-Entwickler in Niš, Serbien. Services in NestJS und Node.js, ereignisgetriebene Infrastruktur auf AWS und die React-Oberflächen davor.',
+      'Backend-Entwickler in Niš, Serbien. Services in Node.js (NestJS, Express), ereignisgetriebene Infrastruktur auf AWS und die React-Oberflächen davor.',
     ogImageAlt: 'Vuk Cvetković, Backend-Entwickler',
   },
 
@@ -33,7 +33,7 @@ const de: Dict = {
 
   hero: {
     positioning:
-      'Backend-Entwickler bei Ncoded Solutions, in Niš. Ich baue Services in NestJS und Node.js, und in .NET, wenn ein Kunde damit schon arbeitet, und bringe sie dann auf AWS: Container, Queues und die Events, die dazwischen laufen.',
+      'Backend-Entwickler bei Ncoded Solutions, in Niš. Ich baue Services in Node.js (NestJS, Express), und in .NET, wenn ein Kunde damit schon arbeitet, und bringe sie dann auf AWS: Container, Queues und die Events, die dazwischen laufen.',
     cta: 'Kontakt aufnehmen',
     portraitAlt: 'Porträt von Vuk Cvetković',
     portraitPlaceholder: 'Porträt',
@@ -42,7 +42,7 @@ const de: Dict = {
   about: {
     label: 'Über mich',
     paragraphs: [
-      'Der größte Teil meiner Arbeit liegt im Backend. Ich entwerfe APIs und die Services dahinter, überwiegend in NestJS und Node.js, und führe dieselbe Arbeit bis zu den React-Oberflächen darüber weiter, wenn ein Projekt das braucht.',
+      'Der größte Teil meiner Arbeit liegt im Backend. Ich entwerfe APIs und die Services dahinter, überwiegend in Node.js (NestJS, Express), und führe dieselbe Arbeit bis zu den React-Oberflächen darüber weiter, wenn ein Projekt das braucht.',
       'Mir liegt an Systemen, die auch nach dem ersten Release noch verständlich sind: klare Grenzen zwischen Services, Typen, die die Domäne beschreiben statt die Datenbank zu wiederholen, und eine Infrastruktur, die ein kleines Team ohne Zeremonie betreiben kann. Das meiste, was ich baue, läuft auf AWS.',
       'Ich lebe in Niš, Serbien. Angefangen habe ich auf der Full-Stack-Seite, mit .NET-Web-API-Services hinter ASP.NET-MVC-Seiten, und habe mich stetig zum Backend und der Infrastruktur darunter bewegt. Nebenher beende ich einen Master in Software Engineering.',
     ],
@@ -64,7 +64,7 @@ const de: Dict = {
       ncoded: {
         role: 'Backend-Entwickler',
         bullets: [
-          'Backend-Services in NestJS und Node.js: REST-APIs, JWT-Authentifizierung, rollenbasierte Zugriffskontrolle und Integrationen von Drittanbietern, über SQL- wie Dokumentdatenbanken.',
+          'Backend-Services in Node.js (NestJS, Express): REST-APIs, JWT-Authentifizierung, rollenbasierte Zugriffskontrolle und Integrationen von Drittanbietern, über SQL- wie Dokumentdatenbanken.',
           'Dieselbe Arbeit in .NET, wenn ein Kunde damit schon arbeitet, mit Clean Architecture strukturiert, damit die Geschäftslogik vom umgebenden Framework trennbar bleibt.',
           'Die AWS-Seite: S3, ECS, EC2, Lambda, Route 53 und EventBridge, also Deployments und die ereignisgetriebenen Wege zwischen den Services.',
         ],
@@ -107,7 +107,7 @@ const de: Dict = {
         'Projekte von Vuk Cvetković, Backend-Entwickler in Niš: was jedes System tut, wie es gebaut ist und was dabei herauskam.',
       heading: 'Projekte',
       intro:
-        'Arbeiten, über die ich vollständig schreiben kann, mit Architektur und Ergebnissen statt mit einem Screenshot. Vorerst eine, und jede bekommt ihre eigene Seite.',
+        'Arbeiten, über die ich vollständig schreiben kann, mit Architektur und Ergebnissen statt mit einem Screenshot. Jede bekommt ihre eigene Seite.',
     },
 
     detail: {
@@ -342,7 +342,7 @@ const de: Dict = {
       {
         title: 'Backend- und API-Entwicklung',
         description:
-          'Services und APIs in NestJS, Node.js oder .NET: Datenmodellierung, Authentifizierung, Integrationen von Drittanbietern und die Tests, die das Ganze ehrlich halten.',
+          'Services und APIs in Node.js (NestJS, Express) oder .NET: Datenmodellierung, Authentifizierung, Integrationen von Drittanbietern und die Tests, die das Ganze ehrlich halten.',
       },
       {
         title: 'Full-Stack-Produktarbeit',

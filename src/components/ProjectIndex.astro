@@ -9,6 +9,7 @@
 import type { Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
 import { site } from '../site';
+import TechIcon from './TechIcon.astro';
 
 interface Props {
   lang: Lang;
@@ -51,7 +52,10 @@ const index = dict.projects.index;
                 {project.tech.length > 0 && (
                   <ul class="project-tags mt-5">
                     {project.tech.map((tech) => (
-                      <li class="tag">{tech}</li>
+                      <li class="tag">
+                        <TechIcon name={tech} class="tag-icon" />
+                        {tech}
+                      </li>
                     ))}
                   </ul>
                 )}

@@ -16,6 +16,7 @@ import type { Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
 import { site } from '../site';
 import Section, { type SectionTone } from './Section.astro';
+import TechIcon from './TechIcon.astro';
 
 interface Props {
   lang: Lang;
@@ -55,7 +56,10 @@ const dict = getDict(lang);
               {project.tech.length > 0 && (
                 <ul class="project-tags">
                   {project.tech.map((tech) => (
-                    <li class="tag">{tech}</li>
+                    <li class="tag">
+                      <TechIcon name={tech} class="tag-icon" />
+                      {tech}
+                    </li>
                   ))}
                 </ul>
               )}
