@@ -196,9 +196,34 @@ stylesheet, so the order of the hero sequence is readable where the elements are
 a blur on body copy would read as a rendering fault.
 
 ⚠️ **Stagger on a scroll timeline is `animation-range`, not `animation-delay`** -
-`animation-delay` has no meaning on a scroll timeline. `.reveal-item` steps
-`entry 6%/12%/18%` and flattens at `nth-child(n+4)`. `.tech` steps six times, the largest
-skill group having five entries.
+`animation-delay` has no meaning on a scroll timeline. `.reveal-item` steps its start
+`90/140/190px` and flattens at `nth-child(n+4)`. `.tech` steps six times, the largest skill
+group having five entries.
+
+### Why every range is `cover`, in pixels
+
+Two decisions in the ranges are not free choices, and both were arrived at the hard way.
+
+**`cover`, not `entry`.** `entry` is the obvious phase and it is measured in the *element's
+own height*: it runs from the element's top edge reaching the bottom of the screen to its
+bottom edge reaching it. A section label on a rule is about 50px tall and a technology chip
+about 28px, so on `entry` a whole reveal started and finished inside 28 to 50 pixels of
+scrolling, at the very bottom edge of the screen. The animations ran correctly and were
+invisible. `cover` spans the element's height **plus the viewport's**, so a 28px chip gets a
+screen's worth of runway instead of 28 pixels of it.
+
+**Pixels, not percentages.** The amount of page below any element is a fixed pixel quantity,
+while a percentage of `cover` grows with the viewport. The last revealed element on a page -
+Contact here, a takeaway on a project page - can only ever travel its own height plus
+whatever follows it, around 500px. `cover 30%` is 375px on a laptop and 600px on an 1800px
+monitor, so a percentage range that finishes on a laptop **runs out of page on a tall screen**
+and leaves the section permanently a few pixels low and slightly transparent. In pixels the
+margin is identical on a 667px phone and an 1800px monitor.
+
+⚠️ **Every range on the site finishes with slack, and the tightest is 48px** - the sixth
+chip in the last stack row of a project page, on `cover 280px cover 520px`. Push any end
+value further and check that case first: its budget is the row's own height plus the takeaway
+section and footer below it.
 
 ⚠️ **The `.tech` ranges count within their row, not across the section.** That is why the
 tiles sit directly inside the `<dd class="skill-items">` in
@@ -294,6 +319,8 @@ class, **a manual toggle does not change the browser chrome colour.** See open i
 
 ## Changelog
 
+- 2026-09-08 - scroll reveals moved from `entry` percentages to `cover` pixel offsets,
+  which is what makes them visible and what keeps the last section on a page finishing.
 - 2026-09-08 - the homepage projects section is a two-column grid of hairline-opened
   cells (`.project-grid`) rather than one full-width row per project.
 - 2026-09-08 - project tag rows carry their technology marks (`.tag-icon`).

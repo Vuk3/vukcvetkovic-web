@@ -1570,6 +1570,33 @@
  * the progress. Entries inside a section stagger through animation-range rather
  * than a delay, since animation-delay has no meaning on a scroll timeline.
  *
+ * ⚠️ Every range is measured in `cover`, and that is the whole reason these are
+ * visible. The obvious phase to reach for is `entry`, but `entry` is measured in
+ * the *element's own height*: it runs from the moment the element's top edge
+ * reaches the bottom of the screen to the moment its bottom edge does. A section
+ * label sitting on a rule is about 50px tall and a technology chip about 28px,
+ * so on `entry` the whole animation started and finished inside 28 to 50 pixels
+ * of scrolling, down at the very bottom edge of the screen where nobody is
+ * looking. It was running correctly and could not be seen.
+ *
+ * `cover` spans the element's height *plus* the viewport's, so even a 28px chip
+ * gets a screen's worth of runway rather than 28 pixels of it.
+ *
+ * ⚠️ And the offsets into it are **pixels, not percentages**, which matters for
+ * a reason that is not obvious. A percentage of `cover` grows with the viewport,
+ * while the amount of page below any element is a fixed pixel quantity - so the
+ * last revealed thing on a page (Contact here, a takeaway on a project page) has
+ * only `its own height + whatever follows it` of travel available, about 500px.
+ * `cover 30%` is 375px on a laptop and 600px on a 1800px monitor, so the same
+ * range that finishes on a laptop runs out of page on a tall screen and leaves
+ * the section sitting permanently a few pixels low and slightly transparent.
+ * In pixels the margin is the same on a 667px phone and a 1800px monitor.
+ *
+ * So: nothing moves for the first 80px after an element peeks in, the motion
+ * runs over the next 240px, and every range on the site finishes with slack -
+ * 48px in the tightest case, which is the sixth chip in the last stack row of a
+ * project page. Push any end value further and check that case first.
+ *
  * Longhands throughout: the `animation` shorthand resets animation-timeline and
  * animation-range to their initial values, so writing it here would silently
  * undo the timeline on the line below.
@@ -1581,7 +1608,7 @@
       animation-timing-function: var(--site-ease);
       animation-fill-mode: both;
       animation-timeline: view();
-      animation-range: entry 5% entry 45%;
+      animation-range: cover 80px cover 320px;
     }
 
     /* Items within a section, each a little behind the one above it. */
@@ -1590,19 +1617,19 @@
       animation-timing-function: var(--site-ease);
       animation-fill-mode: both;
       animation-timeline: view();
-      animation-range: entry 6% entry 46%;
+      animation-range: cover 90px cover 330px;
     }
 
     .reveal-item:nth-child(2) {
-      animation-range: entry 12% entry 52%;
+      animation-range: cover 140px cover 380px;
     }
 
     .reveal-item:nth-child(3) {
-      animation-range: entry 18% entry 58%;
+      animation-range: cover 190px cover 430px;
     }
 
     .reveal-item:nth-child(n + 4) {
-      animation-range: entry 24% entry 64%;
+      animation-range: cover 240px cover 480px;
     }
 
     /*
@@ -1610,33 +1637,38 @@
      * brand colours as they go. Ranges cover up to six entries, the largest
      * group having five, and they count within a row rather than across the
      * section, which is why the tiles sit directly inside the <dd>.
+     *
+     * These are the entries that suffered worst on `entry`: a chip is about 28px
+     * tall, so the six staggered ranges were all crammed into 28px of scrolling
+     * and the row arrived already finished. On `cover` the same stagger spreads
+     * over 280px of scrolling and reads as a row filling in left to right.
      */
     .tech {
       animation-name: tech-in;
       animation-timing-function: var(--site-ease);
       animation-fill-mode: both;
       animation-timeline: view();
-      animation-range: entry 5% entry 45%;
+      animation-range: cover 80px cover 320px;
     }
 
     .tech:nth-child(2) {
-      animation-range: entry 11% entry 51%;
+      animation-range: cover 120px cover 360px;
     }
 
     .tech:nth-child(3) {
-      animation-range: entry 17% entry 57%;
+      animation-range: cover 160px cover 400px;
     }
 
     .tech:nth-child(4) {
-      animation-range: entry 23% entry 63%;
+      animation-range: cover 200px cover 440px;
     }
 
     .tech:nth-child(5) {
-      animation-range: entry 29% entry 69%;
+      animation-range: cover 240px cover 480px;
     }
 
     .tech:nth-child(n + 6) {
-      animation-range: entry 35% entry 75%;
+      animation-range: cover 280px cover 520px;
     }
 
     .site-head {
