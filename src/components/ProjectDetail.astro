@@ -1,0 +1,289 @@
+---
+/**
+ * A whole project page, shared by /projects/<slug>/ and its three prefixed
+ * locales so the four cannot drift - the same arrangement as Home.astro.
+ *
+ * It renders whatever the project has and skips what it does not, so a second
+ * project with no measured comparison simply has no results section. Every
+ * entry under `projects.items` in the dictionaries carries the same keys for
+ * exactly this reason: one component, any project.
+ *
+ * Widths and heads come from the same family the homepage uses (see
+ * Section.astro): prose sits at the About measure, the numbered steps at the
+ * timeline one, the table and the diagram at the widest. Tone is spent three
+ * times out of nine sections, which is the restraint the homepage keeps.
+ */
+import { ArrowLeft, ArrowUpRight } from '@lucide/astro';
+import type { Lang } from '../i18n/types';
+import { getDict, localizePath } from '../i18n/utils';
+import type { Project } from '../site';
+import ProjectFlow from './ProjectFlow.astro';
+import Section from './Section.astro';
+import TechIcon from './TechIcon.astro';
+
+interface Props {
+  lang: Lang;
+  project: Project;
+}
+
+const { lang, project } = Astro.props;
+const dict = getDict(lang);
+const copy = dict.projects.items[project.id];
+const labels = dict.projects.detail;
+
+const projectsPath = localizePath('/projects/', lang);
+
+/*
+ * Numbers are stored raw in src/site.ts and formatted here, so 17942 prints as
+ * "17,942" in English and "17.942" in Serbian and German, and 0.916 keeps its
+ * decimal comma outside English. Three fraction digits on the metrics because
+ * that is the precision the thesis reports and a trailing zero should not be
+ * dropped: 0.800 and 0.8 are not the same claim.
+ */
+const count = new Intl.NumberFormat(lang);
+const metric = new Intl.NumberFormat(lang, {
+  minimumFractionDigits: 3,
+  maximumFractionDigits: 3,
+});
+
+const links = [
+  { href: project.links.live, label: dict.projects.liveLabel },
+  { href: project.links.source, label: dict.projects.sourceLabel },
+].filter((link): link is { href: string; label: string } => Boolean(link.href));
+
+const meta = [
+  { label: labels.year, value: project.year },
+  { label: labels.context, value: copy.context },
+  { label: labels.domain, value: copy.domain },
+];
+---
+
+<article>
+  {/*
+    The page head. In view at first paint, so it runs the load sequence rather
+    than a scroll reveal, and the beats are the same ones the hero uses: title,
+    then the line under it, then the metadata.
+  */}
+  <header class="page-head">
+    <div class="shell shell-projects">
+      <a href={projectsPath} class="crumb enter">
+        <ArrowLeft class="size-[0.95rem]" aria-hidden="true" />
+        {dict.projects.back}
+      </a>
+
+      <h1 class="page-title enter" style="--enter-delay:60ms">{copy.title}</h1>
+
+      <p class="page-lead enter" style="--enter-delay:160ms">{copy.tagline}</p>
+
+      <div class="enter" style="--enter-delay:260ms">
+        <dl class="page-meta">
+          {
+            meta.map((item) => (
+              <div class="page-meta-cell">
+                <dt class="page-meta-label">{item.label}</dt>
+                <dd class="page-meta-value">{item.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+
+        {
+          links.length > 0 && (
+            <ul class="mt-7 flex flex-wrap gap-x-6 gap-y-2">
+              {links.map((link) => (
+                <li>
+                  <a href={link.href} target="_blank" rel="noopener" class="link">
+                    {link.label}
+                    <ArrowUpRight class="ml-1 inline size-[0.9rem] align-[-0.05em]" aria-hidden="true" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+    </div>
+  </header>
+
+  <Section
+    id="flow"
+    label={labels.flow}
+    width="projects"
+    tone="band"
+    head="rule"
+    space="lite"
+  >
+    <ProjectFlow
+      before={copy.flow.before}
+      branches={copy.flow.branches}
+      after={copy.flow.after}
+    />
+  </Section>
+
+  {
+    copy.overview.length > 0 && (
+      <Section id="overview" label={labels.overview} width="about">
+        <div class="reveal space-y-4">
+          {copy.overview.map((paragraph, index) =>
+            index === 0 ? (
+              <p class="text-[clamp(1.1875rem,1.7vw,1.375rem)] leading-[1.55] tracking-[-0.01em]">
+                {paragraph}
+              </p>
+            ) : (
+              <p>{paragraph}</p>
+            ),
+          )}
+        </div>
+      </Section>
+    )
+  }
+
+  {
+    copy.steps.length > 0 && (
+      <Section id="architecture" label={labels.architecture} width="timeline" head="rule">
+        {/*
+          Numbered, which nothing else on this site is: a request genuinely runs
+          in this order, and the number is the only thing that can carry it.
+          Two digits so the column does not shift at the tenth step.
+        */}
+        <ol>
+          {copy.steps.map((step, index) => (
+            <li class="entry entry-step reveal-item">
+              <p class="entry-period">{String(index + 1).padStart(2, '0')}</p>
+              <div>
+                <h3 class="entry-title">{step.title}</h3>
+                <p class="measure mt-2 text-muted">{step.body}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </Section>
+    )
+  }
+
+  {
+    copy.features.length > 0 && (
+      <Section
+        id="features"
+        label={labels.features}
+        width="services"
+        tone="band"
+        head="rule"
+      >
+        <ul class="svc-grid">
+          {copy.features.map((feature) => (
+            <li class="svc reveal-item">
+              <h3 class="svc-title">{feature.title}</h3>
+              <p class="mt-2 text-muted">{feature.body}</p>
+            </li>
+          ))}
+        </ul>
+      </Section>
+    )
+  }
+
+  {
+    copy.dataset.length > 0 && (
+      <Section id="dataset" label={labels.dataset} width="about">
+        <div class="reveal space-y-4">
+          {copy.dataset.map((paragraph) => (
+            <p>{paragraph}</p>
+          ))}
+        </div>
+      </Section>
+    )
+  }
+
+  {/*
+    Results sit on the timeline measure rather than the widest one: seven
+    columns stretched across 1104 points put 60 points of air between a model
+    name and its first figure, which reads as a table that lost its columns.
+  */}
+  {
+    project.results && (
+      <Section id="results" label={labels.results} width="timeline" head="rule">
+        {/*
+          A real table, because this is real tabular data and any other shape
+          would be decoration over it. It scrolls inside its own box rather
+          than pushing the page sideways on a phone.
+        */}
+        <div class="metrics-wrap reveal">
+          <table class="metrics">
+            <caption class="sr-only">{`${copy.title} - ${labels.results}`}</caption>
+            <thead>
+              <tr>
+                <th scope="col">{dict.projects.results.model}</th>
+                <th scope="col">{dict.projects.results.annotations}</th>
+                {project.results.metrics.map((name) => (
+                  <th scope="col">{name}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {project.results.rows.map((row) => (
+                <tr>
+                  <th scope="row">{row.model}</th>
+                  <td>{count.format(row.annotations)}</td>
+                  {row.values.map((value) => (
+                    <td>{value === null ? '-' : metric.format(value)}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {copy.results.length > 0 && (
+          <div class="measure reveal mt-9 space-y-4">
+            {copy.results.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))}
+          </div>
+        )}
+      </Section>
+    )
+  }
+
+  {/*
+    The stack, as the same rows the Skills section uses. Grouped by service
+    rather than by category, so the list doubles as a map of what runs where.
+  */}
+  <Section id="stack" label={labels.stack} width="skills">
+    <dl>
+      {
+        project.stack.map((group) => (
+          <div class="skill-row">
+            <dt class="skill-group">{dict.projects.stackGroups[group.id]}</dt>
+            <dd class="skill-items">
+              {group.items.map((item) => (
+                <span class="tech">
+                  <TechIcon name={item} class="tech-icon" />
+                  <span>{item}</span>
+                </span>
+              ))}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+  </Section>
+
+  {
+    copy.takeaway.length > 0 && (
+      <Section id="takeaway" label={labels.takeaway} width="about" tone="close">
+        <div class="reveal space-y-4">
+          {copy.takeaway.map((paragraph) => (
+            <p>{paragraph}</p>
+          ))}
+        </div>
+
+        <p class="reveal mt-9">
+          <a href={projectsPath} class="cta">
+            <ArrowLeft class="size-[1.05rem]" aria-hidden="true" />
+            {dict.projects.all}
+          </a>
+        </p>
+      </Section>
+    )
+  }
+</article>

@@ -3,21 +3,17 @@
  * One row per project: title and description hold the column, technology tags
  * and links sit in a fixed aside on the right.
  *
- * A row rather than a card, because the section has to read well at three
- * entries and at nine. Nothing about the layout depends on how many there are,
- * and a new project is one entry in src/site.ts plus its copy in the four
+ * A row rather than a card, because the section has to read well at one entry
+ * and at nine. Nothing about the layout depends on how many there are, and a
+ * new project is one entry in src/site.ts plus its copy in the four
  * dictionaries - no layout change.
  *
- * The entries are still placeholders, so each row asks whether its title is one
- * and holds back if it is: the title sets at the muted tone instead of full
- * contrast, and the aside sits back with it. Three reserved slots read as a
- * section waiting for content, which is what this is, rather than as three
- * projects that failed to say anything. The check is on the copy rather than on
- * a flag in site.ts so that filling in a real title is the only thing needed -
- * the row goes to full strength on its own.
+ * The homepage carries the summary. Each row links to the project's own page
+ * under /projects/, where the architecture, the results and the full stack
+ * live, which is what keeps this section short enough to scan.
  */
 import type { Lang } from '../i18n/types';
-import { getDict } from '../i18n/utils';
+import { getDict, localizePath } from '../i18n/utils';
 import { site } from '../site';
 import Section, { type SectionTone } from './Section.astro';
 
@@ -28,8 +24,6 @@ interface Props {
 
 const { lang, tone } = Astro.props;
 const dict = getDict(lang);
-
-const isPlaceholder = (text: string) => text.trimStart().startsWith('TODO');
 ---
 
 <Section id="projects" label={dict.projects.label} width="projects" tone={tone} head="rule">
@@ -37,18 +31,23 @@ const isPlaceholder = (text: string) => text.trimStart().startsWith('TODO');
     {
       site.projects.map((project) => {
         const copy = dict.projects.items[project.id];
+        const page = localizePath(`/projects/${project.slug}/`, lang);
+
         const links = [
-          { href: project.links.live, label: dict.projects.liveLabel },
-          { href: project.links.source, label: dict.projects.sourceLabel },
-        ].filter((link): link is { href: string; label: string } => Boolean(link.href));
+          { href: project.links.live, label: dict.projects.liveLabel, external: true },
+          { href: project.links.source, label: dict.projects.sourceLabel, external: true },
+        ].filter((link): link is { href: string; label: string; external: boolean } =>
+          Boolean(link.href),
+        );
 
         return (
-          <li
-            class="project reveal-item"
-            data-placeholder={isPlaceholder(copy.title) ? '' : undefined}
-          >
+          <li class="project reveal-item">
             <div>
-              <h3 class="project-title">{copy.title}</h3>
+              <h3 class="project-title">
+                <a href={page} class="entry-link">
+                  {copy.title}
+                </a>
+              </h3>
               <p class="measure mt-2 text-muted">{copy.description}</p>
             </div>
 
@@ -61,21 +60,28 @@ const isPlaceholder = (text: string) => text.trimStart().startsWith('TODO');
                 </ul>
               )}
 
-              {links.length > 0 && (
-                <ul class="flex flex-wrap gap-5 text-[15px]">
-                  {links.map((link) => (
-                    <li>
-                      <a href={link.href} target="_blank" rel="noopener" class="link">
-                        {link.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              )}
+              <ul class="flex flex-wrap gap-5 text-[15px]">
+                <li>
+                  <a href={page} class="link">
+                    {dict.projects.view}
+                  </a>
+                </li>
+                {links.map((link) => (
+                  <li>
+                    <a href={link.href} target="_blank" rel="noopener" class="link">
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           </li>
         );
       })
     }
   </ul>
+
+  <p class="reveal mt-7">
+    <a href={localizePath('/projects/', lang)} class="link">{dict.projects.all}</a>
+  </p>
 </Section>

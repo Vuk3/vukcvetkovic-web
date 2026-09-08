@@ -1,0 +1,71 @@
+---
+/**
+ * The /projects/ index, shared by the four locales.
+ *
+ * One row per project, on the same dated skeleton Experience uses: the year in
+ * the left column, everything else beside it. It reads at one entry and at
+ * nine, and the row is the link, so the page needs no cards to be clickable.
+ */
+import type { Lang } from '../i18n/types';
+import { getDict, localizePath } from '../i18n/utils';
+import { site } from '../site';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = getDict(lang);
+const index = dict.projects.index;
+---
+
+<div class="page-head">
+  <div class="shell shell-projects">
+    <h1 class="page-title enter">{index.heading}</h1>
+    <p class="page-lead enter" style="--enter-delay:140ms">{index.intro}</p>
+  </div>
+</div>
+
+<div class="sec-lite">
+  <div class="shell shell-projects">
+    {/* The list opens on a full-contrast rule, the way a `rule` section head does. */}
+    <ol class="border-t border-fg">
+      {
+        site.projects.map((project) => {
+          const copy = dict.projects.items[project.id];
+          const href = localizePath(`/projects/${project.slug}/`, lang);
+
+          return (
+            <li class="entry entry-index reveal-item">
+              <p class="entry-period">{project.year}</p>
+
+              <div>
+                <h2 class="entry-title">
+                  <a href={href} class="entry-link">
+                    {copy.title}
+                  </a>
+                </h2>
+
+                <p class="measure mt-2 text-muted">{copy.description}</p>
+
+                {project.tech.length > 0 && (
+                  <ul class="project-tags mt-5">
+                    {project.tech.map((tech) => (
+                      <li class="tag">{tech}</li>
+                    ))}
+                  </ul>
+                )}
+
+                <p class="mt-5">
+                  <a href={href} class="link">
+                    {dict.projects.view}
+                  </a>
+                </p>
+              </div>
+            </li>
+          );
+        })
+      }
+    </ol>
+  </div>
+</div>

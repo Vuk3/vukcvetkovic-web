@@ -1,0 +1,26 @@
+---
+import ProjectIndex from '../../components/ProjectIndex.astro';
+import { defaultLocale } from '../../i18n/types';
+import { getDict } from '../../i18n/utils';
+import Base from '../../layouts/Base.astro';
+
+/*
+ * The project index, in the unprefixed default locale. `/sr/projects/` and the
+ * other two come from [lang]/projects/index.astro.
+ *
+ * An index route, so `build.format: 'preserve'` writes it to
+ * projects/index.html and the URL keeps its trailing slash like every other
+ * page here. That is also why the project pages are [slug]/index.astro rather
+ * than [slug].astro, which would have emitted projects/object-detection.html.
+ */
+const lang = defaultLocale;
+const dict = getDict(lang);
+---
+
+<Base
+  lang={lang}
+  title={dict.projects.index.metaTitle}
+  description={dict.projects.index.metaDescription}
+>
+  <ProjectIndex lang={lang} />
+</Base>

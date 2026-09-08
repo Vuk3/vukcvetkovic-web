@@ -1,0 +1,28 @@
+---
+import type { InferGetStaticPropsType } from 'astro';
+import ProjectDetail from '../../../../components/ProjectDetail.astro';
+import { prefixedLocales } from '../../../../i18n/types';
+import { getDict, resolveLang } from '../../../../i18n/utils';
+import Base from '../../../../layouts/Base.astro';
+import { site } from '../../../../site';
+
+/** Every project in every prefixed locale: three locales times the project list. */
+export function getStaticPaths() {
+  return prefixedLocales.flatMap((lang) =>
+    site.projects.map((project) => ({
+      params: { lang, slug: project.slug },
+      props: { project },
+    })),
+  );
+}
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+
+const lang = resolveLang(Astro.params.lang);
+const { project } = Astro.props;
+const copy = getDict(lang).projects.items[project.id];
+---
+
+<Base lang={lang} title={copy.metaTitle} description={copy.metaDescription}>
+  <ProjectDetail lang={lang} project={project} />
+</Base>

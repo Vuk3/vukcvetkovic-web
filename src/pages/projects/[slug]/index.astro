@@ -1,0 +1,30 @@
+---
+import type { InferGetStaticPropsType } from 'astro';
+import ProjectDetail from '../../../components/ProjectDetail.astro';
+import { defaultLocale } from '../../../i18n/types';
+import { getDict } from '../../../i18n/utils';
+import Base from '../../../layouts/Base.astro';
+import { site } from '../../../site';
+
+/*
+ * One page per project, in the default locale. The project itself is handed
+ * over as a prop rather than looked up again from the slug, so the page and
+ * the component cannot disagree about which entry they are rendering.
+ */
+export function getStaticPaths() {
+  return site.projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+
+const lang = defaultLocale;
+const { project } = Astro.props;
+const copy = getDict(lang).projects.items[project.id];
+---
+
+<Base lang={lang} title={copy.metaTitle} description={copy.metaDescription}>
+  <ProjectDetail lang={lang} project={project} />
+</Base>

@@ -1,0 +1,58 @@
+---
+/**
+ * One request, drawn as type on hairlines.
+ *
+ * This is the opening image of a project page and the one place either page is
+ * allowed to be a diagram, because the shape *is* the argument: a single upload
+ * fans out into two ecosystems and gathers back into one response, which is the
+ * only reason the front end can treat the two as interchangeable. A screenshot
+ * of the app would not say that, and a boxed flowchart would say it in someone
+ * else's visual language.
+ *
+ * No SVG and no library. The connectors are 1px pseudo-elements, so they take
+ * the theme with them and the labels stay selectable text - see .flow in
+ * global.css, which also collapses the fork into a single chain below 40rem.
+ *
+ * The node next to the fork is the emphasized one at each end, which is a fact
+ * about the shape rather than about this project: whatever sits beside the fork
+ * is the thing doing the fanning out or the gathering in.
+ */
+interface Props {
+  /** Stages before the fork, in order. The last one carries the emphasis. */
+  before: string[];
+  /** One entry per branch, each a few lines of its own. */
+  branches: string[][];
+  /** Stages after it. Here the first one carries the emphasis. */
+  after: string[];
+}
+
+const { before, branches, after } = Astro.props;
+---
+
+<ol class="flow reveal">
+  {
+    before.map((node, index) => (
+      <li class:list={['flow-node', index === before.length - 1 && 'flow-node-key']}>{node}</li>
+    ))
+  }
+
+  <li class="flow-fork">
+    <ul class="flow-branches">
+      {
+        branches.map((branch) => (
+          <li class="flow-branch">
+            {branch.map((line, index) => (
+              <span class:list={[index === 0 ? 'flow-service' : 'flow-model']}>{line}</span>
+            ))}
+          </li>
+        ))
+      }
+    </ul>
+  </li>
+
+  {
+    after.map((node, index) => (
+      <li class:list={['flow-node', index === 0 && 'flow-node-key']}>{node}</li>
+    ))
+  }
+</ol>

@@ -17,6 +17,7 @@ type SkillGroupId = keyof Dict["skills"]["groups"];
 type RoleId = keyof Dict["experience"]["roles"];
 type DegreeId = keyof Dict["education"]["degrees"];
 type ProjectId = keyof Dict["projects"]["items"];
+type StackGroupId = keyof Dict["projects"]["stackGroups"];
 
 interface SkillGroup {
   id: SkillGroupId;
@@ -40,9 +41,49 @@ interface Degree {
   period: string;
 }
 
-interface Project {
+/** One row of a project's stack, as a service rather than as a category. */
+interface ProjectStackGroup {
+  id: StackGroupId;
+  items: TechName[];
+}
+
+interface ProjectResultRow {
+  /** The model, named the way its own ecosystem names it. */
+  model: string;
+  /**
+   * Which version of the dataset produced this row. The annotation count is
+   * what distinguishes the two versions and it is a number, so it needs no
+   * translating - only formatting, which the page does per locale.
+   */
+  annotations: number;
+  /** Aligned with `metrics`. `null` where a metric was not computed. */
+  values: (number | null)[];
+}
+
+/**
+ * A measured comparison. Metric names are the technical terms used untranslated
+ * in every language, and the values are numbers, so the whole table is a
+ * language-neutral fact and belongs here rather than in four dictionaries.
+ */
+interface ProjectResults {
+  metrics: string[];
+  rows: ProjectResultRow[];
+}
+
+/** Exported because the pages hand one to the components that render it. */
+export interface Project {
   id: ProjectId;
-  tech: string[];
+  /** Last path segment of the project's own page, under /projects/. */
+  slug: string;
+  year: string;
+  /**
+   * The names that identify the project at a glance, for the rows on the
+   * homepage and the index. `stack` below is the full list, grouped by which
+   * service each name belongs to, and only the project's own page shows it.
+   */
+  tech: TechName[];
+  stack: ProjectStackGroup[];
+  results?: ProjectResults;
   /** Omit or leave empty to hide a link. */
   links: { live?: string; source?: string };
 }
@@ -112,21 +153,44 @@ const education: Degree[] = [
   },
 ];
 
-/** Projects in display order. TODO: fill in tech tags and links. */
+/**
+ * Projects in display order.
+ *
+ * `stack` is grouped by service rather than by category, because on a system
+ * built out of four processes that is the more useful fact: it says which names
+ * belong to the Python side and which to the .NET side, which is the whole
+ * subject of this project. Names are typed against the mark registry, so every
+ * one of them renders with an icon or fails `astro check`.
+ *
+ * The two models are deliberately absent from the stack. YOLOv8m and ML.NET are
+ * what the project measures, not what it was built with, so they appear in the
+ * results table and in the prose instead of as two more chips in a list.
+ *
+ * `links` is empty while the repository is private. Filling in either URL is
+ * enough for the link to appear - the rows drop the ones with no href.
+ */
 const projects: Project[] = [
   {
-    id: "projectOne",
-    tech: ["TODO: tech", "TODO: tech"],
-    links: {},
-  },
-  {
-    id: "projectTwo",
-    tech: ["TODO: tech", "TODO: tech"],
-    links: {},
-  },
-  {
-    id: "projectThree",
-    tech: ["TODO: tech", "TODO: tech"],
+    id: "objectDetection",
+    slug: "object-detection",
+    year: "2026",
+    tech: ["React", "NestJS", "FastAPI", "Ultralytics", "ASP.NET Core", "ML.NET"],
+    stack: [
+      { id: "frontend", items: ["React"] },
+      { id: "gateway", items: ["NestJS"] },
+      { id: "pythonService", items: ["Python", "FastAPI", "Ultralytics", "PyTorch", "OpenCV", "NumPy"] },
+      { id: "dotnetService", items: ["ASP.NET Core", "C#", "ML.NET"] },
+      { id: "data", items: ["Roboflow"] },
+    ],
+    results: {
+      metrics: ["Precision", "Recall", "F1", "mAP@0.5", "mAP@0.5:0.95"],
+      rows: [
+        { model: "YOLOv8m", annotations: 8813, values: [0.738, 0.8, null, 0.79, 0.455] },
+        { model: "YOLOv8m", annotations: 17942, values: [0.894, 0.867, null, 0.916, 0.552] },
+        { model: "ML.NET", annotations: 8813, values: [0.669, 0.645, 0.657, 0.58, null] },
+        { model: "ML.NET", annotations: 17942, values: [0.862, 0.709, 0.778, 0.748, null] },
+      ],
+    },
     links: {},
   },
 ];
@@ -143,7 +207,7 @@ export const site = {
     github: "https://github.com/Vuk3",
   },
 
-  /** Open Graph image served from /public. TODO: add public/og.png at 1200×630. */
+  /** Open Graph image served from /public, 1200x630. */
   ogImage: "/og.png",
 
   skillGroups,
