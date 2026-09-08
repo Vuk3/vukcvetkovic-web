@@ -16,6 +16,11 @@
  * The node next to the fork is the emphasized one at each end, which is a fact
  * about the shape rather than about this project: whatever sits beside the fork
  * is the thing doing the fanning out or the gathering in.
+ *
+ * Any number of branches works. The columns come from an implicit grid, and
+ * `--flow-n` is handed to the stylesheet because the two connecting bars have
+ * to end on the first and last branch stems and only the count can say where
+ * those are.
  */
 interface Props {
   /** Stages before the fork, in order. The last one carries the emphasis. */
@@ -37,7 +42,7 @@ const { before, branches, after } = Astro.props;
   }
 
   <li class="flow-fork">
-    <ul class="flow-branches">
+    <ul class="flow-branches" style={`--flow-n:${branches.length}`}>
       {
         branches.map((branch) => (
           <li class="flow-branch">

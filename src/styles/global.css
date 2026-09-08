@@ -1160,7 +1160,12 @@
    * boxed, so it stays in the same language as the rest of the page and takes
    * the theme with it.
    *
-   * Below 40rem the fork collapses: the two branches stack and the bars are
+   * The number of branches is a fact about the project, not about the diagram,
+   * so `--flow-n` is set inline from the markup and the fork reads it. It is
+   * only the bars that need the count - the columns come from an implicit grid
+   * flowing across, which takes however many branches there are.
+   *
+   * Below 40rem the fork collapses: the branches stack and the bars are
    * dropped, which leaves one honest vertical chain instead of a diagram
    * squeezed into 320 points.
    */
@@ -1249,8 +1254,15 @@
   }
 
   @media (min-width: 40rem) {
+    /*
+     * An implicit grid flowing across rather than a named column list, so the
+     * fork takes two branches or four without the stylesheet knowing which.
+     * `minmax(0, 1fr)` rather than `1fr` because a long service name in a
+     * branch would otherwise push its column past an equal share.
+     */
     .flow-branches {
-      grid-template-columns: 1fr 1fr;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
       column-gap: var(--flow-col-gap);
       row-gap: 0;
     }
@@ -1285,19 +1297,26 @@
     }
 
     /*
-     * The bar out, and the bar back, ending exactly on the two branch stems.
+     * The bar out, and the bar back, ending exactly on the first and last
+     * branch stems.
      *
-     * Not at 25%: with a column gap of G, a 1fr column is (W - G) / 2 wide, so
-     * its centre sits at 25% - G/4 rather than at a quarter of the container.
-     * At the widest gap that is 20 points of bar hanging in the air at each
-     * end, which reads as a diagram that did not quite line up.
+     * The gap is why this is not simply half a column: across N columns with a
+     * gap of G, one column is (100% - (N-1)G) / N wide, so the first stem sits
+     * at half of that and the last one mirrors it. Ignoring the gap term left
+     * 20 points of bar hanging in the air at each end at the widest gap, which
+     * reads as a diagram that did not quite line up. For two branches this is
+     * the 25% - G/4 the fork used to hardcode.
      */
     .flow-branches::before,
     .flow-branches::after {
+      --flow-stem: calc(
+        (100% - (var(--flow-n, 2) - 1) * var(--flow-col-gap)) / (2 * var(--flow-n, 2))
+      );
+
       content: '';
       position: absolute;
-      left: calc(25% - var(--flow-col-gap) / 4);
-      right: calc(25% - var(--flow-col-gap) / 4);
+      left: var(--flow-stem);
+      right: var(--flow-stem);
       height: 1px;
       background-color: var(--flow-line);
     }

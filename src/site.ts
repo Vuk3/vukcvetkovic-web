@@ -47,26 +47,35 @@ interface ProjectStackGroup {
   items: TechName[];
 }
 
+/**
+ * How one column's figures are printed. Two projects measure two different
+ * kinds of thing, and the precision is part of the claim: three fraction digits
+ * because 0.800 and 0.8 do not say the same thing, two on a stopwatch reading
+ * because that is what the run reported.
+ */
+export type ResultFormat = "count" | "ratio" | "seconds";
+
 interface ProjectResultRow {
-  /** The model, named the way its own ecosystem names it. */
-  model: string;
-  /**
-   * Which version of the dataset produced this row. The annotation count is
-   * what distinguishes the two versions and it is a number, so it needs no
-   * translating - only formatting, which the page does per locale.
-   */
-  annotations: number;
-  /** Aligned with `metrics`. `null` where a metric was not computed. */
+  /** `null` where a figure was not computed for this row. */
   values: (number | null)[];
 }
 
 /**
- * A measured comparison. Metric names are the technical terms used untranslated
- * in every language, and the values are numbers, so the whole table is a
- * language-neutral fact and belongs here rather than in four dictionaries.
+ * A measured comparison, as numbers only.
+ *
+ * Every word in the table - the column heads and the row labels - lives in the
+ * dictionaries instead, because whether a head needs translating depends on the
+ * project: `mAP@0.5` and `Precision` are the same in all four languages, while
+ * `Mode`, `Sequential` and `Encryption` are not. Keeping the numbers here and
+ * the words there is the same split the rest of this file follows.
+ *
+ * ⚠️ Three lists have to stay aligned and nothing checks them: `formats` and
+ * every row's `values` are one entry per figure column, and the dictionary's
+ * `results.columns` carries one more (the row-label head) while its
+ * `results.rows` is one label per row here.
  */
 interface ProjectResults {
-  metrics: string[];
+  formats: ResultFormat[];
   rows: ProjectResultRow[];
 }
 
@@ -183,15 +192,39 @@ const projects: Project[] = [
       { id: "data", items: ["Roboflow"] },
     ],
     results: {
-      metrics: ["Precision", "Recall", "F1", "mAP@0.5", "mAP@0.5:0.95"],
+      formats: ["count", "ratio", "ratio", "ratio", "ratio", "ratio"],
       rows: [
-        { model: "YOLOv8m", annotations: 8813, values: [0.738, 0.8, null, 0.79, 0.455] },
-        { model: "YOLOv8m", annotations: 17942, values: [0.894, 0.867, null, 0.916, 0.552] },
-        { model: "ML.NET", annotations: 8813, values: [0.669, 0.645, 0.657, 0.58, null] },
-        { model: "ML.NET", annotations: 17942, values: [0.862, 0.709, 0.778, 0.748, null] },
+        { values: [8813, 0.738, 0.8, null, 0.79, 0.455] },
+        { values: [17942, 0.894, 0.867, null, 0.916, 0.552] },
+        { values: [8813, 0.669, 0.645, 0.657, 0.58, null] },
+        { values: [17942, 0.862, 0.709, 0.778, 0.748, null] },
       ],
     },
     links: {},
+  },
+  {
+    id: "encryptix",
+    slug: "encryptix",
+    year: "2023",
+    tech: ["C#", ".NET", "WCF", "Windows Forms"],
+    /*
+     * Two processes, so two rows. The three ciphers are deliberately absent for
+     * the same reason the two models are absent above: they are the subject of
+     * the project rather than something it was built with, so they carry the
+     * diagram and the prose instead of sitting in a list of chips.
+     */
+    stack: [
+      { id: "client", items: ["Windows Forms", "C#"] },
+      { id: "service", items: ["WCF", ".NET", "C#"] },
+    ],
+    results: {
+      formats: ["count", "seconds", "seconds"],
+      rows: [
+        { values: [150, 68.91, 70.13] },
+        { values: [150, 44.16, 40.39] },
+      ],
+    },
+    links: { source: "https://github.com/Vuk3/Encryptix" },
   },
 ];
 

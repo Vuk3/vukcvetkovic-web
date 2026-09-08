@@ -292,4 +292,5 @@ class, **a manual toggle does not change the browser chrome colour.** See open i
 
 ## Changelog
 
+- 2026-09-08 - the request diagram takes any number of branches, driven by `--flow-n`.
 - 2026-09-08 - first version of this page.

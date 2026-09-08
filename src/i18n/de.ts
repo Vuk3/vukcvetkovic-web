@@ -124,17 +124,14 @@ const de: Dict = {
       takeaway: 'Was ich daraus mitnehme',
     },
 
-    results: {
-      model: 'Modell',
-      annotations: 'Annotationen',
-    },
-
     stackGroups: {
       frontend: 'Frontend',
       gateway: 'Gateway',
       pythonService: 'Python-Service',
       dotnetService: '.NET-Service',
       data: 'Datensatz',
+      client: 'Client',
+      service: 'Service',
     },
 
     items: {
@@ -219,15 +216,121 @@ const de: Dict = {
           'Beide Modelle wurden 50 Epochen bei 640x640 aus vortrainierten Gewichten trainiert, mit über beide Datensatzversionen konstant gehaltenen Parametern, damit ein Unterschied in den Ergebnissen als Unterschied in der Annotationsqualität und nicht in der Konfiguration zu lesen ist. Model Builder endet beim trainierten Modell, also brauchte die .NET-Seite einen eigenen Evaluation-Service: er lädt die COCO-Annotationen, sagt über den Validierungssatz vorher und berechnet Precision, Recall, F1 und mAP@0.5 samt Konfusionsmatrizen und Precision-Recall-Kurven, was ML.NET auf dieselbe Grundlage stellt wie das, was Ultralytics von sich aus ausgibt.',
         ],
 
-        results: [
-          'Die erneute Annotation hat jede Metrik beider Modelle bewegt. YOLOv8m ging von 0,790 auf 0,916 mAP@0.5 und ML.NET von 0,580 auf 0,748, relativ gesehen gewinnt also das schwächere Modell am meisten, 29 Prozent gegenüber 16. Der erste Durchgang hatte es am stärksten zurückgehalten.',
-          'YOLOv8m liegt bei den Zahlen vorn, und der Abstand, auf den es ankommt, ist der Recall: 0,867 gegenüber 0,709 auf dem korrigierten Satz, bei nahezu gleicher Precision. Bei Schutzausrüstung ist genau diese Asymmetrie der ganze Punkt, denn eine verpasste Erkennung ist ein Mensch, den das System still als in Ordnung meldet, und die Precision allein kann Ihnen nicht sagen, dass das passiert ist.',
-          'Der Vergleich hört dort auf, wo er ehrlich bleiben kann. Beide Modelle sahen eine Bilddomäne und sechs Klassen, und die Parameter blieben vergleichbar statt auf das jeweils Beste hin abgestimmt: das sind zwei Konfigurationen, gegeneinander gemessen, und nicht die Obergrenze des einen oder anderen Werkzeugs.',
-        ],
+        results: {
+          columns: [
+            'Modell',
+            'Annotationen',
+            'Precision',
+            'Recall',
+            'F1',
+            'mAP@0.5',
+            'mAP@0.5:0.95',
+          ],
+          rows: ['YOLOv8m', 'YOLOv8m', 'ML.NET', 'ML.NET'],
+          notes: [
+            'Die erneute Annotation hat jede Metrik beider Modelle bewegt. YOLOv8m ging von 0,790 auf 0,916 mAP@0.5 und ML.NET von 0,580 auf 0,748, relativ gesehen gewinnt also das schwächere Modell am meisten, 29 Prozent gegenüber 16. Der erste Durchgang hatte es am stärksten zurückgehalten.',
+            'YOLOv8m liegt bei den Zahlen vorn, und der Abstand, auf den es ankommt, ist der Recall: 0,867 gegenüber 0,709 auf dem korrigierten Satz, bei nahezu gleicher Precision. Bei Schutzausrüstung ist genau diese Asymmetrie der ganze Punkt, denn eine verpasste Erkennung ist ein Mensch, den das System still als in Ordnung meldet, und die Precision allein kann Ihnen nicht sagen, dass das passiert ist.',
+            'Der Vergleich hört dort auf, wo er ehrlich bleiben kann. Beide Modelle sahen eine Bilddomäne und sechs Klassen, und die Parameter blieben vergleichbar statt auf das jeweils Beste hin abgestimmt: das sind zwei Konfigurationen, gegeneinander gemessen, und nicht die Obergrenze des einen oder anderen Werkzeugs.',
+          ],
+        },
 
         takeaway: [
           'Das Ergebnis lag mehr in den Daten als in der Wahl des Frameworks. Die Annotationen derselben 2.911 Bilder zu überarbeiten hat beide Modelle weiter bewegt als der Abstand zwischen den beiden Ökosystemen ML.NET bewegt hat, und das ist nicht der Schluss, den ich zu schreiben erwartet hatte.',
           'Die technische Hälfte ist praktischer. Python gab mir Raum zum Experimentieren und lieferte das Auswertungsmaterial gratis mit, .NET gab mir ein Modell, das ohne Brücke dazwischen in einen ASP.NET-Core-Service fällt, und die standardisierte Antwort ist der einzige Grund, warum ein Frontend sie als austauschbar behandeln kann.',
+        ],
+      },
+
+      encryptix: {
+        title: 'Encryptix',
+        tagline:
+          'Drei Verfahren hinter einem Service, und an beiden Enden ein Hash als Beweis, dass die Datei zurückgekommen ist.',
+        description:
+          'Meine Bachelorarbeit. Ein Desktop-Client übergibt einen ganzen Ordner an einen WCF-Service, der jede Datei mit AES, RC6 oder XXTEA verschlüsselt - die letzten beiden nach ihrer Spezifikation geschrieben statt aus einer Bibliothek genommen - und vor und nach jedem Durchgang einen SHA-512-Hash festhält, sodass der Rückweg bewiesen und nicht angenommen wird. Die Dateien parallel zu verarbeiten brachte einen Durchgang über 150 Dateien von 68,91 auf 44,16 Sekunden.',
+        metaTitle: 'Encryptix - Vuk Cvetković',
+        metaDescription:
+          'Ein Projekt aus der Bachelorarbeit: ein Windows-Forms-Client und ein WCF-Service, die einen ganzen Ordner mit AES, RC6 oder XXTEA verschlüsseln, mit SHA-512-Prüfung an beiden Enden.',
+        context: 'Bachelorarbeit, Fakultät für Elektronik in Niš',
+        domain: 'Dateiverschlüsselung auf dem Desktop',
+
+        flow: {
+          before: ['Ein Ordner, rekursiv in Bytes gelesen', 'WCF-Service'],
+          branches: [
+            ['AES', 'CBC, aus der .NET-Bibliothek'],
+            ['RC6', 'Von Hand geschrieben, 20 Runden'],
+            ['XXTEA', 'Von Hand geschrieben, Feistel-Netzwerk'],
+          ],
+          after: ['Eine verschlüsselte Datei je Eingabe', 'SHA-512 vor und nach dem Durchgang'],
+        },
+
+        overview: [
+          'Die Arbeitseinheit ist hier ein Ordner, keine Datei. Sie zeigen der Anwendung ein Verzeichnis, sie liest alles darin und in jedem Unterordner, und dann läuft eines von drei symmetrischen Verfahren über den ganzen Satz - wobei der verschlüsselte Baum, der entschlüsselte Baum und das Hash-Protokoll jeweils dorthin geschrieben werden, wo Sie es wählen.',
+          'Dass es drei sind, liegt daran, dass nur eines fertig mitkam. AES ist die Implementierung der .NET-Bibliothek, also das, was jede vernünftige Anwendung nutzen würde. RC6 und XXTEA sind aus ihren Spezifikationen gebaut, und darin bestand das Projekt eigentlich: die Schlüsselexpansion, das Auffüllen der Blöcke, die Rotationen und der bewusste Ganzzahlüberlauf, auf den XXTEA sich stützt.',
+        ],
+
+        steps: [
+          {
+            title: 'Der Client liest den Ordner',
+            body: 'Ein Ordnerdialog, dann ein rekursiver Durchlauf, der jede Datei unabhängig von der Endung als rohe Bytes liest und Name, Endung, Verzeichnis und Inhalt als einen Datensatz zusammenhält. Nichts deutet die Datei, also nehmen eine .txt und eine .exe denselben Weg durch das Programm.',
+          },
+          {
+            title: 'Ein Hintergrund-Task hält das Fenster lebendig',
+            body: 'Windows Forms gibt der Anwendung einen Thread, und dieser Thread besitzt die Steuerelemente, sodass das Lesen eines großen Ordners darauf das Fenster einfrieren und genau die Ladeanzeige stoppen würde, die es zeigen soll. Das Lesen läuft deshalb als Task, und die Fortsetzung wird zurück auf den Synchronisationskontext des Formulars geplant, die einzige Stelle, von der aus die Schaltflächen legal wieder freigegeben werden können.',
+          },
+          {
+            title: 'Die Liste geht an den Service',
+            body: 'Der Client ruft den WCF-Service über HTTP. Beide Seiten mussten für die Datenmenge umkonfiguriert werden: die Puffergrenzen gehen auf den größten Wert, den ein int fassen kann, und der Übertragungsmodus wechselt von gepuffert auf gestreamt, sodass nur der Nachrichtenkopf gepuffert wird und nicht die ganze Dateiliste, mit zehn Minuten Zeitlimit auf jeder Seite.',
+          },
+          {
+            title: 'Der Service verschlüsselt, Datei für Datei',
+            body: 'Der gewählte Algorithmus bekommt die Liste, den Schlüssel und - bei AES - den Initialisierungsvektor. RC6 und XXTEA brauchen eine Eingabe, die ganze Blöcke füllt, also füllt jeder das Byte-Array auf seine Blockgröße auf und schreibt die ursprüngliche Länge in die ersten vier Bytes, und genau das erlaubt der Entschlüsselung, diese Auffüllung wieder abzuschneiden statt zu raten, wo die Datei endete.',
+          },
+          {
+            title: 'Beide Enden werden gehasht',
+            body: 'Jede Datei bekommt eine Textdatei daneben mit vier SHA-512-Zeilen: vor dem Verschlüsseln, nach dem Verschlüsseln, vor dem Entschlüsseln, nach dem Entschlüsseln. Die erste und die letzte sind die, auf die es ankommt, und sie müssen identisch sein. Das ist die ganze Integritätsaussage, und jeder kann sie prüfen, indem er die Datei öffnet.',
+          },
+        ],
+
+        features: [
+          {
+            title: 'Ein ganzer Ordner auf einmal',
+            body: 'Unterordner eingeschlossen, in jeder Tiefe. Der Ausgabebaum spiegelt den Eingabebaum, was aus der Differenz zwischen dem Pfad jeder Datei und der Wurzel kommt und nicht aus einem Mitzählen der Rekursion.',
+          },
+          {
+            title: 'Drei Verfahren, ein Formular',
+            body: 'AES mit einem Schlüssel aus 32 Zeichen und einem IV aus 16, RC6 und XXTEA mit Schlüsseln aus 16 Zeichen. Jedes hat sein eigenes Fenster, und jedes Feld wird geprüft, bevor irgendetwas geschrieben wird.',
+          },
+          {
+            title: 'Der Beweis, dass sie zurück ist',
+            body: 'Der SHA-512 des Klartexts vor dem Verschlüsseln gegen den SHA-512 des Klartexts nach dem Entschlüsseln. Gleich heißt, der Hin- und Rückweg war verlustfrei.',
+          },
+          {
+            title: 'Sequenziell oder parallel',
+            body: 'Beide Modi sind eingebaut, und ein Kontrollkästchen wählt zwischen ihnen. Der parallele Durchgang verteilt die Dateiliste auf eine parallele Schleife, und weil jede Datei für sich gelesen, umgewandelt und geschrieben wird, gibt es keine Konflikte zu lösen - er ist damit schneller fertig als eine Datei nach der anderen.',
+          },
+          {
+            title: 'Ein Fortschrittsbalken, der nicht stört',
+            body: 'Er ist eine Schätzung, getaktet über die Gesamtzahl der Bytes, denn der Service meldet während der Arbeit nichts zurück. Ein Cancellation Token bricht ihn ab und füllt ihn in dem Moment, in dem der eigentliche Aufruf zurückkehrt, sodass er der Arbeit vorauslaufen kann, ihr aber nie nachhängt.',
+          },
+          {
+            title: 'Der Dateibaum vorab',
+            body: 'Eine Baumansicht von allem, was geladen wurde, ausgeklappt, bevor man sich zum Verschlüsseln entscheidet. Vor allem nützlich, um zu merken, dass man den falschen Ordner gewählt hat.',
+          },
+        ],
+
+        dataset: [],
+
+        results: {
+          columns: ['Modus', 'Dateien', 'Verschlüsselung (s)', 'Entschlüsselung (s)'],
+          rows: ['Sequenziell', 'Parallel'],
+          notes: [
+            'Dieselben 150 Dateien, derselbe RC6-Schlüssel, dieselben Ausgabeordner, je ein Durchlauf. Das parallele Verschlüsseln war in 44,16 Sekunden fertig gegenüber 68,91, das Entschlüsseln in 40,39 gegenüber 70,13 - ein Drittel weniger in beide Richtungen.',
+            'Der Gewinn kommt aus der Form der Arbeit. Dateien hängen hier nie voneinander ab, die Liste verteilt sich also auf eine parallele Schleife, ohne gemeinsamen Zustand zu schützen, ohne Konflikte zu lösen und ohne Reihenfolge zu bewahren, und keine Datei wartet auf die vorige. Deshalb nimmt die parallele Verarbeitung rund ein Drittel des ganzen Durchgangs weg und nicht ein paar Prozent.',
+          ],
+        },
+
+        takeaway: [
+          'Was ich behalten würde, ist, zwei Verfahren implementiert und nicht aufgerufen zu haben. Es sind kurze Algorithmen, und fast jede Zeile trägt Last: in welche Richtung eine Rotation geht, wo die ursprüngliche Länge liegt, und die Tatsache, dass XXTEA verlangt, dass seine Arithmetik überläuft statt einen Fehler zu werfen. Eine falsche Annahme genügt für eine Ausgabe, die richtig aussieht, bis die Hashes auseinandergehen.',
+          'Die Lücken sind heute so deutlich, wie die Arbeit sie genannt hat. Alles hier ist symmetrisch, der Schlüsselaustausch bleibt also vollständig dem überlassen, der es benutzt, und der naheliegende nächste Schritt ist ein asymmetrisches Verfahren und der Hybrid aus AES und RSA, der daraus folgt. WCF und Windows Forms datieren das Projekt ebenfalls ehrlich - keines von beiden ist das, wonach ich heute greifen würde, und dieser Stack hinter mir zu lassen ist ein guter Teil dessen, was ich seither getan habe.',
         ],
       },
     },

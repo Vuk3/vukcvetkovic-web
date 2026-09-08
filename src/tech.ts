@@ -59,6 +59,12 @@ const lucideCloud = 'M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z';
 const lucideHash = 'M4 9h16M4 15h16M10 3 8 21M16 3 14 21';
 const lucideBrain =
   'M12 18V5M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5M17.997 5.125a4 4 0 0 1 2.526 5.77M18 18a4 4 0 0 0 2-7.464M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517M6 18a4 4 0 0 1-2-7.464M6.003 5.125a4 4 0 0 0-2.526 5.77';
+/* app-window.ts and server.ts. Their `rect` elements are written out as path
+ * data with the same 2px corner radius, for the same reason as above. */
+const lucideAppWindow =
+  'M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM10 4v4M2 8h20M6 4v4';
+const lucideServer =
+  'M4 2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM4 14h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2zM6 6h.01M6 18h.01';
 
 export const techIcons = {
   NestJS: { path: siNestjs.path, hex: `#${siNestjs.hex}` },
@@ -93,6 +99,15 @@ export const techIcons = {
   Roboflow: { path: siRoboflow.path, hex: `#${siRoboflow.hex}`, darkHex: '#a97ef0' },
   'ASP.NET Core': { path: siDotnet.path, hex: `#${siDotnet.hex}`, darkHex: '#8a6cf1' },
   'ML.NET': { path: lucideBrain, stroked: true, hex: '#512bd4', darkHex: '#8a6cf1' },
+
+  /*
+   * Two more Microsoft names with no free mark, so two more lucide outlines in
+   * the .NET violet - the same family as .NET, C# and ML.NET, and each with a
+   * glyph none of the others use. A window with a title bar for the desktop
+   * client, stacked racks for the service it calls.
+   */
+  WCF: { path: lucideServer, stroked: true, hex: '#512bd4', darkHex: '#8a6cf1' },
+  'Windows Forms': { path: lucideAppWindow, stroked: true, hex: '#512bd4', darkHex: '#8a6cf1' },
 } satisfies Record<string, TechIcon>;
 
 export type TechName = keyof typeof techIcons;

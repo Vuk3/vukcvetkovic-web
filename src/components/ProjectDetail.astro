@@ -16,7 +16,7 @@
 import { ArrowLeft, ArrowUpRight } from '@lucide/astro';
 import type { Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
-import type { Project } from '../site';
+import type { Project, ResultFormat } from '../site';
 import ProjectFlow from './ProjectFlow.astro';
 import Section from './Section.astro';
 import TechIcon from './TechIcon.astro';
@@ -36,15 +36,18 @@ const projectsPath = localizePath('/projects/', lang);
 /*
  * Numbers are stored raw in src/site.ts and formatted here, so 17942 prints as
  * "17,942" in English and "17.942" in Serbian and German, and 0.916 keeps its
- * decimal comma outside English. Three fraction digits on the metrics because
- * that is the precision the thesis reports and a trailing zero should not be
- * dropped: 0.800 and 0.8 are not the same claim.
+ * decimal comma outside English.
+ *
+ * The fraction digits are fixed rather than minimal because the precision is
+ * part of the claim: a metric reported to three places should not lose a
+ * trailing zero, since 0.800 and 0.8 are not the same statement, and a
+ * stopwatch reading keeps the two places the run printed.
  */
-const count = new Intl.NumberFormat(lang);
-const metric = new Intl.NumberFormat(lang, {
-  minimumFractionDigits: 3,
-  maximumFractionDigits: 3,
-});
+const formatters: Record<ResultFormat, Intl.NumberFormat> = {
+  count: new Intl.NumberFormat(lang),
+  ratio: new Intl.NumberFormat(lang, { minimumFractionDigits: 3, maximumFractionDigits: 3 }),
+  seconds: new Intl.NumberFormat(lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+};
 
 const links = [
   { href: project.links.live, label: dict.projects.liveLabel },
@@ -212,20 +215,22 @@ const meta = [
             <caption class="sr-only">{`${copy.title} - ${labels.results}`}</caption>
             <thead>
               <tr>
-                <th scope="col">{dict.projects.results.model}</th>
-                <th scope="col">{dict.projects.results.annotations}</th>
-                {project.results.metrics.map((name) => (
+                {/* The first head names the row-label column, the rest the figures. */}
+                {copy.results.columns.map((name) => (
                   <th scope="col">{name}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {project.results.rows.map((row) => (
+              {project.results.rows.map((row, rowIndex) => (
                 <tr>
-                  <th scope="row">{row.model}</th>
-                  <td>{count.format(row.annotations)}</td>
-                  {row.values.map((value) => (
-                    <td>{value === null ? '-' : metric.format(value)}</td>
+                  <th scope="row">{copy.results.rows[rowIndex]}</th>
+                  {row.values.map((value, columnIndex) => (
+                    <td>
+                      {value === null
+                        ? '-'
+                        : formatters[project.results!.formats[columnIndex]].format(value)}
+                    </td>
                   ))}
                 </tr>
               ))}
@@ -233,9 +238,9 @@ const meta = [
           </table>
         </div>
 
-        {copy.results.length > 0 && (
+        {copy.results.notes.length > 0 && (
           <div class="measure reveal mt-9 space-y-4">
-            {copy.results.map((paragraph) => (
+            {copy.results.notes.map((paragraph) => (
               <p>{paragraph}</p>
             ))}
           </div>

@@ -124,17 +124,14 @@ const fr: Dict = {
       takeaway: "Ce que j’en retiens",
     },
 
-    results: {
-      model: "Modèle",
-      annotations: "Annotations",
-    },
-
     stackGroups: {
       frontend: "Front end",
       gateway: "Passerelle",
       pythonService: "Service Python",
       dotnetService: "Service .NET",
       data: "Jeu de données",
+      client: "Client",
+      service: "Service",
     },
 
     items: {
@@ -220,15 +217,124 @@ const fr: Dict = {
           "Les deux modèles ont été entraînés sur 50 epochs en 640x640 à partir de poids pré-entraînés, avec des paramètres tenus constants entre les deux versions du jeu de données, pour qu’un écart de résultats se lise comme un écart de qualité d’annotation et non de configuration. Model Builder s’arrête au modèle entraîné, il a donc fallu écrire un service d’évaluation pour le côté .NET : il charge les annotations COCO, prédit sur le jeu de validation et calcule precision, recall, F1 et mAP@0.5 avec les matrices de confusion et les courbes precision-recall, ce qui a mis ML.NET au même niveau que ce qu’Ultralytics produit tout seul.",
         ],
 
-        results: [
-          "La reprise des annotations a déplacé toutes les métriques des deux modèles. YOLOv8m est passé de 0,790 à 0,916 de mAP@0.5 et ML.NET de 0,580 à 0,748 : en relatif, c’est le modèle le plus faible qui gagne le plus, 29 pour cent contre 16. C’est lui que le premier passage retenait le plus.",
-          "YOLOv8m est devant sur les chiffres, et l’écart qui compte est le recall : 0,867 contre 0,709 sur le jeu corrigé, à precision presque égale. Pour de l’équipement de protection, cette asymétrie est tout le sujet, car une détection manquée est une personne que le système signale tranquillement comme conforme, et la precision seule ne peut pas vous dire que c’est arrivé.",
-          "La comparaison s’arrête là où elle peut rester honnête. Les deux modèles n’ont vu qu’un domaine d’images et six classes, et les paramètres sont restés comparables plutôt qu’optimisés pour chaque modèle : ce sont deux configurations mesurées l’une contre l’autre, pas le plafond de l’un ou de l’autre outil.",
-        ],
+        results: {
+          columns: [
+            "Modèle",
+            "Annotations",
+            "Precision",
+            "Recall",
+            "F1",
+            "mAP@0.5",
+            "mAP@0.5:0.95",
+          ],
+          rows: ["YOLOv8m", "YOLOv8m", "ML.NET", "ML.NET"],
+          notes: [
+            "La reprise des annotations a déplacé toutes les métriques des deux modèles. YOLOv8m est passé de 0,790 à 0,916 de mAP@0.5 et ML.NET de 0,580 à 0,748 : en relatif, c’est le modèle le plus faible qui gagne le plus, 29 pour cent contre 16. C’est lui que le premier passage retenait le plus.",
+            "YOLOv8m est devant sur les chiffres, et l’écart qui compte est le recall : 0,867 contre 0,709 sur le jeu corrigé, à precision presque égale. Pour de l’équipement de protection, cette asymétrie est tout le sujet, car une détection manquée est une personne que le système signale tranquillement comme conforme, et la precision seule ne peut pas vous dire que c’est arrivé.",
+            "La comparaison s’arrête là où elle peut rester honnête. Les deux modèles n’ont vu qu’un domaine d’images et six classes, et les paramètres sont restés comparables plutôt qu’optimisés pour chaque modèle : ce sont deux configurations mesurées l’une contre l’autre, pas le plafond de l’un ou de l’autre outil.",
+          ],
+        },
 
         takeaway: [
           "Le résultat tenait davantage aux données qu’au choix du framework. Reprendre les annotations des mêmes 2 911 images a déplacé les deux modèles plus loin que la distance entre les deux écosystèmes n’a déplacé ML.NET, et ce n’est pas la conclusion que je m’attendais à écrire.",
           "La moitié ingénierie est plus pratique. Python m’a laissé de la place pour expérimenter et a produit le matériel d’évaluation gratuitement, .NET m’a donné un modèle qui entre dans un service ASP.NET Core sans aucun pont, et la réponse standardisée est la seule raison pour laquelle un seul front peut les traiter comme interchangeables.",
+        ],
+      },
+
+      encryptix: {
+        title: "Encryptix",
+        tagline:
+          "Trois chiffrements derrière un seul service, et une empreinte aux deux bouts pour prouver que le fichier est revenu.",
+        description:
+          "Mon mémoire de licence. Un client de bureau confie un dossier entier à un service WCF, qui chiffre chaque fichier avec AES, RC6 ou XXTEA - les deux derniers écrits d’après leur spécification plutôt que pris dans une bibliothèque - et enregistre une empreinte SHA-512 avant et après chaque passage, si bien que l’aller-retour se prouve au lieu de se supposer. Traiter les fichiers en parallèle a fait passer un lot de 150 fichiers de 68,91 à 44,16 secondes.",
+        metaTitle: "Encryptix - Vuk Cvetković",
+        metaDescription:
+          "Un projet de mémoire de licence : un client Windows Forms et un service WCF qui chiffrent un dossier entier avec AES, RC6 ou XXTEA, avec vérification SHA-512 aux deux bouts.",
+        context: "Mémoire de licence, Faculté de génie électronique de Niš",
+        domain: "Chiffrement de fichiers sur le poste de travail",
+
+        flow: {
+          before: ["Un dossier, lu récursivement en octets", "Service WCF"],
+          branches: [
+            ["AES", "CBC, depuis la bibliothèque .NET"],
+            ["RC6", "Écrit à la main, 20 tours"],
+            ["XXTEA", "Écrit à la main, réseau de Feistel"],
+          ],
+          after: [
+            "Un fichier chiffré par fichier d’entrée",
+            "SHA-512 enregistrée avant et après",
+          ],
+        },
+
+        overview: [
+          "L’unité de travail ici est un dossier, pas un fichier. Vous désignez un répertoire à l’application, elle lit tout ce qu’il contient et tout ce que contiennent ses sous-dossiers, puis l’un des trois chiffrements symétriques parcourt l’ensemble - l’arborescence chiffrée, l’arborescence déchiffrée et le journal d’empreintes étant écrits là où vous le choisissez.",
+          "S’il y en a trois, c’est parce qu’un seul était fourni. AES est l’implémentation de la bibliothèque .NET, celle que toute application sensée utiliserait. RC6 et XXTEA sont construits d’après leur spécification, et c’est là que le projet se trouvait vraiment : l’expansion de la clé, le remplissage des blocs, les rotations et le dépassement d’entier délibéré sur lequel XXTEA repose.",
+        ],
+
+        steps: [
+          {
+            title: "Le client lit le dossier",
+            body: "Une boîte de dialogue, puis un parcours récursif qui lit chaque fichier en octets bruts quelle que soit son extension et garde ensemble son nom, son extension, son répertoire et son contenu en un seul enregistrement. Rien n’interprète le fichier, donc un .txt et un .exe suivent le même chemin dans le programme.",
+          },
+          {
+            title: "Une tâche de fond garde la fenêtre vivante",
+            body: "Windows Forms ne donne à l’application qu’un seul fil, et ce fil possède les contrôles : lire un gros dossier dessus figerait la fenêtre et arrêterait justement l’indicateur qu’elle est censée afficher. La lecture s’exécute donc comme une tâche, et la continuation est replanifiée sur le contexte de synchronisation du formulaire, le seul endroit d’où les boutons peuvent légalement être réactivés.",
+          },
+          {
+            title: "La liste passe au service",
+            body: "Le client appelle le service WCF en HTTP. Les deux côtés ont dû être reconfigurés pour la charge : les limites de tampon montent à la plus grande valeur qu’un int puisse contenir, et le mode de transfert passe de mis en tampon à flux, si bien que seul l’en-tête du message est mis en tampon et non la liste entière des fichiers, avec un délai de dix minutes de chaque côté.",
+          },
+          {
+            title: "Le service chiffre, fichier par fichier",
+            body: "L’algorithme choisi reçoit la liste, la clé et - pour AES - le vecteur d’initialisation. RC6 et XXTEA exigent que leur entrée remplisse des blocs entiers, donc chacun complète le tableau d’octets jusqu’à sa taille de bloc et inscrit la longueur d’origine dans les quatre premiers octets, ce qui permet au déchiffrement de retirer ce remplissage au lieu de devoir deviner où le fichier s’arrêtait.",
+          },
+          {
+            title: "Les deux bouts sont empreints",
+            body: "Chaque fichier reçoit à côté de lui un fichier texte contenant quatre lignes SHA-512 : avant chiffrement, après chiffrement, avant déchiffrement, après déchiffrement. La première et la dernière sont celles qui comptent, et elles doivent être identiques. C’est toute la garantie d’intégrité, et n’importe qui peut la vérifier en ouvrant le fichier.",
+          },
+        ],
+
+        features: [
+          {
+            title: "Un dossier entier d’un coup",
+            body: "Sous-dossiers compris, à n’importe quelle profondeur. L’arborescence de sortie reflète celle d’entrée, ce qui vient de la différence entre le chemin de chaque fichier et la racine plutôt que d’un suivi de la récursion.",
+          },
+          {
+            title: "Trois chiffrements, un formulaire",
+            body: "AES avec une clé de 32 caractères et un IV de 16, RC6 et XXTEA avec des clés de 16 caractères. Chacun a sa fenêtre, et chaque champ est validé avant que quoi que ce soit soit écrit.",
+          },
+          {
+            title: "La preuve du retour",
+            body: "La SHA-512 du texte clair avant chiffrement contre la SHA-512 du texte clair après déchiffrement. Égales, l’aller-retour s’est fait sans perte.",
+          },
+          {
+            title: "Séquentiel ou parallèle",
+            body: "Les deux modes existent, et une case à cocher choisit entre eux. Le passage parallèle répartit la liste des fichiers sur une boucle parallèle, et comme chaque fichier est lu, transformé et écrit pour lui-même, il n’y a aucun conflit à résoudre : il finit donc plus vite qu’un fichier après l’autre.",
+          },
+          {
+            title: "Une barre de progression qui s’efface",
+            body: "C’est une estimation, cadencée sur le nombre total d’octets, car le service ne rend rien pendant qu’il travaille. Un jeton d’annulation l’interrompt et la remplit à l’instant où l’appel réel revient, si bien qu’elle peut devancer le travail mais jamais le suivre en retard.",
+          },
+          {
+            title: "L’arborescence d’abord",
+            body: "Une vue en arbre de tout ce qui a été chargé, dépliée, avant de s’engager à le chiffrer. Utile surtout pour se rendre compte qu’on a choisi le mauvais dossier.",
+          },
+        ],
+
+        dataset: [],
+
+        results: {
+          columns: ["Mode", "Fichiers", "Chiffrement (s)", "Déchiffrement (s)"],
+          rows: ["Séquentiel", "Parallèle"],
+          notes: [
+            "Les mêmes 150 fichiers, la même clé RC6, les mêmes dossiers de sortie, une exécution dans chaque mode. Le chiffrement parallèle a fini en 44,16 secondes contre 68,91, et le déchiffrement en 40,39 contre 70,13 : un tiers de moins dans les deux sens.",
+            "Le gain vient de la forme du travail. Les fichiers ne dépendent jamais les uns des autres ici, donc la liste se répartit sur une boucle parallèle sans état partagé à protéger, sans conflit à résoudre et sans ordre à préserver, et aucun fichier n’attend celui qui le précède. C’est pourquoi le traitement en parallèle retire environ un tiers du passage entier plutôt que quelques pour cent.",
+          ],
+        },
+
+        takeaway: [
+          "Ce que je garderais, c’est d’avoir implémenté deux chiffrements au lieu de les appeler. Ce sont des algorithmes courts et presque chaque ligne porte le poids : le sens d’une rotation, l’endroit où la longueur d’origine est rangée, et le fait que XXTEA exige que son arithmétique déborde au lieu de lever une erreur. Une seule hypothèse fausse donne une sortie qui a l’air correcte jusqu’à ce que les empreintes divergent.",
+          "Les manques sont aujourd’hui aussi nets que le mémoire le disait. Tout ici est symétrique, donc l’échange de clés est laissé entièrement à qui s’en sert, et l’étape suivante évidente est un algorithme asymétrique et l’hybride AES plus RSA qui en découle. WCF et Windows Forms datent aussi honnêtement le projet - ni l’un ni l’autre n’est ce vers quoi j’irais aujourd’hui, et quitter cette pile est une bonne part de ce que j’ai fait depuis.",
         ],
       },
     },
