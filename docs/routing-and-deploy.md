@@ -78,6 +78,15 @@ Everything in `<head>` is built there, and three of its behaviours are worth kno
   put `.dark` on `<html>`, and a bundled version would flash. It reads `localStorage`, falls
   back to `prefers-color-scheme`, and swallows a storage exception (private mode) into
   light. See [design-system.md §Theming](./design-system.md#6-theming-is-class-based-except-for-one-tag).
+- **The `Person` and `WebSite` JSON-LD is emitted on the four home pages only**, gated on
+  `isHome`, which compares `canonical.pathname` against `localizePath('/', lang)` rather
+  than taking a prop - so the English route and its `[lang]` twin cannot disagree about
+  which of them is a home page. Every value is read from [site.ts](../src/site.ts) or the
+  dictionary, including `jobTitle`, which comes from the role marked `current`. The two
+  `@id`s are absolute and identical across the four, so they describe one entity rather
+  than four, and `inLanguage` lists every locale for the same reason. ⚠️ **A wrong
+  `sameAs` URL does not merely fail to help, it hands the entity to somebody else's
+  account**, which is why the links are never written down here by hand.
 - **The disclosure dismissal script lives here, not in the components.** One listener
   covers every `details[data-menu]` on the page - both the mobile section menu and the
   language switcher. It handles Escape, pointer-down outside, and clicking a link inside,
@@ -279,6 +288,8 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-09-09 - the four home pages carry `Person` and `WebSite` JSON-LD, built from
+  `site.ts` and the dictionary rather than written out by hand (§2).
 - 2026-09-09 - the stylesheet is inlined into every document, so `/_astro` holds no CSS
   file and nothing render-blocking precedes the first paint (§5).
 - 2026-09-08 - a fourth project takes the build to 28 pages and the sitemap to 24 URLs.

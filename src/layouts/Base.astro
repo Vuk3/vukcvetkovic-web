@@ -36,6 +36,56 @@ const alternates = locales.map((locale) => ({
   href: new URL(localizePath(Astro.url.pathname, locale), siteUrl).href,
 }));
 const xDefault = new URL(localizePath(Astro.url.pathname, 'en'), siteUrl).href;
+
+/*
+ * Person and WebSite, on the four home pages only. The person is what a home
+ * page is about, and repeating the entity on a project page describes nothing
+ * the project page is.
+ *
+ * Derived from the path rather than taken as a prop, because the English route
+ * and its `[lang]` twin would otherwise have to remember to agree - which is
+ * the drift src/CLAUDE.md warns about. `canonical` is built the same way.
+ */
+const isHome = canonical.pathname === localizePath('/', lang);
+
+/*
+ * Every value comes from site.ts or the dictionary, so nothing here is a second
+ * copy: change the email or the job in one place and this changes with it. That
+ * matters more than usual because a wrong `sameAs` does not merely fail to
+ * help, it tells Google the site belongs to somebody else's account.
+ *
+ * The `@id`s are absolute and identical on all four home pages, so the four
+ * emit one shared entity rather than four competing ones. For the same reason
+ * `inLanguage` lists every locale instead of naming the current page's.
+ */
+const currentRole = site.experience.find((role) => role.current);
+const personId = `${siteUrl.origin}/#person`;
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': personId,
+      name: site.name,
+      url: `${siteUrl.origin}/`,
+      email: site.email,
+      ...(currentRole && {
+        jobTitle: dict.experience.roles[currentRole.id].role,
+        worksFor: { '@type': 'Organization', name: currentRole.company },
+      }),
+      sameAs: [site.links.linkedin, site.links.github],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${siteUrl.origin}/#website`,
+      name: site.name,
+      url: `${siteUrl.origin}/`,
+      inLanguage: [...locales],
+      publisher: { '@id': personId },
+    },
+  ],
+};
 ---
 
 <html lang={lang}>
@@ -100,6 +150,14 @@ const xDefault = new URL(localizePath(Astro.url.pathname, 'en'), siteUrl).href;
     <meta name="twitter:description" content={pageDescription} />
     <meta name="twitter:image" content={ogImage.href} />
     <meta name="twitter:image:alt" content={dict.meta.ogImageAlt} />
+
+    {/* `is:inline` and `set:html` so the JSON is emitted verbatim: Astro must
+        neither bundle the block nor escape the quotes inside it. */}
+    {
+      isHome && (
+        <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+      )
+    }
 
     {/*
       These match --site-panel-bg, not --site-bg: the browser chrome sits
