@@ -11,7 +11,8 @@
     "check": "astro check",
     "preview": "astro preview",
     "astro": "astro",
-    "generate-types": "wrangler types"
+    "generate-types": "wrangler types",
+    "release": "node release.js"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.3.0",
