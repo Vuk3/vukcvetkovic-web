@@ -38,7 +38,7 @@ plus a project write-up section, in **four languages** (English, Serbian, French
 | **colour, type, spacing or layout width** | [design-system.md](./design-system.md) |
 | a section's width or tone | [Section.astro](../src/components/Section.astro) - [design-system.md §Sections](./design-system.md#3-sections-and-the-card) |
 | **how a card, chip or pill looks** | [design-system.md §Sections](./design-system.md#3-sections-and-the-card) |
-| the request diagram on a project page | [ProjectFlow.astro](../src/components/ProjectFlow.astro) - [design-system.md §The request diagram](./design-system.md#6-the-request-diagram) |
+| the request diagram on a project page | [ArchitectureDiagram.astro](../src/components/ArchitectureDiagram.astro), [diagram-tokens.ts](../src/diagram-tokens.ts), [diagram-layout.ts](../src/diagram-layout.ts) - [design-system.md §The request diagram](./design-system.md#6-the-request-diagram) |
 | an animation | [design-system.md §Motion](./design-system.md#5-motion) |
 | a component's markup | [src/components/](../src/components/) - rules in its [CLAUDE.md](../src/components/CLAUDE.md) |
 | a page or a `getStaticPaths` | [src/pages/](../src/pages/) - rules in [src/CLAUDE.md](../src/CLAUDE.md) |

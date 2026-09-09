@@ -138,6 +138,26 @@ const en = {
       takeaway: "What I took from it",
     },
 
+    /**
+     * The captions in the request diagram, shared by every project.
+     *
+     * They name what a stage *is* rather than what it holds, which is why they
+     * are written once here instead of four times under `items`: the core
+     * orchestrates on all four projects, the lane runs in parallel on all four,
+     * and the terminal at the end is the output on the three that have one.
+     *
+     * Each is set inside the card it belongs to, in the diagram's mono voice -
+     * so a node reads as a header and a body rather than as a box with a word
+     * floating over it, and the reader can answer "where does this start" from
+     * the card itself.
+     */
+    flowCaptions: {
+      entry: "Entry",
+      core: "Orchestration",
+      lane: "In parallel",
+      exit: "Output",
+    },
+
     /** Stack rows are named by the service they belong to. */
     stackGroups: {
       frontend: "Front end",
@@ -166,17 +186,25 @@ const en = {
         context: "Master's thesis, Faculty of Electronic Engineering in Niš",
         domain: "Personal protective equipment on site",
 
+        /*
+         * The request diagram, by role rather than by position.
+         *
+         * `exit` is empty because this run is a round trip - it comes back to
+         * the terminal it started from, which `flowShape` in src/site.ts says
+         * and the diagram draws. The two payloads are annotations on the lines
+         * either side of the gateway, not stages of their own.
+         */
         flow: {
-          before: ["React front end", "Image, multipart/form-data", "NestJS gateway"],
+          entry: "React front end",
+          entryLabel: "Image, multipart/form-data",
+          core: "NestJS gateway",
           branches: [
-            ["FastAPI service", "Ultralytics YOLOv8m"],
-            ["ASP.NET Core service", "ML.NET model"],
+            { title: "FastAPI service", badge: "Ultralytics YOLOv8m" },
+            { title: "ASP.NET Core service", badge: "ML.NET model" },
           ],
-          after: [
-            "NestJS gateway",
-            "One JSON shape: boxes, classes, confidence",
-            "React front end",
-          ],
+          exit: "",
+          exitLabel: "One JSON shape: boxes, classes, confidence",
+          exitNote: "",
         },
 
         overview: [
@@ -283,13 +311,19 @@ const en = {
         domain: "File encryption on the desktop",
 
         flow: {
-          before: ["A folder, read recursively into bytes", "WCF service"],
+          entry: "A folder, read recursively into bytes",
+          entryLabel: "",
+          core: "WCF service",
           branches: [
-            ["AES", "CBC, from the .NET library"],
-            ["RC6", "Written by hand, 20 rounds"],
-            ["XXTEA", "Written by hand, Feistel network"],
+            { title: "AES", badge: "CBC, from the .NET library" },
+            { title: "RC6", badge: "Written by hand, 20 rounds" },
+            { title: "XXTEA", badge: "Written by hand, Feistel network" },
           ],
-          after: ["One encrypted file per input", "SHA-512 recorded before and after"],
+          exit: "One encrypted file per input",
+          exitLabel: "",
+          /* The integrity claim, annotated beside the output rather than drawn
+             as a stage: nothing passes through it. */
+          exitNote: "SHA-512 recorded before and after",
         },
 
         overview: [
@@ -368,21 +402,25 @@ const en = {
         title: "Network Traffic Analyzer",
         tagline: "A packet capture read once, then asked twelve questions about every packet in it.",
         description:
-          "A term paper on traffic analysis, with a desktop application to demonstrate it. It opens a .pcapng capture through Pyshark, walks every packet layer by layer, and pulls out what each protocol carries - HTTP headers, DNS queries, TCP flags, FTP credentials - into an expandable tree, alongside a chart of how the protocols divide up.",
+          "A seminar paper on traffic analysis, with a desktop application to demonstrate it. It opens a .pcapng capture through Pyshark, walks every packet layer by layer, and pulls out what each protocol carries - HTTP headers, DNS queries, TCP flags, FTP credentials - into an expandable tree, alongside a chart of how the protocols divide up.",
         metaTitle: "Network Traffic Analyzer - Vuk Cvetković",
         metaDescription:
-          "A term paper project in Python: a Tkinter application that reads .pcapng captures through Pyshark, extracts twelve protocols per packet, and charts the protocol distribution.",
-        context: "Term paper, Faculty of Electronic Engineering in Niš",
+          "A seminar paper project in Python: a Tkinter application that reads .pcapng captures through Pyshark, extracts twelve protocols per packet, and charts the protocol distribution.",
+        context: "Seminar paper, Faculty of Electronic Engineering in Niš",
         domain: "Packet capture analysis",
 
         flow: {
-          before: ["A .pcapng capture", "Pyshark, over Wireshark's tshark"],
+          entry: "A .pcapng capture",
+          entryLabel: "",
+          core: "Pyshark, over Wireshark's tshark",
           branches: [
-            ["Application protocols", "HTTP, HTTPS, DNS, FTP, SMTP"],
-            ["Transport and control", "TCP, UDP, ICMP, ARP"],
-            ["Addressing", "IP, Ethernet"],
+            { title: "Application protocols", badge: "HTTP, HTTPS, DNS, FTP, SMTP" },
+            { title: "Transport and control", badge: "TCP, UDP, ICMP, ARP" },
+            { title: "Addressing", badge: "IP, Ethernet" },
           ],
-          after: ["One row per packet", "Expandable, and counted into the charts"],
+          exit: "One row per packet",
+          exitLabel: "",
+          exitNote: "Expandable, and counted into the charts",
         },
 
         overview: [
@@ -466,15 +504,16 @@ const en = {
         domain: "Open government data, pollen and allergens",
 
         flow: {
-          before: ["Five open-data endpoints", "Scheduled seeding"],
+          entry: "Five open-data endpoints",
+          entryLabel: "",
+          core: "Scheduled seeding",
           branches: [
-            ["Monthly", "Allergens, types, locations"],
-            ["Hourly, 9 to 12", "Pollens, concentrations"],
+            { title: "Monthly", badge: "Allergens, types, locations" },
+            { title: "Hourly, 9 to 12", badge: "Pollens, concentrations" },
           ],
-          after: [
-            "One deduplicated database",
-            "Narrowed to a radius, a day and your allergens",
-          ],
+          exit: "One deduplicated database",
+          exitLabel: "",
+          exitNote: "Narrowed to a radius, a day and your allergens",
         },
 
         overview: [

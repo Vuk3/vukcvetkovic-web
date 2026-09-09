@@ -124,6 +124,13 @@ const sr: Dict = {
       takeaway: "Šta sam iz ovoga izvukao",
     },
 
+    flowCaptions: {
+      entry: "Ulaz",
+      core: "Orkestracija",
+      lane: "Paralelno",
+      exit: "Izlaz",
+    },
+
     stackGroups: {
       frontend: "Frontend",
       gateway: "Gateway",
@@ -152,16 +159,16 @@ const sr: Dict = {
         domain: "Lična zaštitna oprema na gradilištu",
 
         flow: {
-          before: ["React front end", "Slika, multipart/form-data", "NestJS gateway"],
+          entry: "React front end",
+          entryLabel: "Slika, multipart/form-data",
+          core: "NestJS gateway",
           branches: [
-            ["FastAPI servis", "Ultralytics YOLOv8m"],
-            ["ASP.NET Core servis", "ML.NET model"],
+            { title: "FastAPI servis", badge: "Ultralytics YOLOv8m" },
+            { title: "ASP.NET Core servis", badge: "ML.NET model" },
           ],
-          after: [
-            "NestJS gateway",
-            "Jedan JSON format: okviri, klase, pouzdanost",
-            "React front end",
-          ],
+          exit: "",
+          exitLabel: "Jedan JSON format: okviri, klase, pouzdanost",
+          exitNote: "",
         },
 
         overview: [
@@ -261,13 +268,17 @@ const sr: Dict = {
         domain: "Šifrovanje fajlova na desktopu",
 
         flow: {
-          before: ["Folder, pročitan rekurzivno u bajtove", "WCF servis"],
+          entry: "Folder, pročitan rekurzivno u bajtove",
+          entryLabel: "",
+          core: "WCF servis",
           branches: [
-            ["AES", "CBC, iz .NET biblioteke"],
-            ["RC6", "Napisan rukom, 20 rundi"],
-            ["XXTEA", "Napisan rukom, Fajstelova mreža"],
+            { title: "AES", badge: "CBC, iz .NET biblioteke" },
+            { title: "RC6", badge: "Napisan rukom, 20 rundi" },
+            { title: "XXTEA", badge: "Napisan rukom, Fajstelova mreža" },
           ],
-          after: ["Po jedan šifrovan fajl za svaki ulazni", "SHA-512 upisan pre i posle"],
+          exit: "Po jedan šifrovan fajl za svaki ulazni",
+          exitLabel: "",
+          exitNote: "SHA-512 upisan pre i posle",
         },
 
         overview: [
@@ -354,13 +365,17 @@ const sr: Dict = {
         domain: "Analiza snimljenog mrežnog saobraćaja",
 
         flow: {
-          before: ["Snimak u .pcapng formatu", "Pyshark, preko Wireshark-ovog tshark-a"],
+          entry: "Snimak u .pcapng formatu",
+          entryLabel: "",
+          core: "Pyshark, preko Wireshark-ovog tshark-a",
           branches: [
-            ["Aplikativni protokoli", "HTTP, HTTPS, DNS, FTP, SMTP"],
-            ["Transport i kontrola", "TCP, UDP, ICMP, ARP"],
-            ["Adresiranje", "IP, Ethernet"],
+            { title: "Aplikativni protokoli", badge: "HTTP, HTTPS, DNS, FTP, SMTP" },
+            { title: "Transport i kontrola", badge: "TCP, UDP, ICMP, ARP" },
+            { title: "Adresiranje", badge: "IP, Ethernet" },
           ],
-          after: ["Po jedan red za svaki paket", "Širi se, i ulazi u grafikone"],
+          exit: "Po jedan red za svaki paket",
+          exitLabel: "",
+          exitNote: "Širi se, i ulazi u grafikone",
         },
 
         overview: [
@@ -444,15 +459,16 @@ const sr: Dict = {
         domain: "Otvoreni podaci države, polen i alergeni",
 
         flow: {
-          before: ["Pet endpointa otvorenih podataka", "Seedovanje po rasporedu"],
+          entry: "Pet endpointa otvorenih podataka",
+          entryLabel: "",
+          core: "Seedovanje po rasporedu",
           branches: [
-            ["Mesečno", "Alergeni, tipovi, lokacije"],
-            ["Na sat, od 9 do 12", "Poleni, koncentracije"],
+            { title: "Mesečno", badge: "Alergeni, tipovi, lokacije" },
+            { title: "Na sat, od 9 do 12", badge: "Poleni, koncentracije" },
           ],
-          after: [
-            "Jedna baza, bez duplikata",
-            "Svedena na radijus, dan i tvoje alergene",
-          ],
+          exit: "Jedna baza, bez duplikata",
+          exitLabel: "",
+          exitNote: "Svedena na radijus, dan i tvoje alergene",
         },
 
         overview: [

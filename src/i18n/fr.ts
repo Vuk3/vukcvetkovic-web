@@ -124,6 +124,13 @@ const fr: Dict = {
       takeaway: "Ce que j’en retiens",
     },
 
+    flowCaptions: {
+      entry: "Entrée",
+      core: "Orchestration",
+      lane: "En parallèle",
+      exit: "Sortie",
+    },
+
     stackGroups: {
       frontend: "Front end",
       gateway: "Passerelle",
@@ -153,16 +160,16 @@ const fr: Dict = {
         domain: "Équipements de protection individuelle sur chantier",
 
         flow: {
-          before: ["Front end React", "Image, multipart/form-data", "Passerelle NestJS"],
+          entry: "Front end React",
+          entryLabel: "Image, multipart/form-data",
+          core: "Passerelle NestJS",
           branches: [
-            ["Service FastAPI", "Ultralytics YOLOv8m"],
-            ["Service ASP.NET Core", "Modèle ML.NET"],
+            { title: "Service FastAPI", badge: "Ultralytics YOLOv8m" },
+            { title: "Service ASP.NET Core", badge: "Modèle ML.NET" },
           ],
-          after: [
-            "Passerelle NestJS",
-            "Un seul format JSON : cadres, classes, confiance",
-            "Front end React",
-          ],
+          exit: "",
+          exitLabel: "Un seul format JSON : cadres, classes, confiance",
+          exitNote: "",
         },
 
         overview: [
@@ -263,16 +270,17 @@ const fr: Dict = {
         domain: "Chiffrement de fichiers sur le poste de travail",
 
         flow: {
-          before: ["Un dossier, lu récursivement en octets", "Service WCF"],
+          entry: "Un dossier, lu récursivement en octets",
+          entryLabel: "",
+          core: "Service WCF",
           branches: [
-            ["AES", "CBC, depuis la bibliothèque .NET"],
-            ["RC6", "Écrit à la main, 20 tours"],
-            ["XXTEA", "Écrit à la main, réseau de Feistel"],
+            { title: "AES", badge: "CBC, depuis la bibliothèque .NET" },
+            { title: "RC6", badge: "Écrit à la main, 20 tours" },
+            { title: "XXTEA", badge: "Écrit à la main, réseau de Feistel" },
           ],
-          after: [
-            "Un fichier chiffré par fichier d’entrée",
-            "SHA-512 enregistrée avant et après",
-          ],
+          exit: "Un fichier chiffré par fichier d’entrée",
+          exitLabel: "",
+          exitNote: "SHA-512 enregistrée avant et après",
         },
 
         overview: [
@@ -360,13 +368,17 @@ const fr: Dict = {
         domain: "Analyse de captures de paquets",
 
         flow: {
-          before: ["Une capture .pcapng", "Pyshark, via le tshark de Wireshark"],
+          entry: "Une capture .pcapng",
+          entryLabel: "",
+          core: "Pyshark, via le tshark de Wireshark",
           branches: [
-            ["Protocoles applicatifs", "HTTP, HTTPS, DNS, FTP, SMTP"],
-            ["Transport et contrôle", "TCP, UDP, ICMP, ARP"],
-            ["Adressage", "IP, Ethernet"],
+            { title: "Protocoles applicatifs", badge: "HTTP, HTTPS, DNS, FTP, SMTP" },
+            { title: "Transport et contrôle", badge: "TCP, UDP, ICMP, ARP" },
+            { title: "Adressage", badge: "IP, Ethernet" },
           ],
-          after: ["Une ligne par paquet", "Dépliable, et comptée dans les graphiques"],
+          exit: "Une ligne par paquet",
+          exitLabel: "",
+          exitNote: "Dépliable, et comptée dans les graphiques",
         },
 
         overview: [
@@ -451,15 +463,16 @@ const fr: Dict = {
         domain: "Données publiques ouvertes, pollen et allergènes",
 
         flow: {
-          before: ["Cinq points d’accès ouverts", "Alimentation planifiée"],
+          entry: "Cinq points d’accès ouverts",
+          entryLabel: "",
+          core: "Alimentation planifiée",
           branches: [
-            ["Mensuelle", "Allergènes, types, lieux"],
-            ["Horaire, de 9 h à 12 h", "Pollens, concentrations"],
+            { title: "Mensuelle", badge: "Allergènes, types, lieux" },
+            { title: "Horaire, de 9 h à 12 h", badge: "Pollens, concentrations" },
           ],
-          after: [
-            "Une base dédoublonnée",
-            "Réduite à un rayon, un jour et vos allergènes",
-          ],
+          exit: "Une base dédoublonnée",
+          exitLabel: "",
+          exitNote: "Réduite à un rayon, un jour et vos allergènes",
         },
 
         overview: [

@@ -190,19 +190,32 @@ so an empty array renders nothing and costs nothing.
 
 Two shapes are not free-form:
 
-- **`flow`** feeds [ProjectFlow.astro](../src/components/ProjectFlow.astro) as
-  `before: string[]`, `branches: string[][]`, `after: string[]`. Any number of branches
-  works - the component hands the count to the stylesheet as `--flow-n` so the two
-  connecting bars can find the first and last stems. What is fixed is the **topology**: one
-  fan-out and one gather-in. A project that forks twice, or not at all, needs the component
-  changed rather than the data.
+- **`flow`** is the copy behind the request diagram, **named by role rather than by
+  position**:
 
-  ⚠️ **Position decides how a stage is drawn, so the order of these arrays is design and
-  not just sequence.** The outer end of each run is a filled terminal, the stage beside the
-  fork is the accent hub, and anything between them is a dashed relay - the payload in
-  flight. Object detection uses three entries each way for exactly that reason: front end,
-  request, gateway, then gateway, response, front end, which draws the round trip. A run of
-  two collapses to a terminal and a hub, which is what the other three projects want.
+  | Key | What it names | Drawn as |
+  |---|---|---|
+  | `entry` | where the run starts | a terminal, tier 1 |
+  | `entryLabel` | the payload on the way in | an annotation riding on the line, or nothing if empty |
+  | `core` | the one address the run passes through | the largest node, tier 2 |
+  | `branches` | `{ title, badge }` per parallel service | a lane of tier 3 nodes, the badge in uppercase mono |
+  | `exit` | where the answer lands | a terminal, tier 1 |
+  | `exitLabel` | the payload on the way back out | an annotation on the returning line |
+  | `exitNote` | something true *about* the output | mono beside it, never a stage of its own |
+
+  ⚠️ **The topology is a fact and lives in [src/site.ts](../src/site.ts), as `flowShape`.**
+  `roundTrip` comes back to the terminal it started from, so its `exit` is empty and the
+  diagram draws one terminal with a payload on each side; `pipeline` ends somewhere else, so
+  `exit` names it and `exitLabel` is empty. Inferring the shape from an empty `exit` would
+  put the topology of the drawing at the mercy of a translation, which is why it does not.
+
+  What is fixed is the shape itself: one fan-out into one lane, and one gather-in. A project
+  that forks twice, or not at all, needs
+  [diagram-layout.ts](../src/diagram-layout.ts) extended rather than the data bent.
+
+  `projects.flowCaptions` holds the three captions the diagram draws over its stages -
+  orchestration, in parallel, output. They are shared by every project because they name
+  what a stage *is*, and they are the only diagram copy that is not per-project.
 - **The results table splits down the middle: numbers in
   [src/site.ts](../src/site.ts), every word in the dictionaries.** See §5.1.
 
@@ -316,6 +329,12 @@ So the whole cost is SEO, it is invisible locally, and the only way to catch it 
 
 ## Changelog
 
+- 2026-09-09 - `flow` names its parts by role (`entry`, `entryLabel`, `core`, `branches`,
+  `exit`, `exitLabel`, `exitNote`) instead of by position in three arrays, the topology
+  moved to `flowShape` in [src/site.ts](../src/site.ts), and `projects.flowCaptions` gained
+  the three captions the diagram draws. No copy changed - Encryptix's SHA-512 line is now
+  an annotation on its output rather than the terminal the run ends at, which is what it
+  always said.
 - 2026-09-08 - Easy Breathe added as a fourth project.
 - 2026-09-08 - Network Traffic Analyzer added as a third project, and the first with no
   `results` at all, so the section is skipped rather than padded.

@@ -79,12 +79,27 @@ interface ProjectResults {
   rows: ProjectResultRow[];
 }
 
+/**
+ * What shape the request diagram is, which is a fact about the system rather
+ * than a sentence about it.
+ *
+ * `roundTrip` comes back to the terminal it started from - a client asks and is
+ * answered - so the diagram draws one terminal and two payloads. `pipeline`
+ * ends somewhere else, so it draws two terminals and the last one is an output.
+ *
+ * ⚠️ This lives here rather than being read off the copy on purpose. Inferring
+ * it from an empty `flow.exit` in the dictionaries would put the topology of
+ * the drawing at the mercy of a translation.
+ */
+export type FlowShape = "roundTrip" | "pipeline";
+
 /** Exported because the pages hand one to the components that render it. */
 export interface Project {
   id: ProjectId;
   /** Last path segment of the project's own page, under /projects/. */
   slug: string;
   year: string;
+  flowShape: FlowShape;
   /**
    * The names that identify the project at a glance, for the rows on the
    * homepage and the index. `stack` below is the full list, grouped by which
@@ -188,6 +203,8 @@ const projects: Project[] = [
     id: "objectDetection",
     slug: "object-detection",
     year: "2026",
+    /* The one round trip: the front end asks, and the front end is answered. */
+    flowShape: "roundTrip",
     tech: ["React", "NestJS", "FastAPI", "Ultralytics", "ASP.NET Core", "ML.NET"],
     stack: [
       { id: "frontend", items: ["React"] },
@@ -211,6 +228,7 @@ const projects: Project[] = [
     id: "encryptix",
     slug: "encryptix",
     year: "2023",
+    flowShape: "pipeline",
     tech: ["C#", ".NET", "WCF", "Windows Forms"],
     /*
      * Two processes, so two rows. The three ciphers are deliberately absent for
@@ -235,6 +253,7 @@ const projects: Project[] = [
     id: "networkTrafficAnalyzer",
     slug: "network-traffic-analyzer",
     year: "2024",
+    flowShape: "pipeline",
     tech: ["Python", "Tkinter", "Pyshark", "Matplotlib"],
     /*
      * One process, so the groups name jobs rather than services: the window, the
@@ -262,6 +281,7 @@ const projects: Project[] = [
     id: "easyBreathe",
     slug: "easy-breathe",
     year: "2024",
+    flowShape: "pipeline",
     tech: ["React Native", "Expo", "NestJS", "MongoDB"],
     stack: [
       { id: "mobile", items: ["React Native", "Expo"] },

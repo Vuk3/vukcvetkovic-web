@@ -13,7 +13,10 @@ request.
   elements. The header's scroll behaviour is a `scroll(root)` timeline. The section reveals
   are `view()` timelines. None of that costs script.
 - **If something genuinely needs a script, ask before adding it.** Two exist today: the
-  theme toggle, and the layout's single dismissal listener.
+  theme toggle, and the layout's single dismissal listener. The request diagram sequences a
+  dozen elements in the order a request runs, pinned, while the page scrolls - and it does
+  it on a `view()` timeline with a step index per element. An observer was written for it
+  and then removed.
 - **Dismissal is already solved.** A disclosure gets `data-menu` and
   [Base.astro](../layouts/Base.astro) handles Escape, pointer-down outside and clicking a
   link inside, for every disclosure on the page at once. Do not add a second listener.
@@ -39,9 +42,16 @@ is `<Section …>` with content inside, never a hand-rolled `<section>` with its
 ## Build a section out of cards
 
 `.card` is the page's unit - a service, a role, a degree, a project, a channel, a step, the
-results table, a stage of the request diagram. Add `.card-hover` **only** where the whole
-card is a link, and pair it with `.stretch` on the title so the click target is the card
-while the accessible name stays the title.
+results table. Add `.card-hover` **only** where the whole card is a link, and pair it with
+`.stretch` on the title so the click target is the card while the accessible name stays the
+title.
+
+⚠️ **The request diagram is the one block outside all of this.** It is inline SVG, its
+surfaces and numbers come from [diagram-tokens.ts](../diagram-tokens.ts), and its geometry
+from [diagram-layout.ts](../diagram-layout.ts) - nothing about it is a `.card`, and nothing
+in [global.css](../styles/global.css) styles it. Read
+[docs/design-system.md §6](../../docs/design-system.md#6-the-request-diagram) before
+changing it.
 
 - ⚠️ **`.stretch` covers everything underneath it.** Any link that has to stay clickable
   inside a stretched card needs `.above`.
@@ -79,6 +89,7 @@ Decided by one question: is the element in view at first paint?
 | in view at first paint (hero, page heads, 404) | `enter`, ordered with an inline `style="--enter-delay:…"` |
 | a block arriving on scroll | `reveal` |
 | a repeated card that should stagger within its grid | `reveal-item` |
+| the request diagram | none of them - it is pinned and scrubbed against its own track's `view()` timeline, and a `reveal` on top would fade the block in and then assemble it inside itself |
 
 `reveal-item` staggers by `nth-child`, so it goes on the `<li>` directly inside the list.
 Wrapping the items in another element resets the count.
@@ -88,8 +99,10 @@ Full mechanics, including the two `@property` registrations and the longhands-on
 
 ## Accessibility details already decided
 
-- Icons are `aria-hidden="true"` when a text label sits beside them, and the diagram's
-  connectors are `aria-hidden` too - they are drawing, not content.
+- Icons are `aria-hidden="true"` when a text label sits beside them. The request diagram
+  goes further: all three of its SVGs are `aria-hidden` and the content is announced from a
+  `sr-only` ordered list above them, in the order the run takes. SVG text is read
+  inconsistently, and there are three copies of it in the markup.
 - The Education crest has `alt=""` - the school is named in the line next to it, and
   announcing the crest as well reads the same thing twice.
 - The mobile menu carries **no landmark**. The desktop `<nav>` already has one named

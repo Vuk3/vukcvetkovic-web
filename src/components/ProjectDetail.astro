@@ -13,10 +13,11 @@
  * chain of them, the numbered steps a grid of them, the stack one per service.
  */
 import { ArrowLeft, ArrowUpRight } from '@lucide/astro';
+import type { DiagramEdge, DiagramSpec, DiagramStage } from '../diagram-layout';
 import type { Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
 import type { Project, ResultFormat } from '../site';
-import ProjectFlow from './ProjectFlow.astro';
+import ArchitectureDiagram from './ArchitectureDiagram.astro';
 import Section from './Section.astro';
 import TechIcon from './TechIcon.astro';
 
@@ -58,6 +59,51 @@ const meta = [
   { label: labels.context, value: copy.context },
   { label: labels.domain, value: copy.domain },
 ];
+
+/*
+ * The request diagram's spec: the copy from the dictionary, the topology from
+ * src/site.ts, joined here because this is the one place that has both.
+ *
+ * ArchitectureDiagram takes stages and edges and knows nothing about projects,
+ * so everything project-shaped is decided in these thirty lines - which is also
+ * where to look when a fifth project does not fit the shape.
+ */
+const flow = copy.flow;
+const captions = dict.projects.flowCaptions;
+const roundTrip = project.flowShape === 'roundTrip';
+
+const services = flow.branches.map((branch, index) => ({
+  id: `service-${index}`,
+  tier: 3 as const,
+  title: branch.title,
+  badges: branch.badge ? [branch.badge] : undefined,
+}));
+
+const stages: DiagramStage[] = [
+  { id: 'entry', caption: captions.entry, nodes: [{ id: 'entry', tier: 1, title: flow.entry }] },
+  { id: 'core', caption: captions.core, nodes: [{ id: 'core', tier: 2, title: flow.core }] },
+  { id: 'lane', caption: captions.lane, lane: true, nodes: services },
+];
+
+const edges: DiagramEdge[] = [
+  { from: 'entry', to: 'core', label: flow.entryLabel || undefined },
+  ...services.map((service) => ({ from: 'core', to: service.id })),
+];
+
+if (roundTrip) {
+  /* Back to the core, then back out to the terminal it came from. */
+  edges.push(...services.map((service) => ({ from: service.id, to: 'core', return: true })));
+  edges.push({ from: 'core', to: 'entry', label: flow.exitLabel || undefined });
+} else {
+  stages.push({
+    id: 'exit',
+    caption: captions.exit,
+    nodes: [{ id: 'exit', tier: 1, title: flow.exit, note: flow.exitNote || undefined }],
+  });
+  edges.push(...services.map((service) => ({ from: service.id, to: 'exit' })));
+}
+
+const flowSpec: DiagramSpec = { id: project.id, stages, edges };
 ---
 
 <article>
@@ -107,12 +153,13 @@ const meta = [
     </div>
   </header>
 
+  {/*
+    The diagram runs its own reveal, in the order the request does, so it does
+    not also take the section's `.reveal` - the two together would fade the
+    whole block in and then assemble it inside itself.
+  */}
   <Section id="flow" label={labels.flow} width="projects" tone="band">
-    <ProjectFlow
-      before={copy.flow.before}
-      branches={copy.flow.branches}
-      after={copy.flow.after}
-    />
+    <ArchitectureDiagram spec={flowSpec} />
   </Section>
 
   {

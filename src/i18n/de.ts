@@ -124,6 +124,13 @@ const de: Dict = {
       takeaway: 'Was ich daraus mitnehme',
     },
 
+    flowCaptions: {
+      entry: 'Eingang',
+      core: 'Orchestrierung',
+      lane: 'Parallel',
+      exit: 'Ausgabe',
+    },
+
     stackGroups: {
       frontend: 'Frontend',
       gateway: 'Gateway',
@@ -152,16 +159,16 @@ const de: Dict = {
         domain: 'Persönliche Schutzausrüstung auf der Baustelle',
 
         flow: {
-          before: ['React-Frontend', 'Bild, multipart/form-data', 'NestJS-Gateway'],
+          entry: 'React-Frontend',
+          entryLabel: 'Bild, multipart/form-data',
+          core: 'NestJS-Gateway',
           branches: [
-            ['FastAPI-Service', 'Ultralytics YOLOv8m'],
-            ['ASP.NET-Core-Service', 'ML.NET-Modell'],
+            { title: 'FastAPI-Service', badge: 'Ultralytics YOLOv8m' },
+            { title: 'ASP.NET-Core-Service', badge: 'ML.NET-Modell' },
           ],
-          after: [
-            'NestJS-Gateway',
-            'Ein JSON-Format: Rahmen, Klassen, Konfidenz',
-            'React-Frontend',
-          ],
+          exit: '',
+          exitLabel: 'Ein JSON-Format: Rahmen, Klassen, Konfidenz',
+          exitNote: '',
         },
 
         overview: [
@@ -262,13 +269,17 @@ const de: Dict = {
         domain: 'Dateiverschlüsselung auf dem Desktop',
 
         flow: {
-          before: ['Ein Ordner, rekursiv in Bytes gelesen', 'WCF-Service'],
+          entry: 'Ein Ordner, rekursiv in Bytes gelesen',
+          entryLabel: '',
+          core: 'WCF-Service',
           branches: [
-            ['AES', 'CBC, aus der .NET-Bibliothek'],
-            ['RC6', 'Von Hand geschrieben, 20 Runden'],
-            ['XXTEA', 'Von Hand geschrieben, Feistel-Netzwerk'],
+            { title: 'AES', badge: 'CBC, aus der .NET-Bibliothek' },
+            { title: 'RC6', badge: 'Von Hand geschrieben, 20 Runden' },
+            { title: 'XXTEA', badge: 'Von Hand geschrieben, Feistel-Netzwerk' },
           ],
-          after: ['Eine verschlüsselte Datei je Eingabe', 'SHA-512 vor und nach dem Durchgang'],
+          exit: 'Eine verschlüsselte Datei je Eingabe',
+          exitLabel: '',
+          exitNote: 'SHA-512 vor und nach dem Durchgang',
         },
 
         overview: [
@@ -356,13 +367,17 @@ const de: Dict = {
         domain: 'Analyse von Paketmitschnitten',
 
         flow: {
-          before: ['Ein .pcapng-Mitschnitt', 'Pyshark, über Wiresharks tshark'],
+          entry: 'Ein .pcapng-Mitschnitt',
+          entryLabel: '',
+          core: 'Pyshark, über Wiresharks tshark',
           branches: [
-            ['Anwendungsprotokolle', 'HTTP, HTTPS, DNS, FTP, SMTP'],
-            ['Transport und Steuerung', 'TCP, UDP, ICMP, ARP'],
-            ['Adressierung', 'IP, Ethernet'],
+            { title: 'Anwendungsprotokolle', badge: 'HTTP, HTTPS, DNS, FTP, SMTP' },
+            { title: 'Transport und Steuerung', badge: 'TCP, UDP, ICMP, ARP' },
+            { title: 'Adressierung', badge: 'IP, Ethernet' },
           ],
-          after: ['Eine Zeile je Paket', 'Aufklappbar, und in die Diagramme gezählt'],
+          exit: 'Eine Zeile je Paket',
+          exitLabel: '',
+          exitNote: 'Aufklappbar, und in die Diagramme gezählt',
         },
 
         overview: [
@@ -447,15 +462,16 @@ const de: Dict = {
         domain: 'Offene Verwaltungsdaten, Pollen und Allergene',
 
         flow: {
-          before: ['Fünf offene Endpunkte', 'Geplantes Einlesen'],
+          entry: 'Fünf offene Endpunkte',
+          entryLabel: '',
+          core: 'Geplantes Einlesen',
           branches: [
-            ['Monatlich', 'Allergene, Typen, Orte'],
-            ['Stündlich, 9 bis 12 Uhr', 'Pollen, Konzentrationen'],
+            { title: 'Monatlich', badge: 'Allergene, Typen, Orte' },
+            { title: 'Stündlich, 9 bis 12 Uhr', badge: 'Pollen, Konzentrationen' },
           ],
-          after: [
-            'Eine Datenbank ohne Duplikate',
-            'Eingegrenzt auf Radius, Tag und Ihre Allergene',
-          ],
+          exit: 'Eine Datenbank ohne Duplikate',
+          exitLabel: '',
+          exitNote: 'Eingegrenzt auf Radius, Tag und Ihre Allergene',
         },
 
         overview: [

@@ -1,0 +1,558 @@
+---
+/**
+ * One request, drawn, and told as you scroll past it.
+ *
+ * This is the opening image of a project page and the one place either page is
+ * allowed to be a diagram, because the shape *is* the argument: a run reaches a
+ * single address, fans out into services that do not know about each other, and
+ * gathers back into one answer.
+ *
+ * The component holds no geometry. It takes a spec - stages and edges, which is
+ * data - hands it to [src/diagram-layout.ts](../diagram-layout.ts), and writes
+ * out what comes back. Every number traces to
+ * [src/diagram-tokens.ts](../diagram-tokens.ts), colours included: they arrive
+ * as `--site-*` expressions on the wrapper, so the theme toggle still reaches
+ * them.
+ *
+ * ⚠️ **The scroll is the clock, and it is not pinned.** As the drawing crosses
+ * the screen the run assembles in the order it actually takes: every element
+ * takes a slice of the track's `view()` timeline, so there is no script, no
+ * observer and no duration anywhere. Scroll back up and it unbuilds, which is
+ * what a scrubbed animation is.
+ *
+ * It was a sticky, pinned section twice, and the reason it is not is written
+ * out in docs/design-system.md §6. The short of it: a pin needs a runway to
+ * spend and a runway is empty page, so the section came out with most of a
+ * screen of nothing at each end. Read that before adding one back.
+ *
+ * ⚠️ **One diagram, two arrangements, never both.** An SVG with a viewBox scales
+ * its text with its container, so the landscape composition would set its 18px
+ * titles at 5px on a phone. Below 56rem there is a portrait arrangement
+ * instead. `display` for both is decided in exactly one place in the stylesheet
+ * below - a later rule setting `display: block` on the shared class is what
+ * previously put two of them on screen at once.
+ *
+ * ⚠️ **Nothing is hidden without scroll-driven animation.** Every rule that
+ * hides anything lives inside `@supports (animation-timeline: view())` and
+ * `prefers-reduced-motion: no-preference`. Everywhere else the diagram is
+ * simply present and finished - the same degradation the rest of the site's
+ * motion uses.
+ */
+import { layoutDiagram, type DiagramSpec } from '../diagram-layout';
+import { colors, fonts, motion, shape } from '../diagram-tokens';
+
+interface Props {
+  spec: DiagramSpec;
+}
+
+const { spec } = Astro.props;
+
+const views = (['wide', 'narrow'] as const).map((mode) => layoutDiagram(spec, mode));
+
+/*
+ * The accessible reading, walked in edge order so it comes out as the run
+ * rather than as an inventory: a terminal, the payload that leaves it, what it
+ * reaches, and so on. A node is named the first time it is reached, which is
+ * what keeps a round trip from listing its client twice.
+ */
+const byId = new Map(
+  spec.stages.flatMap((stage) => stage.nodes.map((node) => [node.id, node] as const)),
+);
+const named = new Set<string>();
+const reading: string[] = [];
+
+const describe = (id: string) => {
+  const node = byId.get(id);
+  if (!node || named.has(id)) return;
+
+  named.add(id);
+  reading.push([node.title, node.badges?.join(', '), node.note].filter(Boolean).join(' - '));
+};
+
+for (const edge of spec.edges) {
+  describe(edge.from);
+  if (edge.label) reading.push(edge.label);
+  describe(edge.to);
+}
+
+/** The arrowhead, written once and placed by transform at every landing. */
+const arrow = `M ${-shape.head} ${-shape.head * 0.55} L 0 0 L ${-shape.head} ${shape.head * 0.55}`;
+
+/*
+ * The tokens, on the wrapper so they inherit into both arrangements. An inline
+ * style rather than `define:vars` on the style tag: the scoped stylesheet then
+ * stays hoistable into the shared bundle instead of being inlined into all
+ * sixteen project pages, and there is no question about where they land.
+ */
+const styleVars = Object.entries({
+  ...colors,
+  'dg-mono': fonts.mono,
+  'dg-node-ease': motion.nodeEase,
+  'dg-edge-ease': motion.edgeEase,
+  'dg-story-from': `${motion.story.from}%`,
+  'dg-story-span': `${motion.story.span}%`,
+  'dg-story-from-narrow': `${motion.storyNarrow.from}%`,
+  'dg-story-span-narrow': `${motion.storyNarrow.span}%`,
+})
+  .map(([name, value]) => `--${name}:${value}`)
+  .join(';');
+---
+
+<div class="dg" style={styleVars}>
+  <ol class="sr-only">
+    {reading.map((line) => <li>{line}</li>)}
+  </ol>
+
+  <div class="dg-track">
+    {
+      views.map((view) => (
+        <svg
+          class:list={['dg-svg', `dg-${view.mode}`]}
+          style={`--dg-w:${view.width}px;--dg-steps:${view.steps}`}
+          viewBox={`0 0 ${view.width} ${view.height}`}
+          aria-hidden="true"
+          focusable="false"
+        >
+          {view.lanes.map((lane) => (
+            <rect
+              class="dg-lane dg-fade"
+              style={`--i:${lane.step}`}
+              x={lane.x}
+              y={lane.y}
+              width={lane.w}
+              height={lane.h}
+              rx={shape.radiusLane}
+              stroke-dasharray={shape.laneDash}
+            />
+          ))}
+
+          {view.edges.map((edge) => (
+            <g>
+              {/* pathLength normalises the dash to 1, so one rule draws every
+                  line whatever its actual length. */}
+              <path class="dg-line" style={`--i:${edge.step}`} d={edge.d} pathLength="1" />
+
+              {/*
+                ⚠️ The placing transform is on the group and the animation is
+                on the path inside it. A CSS `transform` overrides the
+                presentation attribute outright, so animating the path where
+                it sits would drop every arrowhead at the origin - and this
+                way the head's own slide is in its rotated local space, so it
+                arrives *along* its line whichever way that line runs.
+              */}
+              <g transform={`translate(${edge.head.x} ${edge.head.y}) rotate(${edge.head.angle})`}>
+                <path class="dg-arrow" style={`--i:${edge.step + motion.headAt}`} d={arrow} />
+              </g>
+            </g>
+          ))}
+
+          {view.nodes.map((node) => (
+            <rect
+              class:list={['dg-node', `dg-t${node.tier}`, 'dg-fade']}
+              style={`--i:${node.step}`}
+              x={node.x}
+              y={node.y}
+              width={node.w}
+              height={node.h}
+              rx={shape.radiusNode}
+            />
+          ))}
+
+          {/* The ground under a badge, sized to its text rather than to its
+              card - a full-width bar would read as a second title. */}
+          {view.chips.map((chip) => (
+            <rect
+              class="dg-chip dg-fade"
+              style={`--i:${chip.step}`}
+              x={chip.x}
+              y={chip.y}
+              width={chip.w}
+              height={chip.h}
+              rx={chip.r}
+            />
+          ))}
+
+          {/*
+            ⚠️ No whitespace inside the text element, and none inside a tspan.
+            Astro keeps template whitespace, and SVG renders a collapsed space
+            from it as a real glyph advance at the tspan's own x - which
+            indents every line by a space and throws a centred annotation off
+            its middle. The tags stay closed up against their content.
+          */}
+          {view.texts.map((run) => (
+            <text
+              class:list={['dg-text', `dg-${run.role}`, 'dg-fade']}
+              style={`--i:${run.step}`}
+              x={run.x}
+              y={run.y}
+              font-size={run.size}
+              letter-spacing={run.track || undefined}
+              text-anchor={run.anchor === 'middle' ? 'middle' : undefined}
+            >{run.lines.map((line, index) => <tspan x={run.x} dy={index === 0 ? 0 : run.lh}>{line}</tspan>)}</text>
+          ))}
+        </svg>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  /* ---- Which arrangement ------------------------------------------------
+   *
+   * ⚠️ `display` is set in these three rules and nowhere else. The shared
+   * `.dg-svg` rule below must never carry one: it comes later in the sheet at
+   * the same specificity, so a `display: block` there wins over the `none`
+   * here and both arrangements end up on the page.
+   */
+  .dg-narrow {
+    display: block;
+  }
+
+  .dg-wide {
+    display: none;
+  }
+
+  @media (min-width: 56rem) {
+    .dg-narrow {
+      display: none;
+    }
+
+    .dg-wide {
+      display: block;
+    }
+  }
+
+  /*
+   * Each arrangement is capped at its own design width so it only ever scales
+   * down, and at the height of the stage so a short viewport letterboxes the
+   * drawing rather than cropping the page.
+   */
+  .dg-svg {
+    width: 100%;
+    height: auto;
+    margin-inline: auto;
+  }
+
+  /*
+   * Each arrangement also declares where the story sits in the track's scroll,
+   * and which way its elements arrive from. Two arrangements, two directions:
+   * a thing should enter along the flow it belongs to, so on a landscape
+   * drawing everything slides in from the left and on a portrait one from
+   * above. No media query needed - only one of these is ever displayed.
+   */
+  .dg-wide {
+    max-width: var(--dg-w);
+    --dg-from: var(--dg-story-from);
+    --dg-span: var(--dg-story-span);
+    --dg-in-x: -6px;
+    --dg-in-y: 2px;
+  }
+
+  .dg-narrow {
+    /* 1.45x its 330 viewBox at the top of its range, rather than stretching to
+       fill a tablet with a portrait drawing. */
+    max-width: 30rem;
+    --dg-from: var(--dg-story-from-narrow);
+    --dg-span: var(--dg-story-span-narrow);
+    --dg-in-x: 0px;
+    --dg-in-y: 6px;
+  }
+
+  /* ---- Surfaces -------------------------------------------------------- */
+
+  .dg-node {
+    stroke-width: 1;
+  }
+
+  /*
+   * The three tiers, and the only thing separating them is surface and border -
+   * no shadow, no glow. A terminal carries the one accent on the page, the core
+   * is the brightest plain surface and the widest node, a service is a step
+   * back towards the plate under a hairline.
+   */
+  .dg-t1 {
+    fill: var(--dg-t1-fill);
+    stroke: var(--dg-t1-line);
+  }
+
+  .dg-t2 {
+    fill: var(--dg-t2-fill);
+    stroke: var(--dg-t2-line);
+  }
+
+  .dg-t3 {
+    fill: var(--dg-t3-fill);
+    stroke: var(--dg-t3-line);
+  }
+
+  /* The lane. Dashed and unfilled, because it is a statement about the boxes
+     inside it rather than a box of its own. */
+  .dg-lane {
+    fill: none;
+    stroke: var(--dg-lane-line);
+    stroke-width: 1;
+  }
+
+  /* The badge's chip: the one thing inside a card that is not the card. */
+  .dg-chip {
+    fill: var(--dg-chip-fill);
+    stroke: var(--dg-chip-line);
+    stroke-width: 1;
+  }
+
+  /* ---- Connectors ------------------------------------------------------ */
+
+  .dg-line {
+    fill: none;
+    stroke: var(--dg-line);
+    stroke-width: 1.25;
+    stroke-linecap: round;
+    /* With pathLength="1" the dash covers the path exactly, so the offset
+       between 1 and 0 is the whole draw. */
+    stroke-dasharray: 1;
+  }
+
+  .dg-arrow {
+    fill: none;
+    stroke: var(--dg-head);
+    stroke-width: 1.35;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* ---- Type ------------------------------------------------------------ */
+
+  .dg-text {
+    fill: var(--dg-ink);
+  }
+
+  .dg-title {
+    font-stretch: 107%;
+    font-weight: 620;
+    letter-spacing: -0.02em;
+  }
+
+  .dg-service {
+    font-stretch: 106%;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+
+  /*
+   * The annotation voice: a monospace, set in caps by the layout rather than by
+   * `text-transform`, because the layout has to measure what it wraps and
+   * because SVG text transforms are not reliable everywhere. Tracking arrives
+   * as an attribute per run, so nothing here may set letter-spacing.
+   *
+   * It is the one place the site sets type in a second family, and it loads
+   * nothing: the stack is the platform's own monospace.
+   */
+  .dg-badge,
+  .dg-caption,
+  .dg-note,
+  .dg-label {
+    font-family: var(--dg-mono);
+    font-weight: 450;
+  }
+
+  .dg-badge,
+  .dg-note {
+    fill: var(--dg-muted);
+  }
+
+  .dg-caption {
+    fill: var(--dg-caption);
+  }
+
+  /*
+   * A payload annotation sits on its own line, and the halo is what lets it:
+   * the text is stroked in the plate colour underneath itself, so the connector
+   * reads as passing behind it rather than through it.
+   */
+  .dg-label {
+    fill: var(--dg-muted);
+    paint-order: stroke fill;
+    stroke: var(--dg-halo);
+    stroke-width: 8;
+    stroke-linejoin: round;
+  }
+
+  /* ---- The story -------------------------------------------------------
+   *
+   * Everything below is inside both guards. Without scroll-driven animations,
+   * or for a reader who asked for less motion, no element is ever hidden: the
+   * page shows a finished diagram and scrolls straight past it.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      /*
+       * The track is the clock, and it is exactly the drawing - no taller.
+       *
+       * ⚠️ **This is deliberately not pinned, and it was, twice.** A sticky
+       * stage needs a runway to spend, and a runway is empty page: 160svh of
+       * it, which is most of a screen of nothing before the diagram and most
+       * of another after it. Every attempt to keep the pin and remove the
+       * emptiness failed, because the emptiness *is* the pin - a viewport-tall
+       * stage also has to centre a 400-unit drawing in 900 units of screen,
+       * which is another 250 either side.
+       *
+       * So the diagram is an ordinary block: the section heading sits directly
+       * above it and Overview directly below, and the run still assembles in
+       * order, scrubbed against the scroll, as the drawing crosses the screen.
+       * What was given up is the page staying still while it happens.
+       */
+      .dg-track {
+        view-timeline-name: --dg-track;
+        view-timeline-axis: block;
+      }
+
+      /*
+       * One element's slice.
+       *
+       * `--i` is its step in the run, written inline by the layout, and
+       * `--dg-steps` is how many steps this arrangement has. A slot is the
+       * span divided by the steps, so the story always fills the runway
+       * whether it is seven steps long or nine. `--dg-hold` stretches an
+       * element over more than its own slot where it should overlap the next.
+       */
+      .dg-fade,
+      .dg-line,
+      .dg-arrow {
+        --dg-slot: calc(var(--dg-span) / var(--dg-steps));
+        --dg-at: calc(var(--dg-from) + var(--i) * var(--dg-slot));
+        /*
+         * ⚠️ Well over 1 on purpose, and it is what makes the whole thing feel
+         * continuous rather than stepped. At `1` each element owns its slot
+         * alone, so the story reads as a row of separate events; at 1.8 an
+         * element is still arriving while the next two begin, and the run
+         * dissolves forwards instead of ticking. Raise it to slow the whole
+         * sequence down without touching the runway.
+         */
+        --dg-hold: 1.8;
+
+        animation-fill-mode: both;
+        animation-timeline: --dg-track;
+        animation-range: cover var(--dg-at) cover
+          calc(var(--dg-at) + var(--dg-slot) * var(--dg-hold));
+      }
+
+      /*
+       * ⚠️ `transform-box: fill-box`. An SVG element's transform origin is the
+       * user-space origin by default, so a scale here would fling the box
+       * towards the top left of the drawing instead of easing up in place.
+       */
+      .dg-fade {
+        animation-name: dg-rise;
+        animation-timing-function: var(--dg-node-ease);
+        transform-box: fill-box;
+        transform-origin: 50% 50%;
+      }
+
+      /*
+       * ⚠️ The lane is the only thing that scales. A box and the text inside it
+       * are separate elements with separate centres, so scaling both makes the
+       * label drift against its own card for the length of the animation -
+       * everything else translates in lockstep instead. The lane has no text of
+       * its own to drift against, and opening slightly is the right gesture for
+       * a container: it makes room, then the services land in it.
+       */
+      .dg-lane {
+        animation-name: dg-settle;
+      }
+
+      /* A line draws itself, over longer than anything else: it is the one
+         element whose whole point is the travelling, and it should still be
+         reaching for the node it feeds as that node begins to arrive. */
+      .dg-line {
+        animation-name: dg-draw;
+        animation-timing-function: var(--dg-edge-ease);
+        --dg-hold: 2.4;
+      }
+
+      .dg-arrow {
+        animation-name: dg-land;
+        animation-timing-function: var(--dg-node-ease);
+        transform-box: fill-box;
+        transform-origin: 100% 50%;
+        --dg-hold: 1.2;
+      }
+
+      /* An annotation is the quietest arrival in the drawing: it has waited a
+         full slot for its own line to finish, and then it is simply there. */
+      .dg-label {
+        animation-name: dg-annotate;
+      }
+
+      .dg-caption,
+      .dg-note {
+        animation-name: dg-annotate;
+      }
+    }
+  }
+
+  /*
+   * ⚠️ From nothing, not from a ghost. A resting state at 15% opacity was
+   * tried - the whole system faintly drawn, lighting up as the run reached it -
+   * and it read as a rendering fault rather than as a diagram waiting its turn.
+   * With no plate under it either, what precedes an element is simply the page.
+   */
+  @keyframes dg-rise {
+    from {
+      opacity: 0;
+      transform: translate(var(--dg-in-x), var(--dg-in-y));
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes dg-settle {
+    from {
+      opacity: 0;
+      transform: scale(0.99);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes dg-draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* The head lands rather than fades: it comes in along its own line, which is
+     the last thing the eye follows before the node it points at. */
+  @keyframes dg-land {
+    from {
+      opacity: 0;
+      transform: translateX(-6px);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes dg-annotate {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>

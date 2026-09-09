@@ -28,7 +28,10 @@ and all of its motion in CSS.
 | a scroll reveal | the `.reveal` / `.reveal-item` block at the bottom of the stylesheet - §5. **Longhands only** |
 | the sticky header's behaviour | `.site-head`, `.head-inner`, the `head-settle` keyframes and `--head-pad` - §5 |
 | the floating Back to top | `.to-top` beside the footer rules, the `to-top-in` keyframes, and the markup in [Footer.astro](../src/components/Footer.astro) - §5 |
-| **the request diagram** | `.flow*` in the stylesheet and the `kindOf` helper in [ProjectFlow.astro](../src/components/ProjectFlow.astro) - §6 |
+| **a number in the request diagram** | [diagram-tokens.ts](../src/diagram-tokens.ts) - §6. Nothing downstream carries one |
+| **the request diagram's composition** | [diagram-layout.ts](../src/diagram-layout.ts) - §6. **Two arrangements, and the 56rem breakpoint in the component has to match** |
+| how fast the request diagram tells itself | `motion.story` and `--dg-hold` - §6. **It is not pinned, and §6 says why** |
+| what the request diagram *says* | `flow` in the dictionaries and `flowShape` in [site.ts](../src/site.ts) - §6 |
 | the active-section indicator | the second `<script>` in [Base.astro](../src/layouts/Base.astro) and `.nav-link[aria-current]` - §7 |
 | dark mode | the `.dark` block, **and** the two `theme-color` tags in [Base.astro](../src/layouts/Base.astro) - §8 and open item 1 |
 
@@ -195,8 +198,9 @@ quieter than its neighbours.
 ```
 
 One class, used everywhere: a service, a role, a degree, a project, a channel, a step, the
-results table, the stack rows, every stage of the request diagram. `.card-hover` is added
-**only** where the whole card is a link.
+results table, the stack rows. `.card-hover` is added **only** where the whole card is a
+link. The request diagram is the one block that does not go through it - it is SVG, and its
+surfaces are the same ladder built with `color-mix` instead (§6).
 
 ⚠️ **A grid of cards stretches to the tallest of them, and that is a trap.** Skills was
 built as a card per group and Backend's five entries set the height, so Data's two came out
@@ -234,9 +238,15 @@ expanded and heavy, text runs at normal width. That is what the extra 55 KB buys
 the whole type system. Do not add a second family.
 
 The display voice is set per rule rather than through one shared utility - `.display-name`,
-`.sec-label`, `.role-company`, `.project-featured-title`, `.flow-hub` and the rest each
-name their own width and weight. A generic `.display` helper existed and nothing applied
-it.
+`.sec-label`, `.role-company`, `.project-featured-title`, `.dg-title` and the rest each name
+their own width and weight. A generic `.display` helper existed and nothing applied it.
+
+**The one exception is the request diagram's annotation voice**, which is set in the
+platform's own monospace (`fonts.mono` in
+[diagram-tokens.ts](../src/diagram-tokens.ts)), uppercase, at 10.5-11.5px on 0.08em. It is a
+register, not a typeface: inside the diagram a node's title says what a thing *is* and the
+mono says what is *known about it* - a model, a mode, a protocol list, a payload. It loads
+nothing, which is why it does not break the rule above. A web font here would.
 
 `.display-name` is the one place the page is allowed to be loud, at
 `clamp(3rem, 11vw, 7rem)`. Three things about it are measured rather than chosen:
@@ -393,53 +403,234 @@ two stacked background gradients rather than a border, because only `background-
 animated directionally.
 
 The accent is used for links, the CTA, the active nav label, the diagram's connectors and
-hubs, and exactly one other thing: the period of the current role, via `[data-current]`.
+its two terminals, and exactly one other thing: the period of the current role, via
+`[data-current]`.
 
 ---
 
 ## 6. The request diagram
 
-[ProjectFlow.astro](../src/components/ProjectFlow.astro) draws one request as a chain of
-stages with a fork in the middle. It is the opening image of a project page and the one
-place either page is allowed to be a diagram, because **the shape is the argument**: one
-request fans out into two ecosystems and gathers back into one response, which is the only
-reason the front end can treat the two as interchangeable.
+[ArchitectureDiagram.astro](../src/components/ArchitectureDiagram.astro) draws one request
+as inline SVG. It is the opening image of a project page and the one place either page is
+allowed to be a diagram, because **the shape is the argument**: a run reaches a single
+address, fans out into services that do not know about each other, and gathers back into
+one answer.
 
-Three kinds of stage, and **which one a stage gets comes from its position in the chain, not
-from the copy** - so any project's flow renders correctly without the dictionary saying
-which is which:
+### Three files, and nothing else holds a number
 
-| Kind | Where | Shape |
+| File | Owns |
+|---|---|
+| [diagram-tokens.ts](../src/diagram-tokens.ts) | every number and every colour, per mode. Colour as `--site-*` *expressions*, so the theme toggle still reaches it |
+| [diagram-layout.ts](../src/diagram-layout.ts) | the geometry. Takes a spec, returns boxes, paths, text runs and reveal delays |
+| [ArchitectureDiagram.astro](../src/components/ArchitectureDiagram.astro) | writes the attributes out, and arms the reveal |
+
+**A diagram is data.** The component takes `spec={{ id, stages, edges }}` and knows nothing
+about projects; the join between a project's copy and that spec is thirty lines at the top
+of [ProjectDetail.astro](../src/components/ProjectDetail.astro), which is where to look when
+a fifth project does not fit. The layout is not a general graph engine and should not become
+one: it draws a terminal, a core, one lane of parallel services, and then either an exit
+terminal or a return to where it started.
+
+### The card, and three tiers of it
+
+Every node is a card with the same anatomy, which is what stops it reading as a labelled
+rectangle:
+
+```
+CAPTION        uppercase mono, inside the card - tiers 1 and 2 only
+Title          the sans, 17-18px, the thing itself
+[ BADGE ]      uppercase mono on a chip - tier 3 only
+```
+
+⚠️ **The caption is set inside the card, not floating over it.** Over the box it was a word
+pointing at a plain rectangle; inside it the card has a header and a body. It also means
+nothing reserves vertical space above anything, which is where a good deal of the diagram's
+old emptiness came from.
+
+⚠️ **A badge sits on a chip sized to its own text**, never to its card. A full-width bar
+under a title reads as a second title; a chip reads as something *on* the card. The width
+comes from the same estimator that wrapped it.
+
+| Tier | What | How it reads |
 |---|---|---|
-| `terminal` | the outer end of each run | a filled pill, so the chain has a visible beginning and end |
-| `hub` | the stage either side of the fork | the largest card in the diagram, on the accent - it is the single address either end talks to |
-| `relay` | everything between them | a **dashed** pill, because it is data crossing a boundary rather than a process sitting somewhere |
+| 1 | the terminals - where a run starts and where the answer lands | the card surface carrying a 10% accent tint under a 42% accent border. The only accent on a box anywhere on the site |
+| 2 | the core - the gateway, the service, the parser | the widest node and the brightest plain surface, under a border at 26% of the ink |
+| 3 | a parallel service - a title and its model, mode or protocol list on a chip | a step back towards the band, under a hairline |
 
-Everything is CSS. `.flow-in` is one connector - a 2px line with a rotated-square
-arrowhead - so every label stays selectable text and the whole thing takes the theme with
-it. No SVG, no image, no library.
+⚠️ **No shadows, no glow, no gradient.** The surfaces are a ladder built with `color-mix`
+towards `--site-card` rather than from named tokens, precisely so it holds in both themes:
+mixing towards the card lightens on a light page *and* on a dark one, while `--site-inset`
+flips direction between them.
 
-Two things about the geometry:
+The parallel services sit inside a **lane** - a dashed, unfilled container with its caption
+in its own top-left. That is the load-bearing move: once parallelism is structural, the
+connectors no longer have to express it, which is what makes the fan two or three quiet
+curves instead of a bus.
 
-- ⚠️ **The fork's bars end exactly on the first and last branch stems, and the gap is why
-  that is not simply half a column.** Across N columns with a gap of G, one column is
-  `(100% - (N-1)G) / N` wide, so the first stem sits at half of that and the last one
-  mirrors it. Ignoring the gap term left 20 points of bar hanging in the air at each end.
-  `--flow-n` is set inline from the markup because only the branch count can say where those
-  stems are, and it is the one thing the stylesheet cannot work out for itself.
-- **Below 48rem the fork collapses**: the branches stack, the bars are dropped and each
-  branch keeps a full-length connector, which leaves one honest vertical chain instead of a
-  diagram squeezed into 320 points.
+### The connector spec
 
-`.flow-wrap` caps the diagram at 44rem, narrower than any section: past about 620 points the
-two branches drift so far apart that the bar between them stops reading as a join.
+⚠️ **Every connector is one cubic bezier with both control points offset along the flow
+axis**, at 40% of the distance between the anchors. There is no polyline, no corner and no
+staircase anywhere in the drawing, and because the offsets are on the axis, every line
+leaves and lands parallel to it - so an arrowhead is always square to the node it enters
+without anything computing an angle.
+
+⚠️ **A fan leaves along an edge, never from a point.** Anchors are distributed down the
+core's right edge, or across its floor in a column layout. Since they come out in the same
+order as the services they feed, the mapping is monotone and **a crossing is impossible
+rather than merely avoided.**
+
+Two consequences worth knowing:
+
+- **A round trip returns once, from the lane, not once per service.** Three lines coming
+  back would have to cross the three going out or travel over the boxes they left. It is
+  also the truer statement: the services do not know about each other, so what returns to
+  the core is the lane. The return hugs the underside of the lane and lands on the core's
+  right edge below every line that left it, which is why the fan sits ten units high on a
+  round trip.
+- **A payload rides on its line, never in a box.** It is set at the bezier's own midpoint
+  and stroked in the band colour underneath itself (`paint-order: stroke fill`), so the
+  connector reads as passing behind it. On a round trip the two nodes *grow* until their
+  edges are long enough to hold both annotations clear of each other - the separation is
+  derived from the wrapped line count, not chosen.
+
+### One diagram, two arrangements, never both
+
+⚠️ An SVG with a viewBox scales its text with its container, so the landscape composition
+that reads at 1150 would set its 18px titles at 5px on a phone. A portrait arrangement below
+56rem is the floor, not a preference - and there is no third, because the wide composition
+holds its type down to about an 896 viewport, which is where the switch is.
+
+| Mode | From | Composition |
+|---|---|---|
+| `wide` | 56rem | stages left to right, services stacked in a lane on the right. Built to 1152, the measure the page's sections already use |
+| `narrow` | 0 | everything stacks, and the lane is wired as a single block: three curves into three stacked boxes is a knot, and the lane's border already says they run together. Capped at 30rem so it grows to about 1.45x rather than stretching to fill a tablet |
+
+⚠️ **`display` for the two is set in exactly three rules and nowhere else.** The shared
+`.dg-svg` rule must never carry one: it comes later in the sheet at the same specificity, so
+a `display: block` there beats the `none` above it and **both arrangements render at once** -
+which is precisely what happened the first time.
+
+Each SVG is capped at its own design width, so it only ever scales *down*. A round trip is
+drawn in place in `wide` and as a straight chain with its core and terminal named a second
+time in `narrow` - at that width a return rail has nowhere to put the sentence it carries.
+
+### Text is measured, not guessed
+
+[diagram-layout.ts](../src/diagram-layout.ts) estimates set width from a per-character
+advance table and wraps with 3% of the measure in hand. It earns that on a four-language
+site: the same node holds "WCF service" in English and "Ein Ordner, rekursiv in Bytes
+gelesen" in German, and the box has to be as tall as whichever locale is being built. Node
+heights, lane heights and the whole drawing's height all fall out of the wrapped line count.
+
+### The story, and why it is not pinned
+
+**The scroll is the clock.** The diagram is an ordinary block in the section - heading
+directly above it, Overview directly below - and as it crosses the screen the run assembles
+in the order a request takes it: terminal, its line, the core, the fan, the services
+together, the return, the answer.
+
+⚠️ **It was pinned, twice, and the pin is the reason it is not.** A sticky stage needs a
+runway to spend and **a runway is empty page** - 160svh of it, which is most of a screen of
+nothing before the diagram and most of another after it. A viewport-tall stage then has to
+centre a 400-unit drawing in 900 units of screen, which is 250 more either side. Both
+attempts were made and both were rejected for the same reason each time, from opposite
+directions:
+
+| Attempt | What went wrong |
+|---|---|
+| stage `height: 100svh`, drawing centred | the drawing is 2.4:1 and a laptop's content box nearer 1.5:1, so centring one in the other turned the difference into a letterbox - most of a viewport of grey between the heading and the diagram |
+| stage sized to its content, stuck at `top: 5.25rem` | the drawing sat in the top third of the screen with a full screen of dead page under it for the whole pin |
+
+There is no third arrangement to try: the emptiness *is* the pin. What was given up is the
+page holding still while the run plays; what was bought is a section that is exactly as tall
+as its diagram.
+
+⚠️ **There is no script, no observer and no duration anywhere in it.** The track carries
+`view-timeline-name: --dg-track` and every element takes a slice of that timeline:
+
+```css
+--dg-slot: calc(var(--dg-span) / var(--dg-steps));
+--dg-at:   calc(var(--dg-from) + var(--i) * var(--dg-slot));
+animation-range: cover var(--dg-at) cover calc(var(--dg-at) + var(--dg-slot) * var(--dg-hold));
+```
+
+`--i` is the element's step in the run, written inline by the layout. `--dg-steps` is how
+many steps that arrangement has, counted from what the drawing actually used - so the story
+fills its range whether it runs to eight steps or nine.
+
+⚠️ **`--dg-hold` is what makes it feel continuous rather than stepped**, and it is the first
+thing to reach for if the motion reads as choppy. At `1` each element owns its slot alone
+and the run is a row of separate events. At `1.8` an element is still arriving while the
+next two begin, and the sequence dissolves forwards; a line takes `2.4`, because travelling
+is the whole point of a line and it should still be reaching for the node it feeds as that
+node arrives.
+
+The track is exactly as tall as the drawing, so a 400-unit drawing in a 900-unit viewport is
+fully on screen between about 31% and 69% of `cover`. The story runs 22% to 56%: it starts
+as the diagram arrives and finishes well before it begins to leave.
+
+Scrolling back up unbuilds it. That is what a scrubbed animation is, not a bug.
+
+### Two more things that were tried and are not there
+
+1. ⚠️ **There is no plate.** A framed surface under the drawing was built twice - hugging
+   the content, and again with a minimum height - and both times the frame was the problem
+   rather than its size: before an element arrives, a plate is a grey rectangle waiting for
+   it. Drawn straight onto the section's band, what precedes an element is simply the page,
+   and an empty box is impossible. This is why `--dg-halo` is `--site-band`: with no plate,
+   that is the ground an annotation actually sits on.
+2. ⚠️ **Nothing rests at a ghost opacity.** The whole system drawn at 15% and lighting up as
+   the run reached it is a well-known pattern and it read here as a rendering fault - a
+   half-printed diagram - rather than as one waiting its turn. Elements start at zero. There
+   is no minimum height either, for the same family of reasons: 540 and then 560 were set so
+   the four diagrams would be one object, and it padded the two-service ones by 150 units of
+   nothing. Every diagram is now exactly as tall as what is in it.
+
+⚠️ **Nothing is hidden without scroll-driven animation.** Every rule that hides anything
+lives inside `@supports (animation-timeline: view())` and `prefers-reduced-motion:
+no-preference` - so a browser without the feature, or a reader who asked for less motion,
+gets a finished diagram and scrolls straight past it. Same degradation as `.reveal` in §5.
+
+⚠️ **The arrowhead's placing transform is on a group and its animation on the path inside.**
+A CSS `transform` overrides the presentation attribute outright, so animating the path where
+it sits drops every arrowhead at the origin. Nesting it also means the head's slide happens
+in its own rotated space, so it arrives *along* its line whichever way that line runs. For
+the same family of reasons every animated SVG element carries `transform-box: fill-box` -
+an SVG transform origin is the user-space origin by default, and a scale without it flings
+the box towards the top left of the drawing.
+
+### Text is measured, not guessed
+
+[diagram-layout.ts](../src/diagram-layout.ts) estimates set width from a per-character
+advance table and wraps with 3% of the measure in hand. It earns that on a four-language
+site: the same node holds "WCF service" in English and "Ein Ordner, rekursiv in Bytes
+gelesen" in German, and the box has to be as tall as whichever locale is being built. Node
+heights, lane heights and the whole drawing's height all fall out of the wrapped line count.
+
+### Accessibility
+
+The SVGs are `aria-hidden` and the content is announced from a `sr-only` ordered list above
+them, walked in edge order so it reads as the run rather than as an inventory. Two reasons:
+SVG text is read inconsistently across screen readers, and there are three copies of it
+here.
+
+### What it replaced
+
+Three stacked layers in CSS: a full-width band the services hung off on short stems, with
+the payload annotated beside an arrow. It had no elbow in it either, but every card carried
+the same weight, the fan and the return were expressed as straight vertical stems from a
+shared edge, and it capped at 44rem - a third of the width the section gives it. The version
+before *that* drew a rectangular bus around the whole diagram.
 
 ---
 
 ## 7. The active-section indicator, and the site's script budget
 
 The site ships **no JavaScript file**. Three inline blocks cover the theme toggle, the
-dismissal of every disclosure, and this.
+dismissal of every disclosure, and this. The request diagram was built with a fourth - an
+`IntersectionObserver` arming a reveal - and it is gone: a `view()` timeline on a sticky
+track does the same job, scrubbed rather than triggered, and costs nothing (§6).
 
 A nav link cannot be styled from the section it points at: the two are in different
 subtrees, and `:target` only knows what was clicked, not what is on screen. So the third
@@ -499,6 +690,20 @@ open item 1.
 
 ## Changelog
 
+- 2026-09-09 - the request diagram **assembles itself as it crosses the screen**: inline SVG
+  built from data at the full 72rem measure, drawn straight onto the band with no plate
+  under it, scrubbed against a `view()` timeline with no script at all. Three tiers of card,
+  each with its caption set inside it and its badge on a chip, a dashed lane around the
+  parallel services, cubic beziers with no corner anywhere, and payloads annotated on their
+  own line. It was pinned twice on the way here and is not now - §6 records why, because the
+  runway a pin needs is empty page. Three files own it:
+  [diagram-tokens.ts](../src/diagram-tokens.ts),
+  [diagram-layout.ts](../src/diagram-layout.ts) and
+  [ArchitectureDiagram.astro](../src/components/ArchitectureDiagram.astro). The 330 lines of
+  `.flow*` are out of the stylesheet.
+- 2026-09-09 - the request diagram is three layers rather than a chain of seven boxes: a
+  full-width band the services hang off on their own stems, the payload annotated on the
+  arrow, and 290 points of height where the chain took 640.
 - 2026-09-09 - Back to top floats (`.to-top`), the arrow alone on a phone and the pill from
   48rem up, rather than waiting in the footer where it could only be reached from the one
   place it is not needed.
