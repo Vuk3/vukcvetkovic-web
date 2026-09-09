@@ -28,7 +28,31 @@ export default defineConfig({
    * and the canonical, hreflang and language-switcher hrefs built from
    * `Astro.url.pathname` are unchanged. Verified rather than assumed.
    */
-  build: { format: 'preserve' },
+  build: {
+    format: 'preserve',
+
+    /*
+     * The stylesheet goes into the document rather than into a file of its own.
+     *
+     * A linked stylesheet is a render-blocking request, and on a mobile
+     * connection that is a full serialized round trip before anything paints.
+     * Lighthouse prices it at 340ms of FCP against this bundle, which is the
+     * only opportunity it quantifies on the page. Inlining removes the request,
+     * so the first response carries everything the first paint needs.
+     *
+     * It also lifts the two woff2 subsets out of a three-hop chain. Linked,
+     * they are discovered only once the CSS has been fetched and parsed (HTML,
+     * then CSS, then woff2). With the @font-face rules in the document they are
+     * known as soon as the head is parsed.
+     *
+     * The default 'auto' inlines only under 4KB and this bundle is 40KB raw, so
+     * 'always' is what it takes. The cost is that the CSS repeats in every
+     * document and is no longer cached across them, about 9KB gz a page. That
+     * is the right trade for a site four page types deep where nearly every
+     * visit is a single view of one of them.
+     */
+    inlineStylesheets: 'always',
+  },
 
   i18n: {
     defaultLocale: 'en',

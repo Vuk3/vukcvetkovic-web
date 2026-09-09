@@ -20,9 +20,10 @@ plus a project write-up section, in **four languages** (English, Serbian, French
   [src/styles/global.css](../src/styles/global.css).
 - **Cloudflare** through `@astrojs/cloudflare`, whose only job here is `imageService:
   'compile'` and the assets shape. Nothing in the repository runs the deploy.
-- **28 pages**, 4 locales, 4 projects. One CSS file, three woff2 faces, a handful of webp
-  variants, and **no JavaScript file at all** - three small inline blocks cover the theme
-  toggle, menu dismissal and the active-section indicator.
+- **28 pages**, 4 locales, 4 projects. Three woff2 faces, a handful of webp variants, and
+  **no CSS file and no JavaScript file at all** - the stylesheet is inlined into every
+  document, and three small inline blocks cover the theme toggle, menu dismissal and the
+  active-section indicator.
 
 ## Where things are
 

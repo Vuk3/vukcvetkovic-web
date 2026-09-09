@@ -180,16 +180,28 @@ wrangler is invoked directly. The adapter also injects `_headers` (immutable
 
 ### What lands in `dist/client/_astro/`
 
-One CSS file, three woff2 faces, five webp variants. **No JavaScript file.**
+Three woff2 faces and five webp variants. **No CSS file and no JavaScript file.**
+
+`build.inlineStylesheets: 'always'` puts the whole stylesheet inside every document, so
+nothing render-blocking stands between the first response and the first paint, and the
+`@font-face` rules are known as soon as the head is parsed rather than one fetch later. It
+costs about 9 KB gz a page and the CSS is no longer cached across pages. The full reasoning
+is on the option in [astro.config.mjs](../astro.config.mjs).
 
 The three `<script>` blocks - the inline theme script, the theme toggle, the menu
 dismissal - are all small enough that Astro inlines them into each page rather than
-emitting a bundle. About 1.2 KB of JS per page, in a 38 KB document, with no extra request.
-Keep it that way: see [src/components/CLAUDE.md](../src/components/CLAUDE.md).
+emitting a bundle. About 1.2 KB of JS per page, in a 27 KB gz home page, with no extra
+request. Keep it that way: see [src/components/CLAUDE.md](../src/components/CLAUDE.md).
 
 `archivo` is imported as the `wdth` build, which costs 90 KB latin against 35 KB for weight
 alone. That is deliberate - width *is* the display/text contrast on this site, so it is the
 whole type system rather than an extra axis.
+
+⚠️ **Two of the three faces load on every page, not one.** `latin` is 90 KB and `latin-ext`
+is 86 KB, so the real type cost is 176 KB. `Cvetković` puts `ć` (U+0107) inside the
+`latin-ext` unicode-range, and the name is in the `<h1>` of every page in all four locales,
+so no page escapes the second subset. `vietnamese` never loads. None of this is on the
+critical path: `font-display: swap` paints the fallback immediately and measured CLS is 0.
 
 ### Deploying
 
@@ -267,6 +279,8 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-09-09 - the stylesheet is inlined into every document, so `/_astro` holds no CSS
+  file and nothing render-blocking precedes the first paint (§5).
 - 2026-09-08 - a fourth project takes the build to 28 pages and the sitemap to 24 URLs.
 - 2026-09-08 - a third project takes the build to 24 pages and the sitemap to 20 URLs.
 - 2026-09-08 - a second project takes the build to 20 pages and the sitemap to 16 URLs.
