@@ -23,8 +23,16 @@ const year = new Date().getFullYear();
 
   The name leads in the display voice with the year under it, rather than both
   being folded into one small copyright line: it is the last thing on the page
-  and it may as well be his name. Back to top is a real button on the right,
-  the same pill the header's controls use.
+  and it may as well be his name.
+
+  ⚠️ Back to top is written here but it is **not in the footer's row** - `.to-top`
+  is `position: fixed`, so it floats at the bottom right of the page for the
+  whole scroll. It stays in this component because the panel palette it inherits
+  is what makes it a dark pill on a light page, and because the label should come
+  from one place. See `.to-top` in global.css.
+
+  The label is hidden on a phone and the `aria-label` carries the name there, so
+  the arrow alone is still a named control rather than an unlabelled link.
 */}
 <footer class="panel site-foot">
   <div class="shell shell-hero foot-inner">
@@ -33,9 +41,9 @@ const year = new Date().getFullYear();
       <p class="foot-note">&copy; {year} {site.domain}</p>
     </div>
 
-    <a href="#main" class="cta-ghost">
-      {dict.footer.backToTop}
-      <ArrowUp class="size-[0.9rem] shrink-0" aria-hidden="true" />
+    <a href="#main" class="cta-ghost to-top" aria-label={dict.footer.backToTop}>
+      <span class="to-top-label">{dict.footer.backToTop}</span>
+      <ArrowUp class="to-top-icon shrink-0" aria-hidden="true" />
     </a>
   </div>
 </footer>

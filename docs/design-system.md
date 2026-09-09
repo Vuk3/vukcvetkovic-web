@@ -27,6 +27,7 @@ and all of its motion in CSS.
 | **the hero load sequence** | `--enter-delay` on the elements in [Hero.astro](../src/components/Hero.astro), not the keyframes - §5 |
 | a scroll reveal | the `.reveal` / `.reveal-item` block at the bottom of the stylesheet - §5. **Longhands only** |
 | the sticky header's behaviour | `.site-head`, `.head-inner`, the `head-settle` keyframes and `--head-pad` - §5 |
+| the floating Back to top | `.to-top` beside the footer rules, the `to-top-in` keyframes, and the markup in [Footer.astro](../src/components/Footer.astro) - §5 |
 | **the request diagram** | `.flow*` in the stylesheet and the `kindOf` helper in [ProjectFlow.astro](../src/components/ProjectFlow.astro) - §6 |
 | the active-section indicator | the second `<script>` in [Base.astro](../src/layouts/Base.astro) and `.nav-link[aria-current]` - §7 |
 | dark mode | the `.dark` block, **and** the two `theme-color` tags in [Base.astro](../src/layouts/Base.astro) - §8 and open item 1 |
@@ -108,6 +109,14 @@ It is spent three times, and all three are the same idea - the page is bracketed
 2. the **close** - Contact on the homepage, the takeaway on a project page;
 3. the **footer** ([Footer.astro](../src/components/Footer.astro)), so every page on the
    site ends the same way and a panelled section above it merges into one closing block.
+
+A fourth thing lives off that third one. **`.to-top` is written inside the footer and is
+`position: fixed`**, so Back to top floats at the bottom right for the whole scroll instead
+of waiting at the end of the page. It stays a child of the footer precisely because of the
+paragraph above: the panel re-declares the palette, so `.cta-ghost` resolves to the panel's
+card and hairline and the button is a dark pill on a light page - the header's surface,
+with no second set of colours to keep in step. On a phone the label is `display: none` and
+the `aria-label` carries the name, so what floats is a 48px circle around the arrow.
 
 ⚠️ **Do not nest a panel inside a panel.** Nothing does, and the tokens would resolve to
 themselves.
@@ -326,6 +335,24 @@ and something at the foot of a page will hang half-arrived.** To check a candida
 scroll a page to the bottom and read `getComputedStyle` on the last `.reveal` - `opacity`
 below 1 or a `transform` that is not `none` is the bug.
 
+### The floating Back to top
+
+`.to-top` is the third thing on a `scroll(root)` timeline, next to the header. It is out of
+the way for the first half screen and fades in over the next third of one
+(`animation-range: 50vh 85vh`): a button offering a reader at the top of the page a way to
+the top of the page is dead weight, and on a phone it would cover the portrait to be it.
+Where there is no scroll timeline, or the reader asked for less motion, it is simply there
+from the first paint - **nothing on this site is hidden by default**.
+
+Two details in `to-top-in` are load-bearing:
+
+- ⚠️ **`translate` and `scale`, not `transform`.** An animation beats a normal declaration
+  in the cascade, so a `transform` in these keyframes would hold at `none` for as long as
+  the button is visible and eat `.cta-ghost:hover`'s 1px lift. The individual properties
+  compose with `transform` instead of replacing it.
+- ⚠️ **`visibility` is in the keyframes.** `opacity: 0` alone still takes a tap, so the
+  hidden button would be a dead spot in the corner of the hero.
+
 ### Three rules that are easy to break
 
 1. ⚠️ **Longhands only, never the `animation` shorthand.** The shorthand resets
@@ -472,6 +499,9 @@ open item 1.
 
 ## Changelog
 
+- 2026-09-09 - Back to top floats (`.to-top`), the arrow alone on a phone and the pill from
+  48rem up, rather than waiting in the footer where it could only be reached from the one
+  place it is not needed.
 - 2026-09-09 - every scroll reveal range now finishes inside the 159px budget the foot of a
   page actually has: the last contact card and the `All projects` link used to hang at 17%
   and 41% opacity, permanently.

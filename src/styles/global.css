@@ -1372,6 +1372,62 @@
     color: var(--site-muted);
   }
 
+  /*
+   * ⚠️ Back to top is written inside the footer and is not part of it: `fixed`
+   * takes it out of that row and floats it at the bottom right for the whole
+   * scroll. In the footer's flow the one control that is useful anywhere on the
+   * page could only be reached from the one place it is useless.
+   *
+   * It stays a child of the footer because `.panel` re-declares the palette, so
+   * `.cta-ghost` resolves to the panel's card and hairline and the button is a
+   * dark pill on a light page - the same surface as the header, with no
+   * second set of colours to keep in step.
+   */
+  .to-top {
+    position: fixed;
+    right: clamp(0.9rem, 2.5vw, 1.75rem);
+    bottom: clamp(0.9rem, 2.5vw, 1.75rem);
+    /*
+     * Under the header's 40. The two never meet, and if a short viewport ever
+     * brought them together the sticky bar is the one that should win.
+     */
+    z-index: 30;
+    /* The lift a card takes on hover, not the resting one: this genuinely
+       floats over the page rather than sitting on the ground. */
+    box-shadow: var(--site-lift-hover);
+    /* Equal padding, so the pill radius makes a 46px circle around the arrow
+       once the label is out - a real tap target with nothing to spare. */
+    padding: 0.85rem;
+  }
+
+  .to-top-label {
+    display: none;
+  }
+
+  .to-top-icon {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+
+  /*
+   * From tablet up it is the pill the footer used to hold, label and all. The
+   * padding is `.cta-ghost`'s own, restored after the phone's square override.
+   */
+  @media (min-width: 48rem) {
+    .to-top {
+      padding: 0.8rem 1.4rem;
+    }
+
+    .to-top-label {
+      display: inline;
+    }
+
+    .to-top-icon {
+      width: 0.9rem;
+      height: 0.9rem;
+    }
+  }
+
   /* ---- Project pages --------------------------------------------------- */
 
   /*
@@ -1924,6 +1980,35 @@
 }
 
 /*
+ * The floating Back to top, arriving with the scroll.
+ *
+ * ⚠️ `translate` and `scale`, not `transform`. An animation beats a normal
+ * declaration in the cascade, so a `transform` here would hold at `none` for as
+ * long as the button is visible and eat `.cta-ghost:hover`'s 1px lift. The
+ * individual properties compose with `transform` instead of replacing it, so the
+ * entry and the hover both survive.
+ *
+ * `visibility` is in the keyframes for a reason too: opacity 0 alone still
+ * catches a tap, so the hidden button would be a dead spot in the corner of the
+ * hero. It steps to visible at the first fraction of progress.
+ */
+@keyframes to-top-in {
+  from {
+    opacity: 0;
+    visibility: hidden;
+    translate: 0 0.75rem;
+    scale: 0.92;
+  }
+
+  to {
+    opacity: 1;
+    visibility: visible;
+    translate: none;
+    scale: 1;
+  }
+}
+
+/*
  * Scroll-driven rather than timed, because everything below the hero is below
  * the fold: a section rises as it arrives and the position in the scroll drives
  * the progress. Cards inside a section stagger through animation-range rather
@@ -2010,6 +2095,23 @@
       animation-fill-mode: both;
       animation-timeline: scroll(root);
       animation-range: 0 7.5rem;
+    }
+
+    /*
+     * Back to top arrives with the scroll rather than sitting over the hero from
+     * first paint, where it would offer a reader at the top of the page a way to
+     * the top of the page - and cover the portrait to do it. Out for the first
+     * half screen, in over the next third of one.
+     *
+     * Where there is no scroll timeline, or the reader asked for less motion, it
+     * is simply there from the start: nothing on this site is hidden by default.
+     */
+    .to-top {
+      animation-name: to-top-in;
+      animation-timing-function: var(--site-ease);
+      animation-fill-mode: both;
+      animation-timeline: scroll(root);
+      animation-range: 50vh 85vh;
     }
   }
 }
