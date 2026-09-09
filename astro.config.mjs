@@ -36,9 +36,10 @@ export default defineConfig({
      *
      * A linked stylesheet is a render-blocking request, and on a mobile
      * connection that is a full serialized round trip before anything paints.
-     * Lighthouse prices it at 340ms of FCP against this bundle, which is the
-     * only opportunity it quantifies on the page. Inlining removes the request,
-     * so the first response carries everything the first paint needs.
+     * Inlining removes the request, so the first response carries everything
+     * the first paint needs. Worth 321ms of FCP and 211ms of LCP on a mobile
+     * Lighthouse run, and it takes `render-blocking-insight` from failing with
+     * one item to passing with none.
      *
      * It also lifts the two woff2 subsets out of a three-hop chain. Linked,
      * they are discovered only once the CSS has been fetched and parsed (HTML,
