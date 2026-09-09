@@ -2,6 +2,15 @@
 
 The source of my personal site: **[vukcvetkovic.com](https://vukcvetkovic.com)**
 
+<!-- Both shots are the live home page at 1440x900, taken in Chrome and saved as webp.
+     GitHub picks one by the reader's theme, which is the site's own trick. -->
+<a href="https://vukcvetkovic.com">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./.github/hero-dark.webp" />
+    <img alt="The vukcvetkovic.com home page" src="./.github/hero-light.webp" />
+  </picture>
+</a>
+
 I am Vuk Cvetković, a backend developer at Ncoded Solutions in Niš, Serbia. I build
 services in Node.js (NestJS, Express) and the event-driven infrastructure they run on in
 AWS, and carry the same work through to the React interfaces on top when a project needs
