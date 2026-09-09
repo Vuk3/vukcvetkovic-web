@@ -76,8 +76,9 @@ not need the map to change a dictionary, add a project, or touch the stylesheet.
   [src/styles/global.css](./src/styles/global.css). A raw hex in a component is a bug -
   the only two in the codebase are the `theme-color` meta tags, and they are a known
   duplication.
-- **The site ships no JavaScript file.** Three inline blocks, about 1.2 KB in total, cover
-  the theme toggle and menu dismissal. Anything new should be CSS first. If it genuinely
+- **The site ships no JavaScript file.** Four inline blocks, about 1.7 KB in total, cover
+  the pre-paint theme script, the theme toggle, disclosure dismissal and the
+  active-section indicator. Anything new should be CSS first. If it genuinely
   needs script, ask before adding it.
 - Reach for an existing component before writing a new one. Sections go through
   [Section.astro](./src/components/Section.astro), which owns the widths and the three

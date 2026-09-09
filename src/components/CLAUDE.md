@@ -6,8 +6,8 @@ reference: **[docs/design-system.md](../../docs/design-system.md)**.
 ## The site ships no JavaScript file
 
 Three woff2 faces and five webp variants, and no CSS file either: the stylesheet is inlined
-into every document. The three `<script>` blocks that exist are small enough that Astro
-inlines them into each page too - about 1.2 KB total, no extra request.
+into every document. The four `<script>` blocks that exist are small enough that Astro
+inlines them into each page too - 1.7 KB total, no extra request.
 
 - **Reach for CSS first.** The language switcher and the mobile menu are native `<details>`
   elements. The header's scroll behaviour is a `scroll(root)` timeline. The section reveals

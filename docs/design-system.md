@@ -627,8 +627,8 @@ before *that* drew a rectangular bus around the whole diagram.
 
 ## 7. The active-section indicator, and the site's script budget
 
-The site ships **no JavaScript file**. Three inline blocks cover the theme toggle, the
-dismissal of every disclosure, and this. The request diagram was built with a fourth - an
+The site ships **no JavaScript file**. Four inline blocks cover the pre-paint theme
+script, the theme toggle, the dismissal of every disclosure, and this. The request diagram was built with a fourth - an
 `IntersectionObserver` arming a reveal - and it is gone: a `view()` timeline on a sticky
 track does the same job, scrubbed rather than triggered, and costs nothing (§6).
 

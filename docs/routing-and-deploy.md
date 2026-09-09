@@ -197,10 +197,10 @@ nothing render-blocking stands between the first response and the first paint, a
 costs about 9 KB gz a page and the CSS is no longer cached across pages. The full reasoning
 is on the option in [astro.config.ts](../astro.config.ts).
 
-The three `<script>` blocks - the inline theme script, the theme toggle, the menu
-dismissal - are all small enough that Astro inlines them into each page rather than
-emitting a bundle. About 1.2 KB of JS per page, in a 27 KB gz home page, with no extra
-request. Keep it that way: see [src/components/CLAUDE.md](../src/components/CLAUDE.md).
+The four `<script>` blocks - the pre-paint theme script, the theme toggle, the disclosure
+dismissal and the active-section indicator - are all small enough that Astro inlines them
+into each page rather than emitting a bundle. 1.7 KB of JS per page, in a 26 KB gz home
+page, with no extra request. Keep it that way: see [src/components/CLAUDE.md](../src/components/CLAUDE.md).
 
 `archivo` is imported as the `wdth` build, which costs 90 KB latin against 35 KB for weight
 alone. That is deliberate - width *is* the display/text contrast on this site, so it is the
