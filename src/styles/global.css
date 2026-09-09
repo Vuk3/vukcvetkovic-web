@@ -1944,15 +1944,28 @@
  * a reason that is not obvious. A percentage of `cover` grows with the viewport,
  * while the amount of page below any element is a fixed pixel quantity - so the
  * last revealed thing on a page has only `its own height + whatever follows it`
- * of travel available, about 500px. `cover 30%` is 375px on a laptop and 600px
- * on a 1800px monitor, so the same range that finishes on a laptop runs out of
- * page on a tall screen and leaves the section sitting permanently a few pixels
- * low and slightly transparent. In pixels the margin is the same on a 667px
- * phone and a 1800px monitor.
+ * of travel available. `cover 30%` is 375px on a laptop and 600px on a 1800px
+ * monitor, so the same range that finishes on a laptop runs out of page on a
+ * tall screen. In pixels the budget is the same on a 667px phone and a 1800px
+ * monitor.
  *
- * So: nothing moves for the first 60px after an element peeks in, the motion
- * runs over the next 240px, and every range on the site finishes with slack.
- * Push any end value further and check the last card on a project page first.
+ * ⚠️ **That budget is 159px, and it is the number every range here is built
+ * around.** An element's reachable travel is `document height - its own offset
+ * top`: once its top edge crosses the bottom of the screen, that is all the
+ * scrolling left. Measured across the site the floor is the `All projects` link
+ * at the foot of a project page - 48px tall over a 111px footer, so 159px - and
+ * the tightest card is the last contact channel on the homepage at 191px. It is
+ * the same on every viewport, because both terms are document quantities.
+ *
+ * A range that ends past its element's budget does not fail loudly. The element
+ * simply stops where the page ran out and stays there: these ranges used to run
+ * 60px to 300px, which left the GitHub card parked at 17% opacity and 23px low
+ * for as long as the page was open, and the `All projects` link at 41%.
+ *
+ * So: nothing moves for the first 8 to 40px after an element peeks in, the
+ * motion runs over the next 110px or so, and the longest range on the site ends
+ * at 150 - 9px inside the floor and 41px inside the tightest card. Push any end
+ * value past 150 and something at the bottom of a page will hang half-arrived.
  *
  * Longhands throughout: the `animation` shorthand resets animation-timeline and
  * animation-range to their initial values, so writing it here would silently
@@ -1965,28 +1978,30 @@
       animation-timing-function: var(--site-ease);
       animation-fill-mode: both;
       animation-timeline: view();
-      animation-range: cover 60px cover 300px;
+      animation-range: cover 8px cover 128px;
     }
 
-    /* Cards within a section, each a little behind the one above it. */
+    /* Cards within a section, each a little behind the one above it. The stagger
+       is 10px a card rather than the 40 it was: four tiers of 40 put the last
+       one 120px into a 159px budget before its motion had even started. */
     .reveal-item {
       animation-name: reveal-up;
       animation-timing-function: var(--site-ease);
       animation-fill-mode: both;
       animation-timeline: view();
-      animation-range: cover 70px cover 310px;
+      animation-range: cover 12px cover 122px;
     }
 
     .reveal-item:nth-child(2) {
-      animation-range: cover 110px cover 350px;
+      animation-range: cover 22px cover 132px;
     }
 
     .reveal-item:nth-child(3) {
-      animation-range: cover 150px cover 390px;
+      animation-range: cover 32px cover 142px;
     }
 
     .reveal-item:nth-child(n + 4) {
-      animation-range: cover 190px cover 430px;
+      animation-range: cover 40px cover 150px;
     }
 
     .site-head {

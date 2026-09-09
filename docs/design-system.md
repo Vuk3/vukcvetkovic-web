@@ -285,7 +285,8 @@ the frame.
 
 ⚠️ **Stagger on a scroll timeline is `animation-range`, not `animation-delay`** -
 `animation-delay` has no meaning on a scroll timeline. `.reveal-item` steps its start
-`70/110/150px` and flattens at `nth-child(n+4)`.
+`12/22/32px` and flattens at `nth-child(n+4)` on `40px`. The step is 10px because the whole
+range has to land inside a 159px budget - see below.
 
 ### Why every range is `cover`, in pixels
 
@@ -299,15 +300,31 @@ animations ran correctly and were invisible. `cover` spans the element's height 
 viewport's**, so a short card gets a screen's worth of runway instead of its own height.
 
 **Pixels, not percentages.** The amount of page below any element is a fixed pixel quantity,
-while a percentage of `cover` grows with the viewport. The last revealed element on a page
-can only ever travel its own height plus whatever follows it, around 500px. `cover 30%` is
-375px on a laptop and 600px on an 1800px monitor, so a percentage range that finishes on a
-laptop **runs out of page on a tall screen** and leaves the section permanently a few pixels
-low and slightly transparent. In pixels the margin is identical on a 667px phone and an
-1800px monitor.
+while a percentage of `cover` grows with the viewport. `cover 30%` is 375px on a laptop and
+600px on an 1800px monitor, so a percentage range that finishes on a laptop **runs out of
+page on a tall screen** and leaves the section permanently a few pixels low and slightly
+transparent. In pixels the budget is identical on a 667px phone and an 1800px monitor.
 
-⚠️ **Push any end value past `cover 430px` and check the last card on a project page
-first** - its budget is its own height plus the takeaway section and footer below it.
+### The 159px budget
+
+An element's reachable travel is **`document height - its own offset top`**: once its top
+edge crosses the bottom of the screen, that is every pixel of scrolling it will ever get.
+Measured across the site, the floor is the **`All projects` link at the foot of a project
+page** - 48px tall over a 111px footer, so **159px** - and the tightest card is the last
+contact channel on the homepage at 191px. Both numbers hold on every viewport, because both
+terms are document quantities.
+
+A range that ends past its element's budget does not fail loudly. The element stops where
+the page ran out and stays there for as long as the page is open. At `cover 60px` to
+`cover 300px` that left the GitHub channel card **parked at 17% opacity and 23px low**, and
+the `All projects` link at 41% - reported from a phone, where there is no cursor to nudge
+the page further.
+
+So every range here is built to finish inside 159: sections run `8px` to `128px`, cards
+`12px` to `122px` stepping to `40px` to `150px`. ⚠️ **Push any end value past `cover 150px`
+and something at the foot of a page will hang half-arrived.** To check a candidate value,
+scroll a page to the bottom and read `getComputedStyle` on the last `.reveal` - `opacity`
+below 1 or a `transform` that is not `none` is the bug.
 
 ### Three rules that are easy to break
 
@@ -455,6 +472,9 @@ open item 1.
 
 ## Changelog
 
+- 2026-09-09 - every scroll reveal range now finishes inside the 159px budget the foot of a
+  page actually has: the last contact card and the `All projects` link used to hang at 17%
+  and 41% opacity, permanently.
 - 2026-09-08 - the close is three equal channel cards rather than an oversized email slab
   beside two small ones, and the footer leads with the name in the display voice.
 - 2026-09-08 - dark mode is a six-surface ladder: `--site-panel-*` was identical to
@@ -471,7 +491,7 @@ open item 1.
   a featured project, and the portrait framed at its own 3:4 so nothing is cropped.
 - 2026-09-08 - the active-section indicator, which is the site's third and last script.
 - 2026-09-08 - scroll reveals moved from `entry` percentages to `cover` pixel offsets,
-  which is what makes them visible and what keeps the last section on a page finishing.
+  which is what makes them visible at all.
 - 2026-09-08 - project tag rows carry their technology marks (`.tag-icon`).
 - 2026-09-08 - the request diagram takes any number of branches, driven by `--flow-n`.
 - 2026-09-08 - first version of this page.
