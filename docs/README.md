@@ -33,7 +33,7 @@ plus a project write-up section, in **four languages** (English, Serbian, French
 | a name, URL, date, employer or technology label | [src/site.ts](../src/site.ts) - [content-and-i18n.md](./content-and-i18n.md#1-the-split-facts-versus-prose) |
 | **add a project** | [content-and-i18n.md §Adding a project](./content-and-i18n.md#5-adding-a-project) |
 | add a technology to a stack or skill list | [src/tech.ts](../src/tech.ts) - [content-and-i18n.md §Adding a technology](./content-and-i18n.md#adding-a-technology) |
-| **add a language** | [content-and-i18n.md §Adding a locale](./content-and-i18n.md#6-adding-a-locale) - six places, two of them unchecked |
+| **add a language** | [content-and-i18n.md §Adding a locale](./content-and-i18n.md#6-adding-a-locale) - five places, every one checked |
 | a route, a URL shape, a 404, the sitemap or robots.txt | [routing-and-deploy.md](./routing-and-deploy.md) |
 | the Cloudflare or image configuration | [routing-and-deploy.md §Cloudflare](./routing-and-deploy.md#5-cloudflare-and-what-actually-ships) |
 | **colour, type, spacing or layout width** | [design-system.md](./design-system.md) |
@@ -50,9 +50,8 @@ plus a project write-up section, in **four languages** (English, Serbian, French
   [src/site.ts](../src/site.ts) and the four dictionaries, how `Dict` is derived from
   English so a missing key fails the build, the [src/tech.ts](../src/tech.ts) mark registry
   that types every technology name, and the recipes for adding a project, a role, a
-  technology and a locale. **Read the locale section before touching
-  [astro.config.mjs](../astro.config.mjs)** - it is the one registration the compiler
-  cannot check, and the failure is silent.
+  technology and a locale. **Read the locale section before adding a language** - it is
+  five files, and widening `locales` first makes the compiler name the other four.
 
 - **[Routing and deploy](./routing-and-deploy.md)** - why every route exists twice, why
   `build.format` is `'preserve'` and what that couples to, how Cloudflare resolves a 404,

@@ -40,10 +40,10 @@ not need the map to change a dictionary, add a project, or touch the stylesheet.
 - **The type system is the safety net, so let it work.** Ids in
   [src/site.ts](./src/site.ts) are typed against the dictionary, technology names against
   the mark registry, and every locale against English, so a change that skips a step
-  usually fails `astro check` rather than rendering a gap. The exception is
-  [astro.config.mjs](./astro.config.mjs), which is `.mjs` and cannot import a typed const -
-  see [docs/content-and-i18n.md](./docs/content-and-i18n.md#6-adding-a-locale), where getting
-  it out of sync fails silently.
+  usually fails `astro check` rather than rendering a gap. That now covers
+  [astro.config.ts](./astro.config.ts) as well: it is `.ts` so that it can import the
+  locale list instead of repeating it, and tsconfig reaches the repo root - see
+  [docs/content-and-i18n.md](./docs/content-and-i18n.md#6-adding-a-locale).
 - **Update the doc that owns what you changed**, in the same commit, and add a dated line
   to that page's changelog.
 - **Describe the present.** Dates and "changed from X" belong in git and on a changelog

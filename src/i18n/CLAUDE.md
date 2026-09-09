@@ -48,10 +48,10 @@ union.
 
 ## Adding a locale
 
-Six places, and **two of them are not type-checked** because
-[astro.config.mjs](../../astro.config.mjs) is `.mjs` and cannot import a typed const. An
-incomplete registration builds clean and quietly damages the sitemap. The full list and the
-verified failure modes are in
+Five places, and **every one of them fails `astro check`** if you miss it: widening
+`locales` in [types.ts](./types.ts) widens `Lang`, and the `Record<Lang, …>` maps below it
+error until they are filled in. [astro.config.ts](../../astro.config.ts) imports the list
+rather than repeating it, so it is not a sixth place. The full list is in
 [docs/content-and-i18n.md §6](../../docs/content-and-i18n.md#6-adding-a-locale) - read it
 before starting.
 

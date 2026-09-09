@@ -18,11 +18,11 @@ whole build is static: `dist/server` comes out **empty** and nothing runs at req
 | the homepage's sections or their order | [Home.astro](../src/components/Home.astro), not the two routes that render it |
 | **add a route** | two files: the unprefixed one and its `[lang]` twin, plus a shared body component - §1 |
 | how a locale prefix is put onto a path | `localizePath` in [src/i18n/utils.ts](../src/i18n/utils.ts) - read §3, it is coupled to `build.format` |
-| the emitted filenames (`.html` vs `index.html`) | `build.format` in [astro.config.mjs](../astro.config.mjs) - **read §3 first**, three things depend on it |
+| the emitted filenames (`.html` vs `index.html`) | `build.format` in [astro.config.ts](../astro.config.ts) - **read §3 first**, three things depend on it |
 | how an unmatched URL is answered | `not_found_handling` in [wrangler.jsonc](../wrangler.jsonc) + the two 404 routes - §4 |
-| image optimization | `adapter: cloudflare({ imageService })` in [astro.config.mjs](../astro.config.mjs) - §5 |
+| image optimization | `adapter: cloudflare({ imageService })` in [astro.config.ts](../astro.config.ts) - §5 |
 | `robots.txt` | [src/pages/robots.txt.ts](../src/pages/robots.txt.ts) - generated, not a static file |
-| the sitemap | the `sitemap()` integration in [astro.config.mjs](../astro.config.mjs) - **read §6**, the trailing slash is added by hand |
+| the sitemap | the `sitemap()` integration in [astro.config.ts](../astro.config.ts) - **read §6**, the trailing slash is added by hand |
 
 **Read §3 before changing `build.format`.** Three separate things depend on `'preserve'`,
 and only one of them is obvious.
@@ -162,7 +162,7 @@ what makes the per-locale pages worth having.
 
 Both 404 routes pass `noindex` to `Base`, so neither carries a canonical or hreflang tags,
 and `@astrojs/sitemap` keeps them out of the sitemap - **as long as the locale is registered
-in [astro.config.mjs](../astro.config.mjs)**. See
+in [astro.config.ts](../astro.config.ts)**. See
 [content-and-i18n.md §6](./content-and-i18n.md#6-adding-a-locale): a locale missing from that
 list gets its 404 indexed.
 
@@ -195,7 +195,7 @@ Three woff2 faces and five webp variants. **No CSS file and no JavaScript file.*
 nothing render-blocking stands between the first response and the first paint, and the
 `@font-face` rules are known as soon as the head is parsed rather than one fetch later. It
 costs about 9 KB gz a page and the CSS is no longer cached across pages. The full reasoning
-is on the option in [astro.config.mjs](../astro.config.mjs).
+is on the option in [astro.config.ts](../astro.config.ts).
 
 The three `<script>` blocks - the inline theme script, the theme toggle, the menu
 dismissal - are all small enough that Astro inlines them into each page rather than
@@ -227,7 +227,7 @@ where `files` would not, and `astro check` passes without it.
 Twenty-four URLs: the home page, the project index and one page per project, across four
 locales, with the 404 pages excluded. Every entry
 ends in a slash, and that agrees with the `<link rel="canonical">` on the page itself - but
-only because the `serialize` hook in [astro.config.mjs](../astro.config.mjs) puts it there.
+only because the `serialize` hook in [astro.config.ts](../astro.config.ts) puts it there.
 
 ⚠️ **`@astrojs/sitemap` adds the slash in exactly one case, and it is not this one.** The
 branch reads:
@@ -266,7 +266,7 @@ the one output nothing else checks - the 404 exclusion depends on the locale bei
 [src/pages/robots.txt.ts](../src/pages/robots.txt.ts) is an `APIRoute` rather than a file in
 `public/`, for one reason: the sitemap URL is the line that can go stale, and a copy in
 `public/` would have been the **third** place the domain is written down after `site` in
-[astro.config.mjs](../astro.config.mjs) and `url` in [src/site.ts](../src/site.ts).
+[astro.config.ts](../astro.config.ts) and `url` in [src/site.ts](../src/site.ts).
 Generating it means the URL comes from the same `Astro.site` the sitemap integration uses,
 so the file and the sitemap it points at cannot disagree.
 
@@ -281,13 +281,15 @@ state the intent rather than leave it inferred from an absent rule.
 
 | # | Item | Severity |
 |---|---|---|
-| 1 | **The locale list is duplicated across three places and only one is type-checked.** `locales` in [src/i18n/types.ts](../src/i18n/types.ts) is the source, and [astro.config.mjs](../astro.config.mjs) repeats it twice by hand because a `.mjs` config cannot import a typed const. Failure is silent, and one of its effects is that the locale's 404 page gets indexed - see [content-and-i18n.md §6](./content-and-i18n.md#6-adding-a-locale). | silent |
-| 2 | **The adapter declares a `SESSION` KV binding that nothing in [wrangler.jsonc](../wrangler.jsonc) asks for.** `astro build` logs `Enabling sessions with Cloudflare KV with the "SESSION" KV binding` and the generated `dist/client/wrangler.json` carries `kv_namespaces: [{ binding: "SESSION" }]` with no namespace id. No route is on-demand, so no session is ever read. Unverified against a real `wrangler deploy`. | unverified |
+| 1 | **The adapter declares a `SESSION` KV binding that nothing in [wrangler.jsonc](../wrangler.jsonc) asks for.** `astro build` logs `Enabling sessions with Cloudflare KV with the "SESSION" KV binding` and the generated `dist/client/wrangler.json` carries `kv_namespaces: [{ binding: "SESSION" }]` with no namespace id. No route is on-demand, so no session is ever read. Unverified against a real `wrangler deploy`. | unverified |
 
 ---
 
 ## Changelog
 
+- 2026-09-10 - the build config is `astro.config.ts` and imports `locales` from
+  src/i18n/types.ts, so the list is written down once and adding a language can no
+  longer fail silently. Closes the old open item 1.
 - 2026-09-09 - the four home pages carry `Person` and `WebSite` JSON-LD, built from
   `site.ts` and the dictionary rather than written out by hand (§2).
 - 2026-09-09 - the stylesheet is inlined into every document, so `/_astro` holds no CSS

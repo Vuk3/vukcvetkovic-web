@@ -25,7 +25,7 @@ const dict = getDict(lang);
 const pageTitle = title ?? dict.meta.title;
 const pageDescription = description ?? dict.meta.description;
 
-// `Astro.site` is set in astro.config.mjs; the fallback only satisfies types.
+// `Astro.site` is set in astro.config.ts; the fallback only satisfies types.
 const siteUrl = Astro.site ?? new URL(site.url);
 
 const canonical = new URL(localizePath(Astro.url.pathname, lang), siteUrl);

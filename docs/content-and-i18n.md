@@ -22,11 +22,11 @@ rather than rendering a gap.
 | a skill group or the technologies in it | `skillGroups` in [src/site.ts](../src/site.ts) + a group name in every dictionary |
 | **a technology's icon or brand colour** | [src/tech.ts](../src/tech.ts) - §4 |
 | a project, its stack, its results table | `projects` in [src/site.ts](../src/site.ts) + `projects.items` in every dictionary - §5 |
-| **add or remove a language** | six places, two unchecked by the compiler - §6. Read it before editing [astro.config.mjs](../astro.config.mjs) |
+| **add or remove a language** | five places, every one checked by the compiler - §6 |
 | how a locale prefix is put onto a path | `localizePath` in [src/i18n/utils.ts](../src/i18n/utils.ts) - and read [routing-and-deploy.md](./routing-and-deploy.md) first, it is coupled to `build.format` |
 
-**Read §6 before adding a locale.** It is the only registration in the project the type
-system cannot check, and an incomplete one builds clean.
+**Read §6 before adding a locale.** Nothing auto-discovers one, but the compiler does
+walk you through every place it has to go.
 
 ---
 
@@ -259,13 +259,12 @@ component, in all four project routes.
 
 ## 6. Adding a locale
 
-⚠️ **This is the one registration the compiler cannot check end to end, and an incomplete
-one builds clean.** There is no auto-discovery.
+There is no auto-discovery, but **the compiler now walks you through the whole list.**
 
-Adding a locale `xx` touches six places. Start at the top: widening `locales` in
-[src/i18n/types.ts](../src/i18n/types.ts) widens `Lang`, and that turns the three
-`Record<Lang, …>` maps below it into type errors until they are filled in - which is how
-the compiler walks you through half the list.
+Adding a locale `xx` touches five places, and widening `locales` in
+[src/i18n/types.ts](../src/i18n/types.ts) is the one to do first: it widens `Lang`, which
+turns every `Record<Lang, …>` map below it into a type error until it is filled in. An
+incomplete registration fails `astro check`, so it fails `npm run build`.
 
 | # | Where | File | Checked? |
 |---|---|---|---|
@@ -274,34 +273,26 @@ the compiler walks you through half the list.
 | 3 | `ogLocales` | [src/i18n/types.ts](../src/i18n/types.ts) | ✅ `Record<Lang, string>` |
 | 4 | `dictionaries` | [src/i18n/utils.ts](../src/i18n/utils.ts) | ✅ `Record<Lang, Dict>` |
 | 5 | `languageNames` | [src/site.ts](../src/site.ts) | ✅ `Record<Lang, string>` |
-| 6 | `i18n.locales` **and** the `sitemap` i18n map | [astro.config.mjs](../astro.config.mjs) | ❌ **nothing checks these** |
 
 `ogLocales` is separate from `locales` because Open Graph wants a full code (`de_DE`) where
 hreflang takes the bare tag (`de`). `languageNames` holds autonyms - shown in their own
 language in every locale, so never translated.
 
-### What actually fails when step 6 is missed
+### The build config is not a sixth place
 
-[astro.config.mjs](../astro.config.mjs) is `.mjs` and cannot import the typed const, which
-is why the file carries a comment saying to keep the list in sync. Verified by dropping
-`de` from both lists and building:
+[astro.config.ts](../astro.config.ts) needs the list twice, for `i18n.locales` and for the
+`sitemap` integration's map, and **it imports both from `types.ts`** rather than repeating
+them. The file is `.ts` for exactly that reason, and tsconfig's `include` covers the repo
+root, so `astro check` reads it too.
 
-- **The build succeeds, every page, zero warnings, zero errors.** Routing comes from
-  `prefixedLocales`, not from Astro's `i18n` config, and `Astro.currentLocale` is unused
-  (§2), so `/de/` and every page under it is still generated and still correct in
-  isolation.
-- **The sitemap drops the locale from every hreflang alternate set.** `/` goes from
-  `en de fr sr` to `en fr sr`, while `/de` is still listed as a URL - an orphan no
-  alternate points at.
-- **The locale's 404 page gets indexed.** `@astrojs/sitemap` recognises `/de/404.html` as a
-  404 only while `de` is a known locale. Without it the sitemap gains a URL and
-  `https://vukcvetkovic.com/de/404` is offered to crawlers.
-- **The page HTML and the sitemap now disagree.** `/de/index.html` still emits all four
-  `hreflang` links plus `x-default`, because [Base.astro](../src/layouts/Base.astro) builds
-  them from `locales` in `types.ts`.
-
-So the whole cost is SEO, it is invisible locally, and the only way to catch it is to read
-`dist/client/sitemap-0.xml`. **Check it after adding a locale.**
+That matters because the failure it removes was silent and cost only SEO. A locale absent
+from the config still routed correctly, since routing comes from `prefixedLocales` and
+`Astro.currentLocale` is unused (§2), and the build stayed clean. What broke was the
+sitemap: the locale vanished from every `hreflang` alternate set while its URLs stayed
+listed, `@astrojs/sitemap` stopped recognising `/xx/404.html` as a 404 and offered it to
+crawlers, and the page HTML disagreed with the sitemap because
+[Base.astro](../src/layouts/Base.astro) builds its own tags from `types.ts`. None of it was
+visible without reading `dist/client/sitemap-0.xml` by hand.
 
 ---
 
@@ -320,7 +311,6 @@ So the whole cost is SEO, it is invisible locally, and the only way to catch it 
 - an unknown locale reaching `getDict` - English copy, no warning (§2)
 - a missing `src/assets/portrait.*` - [Hero.astro](../src/components/Hero.astro) globs it
   rather than importing it, so the text placeholder stands in and the build still passes
-- a locale missing from [astro.config.mjs](../astro.config.mjs) - see §6
 - a results table whose `formats`, `values`, `columns` and `rows` are out of step - figures
   under the wrong headings (§5.1)
 - an unsupported `light-dark()` - the icon falls back to the text colour (§4)
@@ -329,6 +319,8 @@ So the whole cost is SEO, it is invisible locally, and the only way to catch it 
 
 ## Changelog
 
+- 2026-09-10 - adding a locale is five places instead of six: `astro.config.ts`
+  imports the list rather than repeating it, so every place is compiler-checked (§6).
 - 2026-09-09 - `flow` names its parts by role (`entry`, `entryLabel`, `core`, `branches`,
   `exit`, `exitLabel`, `exitNote`) instead of by position in three arrays, the topology
   moved to `flowShape` in [src/site.ts](../src/site.ts), and `projects.flowCaptions` gained

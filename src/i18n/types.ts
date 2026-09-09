@@ -13,7 +13,11 @@
 /** Type-only reference to en.ts; emits no runtime import. */
 export type Dict = typeof import('./en').default;
 
-/** Keep in sync with `i18n.locales` in astro.config.mjs. */
+/**
+ * The locale list, and the only place it is written down. astro.config.ts
+ * imports it for both `i18n` and the sitemap, so adding a language here is the
+ * whole change.
+ */
 export const locales = ['en', 'sr', 'fr', 'de'] as const;
 
 export type Lang = (typeof locales)[number];

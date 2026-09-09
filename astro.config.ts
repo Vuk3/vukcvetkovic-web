@@ -1,11 +1,20 @@
-// @ts-check
 import cloudflare from '@astrojs/cloudflare';
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
+import { defaultLocale, locales } from './src/i18n/types';
 
-// Keep this list in sync with `locales` in src/i18n/types.ts.
-// (Astro config is .mjs, so it cannot import the typed const.)
+/*
+ * ⚠️ **This file is `.ts` so that it can import the locale list rather than
+ * repeat it.** Astro loads `astro.config.ts` as readily as `.mjs`, and
+ * tsconfig's `include` is `**\/*`, so `astro check` type-checks this file too.
+ *
+ * It used to be `.mjs` and wrote the four locales out twice by hand, in `i18n`
+ * and again in the sitemap's map. Nothing compared them against
+ * src/i18n/types.ts, so a locale added in one place and missed here failed
+ * silently, and one of the ways it showed up was the new locale's 404 page
+ * being indexed. Adding a locale is now a single edit in types.ts.
+ */
 export default defineConfig({
   site: 'https://vukcvetkovic.com',
 
@@ -56,8 +65,8 @@ export default defineConfig({
   },
 
   i18n: {
-    defaultLocale: 'en',
-    locales: ['en', 'sr', 'fr', 'de'],
+    defaultLocale,
+    locales: [...locales],
     routing: {
       prefixDefaultLocale: false,
     },
@@ -65,9 +74,12 @@ export default defineConfig({
 
   integrations: [
     sitemap({
+      /* The integration wants a map of locale to language tag, and here the two
+         are the same word, so it is built from the same list rather than
+         spelled out a second time. */
       i18n: {
-        defaultLocale: 'en',
-        locales: { en: 'en', sr: 'sr', fr: 'fr', de: 'de' },
+        defaultLocale,
+        locales: Object.fromEntries(locales.map((locale) => [locale, locale])),
       },
 
       /*
@@ -89,13 +101,11 @@ export default defineConfig({
        * anything that looks like a file.
        */
       serialize(item) {
-        /**
+        /*
          * The root URL already ends in a slash, so the check for one is not
          * redundant - without it the home entry came out as `https://host//`.
-         *
-         * @param {string} url
          */
-        const withSlash = (url) =>
+        const withSlash = (url: string) =>
           url.endsWith('/') || /\.[a-z0-9]+$/i.test(url) ? url : `${url}/`;
 
         item.url = withSlash(item.url);
