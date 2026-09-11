@@ -25,7 +25,7 @@ plus a project write-up section, in **four languages** (English, Serbian, French
   four small inline blocks cover the pre-paint theme script, the theme toggle, menu
   dismissal and the active-section indicator.
 - **One JavaScript file, on one route.** `/games/2048/` is a game, so it has a real script:
-  2.4 KB gz, requested by that route and its three locale twins and by nothing else.
+  2.7 KB gz, requested by that route and its three locale twins and by nothing else.
 
 ## Where things are
 

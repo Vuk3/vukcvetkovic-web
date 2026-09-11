@@ -11,7 +11,7 @@ inlines them into each page too - 1.7 KB total, no extra request.
 
 ⚠️ **The exception is [Game2048.astro](./Game2048.astro)**, whose script imports
 [src/games/2048/game.ts](../games/2048/game.ts) and is therefore emitted as a real file:
-2.4 KB gz, requested only by `/games/2048/` and its three locale twins. A game cannot be
+2.7 KB gz, requested only by `/games/2048/` and its three locale twins. A game cannot be
 CSS. Nothing else here gets to cite it - the rules below are unchanged for every other
 component.
 

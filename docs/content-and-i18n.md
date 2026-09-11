@@ -336,6 +336,13 @@ Beyond that map, the index needs no editing -
 [GameIndex.astro](../src/components/GameIndex.astro) iterates the registry into a grid
 three cards wide.
 
+**Keeping a best score is already written.** `scoreRecord(name, plausible)` in
+[games/record.ts](../src/games/record.ts) owns the storage key and the signature, and the
+game supplies one predicate saying what its own scoring could have produced. Do not write
+a second copy of it, and read the warning at the top of that file before describing it to
+anybody as protection - see
+[design-system.md §9](./design-system.md#9-the-game-board-and-the-one-place-the-palette-opens-up).
+
 ---
 
 ## 8. What throws, what warns, what falls back silently
@@ -363,6 +370,9 @@ three cards wide.
 
 ## Changelog
 
+- 2026-09-11 - adding a game no longer means writing its best score by hand. `scoreRecord`
+  in [games/record.ts](../src/games/record.ts) keeps and signs it for every game, and §7
+  says what the caller still owns.
 - 2026-09-11 - a `games` key in every dictionary and a `site.games` registry beside it,
   joined by id the way `projects` is. It is a `Record` rather than a list, because a game
   is reached by name from its own page instead of being iterated into a shared one. ⚠️

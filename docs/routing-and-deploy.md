@@ -226,8 +226,17 @@ page, with no extra request. Keep it that way: see [src/components/CLAUDE.md](..
 
 The one file in `_astro` is the 2048 engine, imported by
 [Game2048.astro](../src/components/Game2048.astro) and past the inlining threshold at
-2.4 KB gz. It is requested by `/games/2048/` and its three locale twins and by no other
+2.7 KB gz. It is requested by `/games/2048/` and its three locale twins and by no other
 page, which is the point: the game pays for itself and the rest of the site is unchanged.
+
+**`PUBLIC_GAME_SIGN_KEY` is the only environment variable the site reads**, and it is
+optional: it signs the stored best score of every game, and
+[games/record.ts](../src/games/record.ts) falls back to a literal so a build without it
+works. Set it in the Cloudflare build environment to keep the key out of the
+repository, and understand what that is worth - the `PUBLIC_` prefix is required for client
+code, which means Vite substitutes the value into the shipped bundle either way. Changing it
+invalidates every record signed with the old key and they restart at zero. The reasoning is
+in [design-system.md §9](./design-system.md#9-the-game-board-and-the-one-place-the-palette-opens-up).
 
 `archivo` is imported as the `wdth` build, which costs 90 KB latin against 35 KB for weight
 alone. That is deliberate - width *is* the display/text contrast on this site, so it is the
@@ -314,9 +323,11 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-09-11 - the site reads its first environment variable. `PUBLIC_GAME_SIGN_KEY` is
+  optional, signs the stored 2048 record, and falls back to a literal when it is unset (§5).
 - 2026-09-11 - a games section: `/games/` and `/games/2048/`, six route pairs in all,
   taking the build to 36 pages and the sitemap to 32 URLs. `/games/2048/` is also the first
-  page on the site to request a JavaScript file: 2.4 KB gz in `_astro`, on that route and
+  page on the site to request a JavaScript file: 2.7 KB gz in `_astro`, on that route and
   its three twins only. ⚠️ Games are **not** a `[slug]` route, unlike projects, and §1
   records why.
 - 2026-09-10 - the build config is `astro.config.ts` and imports `locales` from

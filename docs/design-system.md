@@ -762,6 +762,41 @@ however wide the card gets.
 stepped down by `data-digits` so a 2 and a 1024 both fill their tile. A `vw` clamp cannot
 do this: the board stops growing at its 36rem cap and the numbers would carry on.
 
+### The record is signed
+
+`game-2048-best` holds `value.signature` rather than a bare number, and
+[games/record.ts](../src/games/record.ts) throws away anything that does not carry its own
+signature, clears the key and starts the record at zero. The signature is FNV-1a over the
+key, the storage name and the value, in base 36, which is a dozen lines and no dependency.
+The storage name is in there so a verified figure cannot be pasted under a second game's
+key.
+
+**It is shared because keeping a record is the one thing every game does, and what differs
+between them is one predicate.** `scoreRecord(name, plausible)` owns the storage and the
+signing, and the caller says what its own scoring could have produced. 2048 passes
+`value % 4 === 0`, which is worth more than it looks: a merge scores the tile it made,
+always a power of two of at least four, so **a real score is a multiple of four** and most
+invented numbers fail on arithmetic before the signature is reached.
+
+The key comes from `PUBLIC_GAME_SIGN_KEY`, with the literal in the module as a fallback so
+a build without the variable still works. ⚠️ **The `PUBLIC_` prefix is not optional and
+it is the whole caveat**: this is client code, a variable without that prefix is not there
+to read at all, and one with it is substituted into the shipped bundle at build time. Env
+keeps the key out of the repository and out of nothing else.
+
+⚠️ **It is a signature and not encryption, and it is not a security measure.** The key ships
+in the bundle however it is set, so anyone willing to read 2.7 KB can mint a record that
+verifies, and nothing run on the client can prevent that - the page and the person editing
+the page are the same machine. Encrypting the number would hide it from nobody for exactly
+the same reason.
+
+What it is for is that the obvious edit fails silently instead of sticking, and that a
+half-written or corrupted value never reaches the game as a number. That is proportionate,
+because the record is private to one browser and claims nothing to anybody. A figure that
+meant something to other people would have to be **derived by a server** from a
+server-issued seed and the move log, with the client's own claim about its score ignored,
+and that is a feature rather than a hardening step.
+
 ---
 
 ## 10. Open items
@@ -776,6 +811,11 @@ do this: the board stops growing at its 36rem cap and the numbers would carry on
 
 ## Changelog
 
+- 2026-09-11 - the stored record is signed. `game-2048-best` holds `value.signature`, and a
+  value that fails the signature or is not a multiple of four is cleared and the record
+  restarts at zero. It lives in [games/record.ts](../src/games/record.ts) so the next game
+  keeps its record the same way, and the key is `PUBLIC_GAME_SIGN_KEY` with a literal
+  fallback. See "The record is signed" in §9 for what that is and is not worth.
 - 2026-09-11 - the site has a game, and with it a colour ramp: `--g2048-t1` to
   `--g2048-t12` on `:root` and `.dark`, which is the second exception to the
   near-monochrome palette after the technology marks. The board itself adds no dependency -

@@ -81,7 +81,7 @@ not need the map to change a dictionary, add a project, or touch the stylesheet.
   active-section indicator. Anything new should be CSS first. If it genuinely
   needs script, ask before adding it.
 - **The exception is [/games/2048/](./src/games/2048/game.ts)**, which is a game and
-  therefore cannot be. It is 2.4 KB gz on its own route and no other page requests it.
+  therefore cannot be. It is 2.7 KB gz on its own route and no other page requests it.
   That budget is the game's, not a precedent - it does not make a script cheaper anywhere
   else.
 - Reach for an existing component before writing a new one. Sections go through

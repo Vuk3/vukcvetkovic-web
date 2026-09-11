@@ -12,11 +12,11 @@
  * .g2048-* rules in global.css. The script sets one attribute and never
  * touches `hidden`, so the two panels can never both be showing.
  */
-import { ArrowLeft, RotateCcw, Undo2 } from '@lucide/astro';
-import type { Lang } from '../i18n/types';
-import { getDict, localizePath } from '../i18n/utils';
-import { site } from '../site';
-import Section from './Section.astro';
+import { ArrowLeft, RotateCcw, Undo2 } from "@lucide/astro";
+import type { Lang } from "../i18n/types";
+import { getDict, localizePath } from "../i18n/utils";
+import { site } from "../site";
+import Section from "./Section.astro";
 
 interface Props {
   lang: Lang;
@@ -35,7 +35,7 @@ const dict = getDict(lang);
 const game = site.games.twentyFortyEight;
 const copy = dict.games.items.twentyFortyEight;
 
-const index = localizePath('/games/', lang);
+const index = localizePath("/games/", lang);
 
 /* Sixteen empty slots behind the tiles. They are the only thing that draws the
    grid, so a tile never has to paint a border to sit in one. */
@@ -57,7 +57,12 @@ const cells = Array.from({ length: 16 });
 
 <div class="sec-lite">
   <div class="shell shell-wide">
-    <div class="g2048 enter" style="--enter-delay:240ms" data-game data-state="playing">
+    <div
+      class="g2048 enter"
+      style="--enter-delay:240ms"
+      data-game
+      data-state="playing"
+    >
       <div class="g2048-bar">
         <div class="g2048-meter">
           <span class="g2048-meter-label">{copy.score}</span>
@@ -82,16 +87,22 @@ const cells = Array.from({ length: 16 });
         </div>
       </div>
 
-      {/*
+      {
+        /*
         The board is hidden from the accessibility tree and the live region
         below reports it instead. Sixteen cells that rewrite themselves on
         every keypress would otherwise be read out as a wall of numbers with
         no order a listener could hold on to.
-      */}
+      */
+      }
       <div class="g2048-board" data-board aria-hidden="true">
-        <div class="g2048-cells">{cells.map(() => <div class="g2048-cell" />)}</div>
+        <div class="g2048-cells">
+          {cells.map(() => <div class="g2048-cell" />)}
+        </div>
 
-        {/* Tiles are inserted here and never removed except when they merge. */}
+        {
+          /* Tiles are inserted here and never removed except when they merge. */
+        }
         <div class="g2048-layer" data-layer></div>
 
         <div class="g2048-panel" data-panel="won">
@@ -99,8 +110,12 @@ const cells = Array.from({ length: 16 });
           <p class="g2048-panel-body">{copy.won.body}</p>
 
           <div class="g2048-panel-actions">
-            <button type="button" class="cta" data-action="keep-going">{copy.won.keepGoing}</button>
-            <button type="button" class="cta-ghost" data-action="restart">{copy.newGame}</button>
+            <button type="button" class="cta" data-action="keep-going"
+              >{copy.won.keepGoing}</button
+            >
+            <button type="button" class="cta-ghost" data-action="restart"
+              >{copy.newGame}</button
+            >
           </div>
         </div>
 
@@ -109,16 +124,22 @@ const cells = Array.from({ length: 16 });
           <p class="g2048-panel-body">{copy.over.body}</p>
 
           <div class="g2048-panel-actions">
-            <button type="button" class="cta" data-action="restart">{copy.over.restart}</button>
-            <button type="button" class="cta-ghost" data-action="undo">{copy.undo}</button>
+            <button type="button" class="cta" data-action="restart"
+              >{copy.over.restart}</button
+            >
+            <button type="button" class="cta-ghost" data-action="undo"
+              >{copy.undo}</button
+            >
           </div>
         </div>
       </div>
 
       <p class="g2048-hint">{copy.hint}</p>
 
-      {/* The two words the announcement is built from ride on the element, so
-          the script names nothing a reader would see. */}
+      {
+        /* The two words the announcement is built from ride on the element, so
+          the script names nothing a reader would see. */
+      }
       <p
         class="sr-only"
         aria-live="polite"
@@ -151,7 +172,8 @@ const cells = Array.from({ length: 16 });
 </Section>
 
 <script>
-  import { mount } from '../games/2048/game';
+  import { mount } from "../games/2048/game";
+  import { scoreRecord } from "../games/record";
 
   /*
    * The page's side of the game: the two figures, the record, and the buttons.
@@ -160,31 +182,34 @@ const cells = Array.from({ length: 16 });
    * that are the page's business rather than the game's - what a number is
    * called, where the record is kept, and what a screen reader is told.
    */
-  const root = document.querySelector<HTMLElement>('[data-game]');
-  const board = root?.querySelector<HTMLElement>('[data-board]');
-  const layer = root?.querySelector<HTMLElement>('[data-layer]');
+  const root = document.querySelector<HTMLElement>("[data-game]");
+  const board = root?.querySelector<HTMLElement>("[data-board]");
+  const layer = root?.querySelector<HTMLElement>("[data-layer]");
 
   if (root && board && layer) {
-    const scoreOut = root.querySelector<HTMLElement>('[data-score]');
-    const bestOut = root.querySelector<HTMLElement>('[data-best]');
-    const live = root.querySelector<HTMLElement>('[data-live]');
-    const undoButtons = root.querySelectorAll<HTMLButtonElement>('[data-action="undo"]');
+    const scoreOut = root.querySelector<HTMLElement>("[data-score]");
+    const bestOut = root.querySelector<HTMLElement>("[data-best]");
+    const live = root.querySelector<HTMLElement>("[data-live]");
+    const undoButtons = root.querySelectorAll<HTMLButtonElement>(
+      '[data-action="undo"]'
+    );
 
-    const lang = document.documentElement.lang || 'en';
+    const lang = document.documentElement.lang || "en";
     const format = new Intl.NumberFormat(lang);
 
-    const KEY = 'game-2048-best';
+    /*
+     * The record is signed, so a figure typed into the storage inspector is
+     * thrown away on the next load rather than shown. What that is and is not
+     * worth is in record.ts, and it is worth reading before trusting it.
+     *
+     * The predicate is this game's half of it: a merge scores the tile it
+     * produced, always a power of two of at least four, so a real 2048 score
+     * is a multiple of four and most invented numbers fail on arithmetic
+     * before the signature is reached.
+     */
+    const record = scoreRecord("game-2048-best", (value) => value % 4 === 0);
 
-    const readBest = () => {
-      try {
-        return Number.parseInt(localStorage.getItem(KEY) ?? '0', 10) || 0;
-      } catch {
-        /* Storage unavailable (private mode); the record holds for this view. */
-        return 0;
-      }
-    };
-
-    let best = readBest();
+    let best = record.read();
     if (bestOut) bestOut.textContent = format.format(best);
 
     const controller = mount({
@@ -204,22 +229,17 @@ const cells = Array.from({ length: 16 });
          * over a long game.
          */
         if (gained > 0 && scoreOut?.parentElement) {
-          const gain = document.createElement('span');
-          gain.className = 'g2048-gain';
+          const gain = document.createElement("span");
+          gain.className = "g2048-gain";
           gain.textContent = `+${format.format(gained)}`;
-          gain.addEventListener('animationend', () => gain.remove());
+          gain.addEventListener("animationend", () => gain.remove());
           scoreOut.parentElement.append(gain);
         }
 
         if (score <= best) return;
         best = score;
         if (bestOut) bestOut.textContent = format.format(best);
-
-        try {
-          localStorage.setItem(KEY, String(best));
-        } catch {
-          /* Nothing to do; the record simply will not outlive the page. */
-        }
+        record.write(best);
       },
 
       onState(state) {
@@ -232,11 +252,10 @@ const cells = Array.from({ length: 16 });
         // Two figures rather than the board: a listener can hold on to where
         // they are and what the biggest tile is, and cannot hold sixteen
         // numbers that change on every keypress.
-        const scoreLabel = live.dataset.labelScore ?? '';
-        const highestLabel = live.dataset.labelHighest ?? '';
+        const scoreLabel = live.dataset.labelScore ?? "";
+        const highestLabel = live.dataset.labelHighest ?? "";
 
-        live.textContent =
-          `${scoreLabel} ${format.format(score)}. ${highestLabel} ${format.format(highest)}.`;
+        live.textContent = `${scoreLabel} ${format.format(score)}. ${highestLabel} ${format.format(highest)}.`;
       },
 
       onUndo(available) {
@@ -244,13 +263,14 @@ const cells = Array.from({ length: 16 });
       },
     });
 
-    root.addEventListener('click', (event) => {
-      const action = (event.target as Element | null)?.closest<HTMLElement>('[data-action]')?.dataset
-        .action;
+    root.addEventListener("click", (event) => {
+      const action = (event.target as Element | null)?.closest<HTMLElement>(
+        "[data-action]"
+      )?.dataset.action;
 
-      if (action === 'restart') controller.restart();
-      if (action === 'undo') controller.undo();
-      if (action === 'keep-going') controller.keepGoing();
+      if (action === "restart") controller.restart();
+      if (action === "undo") controller.undo();
+      if (action === "keep-going") controller.keepGoing();
     });
   }
 </script>
