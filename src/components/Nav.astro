@@ -1,5 +1,5 @@
 ---
-import { Menu, X } from '@lucide/astro';
+import { Gamepad2, Menu, X } from '@lucide/astro';
 import type { Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
 import { site } from '../site';
@@ -16,6 +16,13 @@ const dict = getDict(lang);
 // Absolute, locale-aware hrefs so the header keeps working from a project page,
 // where the sections are not on the current URL.
 const home = localizePath('/', lang);
+
+/*
+ * The games index is a page, not a section, which is why it sits outside the
+ * rail rather than becoming an eighth label in it. Every link in the rail is
+ * an anchor on the homepage and this one is not.
+ */
+const games = localizePath('/games/', lang);
 
 const sections = [
   { id: 'about', label: dict.nav.about },
@@ -71,6 +78,23 @@ const sections = [
     </nav>
 
     <div class="ml-auto flex items-center gap-2 lg:ml-6">
+      {/*
+        Desktop only. Below lg the rail collapses into the disclosure and this
+        goes with it - the wordmark plus four round controls does not fit
+        beside a 320px viewport, and the menu is where a phone looks anyway.
+        The row inside the disclosure is the same link.
+      */}
+      <a href={games} class="head-btn head-game hidden lg:inline-flex" aria-label={dict.nav.games}>
+        <Gamepad2 class="size-4 shrink-0" aria-hidden="true" />
+        {/*
+          The word waits for xl. At lg the seven labels in the rail are already
+          at the width they need - in German especially - and a pill with a word
+          in it beside them is what pushes the row over. The icon alone still
+          marks the spot, and `aria-label` carries the name either way.
+        */}
+        <span class="hidden xl:inline">{dict.nav.games}</span>
+      </a>
+
       <ThemeToggle lang={lang} />
       <LangSwitcher lang={lang} />
 
@@ -107,6 +131,15 @@ const sections = [
               </li>
             ))
           }
+
+          {/* Ruled off from the seven above it, because those jump within the
+              current page and this one leaves it. */}
+          <li class="head-game-row">
+            <a href={games} class="shell shell-hero nav-row flex items-center gap-2 py-2.5">
+              <Gamepad2 class="size-4 shrink-0" aria-hidden="true" />
+              {dict.nav.games}
+            </a>
+          </li>
         </ul>
       </details>
     </div>

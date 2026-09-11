@@ -40,6 +40,28 @@ generated from a `[lang]` route. That gives eight route files for four logical p
 | project index | [projects/index.astro](../src/pages/projects/index.astro) | [\[lang\]/projects/index.astro](<../src/pages/[lang]/projects/index.astro>) | [ProjectIndex.astro](../src/components/ProjectIndex.astro) |
 | project page | [projects/\[slug\]/index.astro](<../src/pages/projects/[slug]/index.astro>) | [\[lang\]/projects/\[slug\]/index.astro](<../src/pages/[lang]/projects/[slug]/index.astro>) | [ProjectDetail.astro](../src/components/ProjectDetail.astro) |
 | 404 | [404.astro](../src/pages/404.astro) | [\[lang\]/404.astro](<../src/pages/[lang]/404.astro>) | [NotFound.astro](../src/components/NotFound.astro) |
+| game index | [games/index.astro](../src/pages/games/index.astro) | [\[lang\]/games/index.astro](<../src/pages/[lang]/games/index.astro>) | [GameIndex.astro](../src/components/GameIndex.astro) |
+| 2048 | [games/2048/index.astro](../src/pages/games/2048/index.astro) | [\[lang\]/games/2048/index.astro](<../src/pages/[lang]/games/2048/index.astro>) | [Game2048.astro](../src/components/Game2048.astro) |
+
+⚠️ **A game gets a route pair of its own, and that is the one place this table breaks its
+own pattern.** It is about the *files*, not the URLs - `/projects/encryptix/` and
+`/games/2048/` look identical from outside, and both have a slug in them. What differs is
+where that slug comes from:
+
+| | On disk | Pages built |
+|---|---|---|
+| projects | one file, `projects/[slug]/index.astro` | four, from `getStaticPaths` |
+| games | one directory per game, `games/2048/index.astro` | one each, no parameter |
+
+Every project page is the same page with different data, so one parameterised file covers
+all four and always will. A game is its own program - its own markup, its own script, its
+own bundle - and there is no "the game component" for a `[slug]` route to render. It would
+have to import all of them and pick one by slug, and because Vite resolves imports
+statically, **that single import list would pull every game's code into every game's
+page**. Two files per game is what keeps a game paying only for itself.
+
+Adding one is five steps and the recipe is in
+[content-and-i18n.md §Adding a game](./content-and-i18n.md#7-adding-a-game).
 
 **The rule that keeps this from being duplication: a route file holds no markup.** It
 resolves `lang`, calls `getDict` for the meta strings, and renders `Base` around one shared
@@ -189,7 +211,7 @@ wrangler is invoked directly. The adapter also injects `_headers` (immutable
 
 ### What lands in `dist/client/_astro/`
 
-Three woff2 faces and five webp variants. **No CSS file and no JavaScript file.**
+Three woff2 faces, five webp variants and **one JavaScript file**, which is the game.
 
 `build.inlineStylesheets: 'always'` puts the whole stylesheet inside every document, so
 nothing render-blocking stands between the first response and the first paint, and the
@@ -201,6 +223,11 @@ The four `<script>` blocks - the pre-paint theme script, the theme toggle, the d
 dismissal and the active-section indicator - are all small enough that Astro inlines them
 into each page rather than emitting a bundle. 1.7 KB of JS per page, in a 26 KB gz home
 page, with no extra request. Keep it that way: see [src/components/CLAUDE.md](../src/components/CLAUDE.md).
+
+The one file in `_astro` is the 2048 engine, imported by
+[Game2048.astro](../src/components/Game2048.astro) and past the inlining threshold at
+2.4 KB gz. It is requested by `/games/2048/` and its three locale twins and by no other
+page, which is the point: the game pays for itself and the rest of the site is unchanged.
 
 `archivo` is imported as the `wdth` build, which costs 90 KB latin against 35 KB for weight
 alone. That is deliberate - width *is* the display/text contrast on this site, so it is the
@@ -224,8 +251,8 @@ where `files` would not, and `astro check` passes without it.
 
 ## 6. The sitemap carries a trailing slash by hand
 
-Twenty-four URLs: the home page, the project index and one page per project, across four
-locales, with the 404 pages excluded. Every entry
+Thirty-two URLs: the home page, the project index, one page per project, the game index
+and one page per game, across four locales, with the 404 pages excluded. Every entry
 ends in a slash, and that agrees with the `<link rel="canonical">` on the page itself - but
 only because the `serialize` hook in [astro.config.ts](../astro.config.ts) puts it there.
 
@@ -257,7 +284,7 @@ trailing slash for a directory route, nothing for anything that looks like a fil
 
 **After changing anything about routing or locales, read `dist/client/sitemap-0.xml`.** It is
 the one output nothing else checks - the 404 exclusion depends on the locale being registered
-(§8 item 1), and the slash depends on this hook.
+(design-system §8, open item 1), and the slash depends on this hook.
 
 ---
 
@@ -287,6 +314,11 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-09-11 - a games section: `/games/` and `/games/2048/`, six route pairs in all,
+  taking the build to 36 pages and the sitemap to 32 URLs. `/games/2048/` is also the first
+  page on the site to request a JavaScript file: 2.4 KB gz in `_astro`, on that route and
+  its three twins only. ⚠️ Games are **not** a `[slug]` route, unlike projects, and §1
+  records why.
 - 2026-09-10 - the build config is `astro.config.ts` and imports `locales` from
   src/i18n/types.ts, so the list is written down once and adding a language can no
   longer fail silently. Closes the old open item 1.

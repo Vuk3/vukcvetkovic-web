@@ -77,6 +77,54 @@
   --site-radius: 8px;
   --site-radius-card: 18px;
   --site-radius-pill: 999px;
+
+  /*
+   * The 2048 ramp.
+   *
+   * ⚠️ This and the technology marks in src/tech.ts are the only colour on the
+   * site outside the accent, and unlike the rest of the page it is not a
+   * decision about taste: eleven values have to be told apart at a glance and
+   * at speed, and a near-monochrome board makes that impossible. The ramp is
+   * the one place the palette is allowed to open up.
+   *
+   * It is a single sequence rather than eleven picked colours. Paper and sand
+   * for the two smallest, then the site's own cobalt, then indigo, violet,
+   * magenta, rose, coral and amber - hue and heat both moving one way, so
+   * bigger always looks hotter and the board can be read without reading a
+   * number on it.
+   *
+   * Every chromatic step carries white at 3.5:1 or better, which is the large
+   * bold text threshold and what these are. The two pale ones and the 2048
+   * itself take the ink instead.
+   */
+  --g2048-tray: #d8d4c9;
+  --g2048-cell: #e5e1d8;
+
+  /* A tile is a piece resting on the tray, and the tray is a well cut into
+     the page. Both are quiet - two shadows this size across sixteen elements
+     is the difference between pieces and coloured rectangles, and anything
+     heavier turns the board into a pile of buttons. */
+  --g2048-tile-lift:
+    0 1px 2px color-mix(in oklab, #14161a 12%, transparent),
+    0 4px 14px color-mix(in oklab, #14161a 8%, transparent);
+  --g2048-tray-inset: inset 0 2px 7px color-mix(in oklab, #14161a 9%, transparent);
+
+  --g2048-low-fg: #14161a;
+  --g2048-on-dark: #ffffff;
+  --g2048-t11-fg: #14161a;
+
+  --g2048-t1: #faf8f3;
+  --g2048-t2: #f2dfaf;
+  --g2048-t3: #1c74c8;
+  --g2048-t4: #2331c8;
+  --g2048-t5: #5320cc;
+  --g2048-t6: #7a17c2;
+  --g2048-t7: #9f13ae;
+  --g2048-t8: #be1487;
+  --g2048-t9: #cf1b57;
+  --g2048-t10: #db3e28;
+  --g2048-t11: #efa80e;
+  --g2048-t12: #14161a;
 }
 
 .dark {
@@ -120,6 +168,37 @@
   --site-panel-muted: #a8aeba;
   --site-panel-hairline: #3b4351;
   --site-panel-accent: #a2b1ff;
+
+  /*
+   * The ramp again, on a dark ground.
+   *
+   * The two pale steps become greys, because paper on a dark board reads as
+   * the brightest thing on it and the smallest tile should be the quietest.
+   * The chromatic steps are lifted rather than re-picked: the same sequence,
+   * bright enough to hold against the tray instead of against paper.
+   */
+  --g2048-tray: #131820;
+  --g2048-cell: #1d2430;
+
+  --g2048-tile-lift:
+    0 1px 2px color-mix(in oklab, #000 45%, transparent),
+    0 6px 18px color-mix(in oklab, #000 30%, transparent);
+  --g2048-tray-inset: inset 0 2px 9px color-mix(in oklab, #000 38%, transparent);
+
+  --g2048-low-fg: #e8ebf0;
+
+  --g2048-t1: #303844;
+  --g2048-t2: #46505f;
+  --g2048-t3: #2e86d9;
+  --g2048-t4: #3341dc;
+  --g2048-t5: #6430de;
+  --g2048-t6: #8a24d2;
+  --g2048-t7: #b01fc0;
+  --g2048-t8: #d0209a;
+  --g2048-t9: #e02a66;
+  --g2048-t10: #ec5238;
+  --g2048-t11: #f7b622;
+  --g2048-t12: #07090c;
 }
 
 /*
@@ -280,12 +359,16 @@
    * flash.
    */
   .card {
+    /* Named, so a block inside a card can cancel it and bleed to the edges -
+       see `.game-art`. The number is unchanged. */
+    --card-pad: clamp(1.25rem, 2vw, 1.75rem);
+
     position: relative;
     border: 1px solid var(--site-hairline);
     border-radius: var(--site-radius-card);
     background-color: var(--site-card);
     box-shadow: var(--site-lift);
-    padding: clamp(1.25rem, 2vw, 1.75rem);
+    padding: var(--card-pad);
     transition:
       border-color 240ms var(--site-ease),
       box-shadow 240ms var(--site-ease),
@@ -682,6 +765,35 @@
   .head-btn:hover {
     border-color: color-mix(in oklab, var(--site-fg) 25%, transparent);
     color: var(--site-fg);
+  }
+
+  /*
+   * The way into the game, from every page.
+   *
+   * It borrows `.head-btn`'s pill so it reads as one of the header's controls
+   * rather than as an eighth section. The seven in the rail are anchors on the
+   * homepage and this is a page, and that difference is the whole reason it
+   * sits beside the rail instead of inside it.
+   *
+   * The label is the game's name set in the numerals' own voice, which is what
+   * makes a four-character link legible as a title rather than as a figure.
+   */
+  .head-game {
+    height: 2.25rem;
+    gap: 0.45rem;
+    padding-inline: 0.6rem;
+    font-stretch: 108%;
+    font-weight: 580;
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  /* The same link inside the phone menu, ruled off from the anchors above it. */
+  .head-game-row {
+    margin-top: 0.4rem;
+    padding-top: 0.4rem;
+    border-top: 1px solid var(--site-hairline);
   }
 
   /* ---- Hero ------------------------------------------------------------ */
@@ -1462,6 +1574,41 @@
     transform: translateX(-3px);
   }
 
+  /*
+   * Running prose across the full measure, in two columns rather than one long
+   * line or one short one with a hole beside it.
+   *
+   * `columns` rather than a two-cell grid, because the browser balances them:
+   * a grid puts one paragraph per cell and a row is as tall as its taller
+   * half, so a short paragraph beside a long one opens exactly the hole this
+   * is here to close. Balancing is only safe because the whole block fits on
+   * one screen - reading down and back up costs a scroll otherwise.
+   *
+   * ⚠️ Spacing is `margin-bottom`, never `margin-top`. A top margin on the
+   * paragraph that happens to begin the second column indents that column
+   * against the first, and which paragraph that is changes with the viewport.
+   */
+  .prose-columns {
+    column-gap: clamp(2rem, 5vw, 4rem);
+  }
+
+  @media (min-width: 60rem) {
+    .prose-columns {
+      columns: 2;
+    }
+  }
+
+  .prose-columns > p {
+    /* A paragraph split across the break reads as two, and the second half
+       arrives with no subject. */
+    break-inside: avoid;
+    margin-bottom: clamp(0.9rem, 2vw, 1.4rem);
+  }
+
+  .prose-columns > p:last-child {
+    margin-bottom: 0;
+  }
+
   .page-title {
     margin-top: clamp(1rem, 2vw, 1.5rem);
     font-stretch: 118%;
@@ -1471,9 +1618,16 @@
     letter-spacing: -0.04em;
   }
 
+  /*
+   * ⚠️ **No `max-width`, deliberately.** It was capped at 38rem, which inside a
+   * 68rem or 72rem shell put the lead in the left half of the screen and left
+   * the right half empty - the page reading as though it stopped halfway. The
+   * long line that a full-width lead buys is the lesser problem, and it is the
+   * trade Vuk asked for. Where prose genuinely needs two columns, that is what
+   * `.prose-columns` is for.
+   */
   .page-lead {
     margin-top: clamp(1rem, 2vw, 1.375rem);
-    max-width: 38rem;
     font-size: clamp(1.0625rem, 1.7vw, 1.375rem);
     line-height: 1.5;
     letter-spacing: -0.012em;
@@ -1591,6 +1745,586 @@
     font-weight: 620;
     letter-spacing: -0.01em;
     text-align: left;
+  }
+
+  /* ---- 2048 ---------------------------------------------------------------
+   *
+   * The board, the tiles, and the colour ramp the numbers are read off. There
+   * is no canvas and no renderer: a tile is a div that moves by changing two
+   * custom properties, and the transition on it is the whole animation system.
+   * See src/games/2048/game.ts and src/components/Game2048.astro.
+   */
+
+  .g2048 {
+    /*
+     * The gutter between cells, and the padding of the tray, which are the
+     * same measurement - that is what makes the frame read as one grid rather
+     * than as a grid inside a box.
+     */
+    --g2048-gap: clamp(0.5rem, 1.8vw, 0.8rem);
+
+    /* Overwritten from the module at mount so the slide, the delay on a
+       spawning tile and the merge timer are one number. The value here is only
+       what applies for the frame before the script runs. */
+    --g2048-slide: 140ms;
+
+    /*
+     * Two curves, because a slide and a pop want opposite things.
+     *
+     * ⚠️ A tile must not overshoot its cell. The board is a grid of hard
+     * edges, and a position that sails past its column and comes back reads
+     * as a tile passing through the wall rather than stopping at it. So the
+     * glide is a hard ease-out: most of the distance early, then a long
+     * settle, which is what makes 140ms feel quick without feeling abrupt.
+     *
+     * Scale has no wall to hit, so the pop and the arrival are free to
+     * overshoot, and that is where the life in the board comes from.
+     */
+    --g2048-glide: cubic-bezier(0.16, 0.84, 0.28, 1);
+    --g2048-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    max-width: 36rem;
+    margin-inline: auto;
+  }
+
+  .g2048-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: clamp(0.75rem, 2vw, 1.1rem);
+  }
+
+  /*
+   * A figure with its label above it. Narrow, because the two of them sit
+   * beside the controls and the board is what the eye should land on.
+   */
+  .g2048-meter {
+    position: relative;
+    min-width: 5.5rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius);
+    background-color: var(--site-card);
+    padding: 0.45rem 0.8rem 0.5rem;
+    text-align: center;
+  }
+
+  .g2048-meter-label {
+    display: block;
+    font-size: 0.6875rem;
+    line-height: 1.3;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--site-muted);
+  }
+
+  .g2048-meter-value {
+    display: block;
+    font-stretch: 112%;
+    font-weight: 660;
+    font-size: 1.25rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+  }
+
+  /*
+   * The points a move was worth, floating off the score.
+   *
+   * Without it the total jumps and nothing on screen says why. It is taken out
+   * of flow so the card cannot change size under it, which would shift the
+   * board every time a merge landed.
+   */
+  .g2048-gain {
+    position: absolute;
+    inset: auto 0 0.35rem 0;
+    font-stretch: 110%;
+    font-weight: 640;
+    font-size: 1rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--site-accent);
+    pointer-events: none;
+    animation: g2048-gain 620ms var(--site-ease) forwards;
+  }
+
+  .g2048-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  .g2048-actions .cta-ghost {
+    padding: 0.55rem 0.9rem;
+    font-size: 0.875rem;
+  }
+
+  .g2048-actions .cta-ghost:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .g2048-actions .cta-ghost:disabled:hover {
+    border-color: var(--site-hairline);
+    color: inherit;
+    transform: none;
+  }
+
+  /* Two figures and two controls do not fit on one line on a small phone, so
+     the controls take the next row rather than being squeezed. `.g2048-bar`
+     wraps, and this is what makes them wrap together instead of one at a time. */
+  @media (max-width: 30rem) {
+    .g2048-actions {
+      width: 100%;
+      margin-left: 0;
+    }
+
+    .g2048-actions .cta-ghost {
+      flex: 1;
+      justify-content: center;
+      padding: 0.55rem 0.7rem;
+    }
+  }
+
+  /*
+   * The tray.
+   *
+   * `container-type` is what lets a tile's number be sized off the board
+   * rather than off the viewport, so the digits hold their proportion whether
+   * the board is 320px on a phone or capped at 36rem on a desktop. A vw-based
+   * clamp cannot do that: past the cap the board stops growing and the numbers
+   * would carry on.
+   */
+  .g2048-board {
+    position: relative;
+    container-type: inline-size;
+    aspect-ratio: 1;
+    border-radius: var(--site-radius-card);
+    background-color: var(--g2048-tray);
+    box-shadow: var(--g2048-tray-inset);
+    padding: var(--g2048-gap);
+    /* A swipe is a move, so the browser must not also read it as a scroll. */
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /*
+   * Rows are spelled out rather than left implicit. Auto rows do stretch to a
+   * definite height, but a cell has to be exactly the size a tile computes for
+   * itself - and a tile's height comes from `(100% - 3 gaps) / 4`, not from
+   * however the grid algorithm decided to distribute the leftovers.
+   */
+  .g2048-cells {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: var(--g2048-gap);
+    height: 100%;
+  }
+
+  .g2048-cell {
+    border-radius: calc(var(--site-radius-card) - 8px);
+    background-color: var(--g2048-cell);
+  }
+
+  /* Exactly over the cells, so a tile's percentage width is one cell wide. */
+  .g2048-layer {
+    position: absolute;
+    inset: var(--g2048-gap);
+  }
+
+  /*
+   * A tile.
+   *
+   * Position is `--x` and `--y`, in cells, and the translate resolves them
+   * against the tile's own size - which is why nothing here needs to know how
+   * big the board is, and why a resize costs no JavaScript at all.
+   *
+   * ⚠️ `transform` is the only thing that transitions. Animating `left` or a
+   * grid position would put every move through layout, on sixteen elements,
+   * and no amount of tuning gets that back to sixty frames on a phone.
+   */
+  .g2048-tile {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: grid;
+    place-items: center;
+    width: calc((100% - 3 * var(--g2048-gap)) / 4);
+    height: calc((100% - 3 * var(--g2048-gap)) / 4);
+    border-radius: calc(var(--site-radius-card) - 8px);
+    font-stretch: 112%;
+    font-weight: 680;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.045em;
+    line-height: 1;
+    transform: translate(
+      calc(var(--x) * (100% + var(--g2048-gap))),
+      calc(var(--y) * (100% + var(--g2048-gap)))
+    );
+    box-shadow: var(--g2048-tile-lift);
+    transition: transform var(--g2048-slide) var(--g2048-glide);
+    /* Sixteen of these at most, and every one of them is a transform away from
+       moving. Promoting them up front is what keeps the first move of a game
+       as smooth as the hundredth. */
+    will-change: transform;
+  }
+
+  /* Under the tile it is merging into, so the one that pops is on top. */
+  .g2048-tile.is-gone {
+    z-index: 0;
+  }
+
+  .g2048-tile.is-merged {
+    z-index: 2;
+    animation: g2048-pop 260ms var(--site-ease);
+  }
+
+  /*
+   * A spawning tile.
+   *
+   * `backwards` is doing the work: the animation is delayed by exactly one
+   * slide and holds its opening frame through the wait, so the tile is already
+   * in the DOM and invisible while the board is still moving, and lands the
+   * instant everything else stops. No second timer, and it cannot arrive early
+   * on a slow frame.
+   */
+  .g2048-tile.is-new {
+    animation: g2048-appear 240ms var(--g2048-spring) var(--g2048-slide) backwards;
+  }
+
+  /*
+   * Numbers, sized off the board and stepped down by digit count so 2 and 1024
+   * both fill their tile. Set on the span rather than the tile so the pop
+   * scales the whole thing, digits included.
+   */
+  .g2048-tile > span {
+    font-size: 8.5cqi;
+  }
+
+  .g2048-tile[data-digits='3'] > span {
+    font-size: 7cqi;
+  }
+
+  .g2048-tile[data-digits='4'] > span {
+    font-size: 5.5cqi;
+  }
+
+  .g2048-tile[data-digits='5'] > span,
+  .g2048-tile[data-digits='6'] > span {
+    font-size: 4.3cqi;
+  }
+
+  /*
+   * One step per doubling, off the ramp declared at the top of this file.
+   *
+   * On `.g2048-tier` rather than on `.g2048-tile`, because the board is not the
+   * only thing that wears the ramp: the thumbnail on the games index is a
+   * still of a board and has to be the same eleven colours in both themes.
+   * A tile carries both classes.
+   */
+  .g2048-tier[data-tier='1'] {
+    background-color: var(--g2048-t1);
+    color: var(--g2048-low-fg);
+  }
+
+  .g2048-tier[data-tier='2'] {
+    background-color: var(--g2048-t2);
+    color: var(--g2048-low-fg);
+  }
+
+  .g2048-tier[data-tier='3'] {
+    background-color: var(--g2048-t3);
+    color: var(--g2048-on-dark);
+  }
+
+  .g2048-tier[data-tier='4'] {
+    background-color: var(--g2048-t4);
+    color: var(--g2048-on-dark);
+  }
+
+  .g2048-tier[data-tier='5'] {
+    background-color: var(--g2048-t5);
+    color: var(--g2048-on-dark);
+  }
+
+  .g2048-tier[data-tier='6'] {
+    background-color: var(--g2048-t6);
+    color: var(--g2048-on-dark);
+  }
+
+  .g2048-tier[data-tier='7'] {
+    background-color: var(--g2048-t7);
+    color: var(--g2048-on-dark);
+  }
+
+  .g2048-tier[data-tier='8'] {
+    background-color: var(--g2048-t8);
+    color: var(--g2048-on-dark);
+  }
+
+  .g2048-tier[data-tier='9'] {
+    background-color: var(--g2048-t9);
+    color: var(--g2048-on-dark);
+  }
+
+  .g2048-tier[data-tier='10'] {
+    background-color: var(--g2048-t10);
+    color: var(--g2048-on-dark);
+  }
+
+  /* 2048 itself, which is the one tile allowed to announce itself. */
+  .g2048-tier[data-tier='11'] {
+    background-color: var(--g2048-t11);
+    color: var(--g2048-t11-fg);
+    box-shadow:
+      var(--g2048-tile-lift),
+      0 6px 26px color-mix(in oklab, var(--g2048-t11) 55%, transparent);
+  }
+
+  /* Everything past it, so a long game does not run off the end of the ramp. */
+  .g2048-tier[data-tier='12'] {
+    background-color: var(--g2048-t12);
+    color: var(--g2048-t11);
+    box-shadow:
+      var(--g2048-tile-lift),
+      0 6px 26px color-mix(in oklab, var(--g2048-t11) 30%, transparent);
+  }
+
+  /*
+   * Won and lost. Both cover the board, because both are asking a question
+   * that has to be answered before play carries on, and a panel beside the
+   * board would let a reader keep pressing arrows past it.
+   */
+  .g2048-panel {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    border-radius: var(--site-radius-card);
+    padding: var(--site-pad);
+    text-align: center;
+    background-color: color-mix(in oklab, var(--g2048-tray) 82%, transparent);
+    backdrop-filter: blur(4px);
+    animation: g2048-panel 240ms var(--site-ease);
+  }
+
+  .g2048[data-state='won'] .g2048-panel[data-panel='won'],
+  .g2048[data-state='over'] .g2048-panel[data-panel='over'] {
+    display: flex;
+  }
+
+  .g2048-panel-title {
+    font-stretch: 116%;
+    font-weight: 680;
+    font-size: clamp(1.75rem, 8cqi, 2.75rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+  }
+
+  .g2048-panel-body {
+    max-width: 24rem;
+    font-size: clamp(0.9375rem, 3.4cqi, 1.0625rem);
+    line-height: 1.5;
+    color: var(--site-muted);
+  }
+
+  .g2048-panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 0.7rem;
+  }
+
+  /* ---- The games index ----------------------------------------------- */
+
+  /*
+   * Three across, not one big card and a row under it.
+   *
+   * The featured shape was borrowed from the projects section and it was the
+   * wrong loan: a project is a write-up, so the first one earns the extra
+   * room, while a game is a thing you either want to play or you do not, and
+   * one per row is a list pretending to be a showcase.
+   */
+  /*
+   * Three across, fixed, and a short row stays short.
+   *
+   * `auto-fit` was tried here so that one game would stretch to fill the row
+   * rather than sitting in the first third of it, and it is the wrong answer:
+   * a card is a fixed-size object and stretching it to 72rem turns the
+   * thumbnail into a wall. An unfilled track reads as a grid waiting for the
+   * next entry, which is what it is.
+   */
+  .game-grid {
+    display: grid;
+    gap: clamp(0.875rem, 1.5vw, 1.25rem);
+  }
+
+  @media (min-width: 40rem) {
+    .game-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .game-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  /*
+   * The thumbnail, bled to the card's edges.
+   *
+   * Negative margins of exactly `--card-pad`, which is why `.card` names it:
+   * the picture is the top of the card rather than something sitting inside
+   * it with a frame of ground around it. The radius is the card's own, less
+   * the border, so the two curves sit on each other rather than beside.
+   *
+   * `container-type` so everything inside is sized off the thumbnail. Three of
+   * these across a 72rem shell and one across a phone are very different
+   * widths, and a viewport clamp cannot tell them apart.
+   *
+   * ⚠️ **The container declares no `cqi` of its own, and cannot.** An element
+   * is not its own query container, so a `cqi` length in a rule on this
+   * selector resolves against the nearest container *above* it - and where
+   * there is none, against the viewport. Putting the gap and the padding here
+   * is what made the first version look the way it did: 2.5% of the window
+   * between cells, on a card a third of the window wide, so the cells were
+   * squeezed down to the size of their own text. Everything measured in `cqi`
+   * belongs on `.game-art-board` below.
+   */
+  .game-art {
+    container-type: inline-size;
+    aspect-ratio: 5 / 2;
+    margin: calc(-1 * var(--card-pad)) calc(-1 * var(--card-pad)) clamp(1rem, 1.6vw, 1.35rem);
+    border-radius: calc(var(--site-radius-card) - 1px) calc(var(--site-radius-card) - 1px) 0 0;
+    background-color: var(--g2048-tray);
+  }
+
+  /*
+   * Five across and two down, against that 5:2 box. It is the one pairing that
+   * keeps the cells square whatever the card is doing, and a 2048 board with
+   * oblong cells does not read as a 2048 board.
+   *
+   * Gap and padding are equal, and both are the same fraction of a cell that
+   * `--g2048-gap` is on the real board, so the still is in the game's own
+   * proportions rather than near them.
+   */
+  .game-art-board {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 2cqi;
+    height: 100%;
+    padding: 2cqi;
+  }
+
+  /* `.project-title` carries a top margin to clear the year tag above it on a
+     project card. A game card has no year, and the thumbnail's own bottom
+     margin is the whole gap. */
+  .game-grid .project-title {
+    margin-top: 0;
+  }
+
+  .game-art-cell {
+    display: grid;
+    place-items: center;
+    /* 8% of a cell, which is exactly what the real board's 10px radius is on
+       its 128px cell. Squarer than a chip and squarer than it looks like it
+       should be, and that is the point - it has to read as the same object. */
+    border-radius: 1.4cqi;
+    background-color: var(--g2048-cell);
+    font-stretch: 110%;
+    font-weight: 680;
+    font-size: 7cqi;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  /* Stepped by digit count, which the tier stands in for: 128 up is three
+     digits and 1024 up is four. The steps are the board's own ratios. */
+  .game-art-cell[data-tier='7'],
+  .game-art-cell[data-tier='8'],
+  .game-art-cell[data-tier='9'] {
+    font-size: 5.7cqi;
+  }
+
+  .game-art-cell[data-tier='10'],
+  .game-art-cell[data-tier='11'],
+  .game-art-cell[data-tier='12'] {
+    font-size: 4.5cqi;
+  }
+
+  .g2048-hint {
+    margin-top: clamp(0.75rem, 2vw, 1.1rem);
+    font-size: 0.875rem;
+    text-align: center;
+    color: var(--site-muted);
+  }
+}
+
+/*
+ * 2048 motion.
+ *
+ * Outside the components layer with the rest of the keyframes, and reduced
+ * along with everything else by the block at the end of this file - a merge
+ * still has to be visible without motion, so the pop and the appear are
+ * shortened rather than removed.
+ */
+/* Two stops only, so the spring curve is the whole shape. Opacity rides the
+   same curve and clamps at 1 well before the scale settles, which is what
+   stops a new tile from looking faded while it is still growing. */
+@keyframes g2048-appear {
+  from {
+    opacity: 0;
+    scale: 0.2;
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes g2048-pop {
+  0% {
+    scale: 1;
+  }
+
+  38% {
+    scale: 1.22;
+  }
+
+  100% {
+    scale: 1;
+  }
+}
+
+@keyframes g2048-gain {
+  from {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  to {
+    opacity: 0;
+    translate: 0 -1.6rem;
+  }
+}
+
+@keyframes g2048-panel {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
   }
 }
 

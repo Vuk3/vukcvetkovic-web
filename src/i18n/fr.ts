@@ -27,6 +27,7 @@ const fr: Dict = {
     projects: "Projets",
     services: "Services",
     contact: "Contact",
+    games: "Jeux",
     themeToggle: "Changer de thème",
     language: "Langue",
   },
@@ -542,6 +543,86 @@ const fr: Dict = {
           "La leçon qui est restée, c’est que des données ouvertes ne sont pas des données utilisables. Cinq points d’accès qui se référencent par identifiants, une échelle nationale et aucun moyen de poser une question géographique : la valeur tient entièrement dans la recopie et dans les jointures. Décider quoi copier, à quelle fréquence, et comment rendre une double copie inoffensive, c’est là qu’était vraiment l’ingénierie.",
           "L’autre moitié, c’est que la réponse doit arriver sans être demandée. Une personne allergique n’ouvre pas une application pour vérifier : elle veut qu’on le lui dise, dans un rayon et à un intervalle réglés une fois pour toutes. Les notifications push posées sur un backend planifié sont ce qui transforme un jeu de données public en quelque chose qui atteint quelqu’un le jour où cela compte.",
         ],
+      },
+    },
+  },
+
+  games: {
+    label: "Jeux",
+
+    index: {
+      metaTitle: "Jeux - Vuk Cvetković",
+      metaDescription:
+        "Les jeux de navigateur de Vuk Cvetković, construits en balisage et en CSS plutôt qu'en canvas. Chacun a sa propre page.",
+      heading: "Jeux",
+      intro:
+        "Des choses construites parce qu'elles en valaient la peine. Elles tournent dans le navigateur sans rien installer, et chacune a une page sur son fonctionnement.",
+    },
+
+    items: {
+      twentyFortyEight: {
+        /** One line, for the card on the index. */
+        tagline:
+          "Le jeu de tuiles, construit en éléments plutôt qu'en dessin, si bien que les chiffres restent nets et que le plateau suit le thème.",
+
+        metaDescription:
+          "Le jeu de tuiles, construit en balisage plutôt qu'en canvas. Poussez le plateau, fusionnez les nombres identiques, et atteignez une tuile à 2048.",
+        lead: "Poussez le plateau dans n'importe quelle direction et chaque tuile glisse aussi loin qu'elle le peut. Deux nombres identiques fusionnent en un seul du double, et le but est une tuile à 2048. Construit en éléments plutôt qu'en dessin, si bien que les chiffres restent nets à toute taille et que le plateau suit le thème.",
+
+        score: "Score",
+        best: "Record",
+        highest: "Plus grande tuile",
+        newGame: "Nouvelle partie",
+        undo: "Annuler",
+        hint: "Les flèches ou WASD, et un balayage sur téléphone.",
+
+        won: {
+          title: "2048",
+          body: "La tuile est sur le plateau. Rien n'oblige à s'arrêter là : la partie continue tant que quelque chose peut bouger.",
+          keepGoing: "Continuer",
+        },
+
+        over: {
+          title: "Plus aucun coup",
+          body: "Le plateau est plein et rien ne correspond à son voisin. Un retour en arrière reste possible si c'est le dernier coup qui a tout décidé.",
+          restart: "Rejouer",
+        },
+
+        how: {
+          label: "Comment jouer",
+          items: [
+            {
+              title: "Vous poussez tout le plateau",
+              description:
+                "Les flèches ou WASD au clavier, un balayage dans n'importe quelle direction sur téléphone. Chaque tuile parcourt en un coup toute la distance possible, et non une case.",
+            },
+            {
+              title: "Les nombres égaux fusionnent",
+              description:
+                "Deux tuiles portant le même nombre n'en font plus qu'une, du double. Une tuile qui vient de fusionner en a fini pour ce coup : une rangée de quatre 2 donne donc deux 4 et non un 8.",
+            },
+            {
+              title: "Une nouvelle tuile à chaque coup",
+              description:
+                "Elle apparaît sur une case libre, et c'est un 2 neuf fois sur dix. Une poussée qui ne change rien n'est pas un coup : rien n'apparaît et rien n'est perdu à l'essayer.",
+            },
+            {
+              title: "Choisissez un coin et restez-y",
+              description:
+                "Gardez la plus grande tuile dans un coin et ne poussez jamais dans l'autre sens. L'essentiel du jeu consiste à refuser le coup qui l'en ferait sortir.",
+            },
+          ],
+        },
+
+        close: {
+          label: "Comment c'est construit",
+          paragraphs: [
+            "Pas de canvas et pas de bibliothèque de jeu. Une tuile est un élément portant deux propriétés personnalisées, sa position est une translation résolue par rapport à sa propre taille, et le glissement est composé par le navigateur. La fluidité vient de là : un coup change une transformation et rien d'autre, donc aucune de ses parties ne passe par la mise en page.",
+            "L'autre moitié, c'est que chaque tuile garde son élément tant qu'elle existe. Le plateau n'est jamais redessiné depuis l'état : un coup met à jour les nombres sur des nœuds déjà présents, et c'est pourquoi une tuile parcourt visiblement le chemin depuis sa place au lieu de disparaître pour réapparaître ailleurs.",
+            "Les chiffres sont du texte : ils sont aussi nets que le reste de la page et suivent la taille que le lecteur a choisie. Les couleurs sont des jetons dans la même feuille de style que tout le reste, et c'est pourquoi le plateau répond au sélecteur de thème de l'en-tête.",
+            "Les commandes passent par une seule fonction appelée depuis trois endroits, si bien qu'une touche, un balayage et une tape ne peuvent pas finir par vouloir dire des choses légèrement différentes. Les flèches n'appartiennent au plateau que tant qu'il est à l'écran, et un coup poussé avant que le précédent ne soit posé est mis en attente plutôt qu'abandonné : jouer vite ne coûte jamais un tour.",
+          ],
+        },
       },
     },
   },

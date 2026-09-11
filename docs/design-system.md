@@ -34,6 +34,7 @@ and all of its motion in CSS.
 | what the request diagram *says* | `flow` in the dictionaries and `flowShape` in [site.ts](../src/site.ts) - §6 |
 | the active-section indicator | the second `<script>` in [Base.astro](../src/layouts/Base.astro) and `.nav-link[aria-current]` - §7 |
 | dark mode | the `.dark` block, **and** the two `theme-color` tags in [Base.astro](../src/layouts/Base.astro) - §8 and open item 1 |
+| **the 2048 board or its colour ramp** | [game.ts](../src/games/2048/game.ts), [Game2048.astro](../src/components/Game2048.astro), the `--g2048-*` tokens - §9 |
 
 **Read §5 before touching any animation.** The `animation` shorthand silently breaks the
 scroll timelines, and one custom property has to stay registered.
@@ -281,8 +282,9 @@ tabular-nums` - periods, the results table, the 404 status.
 
 ## 5. Motion
 
-All of it is CSS. The one script on the site is the active-section observer in §7, and it
-draws no animation. The reveal system has two halves, chosen by one question: **is the
+All of it is CSS. The only script that touches motion anywhere on the site is the game in
+§9, which is a game; the active-section observer in §7 draws no animation, and nothing on
+any other page does either. The reveal system has two halves, chosen by one question: **is the
 element in view at first paint?**
 
 | | `.enter` / `.enter-name` / `.enter-portrait` | `.reveal` / `.reveal-item` |
@@ -627,8 +629,8 @@ before *that* drew a rectangular bus around the whole diagram.
 
 ## 7. The active-section indicator, and the site's script budget
 
-The site ships **no JavaScript file**. Four inline blocks cover the pre-paint theme
-script, the theme toggle, the dismissal of every disclosure, and this. The request diagram was built with a fourth - an
+Every page but `/games/2048/` ships **no JavaScript file**. Four inline blocks cover the
+pre-paint theme script, the theme toggle, the dismissal of every disclosure, and this. The request diagram was built with a fourth - an
 `IntersectionObserver` arming a reveal - and it is gone: a `view()` timeline on a sticky
 track does the same job, scrubbed rather than triggered, and costs nothing (§6).
 
@@ -678,7 +680,91 @@ open item 1.
 
 ---
 
-## 9. Open items
+## 9. The game board, and the one place the palette opens up
+
+[/games/2048/](../src/pages/games/2048/index.astro) is the only page here with a game on
+it, and it is built the way the rest of the site is: markup, tokens, and transforms. There
+is no canvas and no game library. What is worth knowing is why two decisions were made the
+way they were.
+
+### A tile keeps its element for its whole life
+
+The board is never re-rendered from the state. A tile is a `div` in
+`.g2048-layer` carrying `--x` and `--y`, and a move writes two numbers onto elements that
+are already there:
+
+```css
+.g2048-tile {
+  width: calc((100% - 3 * var(--g2048-gap)) / 4);
+  transform: translate(
+    calc(var(--x) * (100% + var(--g2048-gap))),
+    calc(var(--y) * (100% + var(--g2048-gap)))
+  );
+  transition: transform var(--g2048-slide) var(--g2048-glide);
+}
+```
+
+Two things fall out of that. The percentage in `translate` resolves against the **tile's
+own** size, so a column step is `100% + gap` and nothing in the CSS or the module needs to
+know how big the board is - a resize costs no script at all. And because the element
+persists, the transition is a slide rather than a repaint: the move goes through the
+compositor and never through layout, which is the whole of what makes it smooth.
+
+⚠️ **`--g2048-slide` is set from the module**, in
+[game.ts](../src/games/2048/game.ts), not from the stylesheet. The transition, the
+`animation-delay` a spawning tile waits out, and the timer that resolves a merge are one
+number, and it is `0ms` under `prefers-reduced-motion` - which the blanket rule at the
+bottom of the stylesheet cannot do, because it cannot reach a `setTimeout`.
+
+A spawning tile is `animation: … var(--g2048-slide) backwards`. The `backwards` fill is
+what removes the second timer: the tile is in the DOM immediately and holds its opening
+frame through the delay, so it cannot land early on a slow frame.
+
+Two easing curves, and the split matters. ⚠️ **`--g2048-glide` must not overshoot.** The
+board is a grid of hard edges, and a tile whose position sails past its column and comes
+back reads as one passing through the wall rather than stopping at it, so the slide is a
+hard ease-out. Scale has no wall to hit, so `--g2048-spring` overshoots and the pop and the
+arrival are where the life in the board comes from.
+
+**A move that arrives mid-slide is held, not run.** Cutting the previous slide short to
+serve the new direction makes a fast player's tiles jump, which is the opposite of what
+they were asking for. One move is queued and played the moment the board settles - one
+deep, because a longer queue stops answering the keyboard and starts replaying it.
+
+### The colour ramp
+
+⚠️ **This and the technology marks in [src/tech.ts](../src/tech.ts) are the only colour on
+the site outside the accent**, and unlike everything else in this document it is not a
+decision about taste. Eleven values have to be told apart at a glance and at speed, and a
+near-monochrome board makes that impossible.
+
+`--g2048-t1` to `--g2048-t12` are declared on `:root` and redefined in `.dark`, one step
+per doubling. It is a single sequence rather than eleven picked colours: paper and sand for
+the two smallest, then the site's own `--site-accent` at 16, then indigo, violet, magenta,
+rose, coral and amber. Hue and heat both move one way, so bigger always looks hotter and
+the board reads without reading a number on it. Every chromatic step carries white at
+3.5:1 or better, which is the large-bold threshold and what these are; the two pale steps
+and the 2048 itself take the ink instead.
+
+The tier is `min(12, log2(value))`, written to `data-tier` by the module, so a long game
+tops out on the ramp rather than running off the end of it.
+
+The colours hang off `.g2048-tier` rather than off `.g2048-tile`, because the board is not
+the only thing wearing them: the thumbnail on the games index is a still of a board -
+markup and tokens, not an image - so it stays sharp at any size, costs nothing to serve,
+and answers the theme toggle. See [Art2048.astro](../src/components/games/Art2048.astro).
+Its five-by-two grid against a 5:2 box is the one pairing that keeps the cells square
+however wide the card gets.
+
+### Numbers are sized off the board, not the viewport
+
+`.g2048-board` is a `container-type: inline-size` container and the digits are in `cqi`,
+stepped down by `data-digits` so a 2 and a 1024 both fill their tile. A `vw` clamp cannot
+do this: the board stops growing at its 36rem cap and the numbers would carry on.
+
+---
+
+## 10. Open items
 
 | # | Item | Severity |
 |---|---|---|
@@ -690,6 +776,11 @@ open item 1.
 
 ## Changelog
 
+- 2026-09-11 - the site has a game, and with it a colour ramp: `--g2048-t1` to
+  `--g2048-t12` on `:root` and `.dark`, which is the second exception to the
+  near-monochrome palette after the technology marks. The board itself adds no dependency -
+  a tile is an element with two custom properties and the move is a `transform` transition.
+  §9 records the two decisions worth knowing.
 - 2026-09-09 - the request diagram **assembles itself as it crosses the screen**: inline SVG
   built from data at the full 72rem measure, drawn straight onto the band with no plate
   under it, scrubbed against a `view()` timeline with no script at all. Three tiers of card,

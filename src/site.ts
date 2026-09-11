@@ -18,6 +18,7 @@ type RoleId = keyof Dict["experience"]["roles"];
 type DegreeId = keyof Dict["education"]["degrees"];
 type ProjectId = keyof Dict["projects"]["items"];
 type StackGroupId = keyof Dict["projects"]["stackGroups"];
+type GameId = keyof Dict["games"]["items"];
 
 interface SkillGroup {
   id: SkillGroupId;
@@ -291,6 +292,46 @@ const projects: Project[] = [
   },
 ];
 
+/**
+ * One browser game, at /games/<slug>/.
+ *
+ * No date, unlike a project. A project page is a record of work and the year
+ * is part of the claim, while a game is either fun to play now or it is not -
+ * stamping it with a year only invites the reader to wonder whether it is
+ * stale.
+ */
+export interface Game {
+  /** Last path segment under /games/. */
+  slug: string;
+  /**
+   * The title. It reads the same in every language, so it is a fact and the
+   * dictionaries carry only the prose around it - which is what lets a game's
+   * page title be composed rather than written out four times.
+   */
+  name: string;
+}
+
+/**
+ * The games, keyed by the id that joins each to `games.items` in the
+ * dictionaries.
+ *
+ * A Record and not a list, unlike `projects`, because the two are reached
+ * differently. Every project goes through one shared component, so the list is
+ * iterated and an entry is never named. A game has its own implementation and
+ * its own route pair, so its page names it - `site.games.twentyFortyEight` -
+ * and a lookup by slug would only be a way of losing the type.
+ *
+ * The index iterates it, and declaration order is display order: string keys
+ * enumerate in insertion order, so putting a new game first here puts it first
+ * on the page.
+ */
+const games: Record<GameId, Game> = {
+  twentyFortyEight: {
+    slug: "2048",
+    name: "2048",
+  },
+};
+
 export const site = {
   name: "Vuk Cvetković",
   domain: "vukcvetkovic.com",
@@ -310,6 +351,7 @@ export const site = {
   experience,
   education,
   projects,
+  games,
 };
 
 /** Autonyms — shown in their own language in every locale, so never translated. */

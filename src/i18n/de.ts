@@ -27,6 +27,7 @@ const de: Dict = {
     projects: 'Projekte',
     services: 'Leistungen',
     contact: 'Kontakt',
+    games: 'Spiele',
     themeToggle: 'Design wechseln',
     language: 'Sprache',
   },
@@ -541,6 +542,86 @@ const de: Dict = {
           'Die Lektion, die geblieben ist: offene Daten sind nicht dasselbe wie nutzbare Daten. Fünf Endpunkte, die sich über Ids gegenseitig referenzieren, ein landesweiter Maßstab und keine Möglichkeit, eine geografische Frage zu stellen - der Wert liegt vollständig im Spiegeln und im Verknüpfen. Zu entscheiden, was kopiert wird, wie oft, und wie zweimaliges Kopieren harmlos bleibt, da lag die eigentliche Ingenieursarbeit.',
           'Die andere Hälfte ist, dass die Antwort ankommen muss, ohne erfragt zu werden. Wer eine Allergie hat, öffnet keine App zum Nachsehen - er will es gesagt bekommen, in einem Radius und Intervall, das einmal eingestellt wird. Push-Nachrichten auf einem geplant arbeitenden Backend sind das, was einen öffentlichen Datensatz in etwas verwandelt, das eine Person an dem Tag erreicht, an dem es zählt.',
         ],
+      },
+    },
+  },
+
+  games: {
+    label: 'Spiele',
+
+    index: {
+      metaTitle: 'Spiele - Vuk Cvetković',
+      metaDescription:
+        'Browserspiele von Vuk Cvetković, als Markup und CSS gebaut statt als Canvas. Jedes bekommt eine eigene Seite.',
+      heading: 'Spiele',
+      intro:
+        'Dinge, die es wert waren, gebaut zu werden. Sie laufen im Browser ohne Installation, und jedes hat eine Seite dazu, wie es darunter funktioniert.',
+    },
+
+    items: {
+      twentyFortyEight: {
+        /** One line, for the card on the index. */
+        tagline:
+          'Das Kachelspiel, aus Elementen gebaut statt gezeichnet, damit die Zahlen scharf bleiben und das Brett dem Thema folgt.',
+
+        metaDescription:
+          "Das Kachelspiel, als Markup gebaut statt als Canvas. Das Brett schieben, gleiche Zahlen verschmelzen, und eine einzelne Kachel mit 2048 erreichen.",
+        lead: "Schiebe das Brett in eine beliebige Richtung und jede Kachel rutscht so weit sie kann. Zwei gleiche Zahlen verschmelzen zu einer doppelten, und das Ziel ist eine einzelne Kachel mit 2048. Aus Elementen gebaut statt gezeichnet, deshalb bleiben die Zahlen in jeder Größe scharf und das Brett folgt dem Thema.",
+
+        score: "Punkte",
+        best: "Bestwert",
+        highest: "Größte Kachel",
+        newGame: "Neues Spiel",
+        undo: "Rückgängig",
+        hint: "Pfeiltasten oder WASD, am Telefon wischen.",
+
+        won: {
+          title: "2048",
+          body: "Die Kachel liegt auf dem Brett. Hier muss aber nicht Schluss sein - das Spiel läuft, solange sich etwas bewegen lässt.",
+          keepGoing: "Weiterspielen",
+        },
+
+        over: {
+          title: "Kein Zug mehr",
+          body: "Das Brett ist voll und nichts passt zu seinem Nachbarn. Ein Schritt zurück steht noch offen, falls der letzte Zug den Ausschlag gegeben hat.",
+          restart: "Nochmal spielen",
+        },
+
+        how: {
+          label: "So wird gespielt",
+          items: [
+            {
+              title: "Du schiebst das ganze Brett",
+              description:
+                "Pfeiltasten oder WASD auf der Tastatur, am Telefon ein Wisch in eine beliebige Richtung. Jede Kachel legt in einem Zug die ganze mögliche Strecke zurück, nicht ein Feld.",
+            },
+            {
+              title: "Gleiche Zahlen verschmelzen",
+              description:
+                "Zwei Kacheln mit derselben Zahl werden zu einer doppelten. Eine gerade verschmolzene Kachel ist für diesen Zug fertig, eine Reihe aus vier 2en ergibt also zwei 4en und keine 8.",
+            },
+            {
+              title: "Nach jedem Zug eine neue Kachel",
+              description:
+                "Sie erscheint auf einem freien Feld und ist in neun von zehn Fällen eine 2. Ein Schub, der nichts verändert, ist kein Zug: es kommt nichts dazu, und ein Versuch kostet nichts.",
+            },
+            {
+              title: "Nimm eine Ecke und bleib dort",
+              description:
+                "Halte die größte Kachel in einer Ecke und schiebe nie von ihr weg. Der größere Teil des Spiels besteht darin, den Zug abzulehnen, der sie herausholt.",
+            },
+          ],
+        },
+
+        close: {
+          label: "Wie es gebaut ist",
+          paragraphs: [
+            "Kein Canvas und keine Spielbibliothek. Eine Kachel ist ein Element mit zwei benutzerdefinierten Eigenschaften, ihre Position ist ein Translate gegen ihre eigene Größe, und das Gleiten setzt der Browser zusammen. Daher kommt die Weichheit: ein Zug ändert eine Transformation und sonst nichts, kein Teil davon läuft durch das Layout.",
+            "Die andere Hälfte ist, dass jede Kachel ihr Element behält, solange es sie gibt. Das Brett wird nie aus dem Zustand neu gezeichnet - ein Zug aktualisiert Zahlen auf Knoten, die schon da sind, und deshalb legt eine Kachel den Weg sichtbar zurück, statt zu verschwinden und anderswo wieder aufzutauchen.",
+            "Die Zahlen sind Text, also so scharf wie der Rest der Seite und in der Größe, die der Leser eingestellt hat. Die Farben sind Tokens im selben Stylesheet wie alles andere, und deshalb antwortet das Brett auf den Themenschalter im Kopf.",
+            "Die Eingabe läuft aus drei Richtungen durch eine einzige Funktion, damit Taste, Wisch und Tipp nicht anfangen, leicht Verschiedenes zu bedeuten. Die Pfeiltasten gehören dem Brett nur, solange es im Bild ist, und ein Zug, der vor der Landung des vorigen kommt, wird gehalten statt verworfen - deshalb kostet schnelles Spielen nie einen Zug.",
+          ],
+        },
       },
     },
   },

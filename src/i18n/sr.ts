@@ -27,6 +27,7 @@ const sr: Dict = {
     projects: "Projekti",
     services: "Usluge",
     contact: "Kontakt",
+    games: "Igre",
     themeToggle: "Promeni temu",
     language: "Jezik",
   },
@@ -538,6 +539,86 @@ const sr: Dict = {
           "Lekcija koja je ostala je da otvoreni podaci nisu isto što i upotrebljivi podaci. Pet endpointa koji se pozivaju jedan na drugi preko id-jeva, razmera na nivou države i nikakav način da se postavi geografsko pitanje znače da je vrednost u potpunosti u preslikavanju i spajanju. Odluka šta kopirati, koliko često, i kako kopiranje dva puta učiniti bezopasnim je mesto gde je inženjerski posao zaista bio.",
           "Druga polovina je to da odgovor mora da dođe a da se ne traži. Čovek sa alergijom ne otvara aplikaciju da proveri - želi da mu se kaže, u radijusu i intervalu koje postavi jednom. Push notifikacije nad backendom koji radi po rasporedu su ono što javni skup podataka pretvara u nešto što stigne do čoveka onog dana kada mu treba.",
         ],
+      },
+    },
+  },
+
+  games: {
+    label: "Igre",
+
+    index: {
+      metaTitle: "Igre - Vuk Cvetković",
+      metaDescription:
+        "Igre u pretraživaču Vuka Cvetkovića, napravljene kao markup i CSS a ne kao canvas. Svaka dobija svoju stranicu.",
+      heading: "Igre",
+      intro:
+        "Stvari napravljene zato što je vredelo. Rade u pretraživaču bez ijedne instalacije, i svaka ima stranicu o tome kako radi ispod.",
+    },
+
+    items: {
+      twentyFortyEight: {
+        /** One line, for the card on the index. */
+        tagline:
+          "Igra sa pločicama, napravljena od elemenata a ne od crteža, pa brojevi ostaju oštri a tabla prati temu.",
+
+        metaDescription:
+          "Igra sa pločicama, napravljena kao markup a ne kao canvas. Gurni tablu, spoji iste brojeve, i stigni do jedne pločice od 2048.",
+        lead: "Gurni tablu u bilo kom smeru i svaka pločica klizi dokle može. Dve iste se spajaju u jednu dvostruku, a cilj je jedna pločica od 2048. Napravljeno od elemenata a ne od crteža, pa brojevi ostaju oštri na svakoj veličini i tabla prati temu.",
+
+        score: "Rezultat",
+        best: "Najbolje",
+        highest: "Najveća pločica",
+        newGame: "Nova igra",
+        undo: "Poništi",
+        hint: "Strelice ili WASD, a na telefonu prevlačenje.",
+
+        won: {
+          title: "2048",
+          body: "Pločica je na tabli. Ne mora tu da se stane - igra traje dok ima šta da se pomeri.",
+          keepGoing: "Nastavi",
+        },
+
+        over: {
+          title: "Nema više poteza",
+          body: "Tabla je puna i ništa se ni sa čim ne poklapa. Jedan korak unazad i dalje stoji ako je poslednji potez bio taj koji je odlučio.",
+          restart: "Igraj ponovo",
+        },
+
+        how: {
+          label: "Kako se igra",
+          items: [
+            {
+              title: "Guraš celu tablu",
+              description:
+                "Strelice ili WASD na tastaturi, prevlačenje u bilo kom smeru na telefonu. Svaka pločica u jednom potezu putuje dokle god može, a ne jedno polje.",
+            },
+            {
+              title: "Isti brojevi se spajaju",
+              description:
+                "Dve pločice sa istim brojem postaju jedna dvostruka. Pločica koja se upravo spojila je gotova za taj potez, pa red od četiri dvojke daje dve četvorke a ne jednu osmicu.",
+            },
+            {
+              title: "Nova pločica posle svakog poteza",
+              description:
+                "Pojavi se na slobodnom polju i u devet od deset slučajeva je dvojka. Guranje koje ništa ne promeni nije potez, pa se ništa novo ne pojavljuje i ništa se ne gubi ako probaš.",
+            },
+            {
+              title: "Izaberi ugao i ostani u njemu",
+              description:
+                "Drži najveću pločicu u jednom uglu i nikad ne guraj od njega. Veći deo igre je odbijanje poteza koji je odatle diže.",
+            },
+          ],
+        },
+
+        close: {
+          label: "Kako je napravljeno",
+          paragraphs: [
+            "Nema canvasa ni biblioteke za igre. Pločica je element sa dve custom property vrednosti, njena pozicija je translate izračunat u odnosu na njenu sopstvenu veličinu, a klizanje kompozituje pretraživač. Odatle dolazi glatkoća: potez menja transform i ništa drugo, pa nijedan njegov deo ne prolazi kroz layout.",
+            "Druga polovina je to da svaka pločica zadržava svoj element dok postoji. Tabla se nikad ne iscrtava iz stanja - potez ažurira brojeve na čvorovima koji su već tu, i zato pločica vidljivo putuje odakle je bila umesto da nestane i pojavi se na drugom mestu.",
+            "Brojevi su tekst, pa su oštri kao i ostatak stranice i skaliraju se sa veličinom koju je čitalac podesio. Boje su tokeni u istom stilu kao i sve drugo, i zato tabla odgovara na prekidač teme u zaglavlju.",
+            "Unos ide kroz jednu funkciju sa tri mesta, pa taster, prevlačenje i dodir ne mogu da počnu da znače malo različite stvari. Strelice pripadaju tabli samo dok je tabla na ekranu, a potez gurnut pre nego što je prethodni sleteo se zadržava umesto da se odbaci - i zato brzo igranje nikad ne košta potez.",
+          ],
+        },
       },
     },
   },

@@ -26,6 +26,7 @@ const en = {
     projects: "Projects",
     services: "Services",
     contact: "Contact",
+    games: "Games",
     themeToggle: "Toggle dark theme",
     language: "Language",
   },
@@ -583,6 +584,99 @@ const en = {
           "The lesson that carried was that open data is not the same as usable data. Five endpoints that reference each other by id, a national scale, and no way to ask a geographic question means the value is entirely in the mirroring and the joining. Deciding what to copy, how often, and how to make copying it twice harmless is where the engineering actually was.",
           "The other half is that the answer has to arrive without being asked for. Someone with an allergy does not open an app to check - they want to be told, at a radius and an interval they set once. Push notifications on top of a scheduled backend are what turn a public dataset into something that reaches a person on the day it matters.",
         ],
+      },
+    },
+  },
+
+  /*
+   * The games, at /games/ and one page per game.
+   *
+   * Same three layers as `projects`: the index, and an `items` map keyed by
+   * the id in src/site.ts. A game's name and slug are not here - "2048" is
+   * four characters in every language, so they are facts.
+   *
+   * ⚠️ Unlike a project, a game is not rendered by one shared component. Each
+   * has its own implementation and its own route pair, so `items` only has to
+   * carry the copy around a board, and two games are free to need different
+   * keys. Read docs/content-and-i18n.md before adding one.
+   */
+  games: {
+    label: "Games",
+
+    index: {
+      metaTitle: "Games - Vuk Cvetković",
+      metaDescription:
+        "Browser games by Vuk Cvetković, built as markup and CSS rather than as a canvas. Each one gets a page of its own.",
+      heading: "Games",
+      intro:
+        "Things built because they were worth building. They run in the browser with nothing installed, and each one has a page on how it works underneath.",
+    },
+
+    items: {
+      twentyFortyEight: {
+        /** One line, for the card on the index. */
+        tagline:
+          "The tile game, built as elements rather than a drawing, so the numbers stay sharp and the board follows the theme.",
+
+        metaDescription:
+          "The tile game, built as markup rather than as a canvas. Slide the board, merge matching numbers, and get to a single tile worth 2048.",
+        lead: "Push the board in any direction and every tile slides as far as it can. Two of the same number merge into one worth double, and the aim is a single tile worth 2048. Built as elements rather than as a drawing, so the numbers stay sharp at any size and the board follows the theme.",
+
+        score: "Score",
+        best: "Best",
+        /** Only ever read out, in the live region that stands in for the board. */
+        highest: "Highest tile",
+        newGame: "New game",
+        undo: "Undo",
+        hint: "Arrow keys or WASD, and a swipe on a phone.",
+
+        won: {
+          title: "2048",
+          body: "The tile is on the board. It does not have to stop here, though - the game runs until nothing can move.",
+          keepGoing: "Keep going",
+        },
+
+        over: {
+          title: "No moves left",
+          body: "The board is full and nothing beside anything matches. One step back is still there if the last move was the one that did it.",
+          restart: "Play again",
+        },
+
+        how: {
+          label: "How to play",
+          items: [
+            {
+              title: "Push the whole board",
+              description:
+                "Arrow keys or WASD on a keyboard, a swipe in any direction on a phone. Every tile travels as far as it can in one move, not one square.",
+            },
+            {
+              title: "Equal numbers merge",
+              description:
+                "Two tiles carrying the same number become one worth double. A tile that has just merged is finished for that move, so a row of four 2s gives you two 4s rather than one 8.",
+            },
+            {
+              title: "A new tile every move",
+              description:
+                "It arrives in a free cell and it is a 2 nine times out of ten. A push that changes nothing is not a move, so nothing new appears and nothing is lost by trying one.",
+            },
+            {
+              title: "Pick a corner and stay there",
+              description:
+                "Keep the largest tile in one corner and never push away from it. Most of the game is refusing the move that lifts it out.",
+            },
+          ],
+        },
+
+        close: {
+          label: "How it is built",
+          paragraphs: [
+            "No canvas and no game library. A tile is an element with two custom properties on it, its position is a translate resolved against its own size, and the browser composites the slide. That is where the smoothness comes from: a move changes a transform and nothing else, so no part of it goes through layout.",
+            "Keeping every tile's element for the life of that tile is the other half. The board is never re-rendered from the state - a move updates the numbers on nodes that are already there, which is why a tile visibly travels from where it was instead of disappearing and reappearing somewhere else.",
+            "The numbers are text, so they are as sharp as the rest of the page and they scale with whatever size the reader has set. The colours are tokens in the same stylesheet as everything else, which is why the board answers the theme toggle in the header.",
+            "Input runs through one function from three places, so a key, a swipe and a tap cannot drift into meaning slightly different things. The arrow keys belong to the board only while the board is on screen, and a move pushed before the last one has landed is held rather than dropped - which is why pushing quickly never costs you a turn.",
+          ],
+        },
       },
     },
   },

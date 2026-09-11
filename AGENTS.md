@@ -76,10 +76,14 @@ not need the map to change a dictionary, add a project, or touch the stylesheet.
   [src/styles/global.css](./src/styles/global.css). A raw hex in a component is a bug -
   the only two in the codebase are the `theme-color` meta tags, and they are a known
   duplication.
-- **The site ships no JavaScript file.** Four inline blocks, about 1.7 KB in total, cover
-  the pre-paint theme script, the theme toggle, disclosure dismissal and the
+- **Every page but one ships no JavaScript file.** Four inline blocks, about 1.7 KB in
+  total, cover the pre-paint theme script, the theme toggle, disclosure dismissal and the
   active-section indicator. Anything new should be CSS first. If it genuinely
   needs script, ask before adding it.
+- **The exception is [/games/2048/](./src/games/2048/game.ts)**, which is a game and
+  therefore cannot be. It is 2.4 KB gz on its own route and no other page requests it.
+  That budget is the game's, not a precedent - it does not make a script cheaper anywhere
+  else.
 - Reach for an existing component before writing a new one. Sections go through
   [Section.astro](./src/components/Section.astro), which owns the widths and the three
   head shapes.

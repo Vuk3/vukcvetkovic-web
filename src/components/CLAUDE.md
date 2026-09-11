@@ -3,11 +3,17 @@
 Every component here is an `.astro` file with no framework runtime behind it. Design
 reference: **[docs/design-system.md](../../docs/design-system.md)**.
 
-## The site ships no JavaScript file
+## Every page but one ships no JavaScript file
 
 Three woff2 faces and five webp variants, and no CSS file either: the stylesheet is inlined
 into every document. The four `<script>` blocks that exist are small enough that Astro
 inlines them into each page too - 1.7 KB total, no extra request.
+
+⚠️ **The exception is [Game2048.astro](./Game2048.astro)**, whose script imports
+[src/games/2048/game.ts](../games/2048/game.ts) and is therefore emitted as a real file:
+2.4 KB gz, requested only by `/games/2048/` and its three locale twins. A game cannot be
+CSS. Nothing else here gets to cite it - the rules below are unchanged for every other
+component.
 
 - **Reach for CSS first.** The language switcher and the mobile menu are native `<details>`
   elements. The header's scroll behaviour is a `scroll(root)` timeline. The section reveals
@@ -69,11 +75,13 @@ changing it.
 - **A page's body lives in one shared component** so the unprefixed route and its `[lang]`
   twin cannot drift - [Home.astro](./Home.astro),
   [NotFound.astro](./NotFound.astro), [ProjectIndex.astro](./ProjectIndex.astro),
-  [ProjectDetail.astro](./ProjectDetail.astro). See
+  [ProjectDetail.astro](./ProjectDetail.astro), [Game2048.astro](./Game2048.astro). See
   [src/CLAUDE.md](../CLAUDE.md).
 - **No raw hex.** Colour comes from the `--site-*` tokens or the Tailwind utilities mapped
-  to them (`text-muted`, `bg-band`, `border-hairline`). Brand colours for technology marks
-  are the exception and they live in [src/tech.ts](../tech.ts).
+  to them (`text-muted`, `bg-band`, `border-hairline`). Two exceptions, both declared away
+  from the components that use them: brand colours for technology marks in
+  [src/tech.ts](../tech.ts), and the 2048 ramp as `--g2048-*` tokens in
+  [global.css](../styles/global.css).
 - **Tailwind utilities for one-off layout, a named class in
   [global.css](../styles/global.css) for anything that repeats or carries reasoning.** A
   clamp with a comment explaining how the number was arrived at belongs in the stylesheet.

@@ -1,0 +1,32 @@
+---
+import Game2048 from '../../../components/Game2048.astro';
+import { defaultLocale } from '../../../i18n/types';
+import { getDict } from '../../../i18n/utils';
+import Base from '../../../layouts/Base.astro';
+import { site } from '../../../site';
+
+/*
+ * 2048, in the unprefixed default locale. `/sr/games/2048/` and the other two
+ * come from [lang]/games/2048/index.astro.
+ *
+ * An index route, so `build.format: 'preserve'` writes it to
+ * games/2048/index.html and the URL keeps its trailing slash like every other
+ * page here.
+ *
+ * ⚠️ A route pair per game, deliberately, rather than one `games/[slug]` pair
+ * the way the projects work. A project page is one component rendering
+ * whichever project the route resolved. A game is its own program with its own
+ * markup and its own bundle, and a `[slug]` route choosing a component from a
+ * map would put every game's script into every game's page.
+ */
+const lang = defaultLocale;
+const dict = getDict(lang);
+
+// Two facts joined, rather than a fifth copy of the game's name in each
+// dictionary. 2048 is 2048 in all four languages.
+const title = `${site.games.twentyFortyEight.name} - ${site.name}`;
+---
+
+<Base lang={lang} title={title} description={dict.games.items.twentyFortyEight.metaDescription}>
+  <Game2048 lang={lang} />
+</Base>
