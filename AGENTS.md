@@ -29,7 +29,7 @@ not need the map to change a dictionary, add a project, or touch the stylesheet.
 ## Working rules
 
 - **`npm run check` is the only gate this project has.** There is no test runner and no
-  linter - nothing to run but `astro check`, which reports 0 errors across 40 files. Do
+  linter - nothing to run but `astro check`, which reports 0 errors across 57 files. Do
   not add Vitest, ESLint or Prettier without asking.
 - **`npm run build` runs `astro check` first**, so a failed build is usually a type error
   rather than a build error. Read the first failure, not the last line.
@@ -76,13 +76,14 @@ not need the map to change a dictionary, add a project, or touch the stylesheet.
   [src/styles/global.css](./src/styles/global.css). A raw hex in a component is a bug -
   the only two in the codebase are the `theme-color` meta tags, and they are a known
   duplication.
-- **Every page but one ships no JavaScript file.** Four inline blocks, about 1.7 KB in
+- **Every page but the two games ships no JavaScript file.** Four inline blocks, about 1.7 KB in
   total, cover the pre-paint theme script, the theme toggle, disclosure dismissal and the
   active-section indicator. Anything new should be CSS first. If it genuinely
   needs script, ask before adding it.
-- **The exception is [/games/2048/](./src/games/2048/game.ts)**, which is a game and
-  therefore cannot be. It is 2.7 KB gz on its own route and no other page requests it.
-  That budget is the game's, not a precedent - it does not make a script cheaper anywhere
+- **The exceptions are the two games**, [/games/2048/](./src/games/2048/game.ts) and
+  [/games/minesweeper/](./src/games/minesweeper/game.ts), which cannot be. They are 2.4 KB
+  and 3.2 KB gz, each on its own route, plus a shared 0.4 KB chunk for the stored record.
+  That budget is the games', not a precedent - it does not make a script cheaper anywhere
   else.
 - Reach for an existing component before writing a new one. Sections go through
   [Section.astro](./src/components/Section.astro), which owns the widths and the three

@@ -614,6 +614,15 @@ const en = {
 
     items: {
       twentyFortyEight: {
+        /**
+         * The title, in the page head, the card and the browser tab.
+         *
+         * Here rather than in site.ts, even though this one is the same in four
+         * languages: the next one is not, and a rule with an exception in it is
+         * not a rule. See the note on `Game` in src/site.ts.
+         */
+        name: "2048",
+
         /** One line, for the card on the index. */
         tagline:
           "The tile game, built as elements rather than a drawing, so the numbers stay sharp and the board follows the theme.",
@@ -675,6 +684,91 @@ const en = {
             "Keeping every tile's element for the life of that tile is the other half. The board is never re-rendered from the state - a move updates the numbers on nodes that are already there, which is why a tile visibly travels from where it was instead of disappearing and reappearing somewhere else.",
             "The numbers are text, so they are as sharp as the rest of the page and they scale with whatever size the reader has set. The colours are tokens in the same stylesheet as everything else, which is why the board answers the theme toggle in the header.",
             "Input runs through one function from three places, so a key, a swipe and a tap cannot drift into meaning slightly different things. The arrow keys belong to the board only while the board is on screen, and a move pushed before the last one has landed is held rather than dropped - which is why pushing quickly never costs you a turn.",
+          ],
+        },
+      },
+
+      minesweeper: {
+        name: "Minesweeper",
+
+        tagline:
+          "The minefield, on all three of the original boards. Every cell is a real button, so the whole game plays from the keyboard.",
+
+        metaDescription:
+          "Minesweeper in the browser, on the beginner, intermediate and expert boards. Built as markup rather than as a canvas, and playable from the keyboard.",
+        lead: "Open every cell that is not a mine. A number says how many of the eight cells around it are mined, and everything else is worked out from there. Three boards, the sizes the original shipped with, and a first click that can never lose.",
+
+        boards: "Board",
+        levels: {
+          beginner: "Beginner",
+          intermediate: "Intermediate",
+          expert: "Expert",
+        },
+
+        mines: "Mines",
+        time: "Time",
+        best: "Best",
+        newGame: "New game",
+        flagMode: "Flag mode",
+        hint: "Press to open, right click or F to flag, a long press on a phone. A finished number opens the rest of its ring on a press or the middle button.",
+
+        /** The board itself, and the five words a screen reader reads off it.
+         *  A revealed number needs none of them - the digit is real text. */
+        gridLabel: "Minefield",
+        cells: {
+          hidden: "Hidden",
+          flagged: "Flagged",
+          mine: "Mine",
+          empty: "Empty",
+          wrong: "Wrong flag",
+        },
+
+        won: {
+          title: "Cleared",
+          body: "Every cell that was not a mine is open.",
+          record: "A new best for this board.",
+          again: "Play again",
+        },
+
+        lost: {
+          title: "Mine",
+          body: "The field is shown as it was. A flag on a clear cell is marked, which is usually where the reasoning went.",
+          again: "Try again",
+        },
+
+        how: {
+          label: "How to play",
+          items: [
+            {
+              title: "The first click is safe",
+              description:
+                "The mines are laid after it, around wherever you pressed, so the opening move cannot lose and always breaks into open ground. Start anywhere.",
+            },
+            {
+              title: "A number counts its neighbours",
+              description:
+                "It is how many of the eight cells touching it hold a mine. A cell with nothing near it opens the whole region around it in one press.",
+            },
+            {
+              title: "Flag what you have worked out",
+              description:
+                "Right click on a desktop, F on a keyboard, a long press on a phone. A long press only ever plants one, so a slow finger cannot take back what it just put down - flag mode is what removes one, and it is what you want for a whole run of them anyway. The counter shows mines less flags.",
+            },
+            {
+              title: "Press a number you have finished",
+              description:
+                "Once a number has as many flags around it as it says, pressing it opens the rest of its ring at once, and so does the middle button. Hold the button down first and the cells it would open go down with it, so you can see the eight before you commit. That is where the speed in this game is, and most players never find it.",
+            },
+          ],
+        },
+
+        close: {
+          label: "How it is built",
+          paragraphs: [
+            "No canvas and no game library, and unlike the other game here no motion either. There is no loop and nothing in flight: a cell is a button, it changes state or it does not, and the whole board is four hundred and eighty of them at the expert size. What it costs to run is a class on an element.",
+            "The mines are laid on the first press rather than at the start, around the cell that was pressed and the eight touching it. A field dealt in advance has to either let the opening move lose, which is a coin toss rather than a game, or deal again until it does not, which quietly bends the odds everywhere else. Laying them late gets an honest field and a first move that always opens into a region.",
+            "Opening a region is a queue rather than a recursion, which a four hundred deep fill on a phone is entitled to refuse, and the queue hands the animation its timing for free: the ring a cell was found on is how far it is from the press, so each one waits that many steps before it opens. The fill arrives as something spreading outward instead of the board changing all at once, and it costs one custom property and a delay.",
+            "The board is a real grid: rows, cells, a row and column count, and one cell in the tab order at a time so the arrow keys walk it rather than the Tab key. That is why this game is here. The other one has to be hidden from a screen reader and described through a live region, because sixteen tiles that rewrite themselves on every keypress cannot be read. A minefield is a table that sits still and waits, which is exactly what a grid is for.",
           ],
         },
       },

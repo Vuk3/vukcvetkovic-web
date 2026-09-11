@@ -557,6 +557,8 @@ const sr: Dict = {
 
     items: {
       twentyFortyEight: {
+        name: "2048",
+
         /** One line, for the card on the index. */
         tagline:
           "Igra sa pločicama, napravljena od elemenata a ne od crteža, pa brojevi ostaju oštri a tabla prati temu.",
@@ -617,6 +619,89 @@ const sr: Dict = {
             "Druga polovina je to da svaka pločica zadržava svoj element dok postoji. Tabla se nikad ne iscrtava iz stanja - potez ažurira brojeve na čvorovima koji su već tu, i zato pločica vidljivo putuje odakle je bila umesto da nestane i pojavi se na drugom mestu.",
             "Brojevi su tekst, pa su oštri kao i ostatak stranice i skaliraju se sa veličinom koju je čitalac podesio. Boje su tokeni u istom stilu kao i sve drugo, i zato tabla odgovara na prekidač teme u zaglavlju.",
             "Unos ide kroz jednu funkciju sa tri mesta, pa taster, prevlačenje i dodir ne mogu da počnu da znače malo različite stvari. Strelice pripadaju tabli samo dok je tabla na ekranu, a potez gurnut pre nego što je prethodni sleteo se zadržava umesto da se odbaci - i zato brzo igranje nikad ne košta potez.",
+          ],
+        },
+      },
+
+      minesweeper: {
+        name: "Minolovac",
+
+        tagline:
+          "Minsko polje, na sve tri originalne table. Svako polje je pravo dugme, pa se cela igra igra i sa tastature.",
+
+        metaDescription:
+          "Minolovac u pretraživaču, na početničkoj, srednjoj i ekspertskoj tabli. Napravljen kao markup a ne kao canvas, i igra se sa tastature.",
+        lead: "Otvori svako polje koje nije mina. Broj kaže koliko od osam polja oko njega ima minu, a sve ostalo se izvodi odatle. Tri table, u veličinama u kojima je original izašao, i prvi klik koji ne može da izgubi.",
+
+        boards: "Tabla",
+        levels: {
+          beginner: "Početnik",
+          intermediate: "Srednje",
+          expert: "Ekspert",
+        },
+
+        mines: "Mine",
+        time: "Vreme",
+        best: "Najbolje",
+        newGame: "Nova igra",
+        flagMode: "Zastavice",
+        hint: "Pritisak otvara, desni klik ili F postavlja zastavicu, na telefonu dug pritisak. Gotov broj otvara ostatak svog kruga na pritisak ili na srednji klik.",
+
+        gridLabel: "Minsko polje",
+        cells: {
+          hidden: "Zatvoreno",
+          flagged: "Zastavica",
+          mine: "Mina",
+          empty: "Prazno",
+          wrong: "Pogrešna zastavica",
+        },
+
+        won: {
+          title: "Očišćeno",
+          body: "Svako polje koje nije bilo mina je otvoreno.",
+          record: "Novi najbolji rezultat za ovu tablu.",
+          again: "Igraj ponovo",
+        },
+
+        lost: {
+          title: "Mina",
+          body: "Polje je prikazano onakvo kakvo je bilo. Zastavica na praznom polju je označena, i tu obično zapne rasuđivanje.",
+          again: "Probaj ponovo",
+        },
+
+        how: {
+          label: "Kako se igra",
+          items: [
+            {
+              title: "Prvi klik je siguran",
+              description:
+                "Mine se postavljaju posle njega, oko mesta koje si pritisnuo, pa prvi potez ne može da izgubi i uvek otvori slobodan prostor. Počni bilo gde.",
+            },
+            {
+              title: "Broj broji svoje susede",
+              description:
+                "To je koliko od osam polja koja ga dodiruju ima minu. Polje bez ijedne mine oko sebe otvara ceo predeo u jednom pritisku.",
+            },
+            {
+              title: "Označi ono što si izveo",
+              description:
+                "Desni klik na računaru, F na tastaturi, dug pritisak na telefonu. Dug pritisak samo postavlja, pa spor prst ne može da skloni ono što je upravo spustio - sklanja se u režimu zastavica, koji ti ionako treba kad ih ide više zaredom. Brojač pokazuje mine manje zastavice.",
+            },
+            {
+              title: "Pritisni broj koji si završio",
+              description:
+                "Kad broj ima oko sebe onoliko zastavica koliko kaže, pritisak na njega otvara ostatak njegovog kruga odjednom, a isto radi i srednji klik. Drži taster i polja koja bi se otvorila utonu zajedno sa njim, pa vidiš tih osam pre nego što se odlučiš. Odatle dolazi brzina u ovoj igri, a većina igrača za to nikad ne sazna.",
+            },
+          ],
+        },
+
+        close: {
+          label: "Kako je napravljeno",
+          paragraphs: [
+            "Nema canvasa ni biblioteke za igre, a za razliku od druge igre ovde nema ni kretanja. Nema petlje i nema ničega u letu: polje je dugme, ono menja stanje ili ne menja, a cela tabla je četiristo osamdeset takvih na ekspertskoj veličini. Ono što košta da radi je klasa na elementu.",
+            "Mine se postavljaju na prvi pritisak a ne na početku, oko polja koje je pritisnuto i osam koja ga dodiruju. Polje podeljeno unapred mora ili da dozvoli da prvi potez izgubi, što je bacanje novčića a ne igra, ili da deli ponovo dok ne prođe, čime se tiho krive šanse svuda drugde. Kasno postavljanje daje pošteno polje i prvi potez koji uvek otvori predeo.",
+            "Otvaranje predela je red a ne rekurzija, koju bi telefon na četiristo nivoa dubine s pravom odbio, a taj red usput besplatno daje animaciji njen tajming: krug u kome je polje pronađeno jeste koliko je daleko od pritiska, pa svako čeka toliko koraka pre nego što se otvori. Otvaranje stiže kao nešto što se širi spolja umesto kao tabla koja se promeni odjednom, a košta jednu custom property vrednost i kašnjenje.",
+            "Tabla je prava mreža: redovi, polja, broj redova i kolona, i jedno polje u redosledu tabulatora da bi je strelice obilazile umesto tastera Tab. Zbog toga je ova igra ovde. Druga mora da bude sakrivena od čitača ekrana i opisana kroz live region, jer šesnaest pločica koje se prepisuju na svaki pritisak ne mogu da se pročitaju. Minsko polje je tabela koja miruje i čeka, a mreža postoji tačno zbog toga.",
           ],
         },
       },

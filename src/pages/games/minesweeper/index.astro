@@ -1,0 +1,25 @@
+---
+import Minesweeper from '../../../components/Minesweeper.astro';
+import { defaultLocale } from '../../../i18n/types';
+import { getDict } from '../../../i18n/utils';
+import Base from '../../../layouts/Base.astro';
+import { site } from '../../../site';
+
+/*
+ * Minesweeper, in the unprefixed default locale. `/sr/games/minesweeper/` and
+ * the other two come from [lang]/games/minesweeper/index.astro.
+ *
+ * ⚠️ A route pair per game, deliberately, rather than one `games/[slug]` pair
+ * the way the projects work. A game is its own program with its own markup and
+ * its own bundle, and a `[slug]` route choosing a component from a map would
+ * put every game's script into every game's page.
+ */
+const lang = defaultLocale;
+const dict = getDict(lang);
+
+const title = `${dict.games.items.minesweeper.name} - ${site.name}`;
+---
+
+<Base lang={lang} title={title} description={dict.games.items.minesweeper.metaDescription}>
+  <Minesweeper lang={lang} />
+</Base>

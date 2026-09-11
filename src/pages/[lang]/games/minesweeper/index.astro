@@ -1,5 +1,5 @@
 ---
-import Game2048 from '../../../../components/Game2048.astro';
+import Minesweeper from '../../../../components/Minesweeper.astro';
 import { prefixedLocales } from '../../../../i18n/types';
 import { getDict, resolveLang } from '../../../../i18n/utils';
 import Base from '../../../../layouts/Base.astro';
@@ -12,9 +12,9 @@ export function getStaticPaths() {
 const lang = resolveLang(Astro.params.lang);
 const dict = getDict(lang);
 
-const title = `${dict.games.items.twentyFortyEight.name} - ${site.name}`;
+const title = `${dict.games.items.minesweeper.name} - ${site.name}`;
 ---
 
-<Base lang={lang} title={title} description={dict.games.items.twentyFortyEight.metaDescription}>
-  <Game2048 lang={lang} />
+<Base lang={lang} title={title} description={dict.games.items.minesweeper.metaDescription}>
+  <Minesweeper lang={lang} />
 </Base>

@@ -81,7 +81,8 @@
   /*
    * The 2048 ramp.
    *
-   * ⚠️ This and the technology marks in src/tech.ts are the only colour on the
+   * ⚠️ This, the minefield below and the technology marks in src/tech.ts are
+   * the only colour on the
    * site outside the accent, and unlike the rest of the page it is not a
    * decision about taste: eleven values have to be told apart at a glance and
    * at speed, and a near-monochrome board makes that impossible. The ramp is
@@ -125,6 +126,42 @@
   --g2048-t10: #db3e28;
   --g2048-t11: #efa80e;
   --g2048-t12: #14161a;
+
+  /*
+   * Minesweeper, and the same argument as the ramp above rather than a second
+   * indulgence: eight numbers have to be told apart at a glance, in a cell the
+   * size of a fingertip, while the eye is somewhere else on the board.
+   *
+   * ⚠️ **These are not the original's colours and must not be.** That palette
+   * is blue, green, red, navy, maroon, teal, black, grey, and two of those
+   * pairs collapse at this size - navy against blue, and black against grey on
+   * a light ground. The order of the sequence is kept, because a player who
+   * has met this game before reads 1 as blue and 3 as red and should not have
+   * to relearn it, but navy becomes violet and the last two are separated by
+   * weight of colour rather than by hue.
+   *
+   * A covered cell lifts and an open one is flat, which is the whole of the
+   * board's depth. The original drew bevels, which is a picture of a button
+   * from a system that no longer exists.
+   */
+  --ms-tray: #cfcbc0;
+  --ms-cell: #e9e6de;
+  --ms-cell-hover: #f4f2ed;
+  --ms-open: #ddd8ce;
+
+  --ms-flag: #c8202b;
+  --ms-mine: #14161a;
+  --ms-boom: #cf2130;
+  --ms-wrong: #8a8f98;
+
+  --ms-n1: #1c62d6;
+  --ms-n2: #18803a;
+  --ms-n3: #cf2130;
+  --ms-n4: #5b2bc4;
+  --ms-n5: #a8442a;
+  --ms-n6: #0d7b86;
+  --ms-n7: #14161a;
+  --ms-n8: #6b7280;
 }
 
 .dark {
@@ -199,6 +236,37 @@
   --g2048-t10: #ec5238;
   --g2048-t11: #f7b622;
   --g2048-t12: #07090c;
+
+  /*
+   * The minefield on a dark ground.
+   *
+   * The covered cell is the *lighter* of the two here and the open one sinks
+   * towards the tray, which is the reverse of light mode and is the same
+   * inversion `--site-band` makes two blocks up. A covered cell is a thing
+   * resting on the board in both themes, and on a dark page a thing resting on
+   * something catches light rather than casting shadow.
+   *
+   * The eight numbers are lifted rather than re-picked: the same sequence,
+   * bright enough to hold against a dark cell instead of against paper.
+   */
+  --ms-tray: #11161d;
+  --ms-cell: #252d39;
+  --ms-cell-hover: #313a48;
+  --ms-open: #171d26;
+
+  --ms-flag: #ff6b74;
+  --ms-mine: #e8ebf0;
+  --ms-boom: #b41f2b;
+  --ms-wrong: #6c7480;
+
+  --ms-n1: #6fa4ff;
+  --ms-n2: #4fc878;
+  --ms-n3: #ff6b74;
+  --ms-n4: #ab8cff;
+  --ms-n5: #e08a63;
+  --ms-n6: #3fc9d4;
+  --ms-n7: #e8ebf0;
+  --ms-n8: #97a0ac;
 }
 
 /*
@@ -2144,15 +2212,12 @@
   /* ---- The games index ----------------------------------------------- */
 
   /*
-   * Three across, not one big card and a row under it.
-   *
-   * The featured shape was borrowed from the projects section and it was the
-   * wrong loan: a project is a write-up, so the first one earns the extra
-   * room, while a game is a thing you either want to play or you do not, and
-   * one per row is a list pretending to be a showcase.
-   */
-  /*
    * Three across, fixed, and a short row stays short.
+   *
+   * Not one big card with a row under it either. That shape was borrowed from
+   * the projects section and it was the wrong loan: a project is a write-up,
+   * so the first one earns the extra room, while a game is a thing you either
+   * want to play or you do not.
    *
    * `auto-fit` was tried here so that one game would stretch to fill the row
    * rather than sitting in the first third of it, and it is the wrong answer:
@@ -2203,7 +2268,36 @@
     aspect-ratio: 5 / 2;
     margin: calc(-1 * var(--card-pad)) calc(-1 * var(--card-pad)) clamp(1rem, 1.6vw, 1.35rem);
     border-radius: calc(var(--site-radius-card) - 1px) calc(var(--site-radius-card) - 1px) 0 0;
+  }
+
+  /* The tray is the one thing a thumbnail cannot inherit: each game brings its
+     own board colour, and a shared default here would only be whichever game
+     was written first. */
+  .game-art-2048 {
     background-color: var(--g2048-tray);
+  }
+
+  .game-art-ms {
+    background-color: var(--ms-tray);
+  }
+
+  /*
+   * The minefield still, which is the real board's cells at a different size.
+   *
+   * Reusing `.ms-cell` rather than restyling a copy is what keeps the card
+   * honest: the flag and the mine are the same two pseudo-elements, and the
+   * numbers are the same eight tokens, so the thumbnail cannot drift away from
+   * the game it is advertising. Only the three things that are about being a
+   * thumbnail are overridden.
+   */
+  .game-art-ms .ms-cell {
+    width: auto;
+    height: auto;
+    border-radius: 1.4cqi;
+    font-size: 7cqi;
+    /* The board's opening wave has no meaning on a still, and `--d` is not set
+       out here for it to run against anyway. */
+    animation: none;
   }
 
   /*
@@ -2267,6 +2361,443 @@
     text-align: center;
     color: var(--site-muted);
   }
+
+  /* ---- Minesweeper --------------------------------------------------------
+   *
+   * A grid of buttons, and that is the whole renderer. Nothing here moves
+   * except a cell opening, so unlike the 2048 board there is no transition to
+   * tune and no compositor argument to win - what this block has to get right
+   * is that a covered cell reads as something to press and an open one reads
+   * as ground, in both themes, at three board sizes.
+   *
+   * See src/games/minesweeper/game.ts and src/components/Minesweeper.astro.
+   */
+
+  .ms {
+    /* Thin enough that the field reads as one surface rather than as a pile of
+       separate keys, wide enough that a fingertip landing between two cells
+       hits neither instead of the wrong one. */
+    --ms-gap: 3px;
+
+    /* Written from the module at build, so the step the opening wave moves at
+       is one number in one file. What is here is only what applies for the
+       frame before the script runs. */
+    --ms-wave: 14ms;
+  }
+
+  /*
+   * The three boards.
+   *
+   * A fieldset of real radios, so the label is the control: `:has(:checked)`
+   * paints the chosen one and `:has(:focus-visible)` draws the ring the
+   * clipped input cannot draw for itself.
+   */
+  .ms-levels {
+    display: flex;
+    gap: 4px;
+    width: fit-content;
+    margin: 0 auto clamp(0.75rem, 2vw, 1.1rem);
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-pill);
+    background-color: var(--site-inset);
+    padding: 4px;
+  }
+
+  .ms-level {
+    border-radius: var(--site-radius-pill);
+    padding: 0.4rem 0.95rem;
+    font-size: 0.875rem;
+    font-weight: 560;
+    line-height: 1.2;
+    color: var(--site-muted);
+    cursor: pointer;
+    transition:
+      background-color 160ms var(--site-ease),
+      color 160ms var(--site-ease);
+  }
+
+  .ms-level:hover {
+    color: var(--site-fg);
+  }
+
+  .ms-level:has(:checked) {
+    background-color: var(--site-card);
+    box-shadow: var(--site-lift);
+    color: var(--site-fg);
+  }
+
+  .ms-level:has(:focus-visible) {
+    outline: 2px solid var(--site-accent);
+    outline-offset: 2px;
+  }
+
+  .ms-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: clamp(0.75rem, 2vw, 1.1rem);
+  }
+
+  /* Three figures rather than 2048's two, and narrower for it. They are a
+     readout and not the subject: the board is what the eye should land on. */
+  .ms-meter {
+    min-width: 4.75rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius);
+    background-color: var(--site-card);
+    padding: 0.45rem 0.7rem 0.5rem;
+    text-align: center;
+  }
+
+  .ms-meter-label {
+    display: block;
+    font-size: 0.6875rem;
+    line-height: 1.3;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--site-muted);
+  }
+
+  .ms-meter-value {
+    display: block;
+    font-stretch: 112%;
+    font-weight: 660;
+    font-size: 1.25rem;
+    /* The clock changes every second and the mine count on every flag. Without
+       tabular figures both twitch sideways as the digits change width. */
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+  }
+
+  .ms-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  .ms-actions .cta-ghost {
+    padding: 0.55rem 0.9rem;
+    font-size: 0.875rem;
+  }
+
+  /* Flag mode is on. It is a mode the board is in, so it has to be visible
+     from the board rather than only from the button. */
+  .ms-actions .cta-ghost[aria-pressed='true'] {
+    border-color: var(--ms-flag);
+    background-color: color-mix(in oklab, var(--ms-flag) 12%, transparent);
+    color: var(--ms-flag);
+  }
+
+  @media (max-width: 34rem) {
+    .ms-actions {
+      width: 100%;
+      margin-left: 0;
+    }
+
+    .ms-actions .cta-ghost {
+      flex: 1;
+      justify-content: center;
+      padding: 0.55rem 0.7rem;
+    }
+
+    .ms-meter {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  /* The panels cover the board, so they are positioned against the frame and
+     not against the scroller - a panel inside a scrolling box would slide off
+     the top of an expert board along with it. */
+  .ms-frame {
+    position: relative;
+  }
+
+  /*
+   * The tray, and the query container.
+   *
+   * ⚠️ **Expert is 30 columns wide and scrolls sideways on a phone rather than
+   * shrinking.** Below about 25px a cell stops being a touch target, and a
+   * board nobody can press accurately is worse than a board that has to be
+   * pushed around. The clamp on `--ms-size` decides which of the two happens,
+   * and the overflow here is what makes the first one survivable.
+   *
+   * ⚠️ The `cqi` lengths are on `.ms-board` below, never here. An element is
+   * not its own query container - see the same warning on `.game-art`.
+   */
+  .ms-scroll {
+    container-type: inline-size;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    border-radius: var(--site-radius-card);
+    background-color: var(--ms-tray);
+    padding: clamp(0.5rem, 1.5vw, 0.75rem);
+  }
+
+  /*
+   * `fit-content` and auto margins rather than `justify-content: center`.
+   *
+   * Centred tracks that overflow their container are clipped at the *start* in
+   * a scroll box, so the first two columns of an expert board become
+   * unreachable. Auto margins resolve to zero when there is no free space, so
+   * the board centres while it fits and simply overflows to the right when it
+   * does not.
+   */
+  .ms-board {
+    --ms-size: clamp(1.55rem, calc(100cqi / var(--ms-cols) - var(--ms-gap)), 2.4rem);
+
+    display: grid;
+    grid-template-columns: repeat(var(--ms-cols), var(--ms-size));
+    gap: var(--ms-gap);
+    width: fit-content;
+    margin-inline: auto;
+  }
+
+  /* A row has to exist for the grid roles to mean anything and must not exist
+     for the layout, which is exactly what `contents` is for: the cells become
+     items of the board while the reader is still told which row they are in. */
+  .ms-row {
+    display: contents;
+  }
+
+  .ms-cell {
+    display: grid;
+    place-items: center;
+    width: var(--ms-size);
+    height: var(--ms-size);
+    border-radius: 4px;
+    /* Off the cell, so a 9 by 9 board and a 30 by 16 board both carry digits
+       in the same proportion to the square they sit in. */
+    font-size: calc(var(--ms-size) * 0.56);
+    font-stretch: 108%;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    /* Panning is allowed because the board scrolls, but double-tap zoom is
+       not: two quick presses are two moves, not a gesture. */
+    touch-action: pan-x pan-y;
+    -webkit-user-select: none;
+    user-select: none;
+    /* A long press is how you flag on a phone, so the selection callout that
+       iOS would otherwise put over the board has to go. */
+    -webkit-touch-callout: none;
+    /* Short enough to read as the cell going down under the button rather than
+       as a fade. It carries the hover as well, which wants the same speed. */
+    transition: background-color 90ms var(--site-ease);
+  }
+
+  .ms-cell:focus-visible {
+    outline: 2px solid var(--site-accent);
+    outline-offset: 1px;
+    z-index: 1;
+  }
+
+  .ms-cell.is-hidden,
+  .ms-cell.is-flag,
+  .ms-cell.is-wrong {
+    background-color: var(--ms-cell);
+    box-shadow: var(--site-lift);
+    cursor: pointer;
+  }
+
+  .ms-cell.is-hidden:hover,
+  .ms-cell.is-flag:hover {
+    background-color: var(--ms-cell-hover);
+  }
+
+  /*
+   * Held down, and showing what a release would open.
+   *
+   * The whole trick of the original's chord is here: the ring goes down with
+   * the button so you can see which eight cells are about to go, and comes
+   * back up if you let go somewhere else. It is a class and nothing more - the
+   * model does not know this is happening.
+   *
+   * ⚠️ It has to win over `:hover` above, which is why it comes after and why
+   * the shadow is cleared explicitly: a covered cell lifts, and something
+   * pressed in cannot still be casting the shadow of something resting on top.
+   */
+  .ms-cell.is-armed {
+    background-color: var(--ms-open);
+    box-shadow: none;
+  }
+
+  .ms-cell.is-open,
+  .ms-cell.is-mine {
+    background-color: var(--ms-open);
+    animation: ms-open 190ms var(--site-ease) calc(var(--d) * var(--ms-wave)) backwards;
+  }
+
+  /* An open number is still pressable - that is the chord - so it keeps the
+     pointer. An open blank has nothing left to do. */
+  .ms-cell.is-open[data-near] {
+    cursor: pointer;
+  }
+
+  .ms-cell[data-near='1'] {
+    color: var(--ms-n1);
+  }
+
+  .ms-cell[data-near='2'] {
+    color: var(--ms-n2);
+  }
+
+  .ms-cell[data-near='3'] {
+    color: var(--ms-n3);
+  }
+
+  .ms-cell[data-near='4'] {
+    color: var(--ms-n4);
+  }
+
+  .ms-cell[data-near='5'] {
+    color: var(--ms-n5);
+  }
+
+  .ms-cell[data-near='6'] {
+    color: var(--ms-n6);
+  }
+
+  .ms-cell[data-near='7'] {
+    color: var(--ms-n7);
+  }
+
+  .ms-cell[data-near='8'] {
+    color: var(--ms-n8);
+  }
+
+  /*
+   * The flag and the mine are drawn, not set in a font and not fetched.
+   *
+   * An emoji is a different picture on every platform and a third of them are
+   * colour fonts that ignore `color` entirely, which would put the one shape
+   * that has to answer the theme outside the theme. Two pseudo-elements and a
+   * clip path cost nothing and look the same everywhere.
+   */
+  .ms-cell.is-flag,
+  .ms-cell.is-wrong,
+  .ms-cell.is-mine {
+    position: relative;
+  }
+
+  /* The pole. */
+  .ms-cell.is-flag::before,
+  .ms-cell.is-wrong::before {
+    content: '';
+    width: 2px;
+    height: 46%;
+    border-radius: 1px;
+    background-color: currentColor;
+    translate: 26% 0;
+  }
+
+  /* The pennant, hanging off the top of it. */
+  .ms-cell.is-flag::after,
+  .ms-cell.is-wrong::after {
+    content: '';
+    position: absolute;
+    top: 27%;
+    right: 50%;
+    width: 30%;
+    height: 24%;
+    clip-path: polygon(100% 0, 100% 100%, 0 50%);
+    background-color: currentColor;
+  }
+
+  .ms-cell.is-flag {
+    color: var(--ms-flag);
+  }
+
+  /* A flag that was wrong, shown only once the game is over. Until then it is
+     a guess, and marking it would be the game answering itself. */
+  .ms-cell.is-wrong {
+    color: var(--ms-wrong);
+    opacity: 0.75;
+  }
+
+  .ms-cell.is-mine {
+    color: var(--ms-mine);
+  }
+
+  /* The body. */
+  .ms-cell.is-mine::before {
+    content: '';
+    width: 44%;
+    height: 44%;
+    border-radius: 50%;
+    background-color: currentColor;
+  }
+
+  /* The spikes, as two bars crossing behind it. */
+  .ms-cell.is-mine::after {
+    content: '';
+    position: absolute;
+    inset: 22%;
+    background:
+      linear-gradient(currentColor, currentColor) center / 2px 100% no-repeat,
+      linear-gradient(currentColor, currentColor) center / 100% 2px no-repeat;
+  }
+
+  /* The one that was pressed. Everything else on a lost board is information;
+     this is the answer to what happened. */
+  .ms-cell.is-hit {
+    background-color: var(--ms-boom);
+    color: var(--site-bg);
+  }
+
+  .ms-panel {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    border-radius: var(--site-radius-card);
+    padding: var(--site-pad);
+    text-align: center;
+    background-color: color-mix(in oklab, var(--ms-tray) 84%, transparent);
+    backdrop-filter: blur(4px);
+    animation: ms-panel 240ms var(--site-ease);
+  }
+
+  .ms[data-state='won'] .ms-panel[data-panel='won'],
+  .ms[data-state='lost'] .ms-panel[data-panel='lost'] {
+    display: flex;
+  }
+
+  .ms-panel-title {
+    font-stretch: 116%;
+    font-weight: 680;
+    font-size: clamp(1.75rem, 7vw, 2.75rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+  }
+
+  .ms-panel-body {
+    max-width: 28rem;
+    font-size: clamp(0.9375rem, 3vw, 1.0625rem);
+    line-height: 1.5;
+    color: var(--site-muted);
+  }
+
+  .ms-panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 0.7rem;
+  }
+
+  .ms-hint {
+    margin-top: clamp(0.75rem, 2vw, 1.1rem);
+    font-size: 0.875rem;
+    text-align: center;
+    color: var(--site-muted);
+  }
 }
 
 /*
@@ -2319,6 +2850,40 @@
 }
 
 @keyframes g2048-panel {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/*
+ * Minesweeper motion, which is one animation used twice.
+ *
+ * A cell opening, and every mine arriving at the end of a lost game. The delay
+ * is `--d` steps of `--ms-wave`, both written from the module, and `backwards`
+ * is what makes the wait work: the cell holds this opening frame through its
+ * delay instead of sitting there finished and then jumping back to start.
+ *
+ * That is the same trick a spawning 2048 tile uses, and it is here for the
+ * same reason - it removes the timer that would otherwise have to exist, and
+ * a cell cannot land early on a slow frame.
+ */
+@keyframes ms-open {
+  from {
+    opacity: 0;
+    scale: 0.82;
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes ms-panel {
   from {
     opacity: 0;
   }

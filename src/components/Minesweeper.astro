@@ -1,0 +1,369 @@
+---
+/**
+ * The Minesweeper page, shared by the four locales.
+ *
+ * The board is empty here and built by the module, which is the one place this
+ * differs from the 2048 page: that board is sixteen cells whatever happens, so
+ * the markup can hold them, while this one is 81, 256 or 480 and changes when
+ * the reader picks a different level. Rendering the largest of them into every
+ * document and hiding two thirds would be 480 buttons of markup on a page that
+ * might only ever show 81.
+ *
+ * ⚠️ Which panel is up is decided in CSS off `data-state` on the frame, see the
+ * .ms-* rules in global.css. The script sets one attribute and never touches
+ * `hidden`, so the two panels can never both be showing.
+ */
+import { ArrowLeft, Flag, RotateCcw } from "@lucide/astro";
+import type { Lang } from "../i18n/types";
+import { getDict, localizePath } from "../i18n/utils";
+import { LEVELS } from "../games/minesweeper/game";
+import Section from "./Section.astro";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = getDict(lang);
+
+const copy = dict.games.items.minesweeper;
+
+const index = localizePath("/games/", lang);
+
+/*
+ * The three boards, from the module rather than written out again here.
+ *
+ * The dimensions are game rules and live with the game. The labels are prose
+ * and live in the dictionary. The id is what joins them, so a fourth level
+ * added to `LEVELS` with no label behind it fails `astro check` on this line.
+ */
+const levels = Object.keys(LEVELS) as (keyof typeof LEVELS)[];
+---
+
+<div class="page-head">
+  <div class="shell shell-wide">
+    <a href={index} class="crumb enter">
+      <ArrowLeft class="size-4" aria-hidden="true" />
+      {dict.games.label}
+    </a>
+
+    <h1 class="page-title enter" style="--enter-delay:80ms">{copy.name}</h1>
+
+    <p class="page-lead enter" style="--enter-delay:160ms">{copy.lead}</p>
+  </div>
+</div>
+
+<div class="sec-lite">
+  <div class="shell shell-wide">
+    <div
+      class="ms enter"
+      style="--enter-delay:240ms"
+      data-game
+      data-state="ready"
+      data-level="beginner"
+    >
+      {/*
+        Real radios, hidden and labelled, rather than three buttons wearing
+        `role="radio"`.
+
+        Picking a board is one choice out of three, and the native control
+        already is that: it groups, it moves on the arrow keys, it keeps one
+        tab stop for the whole set, and it announces "2 of 3". Hand-rolling the
+        same thing out of buttons means writing the roving focus by hand and
+        getting less. The `sr-only` class clips rather than hides, so the input
+        is still focusable and the ring below is drawn on the label around it.
+      */}
+      <fieldset class="ms-levels">
+        <legend class="sr-only">{copy.boards}</legend>
+
+        {
+          levels.map((id, i) => (
+            <label class="ms-level">
+              <input
+                type="radio"
+                name="ms-level"
+                value={id}
+                checked={i === 0}
+                class="sr-only"
+                data-level-option
+              />
+              <span>{copy.levels[id]}</span>
+            </label>
+          ))
+        }
+      </fieldset>
+
+      <div class="ms-bar">
+        <div class="ms-meter">
+          <span class="ms-meter-label">{copy.mines}</span>
+          <span class="ms-meter-value" data-mines>0</span>
+        </div>
+
+        <div class="ms-meter">
+          <span class="ms-meter-label">{copy.time}</span>
+          <span class="ms-meter-value" data-time>0:00</span>
+        </div>
+
+        <div class="ms-meter">
+          <span class="ms-meter-label">{copy.best}</span>
+          <span class="ms-meter-value" data-best>-</span>
+        </div>
+
+        <div class="ms-actions">
+          {/* A toggle rather than a command, so it says what mode the board is
+              in rather than what pressing it will do. It is the only way to
+              flag on a phone that does not need explaining. */}
+          <button
+            type="button"
+            class="cta-ghost"
+            data-action="flagging"
+            aria-pressed="false"
+          >
+            <Flag class="size-4 shrink-0" aria-hidden="true" />
+            {copy.flagMode}
+          </button>
+
+          <button type="button" class="cta-ghost" data-action="restart">
+            <RotateCcw class="size-4 shrink-0" aria-hidden="true" />
+            {copy.newGame}
+          </button>
+        </div>
+      </div>
+
+      <div class="ms-frame">
+        {/* The scroller is the query container, and the board inside it is what
+            measures itself in `cqi`. An element is not its own container. */}
+        <div class="ms-scroll">
+          <div
+            class="ms-board"
+            role="grid"
+            aria-label={copy.gridLabel}
+            data-board
+            data-label-hidden={copy.cells.hidden}
+            data-label-flagged={copy.cells.flagged}
+            data-label-mine={copy.cells.mine}
+            data-label-empty={copy.cells.empty}
+            data-label-wrong={copy.cells.wrong}
+          >
+          </div>
+        </div>
+
+        <div class="ms-panel" data-panel="won">
+          <p class="ms-panel-title">{copy.won.title}</p>
+
+          {/* Both sentences ride on the element, so the second one is copy in
+              the markup rather than a string the script carries. */}
+          <p
+            class="ms-panel-body"
+            data-won-body
+            data-body={copy.won.body}
+            data-record={copy.won.record}
+          >
+            {copy.won.body}
+          </p>
+
+          <div class="ms-panel-actions">
+            <button type="button" class="cta" data-action="restart"
+              >{copy.won.again}</button
+            >
+          </div>
+        </div>
+
+        <div class="ms-panel" data-panel="lost">
+          <p class="ms-panel-title">{copy.lost.title}</p>
+          <p class="ms-panel-body">{copy.lost.body}</p>
+
+          <div class="ms-panel-actions">
+            <button type="button" class="cta" data-action="restart"
+              >{copy.lost.again}</button
+            >
+          </div>
+        </div>
+      </div>
+
+      <p class="ms-hint">{copy.hint}</p>
+
+      {/* The board announces its own cells through the grid roles, so this only
+          has to carry the two things that are not in it: that the game ended,
+          and how long it took. */}
+      <p class="sr-only" aria-live="polite" data-live></p>
+    </div>
+  </div>
+</div>
+
+<Section id="how" label={copy.how.label} width="wide" tone="band">
+  <ul class="svc-grid">
+    {
+      copy.how.items.map((item) => (
+        <li class="card reveal-item">
+          <h3 class="svc-title">{item.title}</h3>
+          <p class="mt-2.5 text-muted">{item.description}</p>
+        </li>
+      ))
+    }
+  </ul>
+</Section>
+
+<Section id="build" label={copy.close.label} width="wide" tone="panel">
+  <div class="prose-columns text-muted">
+    {copy.close.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+  </div>
+</Section>
+
+<script>
+  import { LEVELS, mount, type LevelId } from "../games/minesweeper/game";
+  import { scoreRecord } from "../games/record";
+
+  /*
+   * The page's side of the game: the three figures, the record, the level
+   * buttons and what a screen reader is told when a game ends.
+   *
+   * Everything about the minefield itself is in the module. One thing here is
+   * genuinely this page's and not the game's: there is a record per level,
+   * because a time on beginner and a time on expert are not comparable and one
+   * "best" across all three would only ever show the beginner one.
+   */
+  const root = document.querySelector<HTMLElement>("[data-game]");
+  const board = root?.querySelector<HTMLElement>("[data-board]");
+
+  if (root && board) {
+    const minesOut = root.querySelector<HTMLElement>("[data-mines]");
+    const timeOut = root.querySelector<HTMLElement>("[data-time]");
+    const bestOut = root.querySelector<HTMLElement>("[data-best]");
+    const wonBody = root.querySelector<HTMLElement>("[data-won-body]");
+    const live = root.querySelector<HTMLElement>("[data-live]");
+    const options = root.querySelectorAll<HTMLInputElement>("[data-level-option]");
+
+    const lang = document.documentElement.lang || "en";
+    const format = new Intl.NumberFormat(lang);
+
+    /** Minutes and seconds, because a good expert game runs past a hundred
+     *  seconds and a bare count stops being a time somewhere around there. */
+    const clock = (seconds: number) =>
+      `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+
+    /*
+     * Nothing verifies a time the way a 2048 score verifies, so no predicate.
+     * There is no arithmetic a minesweeper time has to satisfy - one second is
+     * a real beginner result and so is twenty minutes - and inventing a bound
+     * would only be a guess dressed as a check.
+     */
+    const records = new Map<LevelId, ReturnType<typeof scoreRecord>>();
+    for (const id of Object.keys(LEVELS) as LevelId[]) {
+      records.set(id, scoreRecord(`game-minesweeper-best-${id}`));
+    }
+
+    /** The level the reader last played, so coming back does not start over on
+     *  beginner. Not a score, so it is stored plainly - but it is still read
+     *  back through the list of real levels rather than trusted. */
+    const LEVEL_KEY = "game-minesweeper-level";
+
+    const stored = (): LevelId => {
+      try {
+        const value = localStorage.getItem(LEVEL_KEY);
+        if (value && value in LEVELS) return value as LevelId;
+      } catch {
+        /* Storage unavailable; beginner is the right place to start anyway. */
+      }
+
+      return "beginner";
+    };
+
+    let level = stored();
+
+    const showBest = () => {
+      const best = records.get(level)?.read() ?? null;
+      if (bestOut) bestOut.textContent = best === null ? "-" : clock(best);
+    };
+
+    const controller = mount(
+      {
+        root,
+        board,
+
+        onMines(remaining) {
+          if (minesOut) minesOut.textContent = format.format(remaining);
+        },
+
+        onTime(seconds) {
+          if (timeOut) timeOut.textContent = clock(seconds);
+        },
+
+        onState(state, seconds) {
+          root.dataset.state = state;
+
+          if (state !== "won" && state !== "lost") return;
+
+          /*
+           * A win is only recorded as a best if it beats what is there, and a
+           * missing record reads as `null` rather than as zero - which is the
+           * whole reason record.read changed shape. Lower wins here.
+           */
+          let beaten = false;
+
+          if (state === "won") {
+            const record = records.get(level);
+            const best = record?.read() ?? null;
+
+            if (record && (best === null || seconds < best)) {
+              record.write(seconds);
+              beaten = true;
+              showBest();
+            }
+          }
+
+          if (wonBody) {
+            wonBody.textContent = beaten
+              ? `${wonBody.dataset.body} ${wonBody.dataset.record}`
+              : (wonBody.dataset.body ?? "");
+          }
+
+          // Two things a panel on screen does not say out loud: which of them
+          // it is, and how long the game took.
+          const panel = root.querySelector<HTMLElement>(`[data-panel="${state}"] .ms-panel-title`);
+          if (live) live.textContent = `${panel?.textContent ?? ""}. ${clock(seconds)}.`;
+        },
+      },
+      level,
+    );
+
+    root.dataset.level = level;
+    showBest();
+
+    // The markup checks the first board, because it has to check one and the
+    // stored choice is not known until here.
+    for (const option of options) option.checked = option.value === level;
+
+    root.addEventListener("change", (event) => {
+      const picked = (event.target as HTMLInputElement | null)?.value as LevelId | undefined;
+      if (!picked || !(picked in LEVELS) || picked === level) return;
+
+      level = picked;
+
+      try {
+        localStorage.setItem(LEVEL_KEY, level);
+      } catch {
+        /* Nothing to do; the choice simply will not outlive the page. */
+      }
+
+      showBest();
+      controller.setLevel(level);
+    });
+
+    root.addEventListener("click", (event) => {
+      const button = (event.target as Element | null)?.closest<HTMLElement>("[data-action]");
+      if (!button) return;
+
+      if (button.dataset.action === "restart") {
+        controller.restart();
+        return;
+      }
+
+      if (button.dataset.action === "flagging") {
+        const on = button.getAttribute("aria-pressed") !== "true";
+        button.setAttribute("aria-pressed", String(on));
+        controller.setFlagging(on);
+      }
+    });
+  }
+</script>

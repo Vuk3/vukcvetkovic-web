@@ -20,12 +20,13 @@ plus a project write-up section, in **four languages** (English, Serbian, French
   [src/styles/global.css](../src/styles/global.css).
 - **Cloudflare** through `@astrojs/cloudflare`, whose only job here is `imageService:
   'compile'` and the assets shape. Nothing in the repository runs the deploy.
-- **36 pages**, 4 locales, 4 projects, 1 game. Three woff2 faces, a handful of webp
+- **40 pages**, 4 locales, 4 projects, 2 games. Three woff2 faces, a handful of webp
   variants, and **no CSS file at all** - the stylesheet is inlined into every document, and
   four small inline blocks cover the pre-paint theme script, the theme toggle, menu
   dismissal and the active-section indicator.
-- **One JavaScript file, on one route.** `/games/2048/` is a game, so it has a real script:
-  2.7 KB gz, requested by that route and its three locale twins and by nothing else.
+- **JavaScript on two routes only.** `/games/2048/` and `/games/minesweeper/` are games, so
+  they have real scripts: 2.4 KB and 3.2 KB gz, plus a 0.4 KB chunk they share, requested by
+  those routes and their locale twins and by nothing else.
 
 ## Where things are
 
@@ -45,7 +46,7 @@ plus a project write-up section, in **four languages** (English, Serbian, French
 | an animation | [design-system.md §Motion](./design-system.md#5-motion) |
 | a component's markup | [src/components/](../src/components/) - rules in its [CLAUDE.md](../src/components/CLAUDE.md) |
 | **add a game** | [content-and-i18n.md §Adding a game](./content-and-i18n.md#7-adding-a-game) - a route pair of its own, not a `[slug]` |
-| **the 2048 game** | [src/games/2048/game.ts](../src/games/2048/game.ts) and [Game2048.astro](../src/components/Game2048.astro) - board and ramp in [design-system.md §The game board](./design-system.md#9-the-game-board-and-the-one-place-the-palette-opens-up) |
+| **either game** | [src/games/](../src/games/) and [Game2048.astro](../src/components/Game2048.astro) / [Minesweeper.astro](../src/components/Minesweeper.astro) - boards and palettes in [design-system.md §The game boards](./design-system.md#9-the-game-boards-and-the-one-place-the-palette-opens-up) |
 | a page or a `getStaticPaths` | [src/pages/](../src/pages/) - rules in [src/CLAUDE.md](../src/CLAUDE.md) |
 
 ## The deep-dives

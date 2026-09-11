@@ -59,8 +59,16 @@ function sign(name: string, value: number): string {
 }
 
 export interface ScoreRecord {
-  /** The stored figure, or 0 if there is none or it does not verify. */
-  read(): number;
+  /**
+   * The stored figure, or `null` when there is none, it does not verify, or
+   * storage is unavailable.
+   *
+   * ⚠️ **`null` and not 0**, which the first version returned and which was
+   * wrong the moment a second game turned up. Minesweeper's record is a time,
+   * where lower wins, so a missing record read as 0 is the unbeatable best.
+   * Even in 2048 it was a lie: a score of 0 is a real result.
+   */
+  read(): number | null;
   /** Stores the figure with its signature. A failure is swallowed. */
   write(value: number): void;
 }
@@ -78,7 +86,7 @@ export function scoreRecord(name: string, plausible?: (value: number) => boolean
     read() {
       try {
         const raw = localStorage.getItem(name);
-        if (raw === null) return 0;
+        if (raw === null) return null;
 
         const cut = raw.lastIndexOf('.');
         const value = Number(raw.slice(0, cut));
@@ -95,10 +103,10 @@ export function scoreRecord(name: string, plausible?: (value: number) => boolean
         // Cleared rather than left alone, so a bad record cannot survive the
         // session and the next write is not merged into whatever was there.
         localStorage.removeItem(name);
-        return 0;
+        return null;
       } catch {
         /* Storage unavailable (private mode); the record holds for this view. */
-        return 0;
+        return null;
       }
     },
 

@@ -301,14 +301,20 @@ const projects: Project[] = [
  * stale.
  */
 export interface Game {
-  /** Last path segment under /games/. */
-  slug: string;
   /**
-   * The title. It reads the same in every language, so it is a fact and the
-   * dictionaries carry only the prose around it - which is what lets a game's
-   * page title be composed rather than written out four times.
+   * Last path segment under /games/, and the only fact a game has.
+   *
+   * ⚠️ **The title is not here, it is `games.items.<id>.name` in the
+   * dictionaries.** It was here while 2048 was the only game, on the argument
+   * that a title reads the same in four languages. Minesweeper is Minolovac in
+   * Serbian and Démineur in French, so the argument was only ever true of that
+   * one title. Writing "2048" out four times is what the rule costs, and it is
+   * cheaper than a Serbian page with an English game on it.
+   *
+   * The slug stays a fact. It is a URL, it is the directory the route lives in,
+   * and it is the same in every locale.
    */
-  name: string;
+  slug: string;
 }
 
 /**
@@ -326,10 +332,8 @@ export interface Game {
  * on the page.
  */
 const games: Record<GameId, Game> = {
-  twentyFortyEight: {
-    slug: "2048",
-    name: "2048",
-  },
+  twentyFortyEight: { slug: "2048" },
+  minesweeper: { slug: "minesweeper" },
 };
 
 export const site = {

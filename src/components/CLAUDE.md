@@ -9,11 +9,12 @@ Three woff2 faces and five webp variants, and no CSS file either: the stylesheet
 into every document. The four `<script>` blocks that exist are small enough that Astro
 inlines them into each page too - 1.7 KB total, no extra request.
 
-⚠️ **The exception is [Game2048.astro](./Game2048.astro)**, whose script imports
-[src/games/2048/game.ts](../games/2048/game.ts) and is therefore emitted as a real file:
-2.7 KB gz, requested only by `/games/2048/` and its three locale twins. A game cannot be
-CSS. Nothing else here gets to cite it - the rules below are unchanged for every other
-component.
+⚠️ **The exceptions are the two games**, [Game2048.astro](./Game2048.astro) and
+[Minesweeper.astro](./Minesweeper.astro), whose scripts import a module and are therefore
+emitted as real files: 2.4 KB gz and 3.2 KB gz, plus a shared 0.4 KB chunk for
+[games/record.ts](../games/record.ts), each requested only by its own route and that
+route's three locale twins. A game cannot be CSS. Nothing else here gets to cite them - the
+rules below are unchanged for every other component.
 
 - **Reach for CSS first.** The language switcher and the mobile menu are native `<details>`
   elements. The header's scroll behaviour is a `scroll(root)` timeline. The section reveals
@@ -75,12 +76,13 @@ changing it.
 - **A page's body lives in one shared component** so the unprefixed route and its `[lang]`
   twin cannot drift - [Home.astro](./Home.astro),
   [NotFound.astro](./NotFound.astro), [ProjectIndex.astro](./ProjectIndex.astro),
-  [ProjectDetail.astro](./ProjectDetail.astro), [Game2048.astro](./Game2048.astro). See
+  [ProjectDetail.astro](./ProjectDetail.astro), [GameIndex.astro](./GameIndex.astro),
+  [Game2048.astro](./Game2048.astro), [Minesweeper.astro](./Minesweeper.astro). See
   [src/CLAUDE.md](../CLAUDE.md).
 - **No raw hex.** Colour comes from the `--site-*` tokens or the Tailwind utilities mapped
-  to them (`text-muted`, `bg-band`, `border-hairline`). Two exceptions, both declared away
+  to them (`text-muted`, `bg-band`, `border-hairline`). Three exceptions, all declared away
   from the components that use them: brand colours for technology marks in
-  [src/tech.ts](../tech.ts), and the 2048 ramp as `--g2048-*` tokens in
+  [src/tech.ts](../tech.ts), and the two game boards as `--g2048-*` and `--ms-*` tokens in
   [global.css](../styles/global.css).
 - **Tailwind utilities for one-off layout, a named class in
   [global.css](../styles/global.css) for anything that repeats or carries reasoning.** A

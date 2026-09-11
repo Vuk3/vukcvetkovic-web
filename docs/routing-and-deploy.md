@@ -1,8 +1,9 @@
 # Routing and deploy
 
-Twenty-eight prerendered pages, four locales, four projects, on Cloudflare. Every route exists
-twice - once unprefixed for English and once under `[lang]` for the other three - and the
-whole build is static: `dist/server` comes out **empty** and nothing runs at request time.
+Forty prerendered pages, four locales, four projects, two games, on Cloudflare. Every route
+exists twice - once unprefixed for English and once under `[lang]` for the other three - and
+the whole build is static: `dist/server` comes out **empty** and nothing runs at request
+time.
 
 > [docs/README.md](./README.md) is the map, but **you should not need it to work on
 > routing** - everything below is self-contained. The rules that apply while editing a
@@ -32,7 +33,7 @@ and only one of them is obvious.
 ## 1. Every route exists twice
 
 `prefixDefaultLocale: false`, so English is unprefixed and the other three locales are
-generated from a `[lang]` route. That gives eight route files for four logical pages:
+generated from a `[lang]` route. That gives fourteen route files for seven logical pages:
 
 | Page | English | Prefixed | Body |
 |---|---|---|---|
@@ -42,6 +43,7 @@ generated from a `[lang]` route. That gives eight route files for four logical p
 | 404 | [404.astro](../src/pages/404.astro) | [\[lang\]/404.astro](<../src/pages/[lang]/404.astro>) | [NotFound.astro](../src/components/NotFound.astro) |
 | game index | [games/index.astro](../src/pages/games/index.astro) | [\[lang\]/games/index.astro](<../src/pages/[lang]/games/index.astro>) | [GameIndex.astro](../src/components/GameIndex.astro) |
 | 2048 | [games/2048/index.astro](../src/pages/games/2048/index.astro) | [\[lang\]/games/2048/index.astro](<../src/pages/[lang]/games/2048/index.astro>) | [Game2048.astro](../src/components/Game2048.astro) |
+| Minesweeper | [games/minesweeper/index.astro](../src/pages/games/minesweeper/index.astro) | [\[lang\]/games/minesweeper/index.astro](<../src/pages/[lang]/games/minesweeper/index.astro>) | [Minesweeper.astro](../src/components/Minesweeper.astro) |
 
 ⚠️ **A game gets a route pair of its own, and that is the one place this table breaks its
 own pattern.** It is about the *files*, not the URLs - `/projects/encryptix/` and
@@ -51,7 +53,7 @@ where that slug comes from:
 | | On disk | Pages built |
 |---|---|---|
 | projects | one file, `projects/[slug]/index.astro` | four, from `getStaticPaths` |
-| games | one directory per game, `games/2048/index.astro` | one each, no parameter |
+| games | one directory per game, `games/2048/index.astro` and `games/minesweeper/index.astro` | one each, no parameter |
 
 Every project page is the same page with different data, so one parameterised file covers
 all four and always will. A game is its own program - its own markup, its own script, its
@@ -83,8 +85,8 @@ there as a page, so a note left in that directory builds as a public HTML page a
 `@astrojs/sitemap` submits it to crawlers. This is why the routing rules live in
 [src/CLAUDE.md](../src/CLAUDE.md) rather than in `src/pages/`. Prefix anything else with `_`
 to keep it out of the route table, and **check the page count**: the build prints it, and it
-should be four locales times two fixed shapes, plus a 404 and one detail page per project
-per locale - 28 with four projects today.
+should be four locales times four fixed shapes, plus a 404, one detail page per project per
+locale, and one page per game per locale - 40 with four projects and two games today.
 
 ---
 
@@ -224,19 +226,24 @@ dismissal and the active-section indicator - are all small enough that Astro inl
 into each page rather than emitting a bundle. 1.7 KB of JS per page, in a 26 KB gz home
 page, with no extra request. Keep it that way: see [src/components/CLAUDE.md](../src/components/CLAUDE.md).
 
-The one file in `_astro` is the 2048 engine, imported by
-[Game2048.astro](../src/components/Game2048.astro) and past the inlining threshold at
-2.7 KB gz. It is requested by `/games/2048/` and its three locale twins and by no other
-page, which is the point: the game pays for itself and the rest of the site is unchanged.
+The three files in `_astro` are the two game engines and the piece they share. 2048 is
+2.4 KB gz, Minesweeper 3.2 KB, and [games/record.ts](../src/games/record.ts) 0.4 KB. Each
+engine is requested by its own route and that route's three locale twins, and by nothing
+else, which is the point: a game pays for itself and the rest of the site is unchanged.
+
+⚠️ **The record is a third file rather than a copy inside each game**, because two entry
+points import it and Rollup splits what they share. That is one extra request on a game
+page and none anywhere else, and a reader who plays both games fetches it once. Do not
+try to inline it back - the alternative is the same bytes twice.
 
 **`PUBLIC_GAME_SIGN_KEY` is the only environment variable the site reads**, and it is
-optional: it signs the stored best score of every game, and
+optional: it signs the stored best score of both games, and
 [games/record.ts](../src/games/record.ts) falls back to a literal so a build without it
 works. Set it in the Cloudflare build environment to keep the key out of the
 repository, and understand what that is worth - the `PUBLIC_` prefix is required for client
 code, which means Vite substitutes the value into the shipped bundle either way. Changing it
 invalidates every record signed with the old key and they restart at zero. The reasoning is
-in [design-system.md §9](./design-system.md#9-the-game-board-and-the-one-place-the-palette-opens-up).
+in [design-system.md §9](./design-system.md#9-the-game-boards-and-the-one-place-the-palette-opens-up).
 
 `archivo` is imported as the `wdth` build, which costs 90 KB latin against 35 KB for weight
 alone. That is deliberate - width *is* the display/text contrast on this site, so it is the
@@ -323,6 +330,9 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-09-11 - a second game and its route pair, `/games/minesweeper/`, taking the build to
+  40 pages and the sitemap to 36 URLs. `_astro` now holds three files: an engine per game
+  and the record module they share (§5).
 - 2026-09-11 - the site reads its first environment variable. `PUBLIC_GAME_SIGN_KEY` is
   optional, signs the stored 2048 record, and falls back to a literal when it is unset (§5).
 - 2026-09-11 - a games section: `/games/` and `/games/2048/`, six route pairs in all,

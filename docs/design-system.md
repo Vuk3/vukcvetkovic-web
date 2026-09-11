@@ -680,12 +680,19 @@ open item 1.
 
 ---
 
-## 9. The game board, and the one place the palette opens up
+## 9. The game boards, and the one place the palette opens up
 
-[/games/2048/](../src/pages/games/2048/index.astro) is the only page here with a game on
-it, and it is built the way the rest of the site is: markup, tokens, and transforms. There
-is no canvas and no game library. What is worth knowing is why two decisions were made the
-way they were.
+Two pages carry a game, and both are built the way the rest of the site is: markup, tokens,
+and no canvas or game library anywhere. They are deliberately opposite, which is most of
+what this section is about.
+
+| | [2048](../src/games/2048/game.ts) | [Minesweeper](../src/games/minesweeper/game.ts) |
+|---|---|---|
+| what it is made of | 16 divs that move | up to 480 buttons that change state |
+| the hard part | motion, at sixty frames | the rules, and the keyboard |
+| the board in the markup | yes, 16 cells, fixed | no, the module builds it |
+| to a screen reader | hidden, narrated by a live region | a real `role="grid"` |
+| what a turn costs | two custom properties | a class |
 
 ### A tile keeps its element for its whole life
 
@@ -733,10 +740,11 @@ deep, because a longer queue stops answering the keyboard and starts replaying i
 
 ### The colour ramp
 
-⚠️ **This and the technology marks in [src/tech.ts](../src/tech.ts) are the only colour on
-the site outside the accent**, and unlike everything else in this document it is not a
-decision about taste. Eleven values have to be told apart at a glance and at speed, and a
-near-monochrome board makes that impossible.
+⚠️ **The two boards and the technology marks in [src/tech.ts](../src/tech.ts) are the only
+colour on the site outside the accent**, and unlike everything else in this document none
+of them is a decision about taste. Eleven values have to be told apart at a glance and at
+speed, and a near-monochrome board makes that impossible. The minefield's eight numbers are
+the same argument and are set out further down.
 
 `--g2048-t1` to `--g2048-t12` are declared on `:root` and redefined in `.dark`, one step
 per doubling. It is a single sequence rather than eleven picked colours: paper and sand for
@@ -756,11 +764,95 @@ and answers the theme toggle. See [Art2048.astro](../src/components/games/Art204
 Its five-by-two grid against a 5:2 box is the one pairing that keeps the cells square
 however wide the card gets.
 
+[ArtMinesweeper.astro](../src/components/games/ArtMinesweeper.astro) goes one further and
+uses `.ms-cell` itself, overriding only the three things that are about being a thumbnail,
+so the card cannot drift away from the game it advertises. The tray colour is the one thing
+a thumbnail cannot share - `.game-art-2048` and `.game-art-ms` each bring their own.
+
 ### Numbers are sized off the board, not the viewport
 
 `.g2048-board` is a `container-type: inline-size` container and the digits are in `cqi`,
 stepped down by `data-digits` so a 2 and a 1024 both fill their tile. A `vw` clamp cannot
 do this: the board stops growing at its 36rem cap and the numbers would carry on.
+
+### The minefield is a grid, in both senses
+
+⚠️ **`.ms-row` is `role="row"` with `display: contents`, and both halves are load bearing.**
+A grid without rows gives a reader no position at all, and a row that is also a layout box
+would nest every cell in a second grid and break the columns. The cells are `<button>`
+elements carrying `role="gridcell"`, so one cell is in the tab order at a time and the
+arrow keys walk the field rather than the Tab key walking 480 buttons.
+
+That is the reason this game is on the site. 2048's board has to be `aria-hidden` and
+described through a live region, because sixteen tiles that rewrite themselves on every
+keypress cannot be read out. A minefield sits still and waits, which is what a grid is for.
+
+**Three boards, and expert scrolls rather than shrinks.** `--ms-size` is
+`clamp(1.55rem, 100cqi / var(--ms-cols) - var(--ms-gap), 2.4rem)`, so a cell is as large as
+the width allows between two bounds it may not leave. Below about 25px a cell stops being a
+touch target, and 30 columns of that do not fit a phone, so `.ms-scroll` takes the overflow.
+
+⚠️ **The board is `width: fit-content` with auto margins, not `justify-content: center`.**
+Centred tracks that overflow a scroll container are clipped at the *start*, which makes the
+first columns of an expert board unreachable. Auto margins go to zero when there is no free
+space, so the board centres while it fits and overflows to the right when it does not.
+
+The cell sizing is a container query for the same reason the 2048 digits are, and with the
+same trap: `.ms-scroll` is the container and every `cqi` length is on `.ms-board` inside it.
+
+### The press preview, and why a long press only plants
+
+⚠️ **Holding a button down shows the cells a release would open, pushed in but untouched.**
+It is the one piece of the original's feel that is not a rule, and it is what makes
+chording usable: a ring of eight is too much to open on faith. `.ms-cell.is-armed` is a
+class and an array of which nodes carry it - **the model never learns this is happening** -
+so a preview that somehow outlives its press costs a wrong colour rather than a wrong
+board. It clears on pointer up, on the pointer leaving the board, and on the window losing
+focus, because the button can be released anywhere.
+
+Chording has three ways in: the middle button (the original's gesture in the form modern
+mice have), an ordinary press on a revealed number (which has nothing else a press could
+mean), and both buttons at once while the preview is up. `auxclick` is what carries the
+middle button - `click` does not fire for it.
+
+⚠️ **A long press plants a flag and never takes one back.** A hold that toggles removes the
+flag whenever the finger lands on one that is already there, which on a phone is most of
+the time. Planting is also idempotent, which settles the harder problem underneath: a long
+press produces a `contextmenu` *and* a timer, browsers disagree on the order, and two
+plants leave the same flag where two toggles leave none. Flag mode is how a flag comes
+back off on a phone, and a right click or `F` is how it comes off anywhere else.
+
+The click a long press trails behind it is swallowed by comparing against **when** the hold
+last fired rather than a boolean saying that one did. A boolean gets stuck: a browser that
+suppresses the click after showing a context menu leaves it set, and the reader's next real
+press is eaten. A timestamp stops mattering on its own.
+
+### The wave, which is the only motion in it
+
+A flood fill can open three hundred cells at once, and opening them on one frame reads as
+the board flickering. Each cell carries `--d`, the ring it was found on, and waits
+`calc(var(--d) * var(--ms-wave))` before it opens - so the fill spreads outward from the
+press. The queue in the module is breadth first, which is what hands the animation its
+distance for free.
+
+`--ms-wave` is written from the module, the way `--g2048-slide` is, and the `backwards`
+fill is the same trick: the cell holds its opening frame through the delay, so no second
+timer has to exist and nothing lands early on a slow frame.
+
+### The eight numbers
+
+⚠️ **A third exception to the near-monochrome palette, on the same grounds as the ramp**
+and not on taste: eight numbers have to be told apart in a cell the size of a fingertip
+while the eye is elsewhere on the board.
+
+`--ms-n1` to `--ms-n8` keep the original's *order* - a player who has met this game before
+reads 1 as blue and 3 as red and should not have to relearn it - but not its values. Two of
+its pairs collapse at this size: navy against blue, and black against grey on a light
+ground. Navy becomes violet, and the last two separate by weight rather than hue.
+
+**The flag and the mine are drawn with two pseudo-elements each, never an emoji.** An emoji
+is a different picture on every platform and many are colour fonts that ignore `color`
+outright, which would put the one shape that must answer the theme outside the theme.
 
 ### The record is signed
 
@@ -811,14 +903,22 @@ and that is a feature rather than a hardening step.
 
 ## Changelog
 
+- 2026-09-11 - the minefield holds a press: the ring a release would open goes down with
+  the button, the middle button chords, and a long press plants a flag rather than toggling
+  one. See "The press preview" in §9.
+- 2026-09-11 - a second game, [Minesweeper](../src/games/minesweeper/game.ts), on the three
+  original boards. It adds `--ms-n1` to `--ms-n8` and the board surfaces to `:root` and
+  `.dark`, which is the third and last place the palette opens up. Nothing about the 2048
+  board changed, and the two games share only the record and the thumbnail frame - §9 sets
+  out where they deliberately go opposite ways.
 - 2026-09-11 - the stored record is signed. `game-2048-best` holds `value.signature`, and a
   value that fails the signature or is not a multiple of four is cleared and the record
   restarts at zero. It lives in [games/record.ts](../src/games/record.ts) so the next game
   keeps its record the same way, and the key is `PUBLIC_GAME_SIGN_KEY` with a literal
   fallback. See "The record is signed" in §9 for what that is and is not worth.
 - 2026-09-11 - the site has a game, and with it a colour ramp: `--g2048-t1` to
-  `--g2048-t12` on `:root` and `.dark`, which is the second exception to the
-  near-monochrome palette after the technology marks. The board itself adds no dependency -
+  `--g2048-t12` on `:root` and `.dark`, the second exception to the near-monochrome
+  palette after the technology marks. The board itself adds no dependency -
   a tile is an element with two custom properties and the move is a `transform` transition.
   §9 records the two decisions worth knowing.
 - 2026-09-09 - the request diagram **assembles itself as it crosses the screen**: inline SVG

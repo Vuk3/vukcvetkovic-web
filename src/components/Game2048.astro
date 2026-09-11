@@ -15,7 +15,6 @@
 import { ArrowLeft, RotateCcw, Undo2 } from "@lucide/astro";
 import type { Lang } from "../i18n/types";
 import { getDict, localizePath } from "../i18n/utils";
-import { site } from "../site";
 import Section from "./Section.astro";
 
 interface Props {
@@ -30,9 +29,8 @@ const dict = getDict(lang);
  * difference between a game and a project. A project page is one component
  * rendering whichever project the route resolved, so it takes the entry as a
  * prop. Every game has a component of its own, so the id is a constant here
- * and both halves of the lookup are checked at build time.
+ * and the lookup is checked at build time.
  */
-const game = site.games.twentyFortyEight;
 const copy = dict.games.items.twentyFortyEight;
 
 const index = localizePath("/games/", lang);
@@ -49,7 +47,7 @@ const cells = Array.from({ length: 16 });
       {dict.games.label}
     </a>
 
-    <h1 class="page-title enter" style="--enter-delay:80ms">{game.name}</h1>
+    <h1 class="page-title enter" style="--enter-delay:80ms">{copy.name}</h1>
 
     <p class="page-lead enter" style="--enter-delay:160ms">{copy.lead}</p>
   </div>
@@ -209,7 +207,7 @@ const cells = Array.from({ length: 16 });
      */
     const record = scoreRecord("game-2048-best", (value) => value % 4 === 0);
 
-    let best = record.read();
+    let best = record.read() ?? 0;
     if (bestOut) bestOut.textContent = format.format(best);
 
     const controller = mount({

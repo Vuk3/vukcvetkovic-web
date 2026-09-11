@@ -560,6 +560,8 @@ const de: Dict = {
 
     items: {
       twentyFortyEight: {
+        name: '2048',
+
         /** One line, for the card on the index. */
         tagline:
           'Das Kachelspiel, aus Elementen gebaut statt gezeichnet, damit die Zahlen scharf bleiben und das Brett dem Thema folgt.',
@@ -620,6 +622,89 @@ const de: Dict = {
             "Die andere Hälfte ist, dass jede Kachel ihr Element behält, solange es sie gibt. Das Brett wird nie aus dem Zustand neu gezeichnet - ein Zug aktualisiert Zahlen auf Knoten, die schon da sind, und deshalb legt eine Kachel den Weg sichtbar zurück, statt zu verschwinden und anderswo wieder aufzutauchen.",
             "Die Zahlen sind Text, also so scharf wie der Rest der Seite und in der Größe, die der Leser eingestellt hat. Die Farben sind Tokens im selben Stylesheet wie alles andere, und deshalb antwortet das Brett auf den Themenschalter im Kopf.",
             "Die Eingabe läuft aus drei Richtungen durch eine einzige Funktion, damit Taste, Wisch und Tipp nicht anfangen, leicht Verschiedenes zu bedeuten. Die Pfeiltasten gehören dem Brett nur, solange es im Bild ist, und ein Zug, der vor der Landung des vorigen kommt, wird gehalten statt verworfen - deshalb kostet schnelles Spielen nie einen Zug.",
+          ],
+        },
+      },
+
+      minesweeper: {
+        name: 'Minesweeper',
+
+        tagline:
+          'Das Minenfeld, auf allen drei Original-Brettern. Jedes Feld ist ein echter Button, deshalb lässt sich das ganze Spiel über die Tastatur spielen.',
+
+        metaDescription:
+          'Minesweeper im Browser, auf den Brettern Anfänger, Fortgeschritten und Experte. Als Markup gebaut statt als Canvas, und über die Tastatur spielbar.',
+        lead: 'Öffne jedes Feld, das keine Mine ist. Eine Zahl sagt, wie viele der acht Felder um sie herum vermint sind, und alles Weitere folgt daraus. Drei Bretter in den Größen, mit denen das Original ausgeliefert wurde, und ein erster Klick, der nicht verlieren kann.',
+
+        boards: 'Brett',
+        levels: {
+          beginner: 'Anfänger',
+          intermediate: 'Fortgeschritten',
+          expert: 'Experte',
+        },
+
+        mines: 'Minen',
+        time: 'Zeit',
+        best: 'Bestzeit',
+        newGame: 'Neues Spiel',
+        flagMode: 'Fahnen',
+        hint: 'Drücken öffnet, Rechtsklick oder F setzt eine Fahne, am Telefon langes Drücken. Eine fertige Zahl öffnet den Rest ihrer Umgebung per Druck oder mit der mittleren Taste.',
+
+        gridLabel: 'Minenfeld',
+        cells: {
+          hidden: 'Verdeckt',
+          flagged: 'Fahne',
+          mine: 'Mine',
+          empty: 'Leer',
+          wrong: 'Falsche Fahne',
+        },
+
+        won: {
+          title: 'Geräumt',
+          body: 'Jedes Feld, das keine Mine war, ist offen.',
+          record: 'Eine neue Bestzeit auf diesem Brett.',
+          again: 'Nochmal spielen',
+        },
+
+        lost: {
+          title: 'Mine',
+          body: 'Das Feld wird so gezeigt, wie es war. Eine Fahne auf einem leeren Feld ist markiert, und dort ist die Überlegung meistens abgebogen.',
+          again: 'Nochmal versuchen',
+        },
+
+        how: {
+          label: 'So wird gespielt',
+          items: [
+            {
+              title: 'Der erste Klick ist sicher',
+              description:
+                'Die Minen werden erst danach gelegt, rund um die gedrückte Stelle. Der erste Zug kann also nicht verlieren und öffnet immer freies Feld. Fang irgendwo an.',
+            },
+            {
+              title: 'Eine Zahl zählt ihre Nachbarn',
+              description:
+                'Sie sagt, wie viele der acht angrenzenden Felder eine Mine tragen. Ein Feld ohne Mine in der Nachbarschaft öffnet die ganze Region mit einem Druck.',
+            },
+            {
+              title: 'Markiere, was du hergeleitet hast',
+              description:
+                'Rechtsklick am Rechner, F auf der Tastatur, langes Drücken am Telefon. Langes Drücken setzt nur, ein langsamer Finger kann also nicht wegnehmen, was er gerade gesetzt hat - weggenommen wird im Fahnenmodus, und den willst du ohnehin, wenn gleich mehrere anstehen. Der Zähler zeigt Minen minus Fahnen.',
+            },
+            {
+              title: 'Drücke eine Zahl, die fertig ist',
+              description:
+                'Sobald eine Zahl so viele Fahnen um sich hat, wie sie angibt, öffnet ein Druck auf sie den Rest ihrer Umgebung auf einmal, und die mittlere Taste tut dasselbe. Halte die Taste gedrückt, und die Felder, die aufgingen, gehen mit ihr nach unten - du siehst die acht, bevor du dich festlegst. Daher kommt das Tempo in diesem Spiel, und die meisten finden es nie.',
+            },
+          ],
+        },
+
+        close: {
+          label: 'Wie es gebaut ist',
+          paragraphs: [
+            'Kein Canvas und keine Spielbibliothek, und anders als beim anderen Spiel hier auch keine Bewegung. Es gibt keine Schleife und nichts im Flug: ein Feld ist ein Button, es wechselt den Zustand oder eben nicht, und das ganze Brett sind in Expertengröße vierhundertachtzig davon. Was es im Betrieb kostet, ist eine Klasse auf einem Element.',
+            'Die Minen werden beim ersten Druck gelegt statt zu Beginn, um das gedrückte Feld und die acht angrenzenden herum. Ein vorab verteiltes Feld muss entweder den ersten Zug verlieren lassen, was ein Münzwurf ist und kein Spiel, oder so lange neu verteilen, bis es das nicht mehr tut, was die Wahrscheinlichkeiten überall sonst still verbiegt. Spätes Legen ergibt ein ehrliches Feld und einen ersten Zug, der immer eine Region öffnet.',
+            'Eine Region zu öffnen ist eine Warteschlange und keine Rekursion, die ein Telefon bei vierhundert Ebenen Tiefe zu Recht ablehnen darf, und diese Warteschlange liefert der Animation ihr Timing gleich mit: der Ring, auf dem ein Feld gefunden wurde, ist sein Abstand zum Druck, also wartet jedes so viele Schritte, bevor es aufgeht. Das Öffnen kommt als etwas, das sich nach außen ausbreitet, statt als Brett, das auf einmal umspringt, und es kostet eine benutzerdefinierte Eigenschaft und eine Verzögerung.',
+            'Das Brett ist ein echtes Grid: Zeilen, Zellen, eine Zeilen- und Spaltenzahl, und genau ein Feld in der Tabulatorfolge, damit die Pfeiltasten es abgehen statt der Tabulatortaste. Dafür ist dieses Spiel hier. Das andere muss vor dem Screenreader versteckt und über eine Live-Region beschrieben werden, weil sechzehn Kacheln, die sich bei jedem Tastendruck neu schreiben, nicht lesbar sind. Ein Minenfeld ist eine Tabelle, die stillhält und wartet, und genau dafür gibt es ein Grid.',
           ],
         },
       },

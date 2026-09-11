@@ -561,6 +561,8 @@ const fr: Dict = {
 
     items: {
       twentyFortyEight: {
+        name: "2048",
+
         /** One line, for the card on the index. */
         tagline:
           "Le jeu de tuiles, construit en éléments plutôt qu'en dessin, si bien que les chiffres restent nets et que le plateau suit le thème.",
@@ -621,6 +623,89 @@ const fr: Dict = {
             "L'autre moitié, c'est que chaque tuile garde son élément tant qu'elle existe. Le plateau n'est jamais redessiné depuis l'état : un coup met à jour les nombres sur des nœuds déjà présents, et c'est pourquoi une tuile parcourt visiblement le chemin depuis sa place au lieu de disparaître pour réapparaître ailleurs.",
             "Les chiffres sont du texte : ils sont aussi nets que le reste de la page et suivent la taille que le lecteur a choisie. Les couleurs sont des jetons dans la même feuille de style que tout le reste, et c'est pourquoi le plateau répond au sélecteur de thème de l'en-tête.",
             "Les commandes passent par une seule fonction appelée depuis trois endroits, si bien qu'une touche, un balayage et une tape ne peuvent pas finir par vouloir dire des choses légèrement différentes. Les flèches n'appartiennent au plateau que tant qu'il est à l'écran, et un coup poussé avant que le précédent ne soit posé est mis en attente plutôt qu'abandonné : jouer vite ne coûte jamais un tour.",
+          ],
+        },
+      },
+
+      minesweeper: {
+        name: "Démineur",
+
+        tagline:
+          "Le champ de mines, sur les trois plateaux d'origine. Chaque case est un vrai bouton, si bien que tout le jeu se joue au clavier.",
+
+        metaDescription:
+          "Le démineur dans le navigateur, sur les plateaux débutant, intermédiaire et expert. Construit en balisage plutôt qu'en canvas, et jouable au clavier.",
+        lead: "Ouvrez toutes les cases qui ne sont pas une mine. Un nombre dit combien des huit cases qui l'entourent sont minées, et tout le reste se déduit de là. Trois plateaux, aux tailles d'origine, et un premier clic qui ne peut pas perdre.",
+
+        boards: "Plateau",
+        levels: {
+          beginner: "Débutant",
+          intermediate: "Intermédiaire",
+          expert: "Expert",
+        },
+
+        mines: "Mines",
+        time: "Temps",
+        best: "Record",
+        newGame: "Nouvelle partie",
+        flagMode: "Drapeaux",
+        hint: "Appuyez pour ouvrir, clic droit ou F pour poser un drapeau, un appui long sur téléphone. Un nombre terminé ouvre le reste de son entourage sur un appui ou au bouton du milieu.",
+
+        gridLabel: "Champ de mines",
+        cells: {
+          hidden: "Fermée",
+          flagged: "Drapeau",
+          mine: "Mine",
+          empty: "Vide",
+          wrong: "Drapeau erroné",
+        },
+
+        won: {
+          title: "Terrain déminé",
+          body: "Toutes les cases qui n'étaient pas une mine sont ouvertes.",
+          record: "Un nouveau record sur ce plateau.",
+          again: "Rejouer",
+        },
+
+        lost: {
+          title: "Mine",
+          body: "Le terrain est montré tel qu'il était. Un drapeau posé sur une case vide est signalé, et c'est là que le raisonnement a lâché la plupart du temps.",
+          again: "Réessayer",
+        },
+
+        how: {
+          label: "Comment jouer",
+          items: [
+            {
+              title: "Le premier clic est sûr",
+              description:
+                "Les mines sont posées après lui, autour de l'endroit appuyé : le premier coup ne peut donc pas perdre et ouvre toujours sur du terrain libre. Commencez n'importe où.",
+            },
+            {
+              title: "Un nombre compte ses voisines",
+              description:
+                "C'est le nombre de mines parmi les huit cases qui le touchent. Une case sans aucune mine autour d'elle ouvre toute la région en un seul appui.",
+            },
+            {
+              title: "Marquez ce que vous avez déduit",
+              description:
+                "Clic droit sur ordinateur, F au clavier, appui long sur téléphone. L'appui long ne fait que poser, si bien qu'un doigt lent ne peut pas retirer ce qu'il vient de mettre : c'est le mode drapeau qui en enlève un, et c'est de toute façon lui qu'il faut quand il y en a toute une série. Le compteur affiche les mines moins les drapeaux.",
+            },
+            {
+              title: "Appuyez sur un nombre terminé",
+              description:
+                "Dès qu'un nombre a autant de drapeaux autour de lui qu'il l'annonce, appuyer dessus ouvre le reste de son entourage d'un coup, et le bouton du milieu fait la même chose. Gardez le bouton enfoncé et les cases qui s'ouvriraient s'enfoncent avec lui : vous voyez les huit avant de vous engager. C'est de là que vient la vitesse dans ce jeu, et la plupart des joueurs ne le découvrent jamais.",
+            },
+          ],
+        },
+
+        close: {
+          label: "Comment c'est construit",
+          paragraphs: [
+            "Pas de canvas et pas de bibliothèque de jeu, et contrairement à l'autre jeu ici, pas de mouvement non plus. Il n'y a pas de boucle et rien en vol : une case est un bouton, elle change d'état ou non, et tout le plateau en compte quatre cent quatre-vingts à la taille expert. Ce que cela coûte à faire tourner, c'est une classe sur un élément.",
+            "Les mines sont posées au premier appui plutôt qu'au départ, autour de la case appuyée et des huit qui la touchent. Un terrain distribué à l'avance doit soit laisser le premier coup perdre, ce qui relève du pile ou face et non du jeu, soit redistribuer jusqu'à ce que ce ne soit plus le cas, ce qui fausse discrètement les probabilités partout ailleurs. Poser tard donne un terrain honnête et un premier coup qui ouvre toujours une région.",
+            "Ouvrir une région se fait avec une file et non par récursion, qu'un téléphone est en droit de refuser à quatre cents niveaux de profondeur, et cette file offre au passage son minutage à l'animation : l'anneau sur lequel une case a été trouvée est sa distance à l'appui, donc chacune attend ce nombre de pas avant de s'ouvrir. L'ouverture arrive comme quelque chose qui se propage vers l'extérieur au lieu d'un plateau qui change d'un bloc, et cela coûte une propriété personnalisée et un délai.",
+            "Le plateau est une vraie grille : des lignes, des cellules, un nombre de lignes et de colonnes, et une seule case dans l'ordre de tabulation pour que les flèches la parcourent plutôt que la touche Tab. C'est la raison d'être de ce jeu ici. L'autre doit être masqué aux lecteurs d'écran et décrit par une région live, parce que seize tuiles réécrites à chaque touche sont illisibles. Un champ de mines est un tableau qui reste immobile et attend, ce à quoi une grille sert exactement.",
           ],
         },
       },

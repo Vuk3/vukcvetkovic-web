@@ -44,11 +44,15 @@ Three entries sit on the surprising side of that line, and all three are deliber
   everywhere, but the faculty is "Elektronski fakultet" in Serbian, so `education` in
   [src/site.ts](../src/site.ts) carries only the period and the school name lives in each
   dictionary.
-- **A game's name and slug are facts, everything around them is prose.** An entry in
-  `site.games` carries `{ slug, name }`, because "2048" is four characters in every
-  language. That is what lets a game's page title be composed -
-  `${site.games.twentyFortyEight.name} - ${site.name}` in the route - instead of
-  `metaTitle` being written out four times the way the project index needs it.
+- **A game's slug is a fact, its name is not.** An entry in `site.games` carries only
+  `{ slug }` - a URL, the same in every locale - while the title sits in
+  `games.items.<id>.name` in each dictionary. The title was a fact while 2048 was the only
+  game, on the argument that it reads the same in four languages, and that argument was
+  only ever true of that one title: Minesweeper is Minolovac in Serbian and Démineur in
+  French. Writing "2048" out four times is what the rule costs, and it is cheaper than a
+  Serbian page with an English game on it. The page title is still composed -
+  `${dict.games.items.minesweeper.name} - ${site.name}` in the route - rather than a
+  `metaTitle` per locale.
 - **A results table is split, not sorted onto one side.** The figures are
   language-neutral and live in [src/site.ts](../src/site.ts), while every word in the
   table - the column heads and the row labels - lives in the dictionaries, because whether
@@ -307,13 +311,15 @@ Five steps, and the compiler names the next one every time. Unlike a project, a 
 not data fed to a shared component - it is a program with a page around it - so two of the
 five are code.
 
-1. **`en.ts`, under `games.items`.** A new key with a `tagline` (the line on the index) and
-   whatever copy that game's own page needs. ⚠️ Games do **not** share a shape the way
+1. **`en.ts`, under `games.items`.** A new key with a `name` (the title, in the page head,
+   the card and the browser tab), a `tagline` (the line on the index) and whatever copy that
+   game's own page needs. ⚠️ Games do **not** share a shape the way
    `projects.items` entries must: each is rendered by its own component, so 2048's `score`
    and `undo` mean nothing to the next one and nothing forces them to appear in it.
 2. **The other three dictionaries**, which are now type errors until they match.
 3. **[src/site.ts](../src/site.ts)**, a new entry in `games` keyed by the same id, with the
-   `slug` and the `name`. There is no date on a game, unlike a project. `GameId` is
+   `slug` and nothing else. There is no date on a game, unlike a project, and the title is
+   prose and lives in the dictionaries. `GameId` is
    `keyof Dict["games"]["items"]`, so a
    registry entry with no copy behind it fails `astro check`, and the id has to be spelled
    the same in both files or neither compiles. Declaration order is the order the index
@@ -341,7 +347,7 @@ three cards wide.
 game supplies one predicate saying what its own scoring could have produced. Do not write
 a second copy of it, and read the warning at the top of that file before describing it to
 anybody as protection - see
-[design-system.md §9](./design-system.md#9-the-game-board-and-the-one-place-the-palette-opens-up).
+[design-system.md §9](./design-system.md#9-the-game-boards-and-the-one-place-the-palette-opens-up).
 
 ---
 
@@ -370,6 +376,9 @@ anybody as protection - see
 
 ## Changelog
 
+- 2026-09-11 - a game's title moved from `site.games` into `games.items.<id>.name`, because
+  Minesweeper is Minolovac and Démineur while 2048 is 2048. A `site.games` entry is now a
+  slug and nothing else (§1, §7).
 - 2026-09-11 - adding a game no longer means writing its best score by hand. `scoreRecord`
   in [games/record.ts](../src/games/record.ts) keeps and signs it for every game, and §7
   says what the caller still owns.
