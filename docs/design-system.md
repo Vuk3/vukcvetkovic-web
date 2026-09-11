@@ -682,17 +682,18 @@ open item 1.
 
 ## 9. The game boards, and the one place the palette opens up
 
-Two pages carry a game, and both are built the way the rest of the site is: markup, tokens,
-and no canvas or game library anywhere. They are deliberately opposite, which is most of
-what this section is about.
+Three pages carry a game, and all three are built the way the rest of the site is: markup,
+tokens, and no canvas or game library anywhere. They are deliberately different from each
+other, which is most of what this section is about.
 
-| | [2048](../src/games/2048/game.ts) | [Minesweeper](../src/games/minesweeper/game.ts) |
-|---|---|---|
-| what it is made of | 16 divs that move | up to 480 buttons that change state |
-| the hard part | motion, at sixty frames | the rules, and the keyboard |
-| the board in the markup | yes, 16 cells, fixed | no, the module builds it |
-| to a screen reader | hidden, narrated by a live region | a real `role="grid"` |
-| what a turn costs | two custom properties | a class |
+| | [2048](../src/games/2048/game.ts) | [Minesweeper](../src/games/minesweeper/game.ts) | [Accretion](../src/games/accretion/game.ts) |
+|---|---|---|---|
+| what it is made of | 16 divs that move | up to 480 buttons that change state | up to 46 circles that fall |
+| the hard part | motion, at sixty frames | the rules, and the keyboard | the solver, and making it settle |
+| the board in the markup | yes, 16 cells, fixed | no, the module builds it | no, play creates every body |
+| to a screen reader | hidden, narrated by a live region | a real `role="grid"` | a live region, and the sequence below it |
+| what a turn costs | two custom properties | a class | a frame of simulation |
+| runs when idle | no | no | **yes** |
 
 ### A tile keeps its element for its whole life
 
@@ -740,11 +741,13 @@ deep, because a longer queue stops answering the keyboard and starts replaying i
 
 ### The colour ramp
 
-⚠️ **The two boards and the technology marks in [src/tech.ts](../src/tech.ts) are the only
-colour on the site outside the accent**, and unlike everything else in this document none
+⚠️ **The three boards and the technology marks in [src/tech.ts](../src/tech.ts) are the
+only colour on the site outside the accent**, and unlike everything else in this document none
 of them is a decision about taste. Eleven values have to be told apart at a glance and at
 speed, and a near-monochrome board makes that impossible. The minefield's eight numbers are
-the same argument and are set out further down.
+the same argument and are set out further down. Accretion's ten are the exception to the
+exception: they were not chosen to be told apart at all, they are the planets' own colours,
+and they happen to be distinguishable because planets are.
 
 `--g2048-t1` to `--g2048-t12` are declared on `:root` and redefined in `.dark`, one step
 per doubling. It is a single sequence rather than eleven picked colours: paper and sand for
@@ -767,7 +770,15 @@ however wide the card gets.
 [ArtMinesweeper.astro](../src/components/games/ArtMinesweeper.astro) goes one further and
 uses `.ms-cell` itself, overriding only the three things that are about being a thumbnail,
 so the card cannot drift away from the game it advertises. The tray colour is the one thing
-a thumbnail cannot share - `.game-art-2048` and `.game-art-ms` each bring their own.
+a thumbnail cannot share - `.game-art-2048`, `.game-art-ms` and `.game-art-acc` each bring
+their own.
+
+⚠️ **[ArtAccretion.astro](../src/components/games/ArtAccretion.astro) is hand placed and has
+to be checked rather than judged.** All ten bodies are spread across the card, and every
+pair of centres has to be further apart than the two radii - Saturn's ring included, which
+is wider than Saturn and is easy to forget. Its sizes are also *not* the game's radius
+table: real ratios put the Sun at nine and a half Moons, which in a 5:2 box leaves the Moon
+at four pixels and the card saying nothing, so they are compressed to about five to one.
 
 ### Numbers are sized off the board, not the viewport
 
@@ -854,6 +865,111 @@ ground. Navy becomes violet, and the last two separate by weight rather than hue
 is a different picture on every platform and many are colour fonts that ignore `color`
 outright, which would put the one shape that must answer the theme outside the theme.
 
+### The field, and a solver in a hundred lines
+
+⚠️ **Accretion is the only thing on this site that runs on every frame.** The other two
+games are event driven and idle at nothing. This one integrates, resolves contacts and
+writes up to 46 transforms sixty times a second, which is a budget the rest of the site
+does not have and must not borrow. A full field costs under a tenth of a millisecond of
+solver against a 16.7ms frame, so the cost is the transform writes rather than the
+mathematics.
+
+**The simulation runs in its own space and never learns how big it is being shown.**
+`.acc-world` is a fixed 1200 by 1650 box carrying one `scale()`, so a resize is that single
+number changing - not a radius, not a position, not a step. Without it the same gravity
+would feel twice as heavy on a phone as on a desktop, and a resize mid-game would jolt the
+pile.
+
+⚠️ **`.acc-world`, the panels and the line are siblings, not nested.** Anything inside the
+scaled layer is scaled with it, which is right for a planet and wrong for a sentence. The
+line was inside it once, and rounding in the scale left it stopping short of the wall.
+
+**Bodies rotate in the solver and the rotation is not drawn**, which is two decisions and
+both are deliberate. Friction is measured between the two *surfaces* rather than the two
+centres, so a body that is rolling has no slip and a body that is skidding is both slowed
+and spun up - that is what lets one friction term serve a roll and a skid at once. Drawing
+the angle is a different question and the answer is no: these are not featureless balls, and
+a ring or a set of cloud bands is set by a planet's axis, so a Saturn resting at ninety
+degrees reads as broken rather than as turned. Two attempts to have it both ways - easing a
+settled body upright, then easing a moving one - were both visibly a body turning while
+nothing turned it.
+
+**The planets are gradients, not images.** One radial gradient makes the lit sphere from
+`--acc-tint`, a shared `--acc-shade` lays a specular, a bounce-lit rim and a curved
+terminator over the top, and most bodies add markings of their own underneath. Saturn's ring
+is two pseudo-elements, one behind the planet and one clipped to its lower half in front,
+because a single ellipse on top reads as a hoop around a circle rather than a ring around a
+sphere.
+
+⚠️ **The Sun takes no shading stack.** It is not lit from outside, so a terminator across it
+is simply wrong.
+
+⚠️ **Saturn's ring may not reach past the body.** At 208% of the width it hung 0.11 of a
+radius below Saturn, so a Saturn resting on the floor had its ring sliced off by the edge of
+the field - which reads as the planet having sunk halfway through the bottom. At 170% the
+furthest point of the ring is inside the body's own silhouette. Uranus had a vertical ring
+for the same reason its real ones are vertical, and it was removed: at the size a body
+actually appears, a tall thin ellipse around a small circle stops reading as a planet.
+
+⚠️ **Neither the ring nor the Sun's glow may use a percentage.** `border-width` and
+`box-shadow` take lengths only, so the ring is drawn as a gradient annulus - whose stops
+*are* percentages of the element - and the glow is in pixels and therefore confined to
+`.acc-world`, where a Sun is always about the same size.
+
+⚠️ **`--acc-line` is the colour and `--acc-line-at` is the position, and they cannot be one
+name.** They were, set on `.acc-field` from an inline style, so a percentage inherited into
+every rule below it and the dashes were drawn in `16%`.
+
+### What made the pile settle
+
+The solver was rewritten several times before it was calm, and every version looked correct
+while it was wrong. They are recorded because the next person to touch this file will
+otherwise make the same moves in the same order:
+
+1. **A wall that clamped the position without moving the previous one.** In Verlet the
+   velocity *is* the gap between the two, so the depth a body sank into the floor became
+   exactly that much upward speed - a perfectly elastic bounce that got stronger the harder
+   the landing.
+2. **A merge rule asking for 14% of overlap.** The solver holds resting contacts at about
+   0.2%, so nothing ever merged and the game had no rule left in it.
+3. **A merge that appeared at full size.** The new body was born inside its neighbours,
+   sometimes by half a radius, and a solver asked to fix that in one frame does it by
+   firing them across the field. It now grows into its size over about a fifth of a second.
+4. ⚠️ **A separation that was handed to the body as speed.** The big one. Pushing two bodies
+   apart and leaving their previous positions behind gives each of them the whole correction
+   as velocity, forty times a frame. The correction now moves the previous position with the
+   current one, so it creates no speed at all, and an *impact* is resolved separately and
+   only when the bodies are actually approaching. One knob between the two could not serve
+   both: set low the pile was dead to a drop from the top, set high every merge threw the
+   field apart.
+5. **Damping written per substep.** It was, and when the substeps went from 8 to 40 the
+   damping silently went with them - 8% of a body's speed survived a second, so a body
+   dropped from the top was halfway down after one. Every rate here is now written per
+   second and converted.
+
+⚠️ **Merging runs inside the substep loop, before anything separates.** It ran once at the
+end of a frame, so two equal bodies met, were pushed apart forty times, and only then became
+one - every merge was visibly a collision followed by a merge.
+
+### How far a body slides, and how to measure it
+
+⚠️ **Judge it by the gap between two settled bodies, never by how far from the middle they
+end up.** Two bodies touching are already 126 units apart by their own size, so a
+distance-from-centre reading is mostly that constant and barely moves however anything is
+set. Eight separate mechanisms were measured against the wrong number and wrongly cleared
+because of it. Against the gap the signal is plain.
+
+**The floor drag and the rolling resistance only work together.** Once bodies could rotate,
+one that reaches the bottom stops sliding and starts rolling, and rolling has no slip against
+the floor - so `GROUND_KEPT_PER_SECOND` stopped touching it. Turning either alone barely
+moves anything. `ROLLING_KEPT_PER_SECOND` is the only term that slows a body which is not
+slipping at all, and it is what took the gap between two bodies dropped in the middle from
+294 to 86.
+
+**The numbers next to each constant in
+[game.ts](../src/games/accretion/game.ts) are measurements, not preferences.** Do not adjust
+one without re-running the thing it cites.
+
 ### The record is signed
 
 `game-2048-best` holds `value.signature` rather than a bare number, and
@@ -903,6 +1019,15 @@ and that is a feature rather than a hardening step.
 
 ## Changelog
 
+- 2026-09-11 - a third game, [Accretion](../src/games/accretion/game.ts), and the first page
+  here that runs on every frame. It brings a position-based solver written from scratch, ten
+  planets drawn as gradients, and `--acc-*` on `:root` and `.dark`. §9 records the three
+  things that made the pile refuse to settle, because each of them looks correct.
+- 2026-09-11 - Accretion's bodies rotate in the solver, and the rotation is deliberately not
+  drawn. Contact friction works on the surfaces rather than the centres, which is what tells
+  rolling from sliding; drawing the angle is a separate question and §9 records why the
+  answer is no. The same section now records how far a body slides and the one honest way to
+  measure it.
 - 2026-09-11 - the minefield holds a press: the ring a release would open goes down with
   the button, the middle button chords, and a long press plants a flag rather than toggling
   one. See "The press preview" in §9.

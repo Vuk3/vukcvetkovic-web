@@ -606,10 +606,10 @@ const en = {
     index: {
       metaTitle: "Games - Vuk Cvetković",
       metaDescription:
-        "Browser games by Vuk Cvetković, built as markup and CSS rather than as a canvas. Each one gets a page of its own.",
+        "Browser games by Vuk Cvetković: 2048, Minesweeper, and a game about merging worlds into bigger ones. Each gets a page of its own.",
       heading: "Games",
       intro:
-        "Things built because they were worth building. They run in the browser with nothing installed, and each one has a page on how it works underneath.",
+        "Games worth more than one go. Each has a page of its own, and underneath it a write-up on how it was built, for anyone who wants that too.",
     },
 
     items: {
@@ -625,11 +625,11 @@ const en = {
 
         /** One line, for the card on the index. */
         tagline:
-          "The tile game, built as elements rather than a drawing, so the numbers stay sharp and the board follows the theme.",
+          "Push the board and every tile slides as far as it can. Two of the same number merge into one worth double, all the way up to 2048.",
 
         metaDescription:
-          "The tile game, built as markup rather than as a canvas. Slide the board, merge matching numbers, and get to a single tile worth 2048.",
-        lead: "Push the board in any direction and every tile slides as far as it can. Two of the same number merge into one worth double, and the aim is a single tile worth 2048. Built as elements rather than as a drawing, so the numbers stay sharp at any size and the board follows the theme.",
+          "The tile game. Slide the board, merge matching numbers, and get to a single tile worth 2048.",
+        lead: "Push the board in any direction and every tile slides as far as it can. Two of the same number merge into one worth double, and the aim is a single tile worth 2048.",
 
         score: "Score",
         best: "Best",
@@ -692,10 +692,10 @@ const en = {
         name: "Minesweeper",
 
         tagline:
-          "The minefield, on all three of the original boards. Every cell is a real button, so the whole game plays from the keyboard.",
+          "Open every cell that is not a mine. Each number counts the mines touching it, and the rest is worked out from there.",
 
         metaDescription:
-          "Minesweeper in the browser, on the beginner, intermediate and expert boards. Built as markup rather than as a canvas, and playable from the keyboard.",
+          "Minesweeper in the browser, on the beginner, intermediate and expert boards, with a first click that can never lose.",
         lead: "Open every cell that is not a mine. A number says how many of the eight cells around it are mined, and everything else is worked out from there. Three boards, the sizes the original shipped with, and a first click that can never lose.",
 
         boards: "Board",
@@ -769,6 +769,86 @@ const en = {
             "The mines are laid on the first press rather than at the start, around the cell that was pressed and the eight touching it. A field dealt in advance has to either let the opening move lose, which is a coin toss rather than a game, or deal again until it does not, which quietly bends the odds everywhere else. Laying them late gets an honest field and a first move that always opens into a region.",
             "Opening a region is a queue rather than a recursion, which a four hundred deep fill on a phone is entitled to refuse, and the queue hands the animation its timing for free: the ring a cell was found on is how far it is from the press, so each one waits that many steps before it opens. The fill arrives as something spreading outward instead of the board changing all at once, and it costs one custom property and a delay.",
             "The board is a real grid: rows, cells, a row and column count, and one cell in the tab order at a time so the arrow keys walk it rather than the Tab key. That is why this game is here. The other one has to be hidden from a screen reader and described through a live region, because sixteen tiles that rewrite themselves on every keypress cannot be read. A minefield is a table that sits still and waits, which is exactly what a grid is for.",
+          ],
+        },
+      },
+      accretion: {
+        name: "Accretion",
+
+        tagline:
+          "Let one body fall onto another. Two of the same merge into the next one up, from the Moon all the way to the Sun.",
+
+        metaDescription:
+          "A merge game in the browser: let celestial bodies fall, and two of the same become the next one up, from the Moon to the Sun.",
+        lead: "Let a body fall. Two of the same merge into the next one up, from the Moon through the planets to the Sun, and the space fills whether you are ready or not.",
+
+        score: "Score",
+        best: "Best",
+        next: "Next",
+        newGame: "New game",
+        hint: "Move to aim and press to drop. Arrow keys aim, space drops.",
+        sequence: "The sequence, from smallest to largest",
+
+        /** The ten bodies, in order. The order is the solar system, the sizes
+         *  are the game's - see the note on the radius table in game.ts. */
+        planets: [
+          "Moon",
+          "Mercury",
+          "Mars",
+          "Venus",
+          "Earth",
+          "Neptune",
+          "Uranus",
+          "Saturn",
+          "Jupiter",
+          "Sun",
+        ],
+
+        won: {
+          title: "A star",
+          body: "The sequence has nowhere left to go. Two Suns cannot become anything, so they go off instead, and the room they leave behind is the only way a full field ever empties.",
+          keepGoing: "Keep going",
+        },
+
+        over: {
+          title: "Out of room",
+          body: "Something has been resting above the line for too long. There is no ceiling here, only a line, and a body that stops above it has nowhere to go.",
+          restart: "Play again",
+        },
+
+        how: {
+          label: "How to play",
+          items: [
+            {
+              title: "Aim, then drop",
+              description:
+                "Move across the top to line a body up and press to let it go. Only the five smallest ever arrive, so everything past Earth has to be built.",
+            },
+            {
+              title: "Two of the same touch and merge",
+              description:
+                "They do not have to be pressed together or held: the moment two equal bodies come to rest against each other they become the next one up, and a merge that lands next to another sets off a chain.",
+            },
+            {
+              title: "Build sideways, not upward",
+              description:
+                "A body dropped onto a tall pile rolls, and where it lands is not where it was aimed. Keeping the larger ones along the bottom is most of the game, because they are the ones with nowhere left to go.",
+            },
+            {
+              title: "The line is a delay, not a wall",
+              description:
+                "Nothing stops a body going above it. It is only over when one is still resting up there a second later, so a splash is survivable and a settled Jupiter is not.",
+            },
+          ],
+        },
+
+        close: {
+          label: "How it is built",
+          paragraphs: [
+            "No canvas, no physics library and no dependency of any kind. A body is a div with a border radius, its colour is a gradient in the same stylesheet as the rest of the page, and the frame writes one transform onto each. So the planets scale with the page, stay sharp at any zoom, and cost nothing to serve. A physics engine would have been six times the weight of this whole page.",
+            "The solver is position based: a body stores where it is and where it was, and the gap between the two is its velocity. Nothing computes an impulse. A contact pushes two bodies apart, and because the previous position stays put, the push removes exactly the speed that drove them together - which is what an inelastic collision is. Forty of those passes run per frame, each against positions that have already moved, and a full field of forty-six bodies costs under a tenth of a millisecond against a budget of nearly seventeen.",
+            "Getting it to settle was the work. Three separate things quietly added energy instead of removing it: a wall that clamped a body's position without moving its previous one, which turned the depth of a landing into the speed of a bounce; tangential friction computed from a velocity the same pass was changing, which had a crowded pile still throwing bodies around after eight seconds; and a merge rule that asked for so much overlap that nothing ever merged at all. Each was found by measuring rather than by reading, and the numbers that came out of it are written next to the constants they justify.",
+            "The simulation runs in its own thousand unit space and never learns how big it is being shown. One transform on one element scales the whole field onto whatever width the page has given it, so a resize changes that single number and nothing else - not a radius, not a position, not a step. It is why the same game plays identically on a phone and on a desktop instead of having twice the gravity on one of them.",
           ],
         },
       },

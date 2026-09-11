@@ -11,6 +11,7 @@ import type { Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
 import { site, type Game } from '../site';
 import Art2048 from './games/Art2048.astro';
+import ArtAccretion from './games/ArtAccretion.astro';
 import ArtMinesweeper from './games/ArtMinesweeper.astro';
 
 interface Props {
@@ -34,6 +35,7 @@ type GameId = keyof typeof copy.items;
 const art: Record<GameId, typeof Art2048> = {
   twentyFortyEight: Art2048,
   minesweeper: ArtMinesweeper,
+  accretion: ArtAccretion,
 };
 
 /*

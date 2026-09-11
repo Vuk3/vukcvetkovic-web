@@ -552,10 +552,10 @@ const de: Dict = {
     index: {
       metaTitle: 'Spiele - Vuk Cvetković',
       metaDescription:
-        'Browserspiele von Vuk Cvetković, als Markup und CSS gebaut statt als Canvas. Jedes bekommt eine eigene Seite.',
+        'Browserspiele von Vuk Cvetković: 2048, Minesweeper und ein Spiel, in dem Welten zu größeren verschmelzen. Jedes bekommt eine eigene Seite.',
       heading: 'Spiele',
       intro:
-        'Dinge, die es wert waren, gebaut zu werden. Sie laufen im Browser ohne Installation, und jedes hat eine Seite dazu, wie es darunter funktioniert.',
+        'Spiele, die mehr als eine Runde wert sind. Jedes hat eine eigene Seite, und darunter einen Text dazu, wie es gebaut ist, für alle die das auch wissen wollen.',
     },
 
     items: {
@@ -564,11 +564,11 @@ const de: Dict = {
 
         /** One line, for the card on the index. */
         tagline:
-          'Das Kachelspiel, aus Elementen gebaut statt gezeichnet, damit die Zahlen scharf bleiben und das Brett dem Thema folgt.',
+          'Schiebe das Brett, und jede Kachel rutscht so weit sie kann. Zwei gleiche Zahlen werden zu einer doppelten, bis hinauf zu 2048.',
 
         metaDescription:
-          "Das Kachelspiel, als Markup gebaut statt als Canvas. Das Brett schieben, gleiche Zahlen verschmelzen, und eine einzelne Kachel mit 2048 erreichen.",
-        lead: "Schiebe das Brett in eine beliebige Richtung und jede Kachel rutscht so weit sie kann. Zwei gleiche Zahlen verschmelzen zu einer doppelten, und das Ziel ist eine einzelne Kachel mit 2048. Aus Elementen gebaut statt gezeichnet, deshalb bleiben die Zahlen in jeder Größe scharf und das Brett folgt dem Thema.",
+          "Das Kachelspiel. Das Brett schieben, gleiche Zahlen verschmelzen, und eine einzelne Kachel mit 2048 erreichen.",
+        lead: "Schiebe das Brett in eine beliebige Richtung und jede Kachel rutscht so weit sie kann. Zwei gleiche Zahlen verschmelzen zu einer doppelten, und das Ziel ist eine einzelne Kachel mit 2048.",
 
         score: "Punkte",
         best: "Bestwert",
@@ -630,10 +630,10 @@ const de: Dict = {
         name: 'Minesweeper',
 
         tagline:
-          'Das Minenfeld, auf allen drei Original-Brettern. Jedes Feld ist ein echter Button, deshalb lässt sich das ganze Spiel über die Tastatur spielen.',
+          'Öffne jedes Feld, das keine Mine ist. Jede Zahl zählt die Minen, die sie berühren, und der Rest wird daraus hergeleitet.',
 
         metaDescription:
-          'Minesweeper im Browser, auf den Brettern Anfänger, Fortgeschritten und Experte. Als Markup gebaut statt als Canvas, und über die Tastatur spielbar.',
+          'Minesweeper im Browser, auf den Brettern Anfänger, Fortgeschritten und Experte, mit einem ersten Klick, der nicht verlieren kann.',
         lead: 'Öffne jedes Feld, das keine Mine ist. Eine Zahl sagt, wie viele der acht Felder um sie herum vermint sind, und alles Weitere folgt daraus. Drei Bretter in den Größen, mit denen das Original ausgeliefert wurde, und ein erster Klick, der nicht verlieren kann.',
 
         boards: 'Brett',
@@ -705,6 +705,84 @@ const de: Dict = {
             'Die Minen werden beim ersten Druck gelegt statt zu Beginn, um das gedrückte Feld und die acht angrenzenden herum. Ein vorab verteiltes Feld muss entweder den ersten Zug verlieren lassen, was ein Münzwurf ist und kein Spiel, oder so lange neu verteilen, bis es das nicht mehr tut, was die Wahrscheinlichkeiten überall sonst still verbiegt. Spätes Legen ergibt ein ehrliches Feld und einen ersten Zug, der immer eine Region öffnet.',
             'Eine Region zu öffnen ist eine Warteschlange und keine Rekursion, die ein Telefon bei vierhundert Ebenen Tiefe zu Recht ablehnen darf, und diese Warteschlange liefert der Animation ihr Timing gleich mit: der Ring, auf dem ein Feld gefunden wurde, ist sein Abstand zum Druck, also wartet jedes so viele Schritte, bevor es aufgeht. Das Öffnen kommt als etwas, das sich nach außen ausbreitet, statt als Brett, das auf einmal umspringt, und es kostet eine benutzerdefinierte Eigenschaft und eine Verzögerung.',
             'Das Brett ist ein echtes Grid: Zeilen, Zellen, eine Zeilen- und Spaltenzahl, und genau ein Feld in der Tabulatorfolge, damit die Pfeiltasten es abgehen statt der Tabulatortaste. Dafür ist dieses Spiel hier. Das andere muss vor dem Screenreader versteckt und über eine Live-Region beschrieben werden, weil sechzehn Kacheln, die sich bei jedem Tastendruck neu schreiben, nicht lesbar sind. Ein Minenfeld ist eine Tabelle, die stillhält und wartet, und genau dafür gibt es ein Grid.',
+          ],
+        },
+      },
+      accretion: {
+        name: 'Akkretion',
+
+        tagline:
+          'Lass Himmelskörper fallen. Zwei gleiche werden zum nächsten, vom Mond bis hinauf zur Sonne.',
+
+        metaDescription:
+          'Ein Verschmelzungsspiel im Browser: Himmelskörper fallen lassen, und zwei gleiche werden zum nächsten, vom Mond bis zur Sonne.',
+        lead: 'Lass einen Himmelskörper fallen. Zwei gleiche verschmelzen zum nächsten, vom Mond über die Planeten bis zur Sonne, und der Raum füllt sich, ob du bereit bist oder nicht.',
+
+        score: 'Punkte',
+        best: 'Bestwert',
+        next: 'Als Nächstes',
+        newGame: 'Neues Spiel',
+        hint: 'Bewegen zum Zielen, drücken zum Loslassen. Die Pfeiltasten zielen, die Leertaste lässt los.',
+        sequence: 'Die Reihe, von der kleinsten zur größten',
+
+        planets: [
+          'Mond',
+          'Merkur',
+          'Mars',
+          'Venus',
+          'Erde',
+          'Neptun',
+          'Uranus',
+          'Saturn',
+          'Jupiter',
+          'Sonne',
+        ],
+
+        won: {
+          title: 'Ein Stern',
+          body: 'Die Reihe hat kein Weiter mehr. Zwei Sonnen können nichts werden, also gehen sie stattdessen hoch, und der Platz, den sie hinterlassen, ist die einzige Art, wie ein voller Raum je wieder leer wird.',
+          keepGoing: 'Weiterspielen',
+        },
+
+        over: {
+          title: 'Kein Platz mehr',
+          body: 'Etwas liegt zu lange über der Linie. Hier gibt es keine Decke, nur eine Linie, und ein Körper, der darüber zur Ruhe kommt, hat kein Weiter.',
+          restart: 'Nochmal spielen',
+        },
+
+        how: {
+          label: 'So wird gespielt',
+          items: [
+            {
+              title: 'Zielen, dann loslassen',
+              description:
+                'Über den Rand bewegen, um einen Körper auszurichten, und drücken, um ihn fallen zu lassen. Es kommen nur die fünf kleinsten, alles jenseits der Erde muss also gebaut werden.',
+            },
+            {
+              title: 'Zwei gleiche berühren sich und verschmelzen',
+              description:
+                'Sie müssen nicht gedrückt oder gehalten werden: sobald zwei gleiche Körper aneinander zur Ruhe kommen, werden sie die nächste Stufe, und eine Verschmelzung neben einer anderen löst eine Kette aus.',
+            },
+            {
+              title: 'In die Breite bauen, nicht in die Höhe',
+              description:
+                'Ein Körper, der auf einen hohen Haufen fällt, rollt, und wo er landet, ist nicht, wohin gezielt wurde. Die großen unten zu halten ist der größere Teil des Spiels, denn genau sie haben kein Weiter.',
+            },
+            {
+              title: 'Die Linie ist eine Frist, keine Wand',
+              description:
+                'Nichts hindert einen Körper daran, darüber zu gehen. Vorbei ist es erst, wenn eine Sekunde später noch etwas dort oben liegt: ein Aufspritzen übersteht man, ein dort liegen gebliebener Jupiter nicht.',
+            },
+          ],
+        },
+
+        close: {
+          label: 'Wie es gebaut ist',
+          paragraphs: [
+            'Kein Canvas, keine Physikbibliothek und überhaupt keine Abhängigkeit. Ein Körper ist ein div mit einem Eckenradius, seine Farbe ist ein Verlauf im selben Stylesheet wie der Rest der Seite, und das Bild schreibt eine Transformation auf jeden einzelnen. Deshalb skalieren die Planeten mit der Seite, bleiben in jedem Zoom scharf und kosten keine Anfrage. Eine Physik-Engine wäre sechsmal so schwer wie diese ganze Seite.',
+            'Der Solver arbeitet über Positionen: ein Körper merkt sich, wo er ist und wo er war, und der Abstand dazwischen ist seine Geschwindigkeit. Nichts berechnet einen Impuls. Ein Kontakt drückt zwei Körper auseinander, und weil die vorige Position stehen bleibt, nimmt dieses Auseinanderdrücken genau die Geschwindigkeit heraus, die sie zusammengebracht hat - und das ist ein unelastischer Stoß. Vierzig solcher Durchgänge laufen pro Bild, jeder gegen Positionen, die sich schon bewegt haben, und ein voller Raum mit sechsundvierzig Körpern kostet unter einem Zehntel einer Millisekunde bei einem Budget von fast siebzehn.',
+            'Die Arbeit war, es zur Ruhe zu bringen. Drei getrennte Dinge fügten still Energie hinzu, statt sie zu entziehen: eine Wand, die die Position eines Körpers begrenzte, ohne die vorige mitzunehmen, wodurch die Tiefe einer Landung zur Geschwindigkeit eines Abprallers wurde; tangentiale Reibung, berechnet aus einer Geschwindigkeit, die derselbe Durchgang gerade änderte, weshalb ein dichter Haufen nach acht Sekunden immer noch Körper herumwarf; und eine Verschmelzungsregel, die so viel Überlappung verlangte, dass überhaupt nie etwas verschmolz. Jedes davon wurde durch Messen gefunden und nicht durch Lesen, und die Zahlen, die dabei herauskamen, stehen neben den Konstanten, die sie begründen.',
+            'Die Simulation läuft in ihrem eigenen Raum aus tausend Einheiten und erfährt nie, wie groß sie gezeigt wird. Eine Transformation auf einem Element bringt den ganzen Raum auf die Breite, die die Seite ihm gegeben hat, eine Größenänderung ändert also diese eine Zahl und sonst nichts - keinen Radius, keine Position, keinen Schritt. Deshalb spielt sich dasselbe Spiel auf dem Telefon genau wie am Rechner, statt auf einem von beiden die doppelte Schwerkraft zu haben.',
           ],
         },
       },

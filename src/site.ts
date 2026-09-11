@@ -334,6 +334,7 @@ export interface Game {
 const games: Record<GameId, Game> = {
   twentyFortyEight: { slug: "2048" },
   minesweeper: { slug: "minesweeper" },
+  accretion: { slug: "accretion" },
 };
 
 export const site = {

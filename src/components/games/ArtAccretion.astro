@@ -1,0 +1,63 @@
+---
+/**
+ * The thumbnail for Accretion on the games index.
+ *
+ * The real bodies at a different size, not a picture of them: the same
+ * `.acc-body` the field is full of, so every gradient, Saturn's ring and the
+ * Sun's glow come from one place and the card cannot drift away from the game
+ * it advertises.
+ *
+ * All ten, spread across the whole card rather than lined up along the bottom.
+ * A row wastes most of a 5:2 box on empty sky and squeezes the sequence into a
+ * strip, which reads as a diagram rather than as the game.
+ *
+ * ⚠️ **Nothing here may touch anything else**, and it is easy to get wrong by
+ * eye - especially Saturn, whose ring is more than twice as wide as Saturn.
+ * The layout is checked rather than judged: every pair of centres is further
+ * apart than the two radii, the ring included, and 1.06 is the largest these
+ * can be scaled before the Sun and Mars meet.
+ *
+ * ⚠️ The sizes are not the game's radius table. Real ratios put the Sun at nine
+ * and a half Moons, which in a box this shape leaves the Moon at four pixels
+ * and the card saying nothing. These are compressed to about five to one.
+ */
+
+/**
+ * Centre and diameter of each body, in percent of the card's width, smallest
+ * first so the index is the tier.
+ *
+ * Hand placed rather than laid out, because what is wanted is a spread field
+ * with no dead corner, and nothing in CSS packs circles.
+ */
+const bodies = [
+  { cx: 21, cy: 36, d: 4.24 },
+  { cx: 8, cy: 9, d: 5.09 },
+  { cx: 76, cy: 33, d: 6.15 },
+  { cx: 44, cy: 10, d: 7.42 },
+  { cx: 28, cy: 10, d: 8.9 },
+  { cx: 63, cy: 30, d: 10.6 },
+  { cx: 13, cy: 27, d: 12.72 },
+  { cx: 40, cy: 29, d: 15.26 },
+  { cx: 60, cy: 10.5, d: 18.34 },
+  { cx: 84, cy: 21, d: 22.26 },
+];
+---
+
+{/*
+  Two elements, not one. The outer is the query container and the inner is the
+  field, because a container cannot size itself in its own `cqi` - see the
+  warning on `.game-art` in global.css.
+*/}
+<div class="game-art game-art-acc" aria-hidden="true">
+  <div class="game-art-well">
+    {
+      bodies.map(({ cx, cy, d }, tier) => (
+        <span
+          class="acc-body game-art-orb"
+          data-tier={tier}
+          style={`--cx:${cx}; --cy:${cy}; --d:${d}`}
+        />
+      ))
+    }
+  </div>
+</div>

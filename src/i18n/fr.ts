@@ -553,10 +553,10 @@ const fr: Dict = {
     index: {
       metaTitle: "Jeux - Vuk Cvetković",
       metaDescription:
-        "Les jeux de navigateur de Vuk Cvetković, construits en balisage et en CSS plutôt qu'en canvas. Chacun a sa propre page.",
+        "Les jeux de navigateur de Vuk Cvetković : 2048, le démineur, et un jeu où l'on fusionne des mondes en de plus grands. Chacun a sa propre page.",
       heading: "Jeux",
       intro:
-        "Des choses construites parce qu'elles en valaient la peine. Elles tournent dans le navigateur sans rien installer, et chacune a une page sur son fonctionnement.",
+        "Des jeux qui valent plus d'une partie. Chacun a sa page, et en dessous un texte sur la façon dont il est construit, pour qui veut aussi cela.",
     },
 
     items: {
@@ -565,11 +565,11 @@ const fr: Dict = {
 
         /** One line, for the card on the index. */
         tagline:
-          "Le jeu de tuiles, construit en éléments plutôt qu'en dessin, si bien que les chiffres restent nets et que le plateau suit le thème.",
+          "Poussez le plateau et chaque tuile glisse aussi loin qu'elle le peut. Deux mêmes nombres fusionnent en un seul du double, jusqu'à 2048.",
 
         metaDescription:
-          "Le jeu de tuiles, construit en balisage plutôt qu'en canvas. Poussez le plateau, fusionnez les nombres identiques, et atteignez une tuile à 2048.",
-        lead: "Poussez le plateau dans n'importe quelle direction et chaque tuile glisse aussi loin qu'elle le peut. Deux nombres identiques fusionnent en un seul du double, et le but est une tuile à 2048. Construit en éléments plutôt qu'en dessin, si bien que les chiffres restent nets à toute taille et que le plateau suit le thème.",
+          "Le jeu de tuiles. Poussez le plateau, fusionnez les nombres identiques, et atteignez une tuile à 2048.",
+        lead: "Poussez le plateau dans n'importe quelle direction et chaque tuile glisse aussi loin qu'elle le peut. Deux nombres identiques fusionnent en un seul du double, et le but est une tuile à 2048.",
 
         score: "Score",
         best: "Record",
@@ -631,10 +631,10 @@ const fr: Dict = {
         name: "Démineur",
 
         tagline:
-          "Le champ de mines, sur les trois plateaux d'origine. Chaque case est un vrai bouton, si bien que tout le jeu se joue au clavier.",
+          "Ouvrez toutes les cases qui ne sont pas une mine. Chaque nombre compte les mines qui le touchent, et le reste se déduit de là.",
 
         metaDescription:
-          "Le démineur dans le navigateur, sur les plateaux débutant, intermédiaire et expert. Construit en balisage plutôt qu'en canvas, et jouable au clavier.",
+          "Le démineur dans le navigateur, sur les plateaux débutant, intermédiaire et expert, avec un premier clic qui ne peut pas perdre.",
         lead: "Ouvrez toutes les cases qui ne sont pas une mine. Un nombre dit combien des huit cases qui l'entourent sont minées, et tout le reste se déduit de là. Trois plateaux, aux tailles d'origine, et un premier clic qui ne peut pas perdre.",
 
         boards: "Plateau",
@@ -706,6 +706,84 @@ const fr: Dict = {
             "Les mines sont posées au premier appui plutôt qu'au départ, autour de la case appuyée et des huit qui la touchent. Un terrain distribué à l'avance doit soit laisser le premier coup perdre, ce qui relève du pile ou face et non du jeu, soit redistribuer jusqu'à ce que ce ne soit plus le cas, ce qui fausse discrètement les probabilités partout ailleurs. Poser tard donne un terrain honnête et un premier coup qui ouvre toujours une région.",
             "Ouvrir une région se fait avec une file et non par récursion, qu'un téléphone est en droit de refuser à quatre cents niveaux de profondeur, et cette file offre au passage son minutage à l'animation : l'anneau sur lequel une case a été trouvée est sa distance à l'appui, donc chacune attend ce nombre de pas avant de s'ouvrir. L'ouverture arrive comme quelque chose qui se propage vers l'extérieur au lieu d'un plateau qui change d'un bloc, et cela coûte une propriété personnalisée et un délai.",
             "Le plateau est une vraie grille : des lignes, des cellules, un nombre de lignes et de colonnes, et une seule case dans l'ordre de tabulation pour que les flèches la parcourent plutôt que la touche Tab. C'est la raison d'être de ce jeu ici. L'autre doit être masqué aux lecteurs d'écran et décrit par une région live, parce que seize tuiles réécrites à chaque touche sont illisibles. Un champ de mines est un tableau qui reste immobile et attend, ce à quoi une grille sert exactement.",
+          ],
+        },
+      },
+      accretion: {
+        name: "Accrétion",
+
+        tagline:
+          "Laissez tomber des corps célestes. Deux identiques deviennent le suivant, de la Lune jusqu'au Soleil.",
+
+        metaDescription:
+          "Un jeu de fusion dans le navigateur : laissez tomber des corps célestes et deux identiques deviennent le suivant, de la Lune au Soleil.",
+        lead: "Laissez tomber un corps céleste. Deux identiques fusionnent en le suivant, de la Lune aux planètes jusqu'au Soleil, et l'espace se remplit que vous soyez prêt ou non.",
+
+        score: "Score",
+        best: "Record",
+        next: "Suivant",
+        newGame: "Nouvelle partie",
+        hint: "Déplacez pour viser et appuyez pour lâcher. Les flèches visent, la barre d'espace lâche.",
+        sequence: "La séquence, du plus petit au plus grand",
+
+        planets: [
+          "Lune",
+          "Mercure",
+          "Mars",
+          "Vénus",
+          "Terre",
+          "Neptune",
+          "Uranus",
+          "Saturne",
+          "Jupiter",
+          "Soleil",
+        ],
+
+        won: {
+          title: "Une étoile",
+          body: "La séquence n'a plus nulle part où aller. Deux Soleils ne peuvent rien devenir, alors ils disparaissent, et la place qu'ils laissent est la seule façon de vider un espace plein.",
+          keepGoing: "Continuer",
+        },
+
+        over: {
+          title: "Plus de place",
+          body: "Quelque chose repose au-dessus de la ligne depuis trop longtemps. Il n'y a pas de plafond ici, seulement une ligne, et un corps qui s'arrête au-dessus n'a plus nulle part où aller.",
+          restart: "Rejouer",
+        },
+
+        how: {
+          label: "Comment jouer",
+          items: [
+            {
+              title: "Visez, puis lâchez",
+              description:
+                "Déplacez-vous au-dessus du champ pour aligner un corps et appuyez pour le laisser partir. Seuls les cinq plus petits arrivent, donc tout ce qui dépasse la Terre doit être construit.",
+            },
+            {
+              title: "Deux identiques se touchent et fusionnent",
+              description:
+                "Nul besoin de les presser ni de les maintenir : dès que deux corps égaux s'immobilisent l'un contre l'autre, ils deviennent le suivant, et une fusion qui tombe à côté d'une autre déclenche une chaîne.",
+            },
+            {
+              title: "Construisez en largeur, pas en hauteur",
+              description:
+                "Un corps lâché sur une pile haute roule, et l'endroit où il atterrit n'est pas celui visé. Garder les gros le long du fond est l'essentiel du jeu, car ce sont eux qui n'ont plus nulle part où aller.",
+            },
+            {
+              title: "La ligne est un délai, pas un mur",
+              description:
+                "Rien n'empêche un corps de la dépasser. Ce n'est fini que si l'un d'eux est encore là-haut une seconde plus tard : une éclaboussure se survit, un Jupiter posé là non.",
+            },
+          ],
+        },
+
+        close: {
+          label: "Comment c'est construit",
+          paragraphs: [
+            "Pas de canvas, pas de bibliothèque de physique et aucune dépendance. Un corps est un div avec un rayon de bordure, sa couleur est un dégradé dans la même feuille de style que le reste de la page, et l'image écrit une transformation sur chacun. Les planètes suivent donc l'échelle de la page, restent nettes à tout zoom et ne coûtent aucune requête. Un moteur physique aurait pesé six fois cette page entière.",
+            "Le solveur travaille sur les positions : un corps retient où il est et où il était, et l'écart entre les deux est sa vitesse. Rien ne calcule d'impulsion. Un contact écarte deux corps, et comme la position précédente ne bouge pas, cet écartement retire exactement la vitesse qui les avait rapprochés, ce qui est la définition d'une collision inélastique. Quarante de ces passes tournent par image, chacune sur des positions déjà déplacées, et un champ plein de quarante-six corps coûte moins d'un dixième de milliseconde sur un budget de près de dix-sept.",
+            "Le travail a été de le faire se stabiliser. Trois choses distinctes ajoutaient discrètement de l'énergie au lieu d'en retirer : un mur qui bornait la position d'un corps sans déplacer la précédente, transformant la profondeur d'un atterrissage en vitesse de rebond ; un frottement tangentiel calculé à partir d'une vitesse que la même passe était en train de changer, qui laissait une pile serrée projeter des corps après huit secondes ; et une règle de fusion exigeant tant de recouvrement que rien ne fusionnait jamais. Chacune a été trouvée en mesurant et non en relisant, et les nombres qui en sont sortis figurent à côté des constantes qu'ils justifient.",
+            "La simulation tourne dans son propre espace de mille unités et n'apprend jamais à quelle taille elle est montrée. Une seule transformation sur un seul élément projette tout le champ sur la largeur que la page lui a donnée : un redimensionnement change ce nombre et rien d'autre, ni un rayon, ni une position, ni un pas. C'est pourquoi la même partie se joue à l'identique sur téléphone et sur ordinateur, au lieu d'avoir deux fois la gravité sur l'un des deux.",
           ],
         },
       },

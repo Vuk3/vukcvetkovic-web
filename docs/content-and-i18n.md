@@ -376,6 +376,9 @@ anybody as protection - see
 
 ## Changelog
 
+- 2026-09-11 - a third game, `accretion`. Its copy carries a ten-name `planets` array, which
+  is the first list in the dictionaries whose length is checked: the game exports the number
+  of bodies and the component indexes the names by it (§7).
 - 2026-09-11 - a game's title moved from `site.games` into `games.items.<id>.name`, because
   Minesweeper is Minolovac and Démineur while 2048 is 2048. A `site.games` entry is now a
   slug and nothing else (§1, §7).
