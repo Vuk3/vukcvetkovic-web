@@ -19,6 +19,7 @@ type DegreeId = keyof Dict["education"]["degrees"];
 type ProjectId = keyof Dict["projects"]["items"];
 type StackGroupId = keyof Dict["projects"]["stackGroups"];
 type GameId = keyof Dict["games"]["items"];
+type GameStatus = keyof Dict["games"]["status"];
 
 interface SkillGroup {
   id: SkillGroupId;
@@ -315,6 +316,21 @@ export interface Game {
    * and it is the same in every locale.
    */
   slug: string;
+
+  /**
+   * How finished the game is: `live` for one that is done, `beta` for one that
+   * is still being worked on.
+   *
+   * A fact, not copy - whether Accretion is finished is the same in four
+   * languages, and only the word for it is not (`games.status.<id>`).
+   *
+   * Required rather than optional with `live` as the default, because the
+   * default would be the wrong way round: a game is at its least finished on
+   * the day it is added, and an omitted line should not quietly claim
+   * otherwise. It is also the one switch that matters - flipping it to `live`
+   * takes the ribbon off the card and the badge off the page together.
+   */
+  status: GameStatus;
 }
 
 /**
@@ -332,9 +348,9 @@ export interface Game {
  * on the page.
  */
 const games: Record<GameId, Game> = {
-  twentyFortyEight: { slug: "2048" },
-  minesweeper: { slug: "minesweeper" },
-  accretion: { slug: "accretion" },
+  twentyFortyEight: { slug: "2048", status: "live" },
+  minesweeper: { slug: "minesweeper", status: "live" },
+  accretion: { slug: "accretion", status: "beta" },
 };
 
 export const site = {

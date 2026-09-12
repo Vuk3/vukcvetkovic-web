@@ -1725,6 +1725,35 @@
   }
 
   /*
+   * A status beside a page title: a pill rather than the ribbon the card
+   * carries, because a ribbon needs a corner to cut and a heading has none.
+   *
+   * It sits inside the `<h1>` so it is part of the heading a screen reader
+   * reads out - "Accretion, Beta" is the whole claim, and a mark that only
+   * sighted readers get would be half of it. Everything the title does to its
+   * own letters is undone here: the badge is a label about the page, not a word
+   * in its name, so it keeps label size and label tracking at any viewport.
+   */
+  .page-status {
+    display: inline-block;
+    vertical-align: middle;
+    /* Against the title's own size rather than the badge's, so the gap stays
+       proportional to the word it follows as the title clamps up. */
+    margin-left: 0.3em;
+    border-radius: var(--site-radius-pill);
+    padding: 0.4em 0.9em;
+    background-color: var(--site-accent);
+    /* The same pairing the one filled thing on the site uses - see `.cta`. */
+    color: var(--site-bg);
+    font-stretch: 106%;
+    font-weight: 620;
+    font-size: 0.875rem;
+    letter-spacing: 0.14em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  /*
    * ⚠️ **No `max-width`, deliberately.** It was capped at 38rem, which inside a
    * 68rem or 72rem shell put the lead in the left half of the screen and left
    * the right half empty - the page reading as though it stopped halfway. The
@@ -2694,10 +2723,25 @@
   /* ---- Saturn: banded, and the ring below ---- */
   .acc-body[data-tier='7'] {
     --acc-tint: var(--acc-p7);
-    /* ⚠️ A stacking context only, which changes no layout: it keeps the ring's
-       `z-index: -1` half behind this planet rather than behind the whole
-       field. It must not set `position` - see the warning on `.acc-body`. */
-    isolation: isolate;
+    /*
+     * ⚠️ **Saturn paints above every other body, ring and all.** The ring
+     * reaches 1.7 diameters across, so on a full field it always has a
+     * neighbour under one of its tips, and a ring that disappears behind a
+     * planet reads as a rendering fault rather than as depth - the tip is a
+     * thin ellipse and half of it simply goes missing.
+     *
+     * ⚠️ It is `z-index` alone, and must stay that way: a `position` here
+     * would tie `.acc-world .acc-body` on specificity, win on order, and drop
+     * Saturn out of the field's absolute positioning. See the warning on
+     * `.acc-body`.
+     *
+     * 1 is under `.acc-panel` at 3, so a game that ends still covers it.
+     *
+     * The `z-index` also makes the stacking context the ring's back half
+     * needs: its `-1` stays behind this planet rather than falling behind the
+     * whole field. `isolation` did that job before and is now redundant.
+     */
+    z-index: 1;
     background-image:
       var(--acc-shade),
       repeating-linear-gradient(
@@ -2870,7 +2914,31 @@
     border-radius: var(--site-radius-card);
     padding: var(--site-pad);
     text-align: center;
-    color: #f2f4f8;
+
+    /*
+     * ⚠️ **The palette is re-declared here rather than the buttons restyled**,
+     * which is the move `.panel` makes and the note on it explains.
+     *
+     * It has more cause than `.panel` does. The well is dark space in both
+     * themes - a sky that answers the theme toggle is not a sky - so in the
+     * light theme every token underneath this panel is the wrong way round.
+     * `.cta-ghost` was the visible cost: it painted `--site-card` at near-white
+     * and then took the panel's near-white text on top of it, so New game was a
+     * button that was not there.
+     *
+     * The other two games need none of this. Their trays follow the theme, so
+     * the tokens are already right over them.
+     */
+    --site-fg: #f2f4f8;
+    --site-bg: var(--acc-well);
+    --site-muted: color-mix(in oklab, var(--site-fg) 74%, transparent);
+    --site-card: color-mix(in oklab, var(--acc-well) 55%, transparent);
+    --site-hairline: color-mix(in oklab, var(--site-fg) 26%, transparent);
+    /* The dark-surface accent, in both themes: cobalt on a night sky is a
+       button you have to look for, and `.cta` fills itself with this. */
+    --site-accent: var(--site-panel-accent);
+
+    color: var(--site-fg);
     background-color: color-mix(in oklab, var(--acc-well) 84%, transparent);
     backdrop-filter: blur(4px);
     animation: acc-panel 260ms var(--site-ease);
@@ -2893,7 +2961,8 @@
     max-width: 24rem;
     font-size: clamp(0.9375rem, 3.4vw, 1.0625rem);
     line-height: 1.5;
-    color: color-mix(in oklab, #f2f4f8 74%, transparent);
+    /* The panel's own muted, which is what the other two games write here too. */
+    color: var(--site-muted);
   }
 
   .acc-panel-actions {
@@ -2990,12 +3059,29 @@
   }
 
   /*
-   * The thumbnail, bled to the card's edges.
+   * The thumbnail's frame: the bleed, the corners and the clip.
    *
    * Negative margins of exactly `--card-pad`, which is why `.card` names it:
    * the picture is the top of the card rather than something sitting inside
    * it with a frame of ground around it. The radius is the card's own, less
    * the border, so the two curves sit on each other rather than beside.
+   *
+   * ⚠️ **It is a separate element from `.game-art` because it clips.** The
+   * status ribbon is a straight band laid across the bottom-right corner, long
+   * enough to run off both of the edges it crosses, and something has to cut
+   * it there. Putting the clip on `.game-art` instead would work and would put
+   * the ribbon inside the `aria-hidden` the art carries, which is right for a
+   * drawing of a board and wrong for the word "Beta".
+   */
+  .game-shot {
+    position: relative;
+    overflow: clip;
+    margin: calc(-1 * var(--card-pad)) calc(-1 * var(--card-pad)) clamp(1rem, 1.6vw, 1.35rem);
+    border-radius: calc(var(--site-radius-card) - 1px) calc(var(--site-radius-card) - 1px) 0 0;
+  }
+
+  /*
+   * The thumbnail itself, which fills the frame above.
    *
    * `container-type` so everything inside is sized off the thumbnail. Three of
    * these across a 72rem shell and one across a phone are very different
@@ -3013,8 +3099,70 @@
   .game-art {
     container-type: inline-size;
     aspect-ratio: 5 / 2;
-    margin: calc(-1 * var(--card-pad)) calc(-1 * var(--card-pad)) clamp(1rem, 1.6vw, 1.35rem);
-    border-radius: calc(var(--site-radius-card) - 1px) calc(var(--site-radius-card) - 1px) 0 0;
+  }
+
+  /*
+   * The status ribbon, cut across the thumbnail's bottom-right corner.
+   *
+   * A corner ribbon rather than a pill in the card body, because the card's own
+   * bottom-right corner is where the tagline ends and a band there would lie
+   * across the last line of it. The thumbnail has a real corner with nothing in
+   * it, and a band on a picture reads as a stamp on the picture.
+   *
+   * Every card carries one, because a mark that only the odd one out has is a
+   * mark the reader has nothing to compare against - "Beta" means something
+   * once "Live" is sitting on the two cards beside it.
+   *
+   * Only the odd one out is coloured, though. Beta takes the accent, which is
+   * the page's one way of saying look here, and Live is a paper band at the
+   * card's own tone. Three accent ribbons would point at nothing.
+   */
+  .game-status {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    /* Longer than the corner it cuts, because both ends run off the thumbnail
+       and are cut by it. 16rem clears the widest a card ever gets. */
+    width: 16rem;
+    padding: 0.3rem 0;
+    text-align: center;
+
+    /* The page's label voice. At this size the three words it can carry - LIVE,
+       BETA, BÊTA - come to about 2.6rem, well inside the 4.2rem of band the
+       corner leaves visible. */
+    font-size: 0.75rem;
+    font-stretch: 106%;
+    font-weight: 620;
+    letter-spacing: 0.14em;
+    line-height: 1.3;
+    text-transform: uppercase;
+
+    background-color: color-mix(in oklab, var(--site-card) 92%, transparent);
+    color: var(--site-muted);
+    box-shadow: var(--site-lift);
+
+    /*
+     * Rotated about the corner it cuts, and both numbers are arithmetic rather
+     * than taste. `translate(50%)` centres the band on the corner's vertical,
+     * and the y lifts it up that vertical; rotating about the corner then lays
+     * it on the diagonal without changing how far from the corner it sits. So
+     * its centre line ends up 1.31rem + half of its 1.575rem height = 2.1rem
+     * from the corner. A diagonal that far off a right angle crosses each edge
+     * 2.97rem out and leaves 4.2rem of band between the two, which is the
+     * visible width quoted above.
+     *
+     * ⚠️ The order matters. Transforms read right to left, so the band moves in
+     * its own upright axes and is rotated after. Swapping the two sends it off
+     * along the diagonal instead.
+     */
+    transform-origin: 100% 100%;
+    transform: rotate(-45deg) translate(50%, -1.31rem);
+  }
+
+  .game-status[data-status='beta'] {
+    background-color: var(--site-accent);
+    /* The same pairing the one filled thing on the site uses - see `.cta`. */
+    color: var(--site-bg);
   }
 
   /* The tray is the one thing a thumbnail cannot inherit: each game brings its

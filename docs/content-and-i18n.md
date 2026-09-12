@@ -44,8 +44,10 @@ Three entries sit on the surprising side of that line, and all three are deliber
   everywhere, but the faculty is "Elektronski fakultet" in Serbian, so `education` in
   [src/site.ts](../src/site.ts) carries only the period and the school name lives in each
   dictionary.
-- **A game's slug is a fact, its name is not.** An entry in `site.games` carries only
-  `{ slug }` - a URL, the same in every locale - while the title sits in
+- **A game's slug and its status are facts, its name is not.** An entry in `site.games`
+  carries a `slug` - a URL, the same in every locale - and a `status`, because whether a
+  game is finished does not change with the language either. Only the word for it does,
+  and that sits in `games.status`. The title sits in
   `games.items.<id>.name` in each dictionary. The title was a fact while 2048 was the only
   game, on the argument that it reads the same in four languages, and that argument was
   only ever true of that one title: Minesweeper is Minolovac in Serbian and Démineur in
@@ -317,9 +319,11 @@ five are code.
    `projects.items` entries must: each is rendered by its own component, so 2048's `score`
    and `undo` mean nothing to the next one and nothing forces them to appear in it.
 2. **The other three dictionaries**, which are now type errors until they match.
-3. **[src/site.ts](../src/site.ts)**, a new entry in `games` keyed by the same id, with the
-   `slug` and nothing else. There is no date on a game, unlike a project, and the title is
-   prose and lives in the dictionaries. `GameId` is
+3. **[src/site.ts](../src/site.ts)**, a new entry in `games` keyed by the same id, with a
+   `slug` and a `status`. There is no date on a game, unlike a project, and the title is
+   prose and lives in the dictionaries. `status` is `live` or `beta`, and it is required
+   rather than defaulting: it puts the ribbon on the card and the badge beside the title,
+   and flipping it to `live` is the one line that takes both off. `GameId` is
    `keyof Dict["games"]["items"]`, so a
    registry entry with no copy behind it fails `astro check`, and the id has to be spelled
    the same in both files or neither compiles. Declaration order is the order the index
@@ -376,6 +380,11 @@ anybody as protection - see
 
 ## Changelog
 
+- 2026-09-12 - a game carries a `status`, `live` or `beta`, and Accretion is the first
+  `beta`. The two words it can take are `games.status` in the dictionaries and they are the
+  same in all four, which the note there explains: "beta" is one loanword everywhere, and
+  translating "live" gives "uživo" and "en ligne", both of which say live *play* rather
+  than released (§1, §7).
 - 2026-09-11 - a third game, `accretion`. Its copy carries a ten-name `planets` array, which
   is the first list in the dictionaries whose length is checked: the game exports the number
   of bodies and the component indexes the names by it (§7).

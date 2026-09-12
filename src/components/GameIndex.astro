@@ -63,7 +63,18 @@ const entries = Object.entries(site.games) as [GameId, Game][];
 
           return (
             <li class="card card-hover project reveal-item">
-              <Art />
+              {/*
+                The ribbon is a sibling of the art, not a child of it, for two
+                reasons: `.game-shot` is what clips the band to the corner it
+                cuts, and the art carries `aria-hidden` - "Beta" is information
+                and has to stay outside it.
+              */}
+              <div class="game-shot">
+                <Art />
+                <span class="game-status" data-status={game.status}>
+                  {copy.status[game.status]}
+                </span>
+              </div>
 
               <h2 class="project-title">
                 <a href={localizePath(`/games/${game.slug}/`, lang)} class="entry-link stretch">

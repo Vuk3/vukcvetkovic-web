@@ -546,6 +546,13 @@ const sr: Dict = {
   games: {
     label: "Igre",
 
+    /** Left in English on purpose: "uživo" says live *play*, not released. See
+     *  the note in en.ts. */
+    status: {
+      live: "Live",
+      beta: "Beta",
+    },
+
     index: {
       metaTitle: "Igre - Vuk Cvetković",
       metaDescription:

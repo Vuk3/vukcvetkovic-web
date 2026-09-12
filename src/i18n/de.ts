@@ -549,6 +549,13 @@ const de: Dict = {
   games: {
     label: 'Spiele',
 
+    /** Both are the loanwords German already uses for this. See the note in
+     *  en.ts. */
+    status: {
+      live: 'Live',
+      beta: 'Beta',
+    },
+
     index: {
       metaTitle: 'Spiele - Vuk Cvetković',
       metaDescription:

@@ -550,6 +550,13 @@ const fr: Dict = {
   games: {
     label: "Jeux",
 
+    /** Left in English on purpose: "en ligne" says live *play*, not released.
+     *  See the note in en.ts. */
+    status: {
+      live: "Live",
+      beta: "Bêta",
+    },
+
     index: {
       metaTitle: "Jeux - Vuk Cvetković",
       metaDescription:

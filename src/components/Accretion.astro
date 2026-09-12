@@ -17,6 +17,7 @@ import { ArrowLeft, RotateCcw } from "@lucide/astro";
 import type { Lang } from "../i18n/types";
 import { getDict, localizePath } from "../i18n/utils";
 import { LOSS_Y, TIERS, WORLD_H, WORLD_W } from "../games/accretion/game";
+import { site } from "../site";
 import Section from "./Section.astro";
 
 interface Props {
@@ -28,6 +29,18 @@ const dict = getDict(lang);
 
 const copy = dict.games.items.accretion;
 const index = localizePath("/games/", lang);
+
+/*
+ * The badge beside the title, read from the registry rather than written out
+ * here, so `status: "live"` in src/site.ts is the single line that finishes the
+ * game: the ribbon leaves the card and the badge leaves this page together.
+ *
+ * Only a game that is not finished says anything. The index badges every card
+ * because there a "Live" is what gives the one "Beta" its meaning, and here
+ * there is nothing to compare against - "Live" over a game you already opened
+ * would be a label with no work to do.
+ */
+const { status } = site.games.accretion;
 
 /*
  * The sequence, from the module rather than written out again.
@@ -50,7 +63,10 @@ const shape = `--acc-ratio:${WORLD_W} / ${WORLD_H}; --acc-line-at:${Math.round((
       {dict.games.label}
     </a>
 
-    <h1 class="page-title enter" style="--enter-delay:80ms">{copy.name}</h1>
+    <h1 class="page-title enter" style="--enter-delay:80ms">
+      {copy.name}
+      {status !== "live" && <span class="page-status">{dict.games.status[status]}</span>}
+    </h1>
 
     <p class="page-lead enter" style="--enter-delay:160ms">{copy.lead}</p>
   </div>

@@ -226,6 +226,14 @@ outbound Live or Source link, for instance - or the stretched pseudo-element cov
 | `.tag` | a year or a short label, with no mark or a small one |
 | `.cta` | the only filled thing on the page: solid accent at rest, inverting on hover |
 | `.cta-ghost` | the same pill outlined, for the secondary action beside it |
+| `.game-status` | a game's Live or Beta, as a band cut across the bottom-right corner of its thumbnail |
+| `.page-status` | the same word beside a page title, as a pill - a heading has no corner for a ribbon to cut |
+
+Both status marks take `Beta` in the accent and leave `Live` at the card's own tone. The
+odd one out is the one worth pointing at, and three accent ribbons on a row of three cards
+point at nothing. Every card on the index carries one even so, because "Beta" only means
+something with a "Live" sitting beside it - the game's own page badges nothing when it is
+finished, since there is nothing there to compare against.
 
 ---
 
@@ -773,12 +781,21 @@ so the card cannot drift away from the game it advertises. The tray colour is th
 a thumbnail cannot share - `.game-art-2048`, `.game-art-ms` and `.game-art-acc` each bring
 their own.
 
-⚠️ **[ArtAccretion.astro](../src/components/games/ArtAccretion.astro) is hand placed and has
-to be checked rather than judged.** All ten bodies are spread across the card, and every
-pair of centres has to be further apart than the two radii - Saturn's ring included, which
-is wider than Saturn and is easy to forget. Its sizes are also *not* the game's radius
-table: real ratios put the Sun at nine and a half Moons, which in a 5:2 box leaves the Moon
-at four pixels and the card saying nothing, so they are compressed to about five to one.
+The frame around all three is `.game-shot` rather than `.game-art`, and the split is not
+cosmetic: `.game-shot` carries the bleed, the top corners and the clip, so the status
+ribbon can be a straight band long enough to run off both edges it crosses. It also keeps
+the ribbon out of the `aria-hidden` the art carries, which is right for a drawing of a
+board and wrong for the word "Beta".
+
+⚠️ **[ArtAccretion.astro](../src/components/games/ArtAccretion.astro) is placed by hand and
+has to be checked rather than judged.** All ten bodies are spread across the card, and four
+things have to clear at once: every pair of centres against the two radii; Saturn's ring,
+as the ellipse it is rather than as a circle around it, which would have more than twice
+Saturn's radius and eat a fifth of the field; the Sun's glow, about 2.4 units past the
+disc, which the frame now cuts; and the ribbon's corner, roughly 20 units in along each
+edge on a one-column phone. The sizes are also *not* the game's radius table: real ratios
+put the Sun at nine and a half Moons, which in a 5:2 box leaves the Moon at four pixels and
+the card saying nothing, so they are compressed to about five to one.
 
 ### Numbers are sized off the board, not the viewport
 
@@ -901,6 +918,24 @@ is two pseudo-elements, one behind the planet and one clipped to its lower half 
 because a single ellipse on top reads as a hoop around a circle rather than a ring around a
 sphere.
 
+⚠️ **Saturn paints above every other body**, on a `z-index: 1` that sits under `.acc-panel`
+at 3. Its ring reaches 1.7 diameters across, so on a full field something is always under
+one of the tips, and a tip that disappears behind a neighbour reads as a rendering fault
+rather than as depth - it is a thin ellipse, and half of it simply goes missing. The
+`z-index` also makes the stacking context that keeps the ring's back half behind its own
+planet instead of behind the whole field, which is what `isolation: isolate` used to do
+there. ⚠️ It has to stay `z-index` alone: a `position` on that rule ties
+`.acc-world .acc-body` on specificity, wins on order, and drops Saturn out of the field's
+absolute positioning.
+
+⚠️ **`.acc-panel` re-declares the palette rather than styling its contents**, the way
+`.panel` does (§1) and with more cause. The well is dark space in both themes, so in the
+light theme every `--site-*` token under the panel is the wrong way round: `.cta-ghost`
+painted `--site-card` at near-white and then took the panel's near-white text on top of it,
+so New game was a button that was not there. The accent goes to `--site-panel-accent` in
+both themes as well, because cobalt on a night sky is a button you have to look for. The
+other two games need none of this, since their trays follow the theme.
+
 ⚠️ **The Sun takes no shading stack.** It is not lit from outside, so a terminator across it
 is simply wrong.
 
@@ -1019,6 +1054,17 @@ and that is a feature rather than a hardening step.
 
 ## Changelog
 
+- 2026-09-12 - games say how finished they are. `.game-status` is a band cut across the
+  bottom-right corner of a thumbnail and `.page-status` the same word beside a page title;
+  only Beta takes the accent (§3). The thumbnail grew a frame, `.game-shot`, which is what
+  clips the band and what keeps it out of the art's `aria-hidden` (§9). Accretion's card was
+  re-spread around the new corner, and §9 now lists all four things that layout has to clear.
+- 2026-09-12 - the end-of-game panel in Accretion re-declares the palette instead of setting
+  one text colour. New game was invisible in the light theme: a near-white ghost button
+  under near-white text, because the well is dark whatever the theme says (§9).
+- 2026-09-12 - Saturn paints above every other body in the field. Its ring is wider than
+  anything else on the board, so one of its tips was always behind a neighbour, and half a
+  thin ellipse going missing reads as a bug rather than as depth (§9).
 - 2026-09-11 - a third game, [Accretion](../src/games/accretion/game.ts), and the first page
   here that runs on every frame. It brings a position-based solver written from scratch, ten
   planets drawn as gradients, and `--acc-*` on `:root` and `.dark`. §9 records the three

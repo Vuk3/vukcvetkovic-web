@@ -603,6 +603,23 @@ const en = {
   games: {
     label: "Games",
 
+    /**
+     * The two words a game's status can carry: on the ribbon across the corner
+     * of its card, and on the badge beside its title. Which one a game gets is
+     * `status` in src/site.ts, and a status with no word here is a type error
+     * there.
+     *
+     * Both stay as they are in all four dictionaries, which is unusual enough
+     * to be worth the note. "Beta" is the same loanword everywhere, and "live"
+     * is the one that would go wrong if it were translated: "uživo" and "en
+     * ligne" both say live *play* - an opponent on the other end - which is
+     * the opposite of what a single-player game wants on its card.
+     */
+    status: {
+      live: "Live",
+      beta: "Beta",
+    },
+
     index: {
       metaTitle: "Games - Vuk Cvetković",
       metaDescription:
