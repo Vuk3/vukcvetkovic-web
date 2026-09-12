@@ -34,6 +34,7 @@ and all of its motion in CSS.
 | what the request diagram *says* | `flow` in the dictionaries and `flowShape` in [site.ts](../src/site.ts) - §6 |
 | the active-section indicator | the second `<script>` in [Base.astro](../src/layouts/Base.astro) and `.nav-link[aria-current]` - §7 |
 | dark mode | the `.dark` block, **and** the two `theme-color` tags in [Base.astro](../src/layouts/Base.astro) - §8 and open item 1 |
+| **the 2048 board or its colour ramp** | [game.ts](../src/games/2048/game.ts), [Game2048.astro](../src/components/Game2048.astro), the `--g2048-*` tokens - §9 |
 
 **Read §5 before touching any animation.** The `animation` shorthand silently breaks the
 scroll timelines, and one custom property has to stay registered.
@@ -225,6 +226,14 @@ outbound Live or Source link, for instance - or the stretched pseudo-element cov
 | `.tag` | a year or a short label, with no mark or a small one |
 | `.cta` | the only filled thing on the page: solid accent at rest, inverting on hover |
 | `.cta-ghost` | the same pill outlined, for the secondary action beside it |
+| `.game-status` | a game's Live or Beta, as a band cut across the bottom-right corner of its thumbnail |
+| `.page-status` | the same word beside a page title, as a pill - a heading has no corner for a ribbon to cut |
+
+Both status marks take `Beta` in the accent and leave `Live` at the card's own tone. The
+odd one out is the one worth pointing at, and three accent ribbons on a row of three cards
+point at nothing. Every card on the index carries one even so, because "Beta" only means
+something with a "Live" sitting beside it - the game's own page badges nothing when it is
+finished, since there is nothing there to compare against.
 
 ---
 
@@ -281,8 +290,9 @@ tabular-nums` - periods, the results table, the 404 status.
 
 ## 5. Motion
 
-All of it is CSS. The one script on the site is the active-section observer in §7, and it
-draws no animation. The reveal system has two halves, chosen by one question: **is the
+All of it is CSS. The only script that touches motion anywhere on the site is the game in
+§9, which is a game; the active-section observer in §7 draws no animation, and nothing on
+any other page does either. The reveal system has two halves, chosen by one question: **is the
 element in view at first paint?**
 
 | | `.enter` / `.enter-name` / `.enter-portrait` | `.reveal` / `.reveal-item` |
@@ -627,8 +637,8 @@ before *that* drew a rectangular bus around the whole diagram.
 
 ## 7. The active-section indicator, and the site's script budget
 
-The site ships **no JavaScript file**. Four inline blocks cover the pre-paint theme
-script, the theme toggle, the dismissal of every disclosure, and this. The request diagram was built with a fourth - an
+Every page but `/games/2048/` ships **no JavaScript file**. Four inline blocks cover the
+pre-paint theme script, the theme toggle, the dismissal of every disclosure, and this. The request diagram was built with a fourth - an
 `IntersectionObserver` arming a reveal - and it is gone: a `view()` timeline on a sticky
 track does the same job, scrubbed rather than triggered, and costs nothing (§6).
 
@@ -678,7 +688,361 @@ open item 1.
 
 ---
 
-## 9. Open items
+## 9. The game boards, and the one place the palette opens up
+
+Three pages carry a game, and all three are built the way the rest of the site is: markup,
+tokens, and no canvas or game library anywhere. They are deliberately different from each
+other, which is most of what this section is about.
+
+| | [2048](../src/games/2048/game.ts) | [Minesweeper](../src/games/minesweeper/game.ts) | [Accretion](../src/games/accretion/game.ts) |
+|---|---|---|---|
+| what it is made of | 16 divs that move | up to 480 buttons that change state | up to 46 circles that fall |
+| the hard part | motion, at sixty frames | the rules, and the keyboard | the solver, and making it settle |
+| the board in the markup | yes, 16 cells, fixed | no, the module builds it | no, play creates every body |
+| to a screen reader | hidden, narrated by a live region | a real `role="grid"` | a live region, and the sequence below it |
+| what a turn costs | two custom properties | a class | a frame of simulation |
+| runs when idle | no | no | **yes** |
+
+### A tile keeps its element for its whole life
+
+The board is never re-rendered from the state. A tile is a `div` in
+`.g2048-layer` carrying `--x` and `--y`, and a move writes two numbers onto elements that
+are already there:
+
+```css
+.g2048-tile {
+  width: calc((100% - 3 * var(--g2048-gap)) / 4);
+  transform: translate(
+    calc(var(--x) * (100% + var(--g2048-gap))),
+    calc(var(--y) * (100% + var(--g2048-gap)))
+  );
+  transition: transform var(--g2048-slide) var(--g2048-glide);
+}
+```
+
+Two things fall out of that. The percentage in `translate` resolves against the **tile's
+own** size, so a column step is `100% + gap` and nothing in the CSS or the module needs to
+know how big the board is - a resize costs no script at all. And because the element
+persists, the transition is a slide rather than a repaint: the move goes through the
+compositor and never through layout, which is the whole of what makes it smooth.
+
+⚠️ **`--g2048-slide` is set from the module**, in
+[game.ts](../src/games/2048/game.ts), not from the stylesheet. The transition, the
+`animation-delay` a spawning tile waits out, and the timer that resolves a merge are one
+number, and it is `0ms` under `prefers-reduced-motion` - which the blanket rule at the
+bottom of the stylesheet cannot do, because it cannot reach a `setTimeout`.
+
+A spawning tile is `animation: … var(--g2048-slide) backwards`. The `backwards` fill is
+what removes the second timer: the tile is in the DOM immediately and holds its opening
+frame through the delay, so it cannot land early on a slow frame.
+
+Two easing curves, and the split matters. ⚠️ **`--g2048-glide` must not overshoot.** The
+board is a grid of hard edges, and a tile whose position sails past its column and comes
+back reads as one passing through the wall rather than stopping at it, so the slide is a
+hard ease-out. Scale has no wall to hit, so `--g2048-spring` overshoots and the pop and the
+arrival are where the life in the board comes from.
+
+**A move that arrives mid-slide is held, not run.** Cutting the previous slide short to
+serve the new direction makes a fast player's tiles jump, which is the opposite of what
+they were asking for. One move is queued and played the moment the board settles - one
+deep, because a longer queue stops answering the keyboard and starts replaying it.
+
+### The colour ramp
+
+⚠️ **The three boards and the technology marks in [src/tech.ts](../src/tech.ts) are the
+only colour on the site outside the accent**, and unlike everything else in this document none
+of them is a decision about taste. Eleven values have to be told apart at a glance and at
+speed, and a near-monochrome board makes that impossible. The minefield's eight numbers are
+the same argument and are set out further down. Accretion's ten are the exception to the
+exception: they were not chosen to be told apart at all, they are the planets' own colours,
+and they happen to be distinguishable because planets are.
+
+`--g2048-t1` to `--g2048-t12` are declared on `:root` and redefined in `.dark`, one step
+per doubling. It is a single sequence rather than eleven picked colours: paper and sand for
+the two smallest, then the site's own `--site-accent` at 16, then indigo, violet, magenta,
+rose, coral and amber. Hue and heat both move one way, so bigger always looks hotter and
+the board reads without reading a number on it. Every chromatic step carries white at
+3.5:1 or better, which is the large-bold threshold and what these are; the two pale steps
+and the 2048 itself take the ink instead.
+
+The tier is `min(12, log2(value))`, written to `data-tier` by the module, so a long game
+tops out on the ramp rather than running off the end of it.
+
+The colours hang off `.g2048-tier` rather than off `.g2048-tile`, because the board is not
+the only thing wearing them: the thumbnail on the games index is a still of a board -
+markup and tokens, not an image - so it stays sharp at any size, costs nothing to serve,
+and answers the theme toggle. See [Art2048.astro](../src/components/games/Art2048.astro).
+Its five-by-two grid against a 5:2 box is the one pairing that keeps the cells square
+however wide the card gets.
+
+[ArtMinesweeper.astro](../src/components/games/ArtMinesweeper.astro) goes one further and
+uses `.ms-cell` itself, overriding only the three things that are about being a thumbnail,
+so the card cannot drift away from the game it advertises. The tray colour is the one thing
+a thumbnail cannot share - `.game-art-2048`, `.game-art-ms` and `.game-art-acc` each bring
+their own.
+
+The frame around all three is `.game-shot` rather than `.game-art`, and the split is not
+cosmetic: `.game-shot` carries the bleed, the top corners and the clip, so the status
+ribbon can be a straight band long enough to run off both edges it crosses. It also keeps
+the ribbon out of the `aria-hidden` the art carries, which is right for a drawing of a
+board and wrong for the word "Beta".
+
+⚠️ **[ArtAccretion.astro](../src/components/games/ArtAccretion.astro) is placed by hand and
+has to be checked rather than judged.** All ten bodies are spread across the card, and four
+things have to clear at once: every pair of centres against the two radii; Saturn's ring,
+as the ellipse it is rather than as a circle around it, which would have more than twice
+Saturn's radius and eat a fifth of the field; the Sun's glow, about 2.4 units past the
+disc, which the frame now cuts; and the ribbon's corner, roughly 20 units in along each
+edge on a one-column phone. The sizes are also *not* the game's radius table: real ratios
+put the Sun at nine and a half Moons, which in a 5:2 box leaves the Moon at four pixels and
+the card saying nothing, so they are compressed to about five to one.
+
+### Numbers are sized off the board, not the viewport
+
+`.g2048-board` is a `container-type: inline-size` container and the digits are in `cqi`,
+stepped down by `data-digits` so a 2 and a 1024 both fill their tile. A `vw` clamp cannot
+do this: the board stops growing at its 36rem cap and the numbers would carry on.
+
+### The minefield is a grid, in both senses
+
+⚠️ **`.ms-row` is `role="row"` with `display: contents`, and both halves are load bearing.**
+A grid without rows gives a reader no position at all, and a row that is also a layout box
+would nest every cell in a second grid and break the columns. The cells are `<button>`
+elements carrying `role="gridcell"`, so one cell is in the tab order at a time and the
+arrow keys walk the field rather than the Tab key walking 480 buttons.
+
+That is the reason this game is on the site. 2048's board has to be `aria-hidden` and
+described through a live region, because sixteen tiles that rewrite themselves on every
+keypress cannot be read out. A minefield sits still and waits, which is what a grid is for.
+
+**Three boards, and expert scrolls rather than shrinks.** `--ms-size` is
+`clamp(1.55rem, 100cqi / var(--ms-cols) - var(--ms-gap), 2.4rem)`, so a cell is as large as
+the width allows between two bounds it may not leave. Below about 25px a cell stops being a
+touch target, and 30 columns of that do not fit a phone, so `.ms-scroll` takes the overflow.
+
+⚠️ **The board is `width: fit-content` with auto margins, not `justify-content: center`.**
+Centred tracks that overflow a scroll container are clipped at the *start*, which makes the
+first columns of an expert board unreachable. Auto margins go to zero when there is no free
+space, so the board centres while it fits and overflows to the right when it does not.
+
+The cell sizing is a container query for the same reason the 2048 digits are, and with the
+same trap: `.ms-scroll` is the container and every `cqi` length is on `.ms-board` inside it.
+
+### The press preview, and why a long press only plants
+
+⚠️ **Holding a button down shows the cells a release would open, pushed in but untouched.**
+It is the one piece of the original's feel that is not a rule, and it is what makes
+chording usable: a ring of eight is too much to open on faith. `.ms-cell.is-armed` is a
+class and an array of which nodes carry it - **the model never learns this is happening** -
+so a preview that somehow outlives its press costs a wrong colour rather than a wrong
+board. It clears on pointer up, on the pointer leaving the board, and on the window losing
+focus, because the button can be released anywhere.
+
+Chording has three ways in: the middle button (the original's gesture in the form modern
+mice have), an ordinary press on a revealed number (which has nothing else a press could
+mean), and both buttons at once while the preview is up. `auxclick` is what carries the
+middle button - `click` does not fire for it.
+
+⚠️ **A long press plants a flag and never takes one back.** A hold that toggles removes the
+flag whenever the finger lands on one that is already there, which on a phone is most of
+the time. Planting is also idempotent, which settles the harder problem underneath: a long
+press produces a `contextmenu` *and* a timer, browsers disagree on the order, and two
+plants leave the same flag where two toggles leave none. Flag mode is how a flag comes
+back off on a phone, and a right click or `F` is how it comes off anywhere else.
+
+The click a long press trails behind it is swallowed by comparing against **when** the hold
+last fired rather than a boolean saying that one did. A boolean gets stuck: a browser that
+suppresses the click after showing a context menu leaves it set, and the reader's next real
+press is eaten. A timestamp stops mattering on its own.
+
+### The wave, which is the only motion in it
+
+A flood fill can open three hundred cells at once, and opening them on one frame reads as
+the board flickering. Each cell carries `--d`, the ring it was found on, and waits
+`calc(var(--d) * var(--ms-wave))` before it opens - so the fill spreads outward from the
+press. The queue in the module is breadth first, which is what hands the animation its
+distance for free.
+
+`--ms-wave` is written from the module, the way `--g2048-slide` is, and the `backwards`
+fill is the same trick: the cell holds its opening frame through the delay, so no second
+timer has to exist and nothing lands early on a slow frame.
+
+### The eight numbers
+
+⚠️ **A third exception to the near-monochrome palette, on the same grounds as the ramp**
+and not on taste: eight numbers have to be told apart in a cell the size of a fingertip
+while the eye is elsewhere on the board.
+
+`--ms-n1` to `--ms-n8` keep the original's *order* - a player who has met this game before
+reads 1 as blue and 3 as red and should not have to relearn it - but not its values. Two of
+its pairs collapse at this size: navy against blue, and black against grey on a light
+ground. Navy becomes violet, and the last two separate by weight rather than hue.
+
+**The flag and the mine are drawn with two pseudo-elements each, never an emoji.** An emoji
+is a different picture on every platform and many are colour fonts that ignore `color`
+outright, which would put the one shape that must answer the theme outside the theme.
+
+### The field, and a solver in a hundred lines
+
+⚠️ **Accretion is the only thing on this site that runs on every frame.** The other two
+games are event driven and idle at nothing. This one integrates, resolves contacts and
+writes up to 46 transforms sixty times a second, which is a budget the rest of the site
+does not have and must not borrow. A full field costs under a tenth of a millisecond of
+solver against a 16.7ms frame, so the cost is the transform writes rather than the
+mathematics.
+
+**The simulation runs in its own space and never learns how big it is being shown.**
+`.acc-world` is a fixed 1200 by 1650 box carrying one `scale()`, so a resize is that single
+number changing - not a radius, not a position, not a step. Without it the same gravity
+would feel twice as heavy on a phone as on a desktop, and a resize mid-game would jolt the
+pile.
+
+⚠️ **`.acc-world`, the panels and the line are siblings, not nested.** Anything inside the
+scaled layer is scaled with it, which is right for a planet and wrong for a sentence. The
+line was inside it once, and rounding in the scale left it stopping short of the wall.
+
+**Bodies rotate in the solver and the rotation is not drawn**, which is two decisions and
+both are deliberate. Friction is measured between the two *surfaces* rather than the two
+centres, so a body that is rolling has no slip and a body that is skidding is both slowed
+and spun up - that is what lets one friction term serve a roll and a skid at once. Drawing
+the angle is a different question and the answer is no: these are not featureless balls, and
+a ring or a set of cloud bands is set by a planet's axis, so a Saturn resting at ninety
+degrees reads as broken rather than as turned. Two attempts to have it both ways - easing a
+settled body upright, then easing a moving one - were both visibly a body turning while
+nothing turned it.
+
+**The planets are gradients, not images.** One radial gradient makes the lit sphere from
+`--acc-tint`, a shared `--acc-shade` lays a specular, a bounce-lit rim and a curved
+terminator over the top, and most bodies add markings of their own underneath. Saturn's ring
+is two pseudo-elements, one behind the planet and one clipped to its lower half in front,
+because a single ellipse on top reads as a hoop around a circle rather than a ring around a
+sphere.
+
+⚠️ **Saturn paints above every other body**, on a `z-index: 1` that sits under `.acc-panel`
+at 3. Its ring reaches 1.7 diameters across, so on a full field something is always under
+one of the tips, and a tip that disappears behind a neighbour reads as a rendering fault
+rather than as depth - it is a thin ellipse, and half of it simply goes missing. The
+`z-index` also makes the stacking context that keeps the ring's back half behind its own
+planet instead of behind the whole field, which is what `isolation: isolate` used to do
+there. ⚠️ It has to stay `z-index` alone: a `position` on that rule ties
+`.acc-world .acc-body` on specificity, wins on order, and drops Saturn out of the field's
+absolute positioning.
+
+⚠️ **`.acc-panel` re-declares the palette rather than styling its contents**, the way
+`.panel` does (§1) and with more cause. The well is dark space in both themes, so in the
+light theme every `--site-*` token under the panel is the wrong way round: `.cta-ghost`
+painted `--site-card` at near-white and then took the panel's near-white text on top of it,
+so New game was a button that was not there. The accent goes to `--site-panel-accent` in
+both themes as well, because cobalt on a night sky is a button you have to look for. The
+other two games need none of this, since their trays follow the theme.
+
+⚠️ **The Sun takes no shading stack.** It is not lit from outside, so a terminator across it
+is simply wrong.
+
+⚠️ **Saturn's ring may not reach past the body.** At 208% of the width it hung 0.11 of a
+radius below Saturn, so a Saturn resting on the floor had its ring sliced off by the edge of
+the field - which reads as the planet having sunk halfway through the bottom. At 170% the
+furthest point of the ring is inside the body's own silhouette. Uranus had a vertical ring
+for the same reason its real ones are vertical, and it was removed: at the size a body
+actually appears, a tall thin ellipse around a small circle stops reading as a planet.
+
+⚠️ **Neither the ring nor the Sun's glow may use a percentage.** `border-width` and
+`box-shadow` take lengths only, so the ring is drawn as a gradient annulus - whose stops
+*are* percentages of the element - and the glow is in pixels and therefore confined to
+`.acc-world`, where a Sun is always about the same size.
+
+⚠️ **`--acc-line` is the colour and `--acc-line-at` is the position, and they cannot be one
+name.** They were, set on `.acc-field` from an inline style, so a percentage inherited into
+every rule below it and the dashes were drawn in `16%`.
+
+### What made the pile settle
+
+The solver was rewritten several times before it was calm, and every version looked correct
+while it was wrong. They are recorded because the next person to touch this file will
+otherwise make the same moves in the same order:
+
+1. **A wall that clamped the position without moving the previous one.** In Verlet the
+   velocity *is* the gap between the two, so the depth a body sank into the floor became
+   exactly that much upward speed - a perfectly elastic bounce that got stronger the harder
+   the landing.
+2. **A merge rule asking for 14% of overlap.** The solver holds resting contacts at about
+   0.2%, so nothing ever merged and the game had no rule left in it.
+3. **A merge that appeared at full size.** The new body was born inside its neighbours,
+   sometimes by half a radius, and a solver asked to fix that in one frame does it by
+   firing them across the field. It now grows into its size over about a fifth of a second.
+4. ⚠️ **A separation that was handed to the body as speed.** The big one. Pushing two bodies
+   apart and leaving their previous positions behind gives each of them the whole correction
+   as velocity, forty times a frame. The correction now moves the previous position with the
+   current one, so it creates no speed at all, and an *impact* is resolved separately and
+   only when the bodies are actually approaching. One knob between the two could not serve
+   both: set low the pile was dead to a drop from the top, set high every merge threw the
+   field apart.
+5. **Damping written per substep.** It was, and when the substeps went from 8 to 40 the
+   damping silently went with them - 8% of a body's speed survived a second, so a body
+   dropped from the top was halfway down after one. Every rate here is now written per
+   second and converted.
+
+⚠️ **Merging runs inside the substep loop, before anything separates.** It ran once at the
+end of a frame, so two equal bodies met, were pushed apart forty times, and only then became
+one - every merge was visibly a collision followed by a merge.
+
+### How far a body slides, and how to measure it
+
+⚠️ **Judge it by the gap between two settled bodies, never by how far from the middle they
+end up.** Two bodies touching are already 126 units apart by their own size, so a
+distance-from-centre reading is mostly that constant and barely moves however anything is
+set. Eight separate mechanisms were measured against the wrong number and wrongly cleared
+because of it. Against the gap the signal is plain.
+
+**The floor drag and the rolling resistance only work together.** Once bodies could rotate,
+one that reaches the bottom stops sliding and starts rolling, and rolling has no slip against
+the floor - so `GROUND_KEPT_PER_SECOND` stopped touching it. Turning either alone barely
+moves anything. `ROLLING_KEPT_PER_SECOND` is the only term that slows a body which is not
+slipping at all, and it is what took the gap between two bodies dropped in the middle from
+294 to 86.
+
+**The numbers next to each constant in
+[game.ts](../src/games/accretion/game.ts) are measurements, not preferences.** Do not adjust
+one without re-running the thing it cites.
+
+### The record is signed
+
+`game-2048-best` holds `value.signature` rather than a bare number, and
+[games/record.ts](../src/games/record.ts) throws away anything that does not carry its own
+signature, clears the key and starts the record at zero. The signature is FNV-1a over the
+key, the storage name and the value, in base 36, which is a dozen lines and no dependency.
+The storage name is in there so a verified figure cannot be pasted under a second game's
+key.
+
+**It is shared because keeping a record is the one thing every game does, and what differs
+between them is one predicate.** `scoreRecord(name, plausible)` owns the storage and the
+signing, and the caller says what its own scoring could have produced. 2048 passes
+`value % 4 === 0`, which is worth more than it looks: a merge scores the tile it made,
+always a power of two of at least four, so **a real score is a multiple of four** and most
+invented numbers fail on arithmetic before the signature is reached.
+
+The key comes from `PUBLIC_GAME_SIGN_KEY`, with the literal in the module as a fallback so
+a build without the variable still works. ⚠️ **The `PUBLIC_` prefix is not optional and
+it is the whole caveat**: this is client code, a variable without that prefix is not there
+to read at all, and one with it is substituted into the shipped bundle at build time. Env
+keeps the key out of the repository and out of nothing else.
+
+⚠️ **It is a signature and not encryption, and it is not a security measure.** The key ships
+in the bundle however it is set, so anyone willing to read 2.7 KB can mint a record that
+verifies, and nothing run on the client can prevent that - the page and the person editing
+the page are the same machine. Encrypting the number would hide it from nobody for exactly
+the same reason.
+
+What it is for is that the obvious edit fails silently instead of sticking, and that a
+half-written or corrupted value never reaches the game as a number. That is proportionate,
+because the record is private to one browser and claims nothing to anybody. A figure that
+meant something to other people would have to be **derived by a server** from a
+server-issued seed and the move log, with the client's own claim about its score ignored,
+and that is a feature rather than a hardening step.
+
+---
+
+## 10. Open items
 
 | # | Item | Severity |
 |---|---|---|
@@ -690,6 +1054,44 @@ open item 1.
 
 ## Changelog
 
+- 2026-09-12 - games say how finished they are. `.game-status` is a band cut across the
+  bottom-right corner of a thumbnail and `.page-status` the same word beside a page title;
+  only Beta takes the accent (§3). The thumbnail grew a frame, `.game-shot`, which is what
+  clips the band and what keeps it out of the art's `aria-hidden` (§9). Accretion's card was
+  re-spread around the new corner, and §9 now lists all four things that layout has to clear.
+- 2026-09-12 - the end-of-game panel in Accretion re-declares the palette instead of setting
+  one text colour. New game was invisible in the light theme: a near-white ghost button
+  under near-white text, because the well is dark whatever the theme says (§9).
+- 2026-09-12 - Saturn paints above every other body in the field. Its ring is wider than
+  anything else on the board, so one of its tips was always behind a neighbour, and half a
+  thin ellipse going missing reads as a bug rather than as depth (§9).
+- 2026-09-11 - a third game, [Accretion](../src/games/accretion/game.ts), and the first page
+  here that runs on every frame. It brings a position-based solver written from scratch, ten
+  planets drawn as gradients, and `--acc-*` on `:root` and `.dark`. §9 records the three
+  things that made the pile refuse to settle, because each of them looks correct.
+- 2026-09-11 - Accretion's bodies rotate in the solver, and the rotation is deliberately not
+  drawn. Contact friction works on the surfaces rather than the centres, which is what tells
+  rolling from sliding; drawing the angle is a separate question and §9 records why the
+  answer is no. The same section now records how far a body slides and the one honest way to
+  measure it.
+- 2026-09-11 - the minefield holds a press: the ring a release would open goes down with
+  the button, the middle button chords, and a long press plants a flag rather than toggling
+  one. See "The press preview" in §9.
+- 2026-09-11 - a second game, [Minesweeper](../src/games/minesweeper/game.ts), on the three
+  original boards. It adds `--ms-n1` to `--ms-n8` and the board surfaces to `:root` and
+  `.dark`, which is the third and last place the palette opens up. Nothing about the 2048
+  board changed, and the two games share only the record and the thumbnail frame - §9 sets
+  out where they deliberately go opposite ways.
+- 2026-09-11 - the stored record is signed. `game-2048-best` holds `value.signature`, and a
+  value that fails the signature or is not a multiple of four is cleared and the record
+  restarts at zero. It lives in [games/record.ts](../src/games/record.ts) so the next game
+  keeps its record the same way, and the key is `PUBLIC_GAME_SIGN_KEY` with a literal
+  fallback. See "The record is signed" in §9 for what that is and is not worth.
+- 2026-09-11 - the site has a game, and with it a colour ramp: `--g2048-t1` to
+  `--g2048-t12` on `:root` and `.dark`, the second exception to the near-monochrome
+  palette after the technology marks. The board itself adds no dependency -
+  a tile is an element with two custom properties and the move is a `transform` transition.
+  §9 records the two decisions worth knowing.
 - 2026-09-09 - the request diagram **assembles itself as it crosses the screen**: inline SVG
   built from data at the full 72rem measure, drawn straight onto the band with no plate
   under it, scrubbed against a `view()` timeline with no script at all. Three tiers of card,

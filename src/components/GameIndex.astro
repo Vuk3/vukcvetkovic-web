@@ -1,0 +1,92 @@
+---
+/**
+ * The /games/ index, shared by the four locales.
+ *
+ * Three cards to a row, each opening with a thumbnail of the game itself. The
+ * thumbnails are markup rather than images - a still of the real board, built
+ * from the same tokens - so they cost nothing to serve, stay sharp at any
+ * size, and follow the theme toggle like the rest of the page.
+ */
+import type { Lang } from '../i18n/types';
+import { getDict, localizePath } from '../i18n/utils';
+import { site, type Game } from '../site';
+import Art2048 from './games/Art2048.astro';
+import ArtAccretion from './games/ArtAccretion.astro';
+import ArtMinesweeper from './games/ArtMinesweeper.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = getDict(lang);
+const copy = dict.games;
+
+type GameId = keyof typeof copy.items;
+
+/**
+ * One thumbnail per game, keyed the way the registry is.
+ *
+ * A `Record<GameId, …>` rather than a lookup with a fallback, so a game added
+ * without art is a type error here instead of a card with a hole in it. These
+ * are static markup components, so naming them all in one map costs nothing at
+ * runtime - which is exactly why the game *pages* are not allowed to do this.
+ */
+const art: Record<GameId, typeof Art2048> = {
+  twentyFortyEight: Art2048,
+  minesweeper: ArtMinesweeper,
+  accretion: ArtAccretion,
+};
+
+/*
+ * `Object.entries` widens the key to `string`, which is the one place the
+ * registry's typing does not survive on its own. The cast is safe by
+ * construction - the Record is keyed by GameId - and it is what lets the id
+ * index the dictionary and the art map below without a lookup that could miss.
+ */
+const entries = Object.entries(site.games) as [GameId, Game][];
+---
+
+<div class="page-head">
+  <div class="shell shell-projects">
+    <h1 class="page-title enter">{copy.index.heading}</h1>
+    <p class="page-lead enter" style="--enter-delay:120ms">{copy.index.intro}</p>
+  </div>
+</div>
+
+<div class="sec-lite">
+  <div class="shell shell-projects">
+    <ol class="game-grid">
+      {
+        entries.map(([id, game]) => {
+          const Art = art[id];
+
+          return (
+            <li class="card card-hover project reveal-item">
+              {/*
+                The ribbon is a sibling of the art, not a child of it, for two
+                reasons: `.game-shot` is what clips the band to the corner it
+                cuts, and the art carries `aria-hidden` - "Beta" is information
+                and has to stay outside it.
+              */}
+              <div class="game-shot">
+                <Art />
+                <span class="game-status" data-status={game.status}>
+                  {copy.status[game.status]}
+                </span>
+              </div>
+
+              <h2 class="project-title">
+                <a href={localizePath(`/games/${game.slug}/`, lang)} class="entry-link stretch">
+                  {copy.items[id].name}
+                </a>
+              </h2>
+
+              <p class="mt-2.5 text-muted">{copy.items[id].tagline}</p>
+            </li>
+          );
+        })
+      }
+    </ol>
+  </div>
+</div>

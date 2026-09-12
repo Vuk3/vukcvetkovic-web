@@ -27,6 +27,7 @@ const de: Dict = {
     projects: 'Projekte',
     services: 'Leistungen',
     contact: 'Kontakt',
+    games: 'Spiele',
     themeToggle: 'Design wechseln',
     language: 'Sprache',
   },
@@ -541,6 +542,256 @@ const de: Dict = {
           'Die Lektion, die geblieben ist: offene Daten sind nicht dasselbe wie nutzbare Daten. Fünf Endpunkte, die sich über Ids gegenseitig referenzieren, ein landesweiter Maßstab und keine Möglichkeit, eine geografische Frage zu stellen - der Wert liegt vollständig im Spiegeln und im Verknüpfen. Zu entscheiden, was kopiert wird, wie oft, und wie zweimaliges Kopieren harmlos bleibt, da lag die eigentliche Ingenieursarbeit.',
           'Die andere Hälfte ist, dass die Antwort ankommen muss, ohne erfragt zu werden. Wer eine Allergie hat, öffnet keine App zum Nachsehen - er will es gesagt bekommen, in einem Radius und Intervall, das einmal eingestellt wird. Push-Nachrichten auf einem geplant arbeitenden Backend sind das, was einen öffentlichen Datensatz in etwas verwandelt, das eine Person an dem Tag erreicht, an dem es zählt.',
         ],
+      },
+    },
+  },
+
+  games: {
+    label: 'Spiele',
+
+    /** Both are the loanwords German already uses for this. See the note in
+     *  en.ts. */
+    status: {
+      live: 'Live',
+      beta: 'Beta',
+    },
+
+    index: {
+      metaTitle: 'Spiele - Vuk Cvetković',
+      metaDescription:
+        'Browserspiele von Vuk Cvetković: 2048, Minesweeper und ein Spiel, in dem Welten zu größeren verschmelzen. Jedes bekommt eine eigene Seite.',
+      heading: 'Spiele',
+      intro:
+        'Spiele, die mehr als eine Runde wert sind. Jedes hat eine eigene Seite, und darunter einen Text dazu, wie es gebaut ist, für alle die das auch wissen wollen.',
+    },
+
+    items: {
+      twentyFortyEight: {
+        name: '2048',
+
+        /** One line, for the card on the index. */
+        tagline:
+          'Schiebe das Brett, und jede Kachel rutscht so weit sie kann. Zwei gleiche Zahlen werden zu einer doppelten, bis hinauf zu 2048.',
+
+        metaDescription:
+          "Das Kachelspiel. Das Brett schieben, gleiche Zahlen verschmelzen, und eine einzelne Kachel mit 2048 erreichen.",
+        lead: "Schiebe das Brett in eine beliebige Richtung und jede Kachel rutscht so weit sie kann. Zwei gleiche Zahlen verschmelzen zu einer doppelten, und das Ziel ist eine einzelne Kachel mit 2048.",
+
+        score: "Punkte",
+        best: "Bestwert",
+        highest: "Größte Kachel",
+        newGame: "Neues Spiel",
+        undo: "Rückgängig",
+        hint: "Pfeiltasten oder WASD, am Telefon wischen.",
+
+        won: {
+          title: "2048",
+          body: "Die Kachel liegt auf dem Brett. Hier muss aber nicht Schluss sein - das Spiel läuft, solange sich etwas bewegen lässt.",
+          keepGoing: "Weiterspielen",
+        },
+
+        over: {
+          title: "Kein Zug mehr",
+          body: "Das Brett ist voll und nichts passt zu seinem Nachbarn. Ein Schritt zurück steht noch offen, falls der letzte Zug den Ausschlag gegeben hat.",
+          restart: "Nochmal spielen",
+        },
+
+        how: {
+          label: "So wird gespielt",
+          items: [
+            {
+              title: "Du schiebst das ganze Brett",
+              description:
+                "Pfeiltasten oder WASD auf der Tastatur, am Telefon ein Wisch in eine beliebige Richtung. Jede Kachel legt in einem Zug die ganze mögliche Strecke zurück, nicht ein Feld.",
+            },
+            {
+              title: "Gleiche Zahlen verschmelzen",
+              description:
+                "Zwei Kacheln mit derselben Zahl werden zu einer doppelten. Eine gerade verschmolzene Kachel ist für diesen Zug fertig, eine Reihe aus vier 2en ergibt also zwei 4en und keine 8.",
+            },
+            {
+              title: "Nach jedem Zug eine neue Kachel",
+              description:
+                "Sie erscheint auf einem freien Feld und ist in neun von zehn Fällen eine 2. Ein Schub, der nichts verändert, ist kein Zug: es kommt nichts dazu, und ein Versuch kostet nichts.",
+            },
+            {
+              title: "Nimm eine Ecke und bleib dort",
+              description:
+                "Halte die größte Kachel in einer Ecke und schiebe nie von ihr weg. Der größere Teil des Spiels besteht darin, den Zug abzulehnen, der sie herausholt.",
+            },
+          ],
+        },
+
+        close: {
+          label: "Wie es gebaut ist",
+          paragraphs: [
+            "Kein Canvas und keine Spielbibliothek. Eine Kachel ist ein Element mit zwei benutzerdefinierten Eigenschaften, ihre Position ist ein Translate gegen ihre eigene Größe, und das Gleiten setzt der Browser zusammen. Daher kommt die Weichheit: ein Zug ändert eine Transformation und sonst nichts, kein Teil davon läuft durch das Layout.",
+            "Die andere Hälfte ist, dass jede Kachel ihr Element behält, solange es sie gibt. Das Brett wird nie aus dem Zustand neu gezeichnet - ein Zug aktualisiert Zahlen auf Knoten, die schon da sind, und deshalb legt eine Kachel den Weg sichtbar zurück, statt zu verschwinden und anderswo wieder aufzutauchen.",
+            "Die Zahlen sind Text, also so scharf wie der Rest der Seite und in der Größe, die der Leser eingestellt hat. Die Farben sind Tokens im selben Stylesheet wie alles andere, und deshalb antwortet das Brett auf den Themenschalter im Kopf.",
+            "Die Eingabe läuft aus drei Richtungen durch eine einzige Funktion, damit Taste, Wisch und Tipp nicht anfangen, leicht Verschiedenes zu bedeuten. Die Pfeiltasten gehören dem Brett nur, solange es im Bild ist, und ein Zug, der vor der Landung des vorigen kommt, wird gehalten statt verworfen - deshalb kostet schnelles Spielen nie einen Zug.",
+          ],
+        },
+      },
+
+      minesweeper: {
+        name: 'Minesweeper',
+
+        tagline:
+          'Öffne jedes Feld, das keine Mine ist. Jede Zahl zählt die Minen, die sie berühren, und der Rest wird daraus hergeleitet.',
+
+        metaDescription:
+          'Minesweeper im Browser, auf den Brettern Anfänger, Fortgeschritten und Experte, mit einem ersten Klick, der nicht verlieren kann.',
+        lead: 'Öffne jedes Feld, das keine Mine ist. Eine Zahl sagt, wie viele der acht Felder um sie herum vermint sind, und alles Weitere folgt daraus. Drei Bretter in den Größen, mit denen das Original ausgeliefert wurde, und ein erster Klick, der nicht verlieren kann.',
+
+        boards: 'Brett',
+        levels: {
+          beginner: 'Anfänger',
+          intermediate: 'Fortgeschritten',
+          expert: 'Experte',
+        },
+
+        mines: 'Minen',
+        time: 'Zeit',
+        best: 'Bestzeit',
+        newGame: 'Neues Spiel',
+        flagMode: 'Fahnen',
+        hint: 'Drücken öffnet, Rechtsklick oder F setzt eine Fahne, am Telefon langes Drücken. Eine fertige Zahl öffnet den Rest ihrer Umgebung per Druck oder mit der mittleren Taste.',
+
+        gridLabel: 'Minenfeld',
+        cells: {
+          hidden: 'Verdeckt',
+          flagged: 'Fahne',
+          mine: 'Mine',
+          empty: 'Leer',
+          wrong: 'Falsche Fahne',
+        },
+
+        won: {
+          title: 'Geräumt',
+          body: 'Jedes Feld, das keine Mine war, ist offen.',
+          record: 'Eine neue Bestzeit auf diesem Brett.',
+          again: 'Nochmal spielen',
+        },
+
+        lost: {
+          title: 'Mine',
+          body: 'Das Feld wird so gezeigt, wie es war. Eine Fahne auf einem leeren Feld ist markiert, und dort ist die Überlegung meistens abgebogen.',
+          again: 'Nochmal versuchen',
+        },
+
+        how: {
+          label: 'So wird gespielt',
+          items: [
+            {
+              title: 'Der erste Klick ist sicher',
+              description:
+                'Die Minen werden erst danach gelegt, rund um die gedrückte Stelle. Der erste Zug kann also nicht verlieren und öffnet immer freies Feld. Fang irgendwo an.',
+            },
+            {
+              title: 'Eine Zahl zählt ihre Nachbarn',
+              description:
+                'Sie sagt, wie viele der acht angrenzenden Felder eine Mine tragen. Ein Feld ohne Mine in der Nachbarschaft öffnet die ganze Region mit einem Druck.',
+            },
+            {
+              title: 'Markiere, was du hergeleitet hast',
+              description:
+                'Rechtsklick am Rechner, F auf der Tastatur, langes Drücken am Telefon. Langes Drücken setzt nur, ein langsamer Finger kann also nicht wegnehmen, was er gerade gesetzt hat - weggenommen wird im Fahnenmodus, und den willst du ohnehin, wenn gleich mehrere anstehen. Der Zähler zeigt Minen minus Fahnen.',
+            },
+            {
+              title: 'Drücke eine Zahl, die fertig ist',
+              description:
+                'Sobald eine Zahl so viele Fahnen um sich hat, wie sie angibt, öffnet ein Druck auf sie den Rest ihrer Umgebung auf einmal, und die mittlere Taste tut dasselbe. Halte die Taste gedrückt, und die Felder, die aufgingen, gehen mit ihr nach unten - du siehst die acht, bevor du dich festlegst. Daher kommt das Tempo in diesem Spiel, und die meisten finden es nie.',
+            },
+          ],
+        },
+
+        close: {
+          label: 'Wie es gebaut ist',
+          paragraphs: [
+            'Kein Canvas und keine Spielbibliothek, und anders als beim anderen Spiel hier auch keine Bewegung. Es gibt keine Schleife und nichts im Flug: ein Feld ist ein Button, es wechselt den Zustand oder eben nicht, und das ganze Brett sind in Expertengröße vierhundertachtzig davon. Was es im Betrieb kostet, ist eine Klasse auf einem Element.',
+            'Die Minen werden beim ersten Druck gelegt statt zu Beginn, um das gedrückte Feld und die acht angrenzenden herum. Ein vorab verteiltes Feld muss entweder den ersten Zug verlieren lassen, was ein Münzwurf ist und kein Spiel, oder so lange neu verteilen, bis es das nicht mehr tut, was die Wahrscheinlichkeiten überall sonst still verbiegt. Spätes Legen ergibt ein ehrliches Feld und einen ersten Zug, der immer eine Region öffnet.',
+            'Eine Region zu öffnen ist eine Warteschlange und keine Rekursion, die ein Telefon bei vierhundert Ebenen Tiefe zu Recht ablehnen darf, und diese Warteschlange liefert der Animation ihr Timing gleich mit: der Ring, auf dem ein Feld gefunden wurde, ist sein Abstand zum Druck, also wartet jedes so viele Schritte, bevor es aufgeht. Das Öffnen kommt als etwas, das sich nach außen ausbreitet, statt als Brett, das auf einmal umspringt, und es kostet eine benutzerdefinierte Eigenschaft und eine Verzögerung.',
+            'Das Brett ist ein echtes Grid: Zeilen, Zellen, eine Zeilen- und Spaltenzahl, und genau ein Feld in der Tabulatorfolge, damit die Pfeiltasten es abgehen statt der Tabulatortaste. Dafür ist dieses Spiel hier. Das andere muss vor dem Screenreader versteckt und über eine Live-Region beschrieben werden, weil sechzehn Kacheln, die sich bei jedem Tastendruck neu schreiben, nicht lesbar sind. Ein Minenfeld ist eine Tabelle, die stillhält und wartet, und genau dafür gibt es ein Grid.',
+          ],
+        },
+      },
+      accretion: {
+        name: 'Akkretion',
+
+        tagline:
+          'Lass Himmelskörper fallen. Zwei gleiche werden zum nächsten, vom Mond bis hinauf zur Sonne.',
+
+        metaDescription:
+          'Ein Verschmelzungsspiel im Browser: Himmelskörper fallen lassen, und zwei gleiche werden zum nächsten, vom Mond bis zur Sonne.',
+        lead: 'Lass einen Himmelskörper fallen. Zwei gleiche verschmelzen zum nächsten, vom Mond über die Planeten bis zur Sonne, und der Raum füllt sich, ob du bereit bist oder nicht.',
+
+        score: 'Punkte',
+        best: 'Bestwert',
+        next: 'Als Nächstes',
+        newGame: 'Neues Spiel',
+        hint: 'Bewegen zum Zielen, drücken zum Loslassen. Die Pfeiltasten zielen, die Leertaste lässt los.',
+        sequence: 'Die Reihe, von der kleinsten zur größten',
+
+        planets: [
+          'Mond',
+          'Merkur',
+          'Mars',
+          'Venus',
+          'Erde',
+          'Neptun',
+          'Uranus',
+          'Saturn',
+          'Jupiter',
+          'Sonne',
+        ],
+
+        won: {
+          title: 'Ein Stern',
+          body: 'Die Reihe hat kein Weiter mehr. Zwei Sonnen können nichts werden, also gehen sie stattdessen hoch, und der Platz, den sie hinterlassen, ist die einzige Art, wie ein voller Raum je wieder leer wird.',
+          keepGoing: 'Weiterspielen',
+        },
+
+        over: {
+          title: 'Kein Platz mehr',
+          body: 'Etwas liegt zu lange über der Linie. Hier gibt es keine Decke, nur eine Linie, und ein Körper, der darüber zur Ruhe kommt, hat kein Weiter.',
+          restart: 'Nochmal spielen',
+        },
+
+        how: {
+          label: 'So wird gespielt',
+          items: [
+            {
+              title: 'Zielen, dann loslassen',
+              description:
+                'Über den Rand bewegen, um einen Körper auszurichten, und drücken, um ihn fallen zu lassen. Es kommen nur die fünf kleinsten, alles jenseits der Erde muss also gebaut werden.',
+            },
+            {
+              title: 'Zwei gleiche berühren sich und verschmelzen',
+              description:
+                'Sie müssen nicht gedrückt oder gehalten werden: sobald zwei gleiche Körper aneinander zur Ruhe kommen, werden sie die nächste Stufe, und eine Verschmelzung neben einer anderen löst eine Kette aus.',
+            },
+            {
+              title: 'In die Breite bauen, nicht in die Höhe',
+              description:
+                'Ein Körper, der auf einen hohen Haufen fällt, rollt, und wo er landet, ist nicht, wohin gezielt wurde. Die großen unten zu halten ist der größere Teil des Spiels, denn genau sie haben kein Weiter.',
+            },
+            {
+              title: 'Die Linie ist eine Frist, keine Wand',
+              description:
+                'Nichts hindert einen Körper daran, darüber zu gehen. Vorbei ist es erst, wenn eine Sekunde später noch etwas dort oben liegt: ein Aufspritzen übersteht man, ein dort liegen gebliebener Jupiter nicht.',
+            },
+          ],
+        },
+
+        close: {
+          label: 'Wie es gebaut ist',
+          paragraphs: [
+            'Kein Canvas, keine Physikbibliothek und überhaupt keine Abhängigkeit. Ein Körper ist ein div mit einem Eckenradius, seine Farbe ist ein Verlauf im selben Stylesheet wie der Rest der Seite, und das Bild schreibt eine Transformation auf jeden einzelnen. Deshalb skalieren die Planeten mit der Seite, bleiben in jedem Zoom scharf und kosten keine Anfrage. Eine Physik-Engine wäre sechsmal so schwer wie diese ganze Seite.',
+            'Der Solver arbeitet über Positionen: ein Körper merkt sich, wo er ist und wo er war, und der Abstand dazwischen ist seine Geschwindigkeit. Nichts berechnet einen Impuls. Ein Kontakt drückt zwei Körper auseinander, und weil die vorige Position stehen bleibt, nimmt dieses Auseinanderdrücken genau die Geschwindigkeit heraus, die sie zusammengebracht hat - und das ist ein unelastischer Stoß. Vierzig solcher Durchgänge laufen pro Bild, jeder gegen Positionen, die sich schon bewegt haben, und ein voller Raum mit sechsundvierzig Körpern kostet unter einem Zehntel einer Millisekunde bei einem Budget von fast siebzehn.',
+            'Die Arbeit war, es zur Ruhe zu bringen. Drei getrennte Dinge fügten still Energie hinzu, statt sie zu entziehen: eine Wand, die die Position eines Körpers begrenzte, ohne die vorige mitzunehmen, wodurch die Tiefe einer Landung zur Geschwindigkeit eines Abprallers wurde; tangentiale Reibung, berechnet aus einer Geschwindigkeit, die derselbe Durchgang gerade änderte, weshalb ein dichter Haufen nach acht Sekunden immer noch Körper herumwarf; und eine Verschmelzungsregel, die so viel Überlappung verlangte, dass überhaupt nie etwas verschmolz. Jedes davon wurde durch Messen gefunden und nicht durch Lesen, und die Zahlen, die dabei herauskamen, stehen neben den Konstanten, die sie begründen.',
+            'Die Simulation läuft in ihrem eigenen Raum aus tausend Einheiten und erfährt nie, wie groß sie gezeigt wird. Eine Transformation auf einem Element bringt den ganzen Raum auf die Breite, die die Seite ihm gegeben hat, eine Größenänderung ändert also diese eine Zahl und sonst nichts - keinen Radius, keine Position, keinen Schritt. Deshalb spielt sich dasselbe Spiel auf dem Telefon genau wie am Rechner, statt auf einem von beiden die doppelte Schwerkraft zu haben.',
+          ],
+        },
       },
     },
   },

@@ -27,6 +27,7 @@ const fr: Dict = {
     projects: "Projets",
     services: "Services",
     contact: "Contact",
+    games: "Jeux",
     themeToggle: "Changer de thème",
     language: "Langue",
   },
@@ -542,6 +543,256 @@ const fr: Dict = {
           "La leçon qui est restée, c’est que des données ouvertes ne sont pas des données utilisables. Cinq points d’accès qui se référencent par identifiants, une échelle nationale et aucun moyen de poser une question géographique : la valeur tient entièrement dans la recopie et dans les jointures. Décider quoi copier, à quelle fréquence, et comment rendre une double copie inoffensive, c’est là qu’était vraiment l’ingénierie.",
           "L’autre moitié, c’est que la réponse doit arriver sans être demandée. Une personne allergique n’ouvre pas une application pour vérifier : elle veut qu’on le lui dise, dans un rayon et à un intervalle réglés une fois pour toutes. Les notifications push posées sur un backend planifié sont ce qui transforme un jeu de données public en quelque chose qui atteint quelqu’un le jour où cela compte.",
         ],
+      },
+    },
+  },
+
+  games: {
+    label: "Jeux",
+
+    /** Left in English on purpose: "en ligne" says live *play*, not released.
+     *  See the note in en.ts. */
+    status: {
+      live: "Live",
+      beta: "Bêta",
+    },
+
+    index: {
+      metaTitle: "Jeux - Vuk Cvetković",
+      metaDescription:
+        "Les jeux de navigateur de Vuk Cvetković : 2048, le démineur, et un jeu où l'on fusionne des mondes en de plus grands. Chacun a sa propre page.",
+      heading: "Jeux",
+      intro:
+        "Des jeux qui valent plus d'une partie. Chacun a sa page, et en dessous un texte sur la façon dont il est construit, pour qui veut aussi cela.",
+    },
+
+    items: {
+      twentyFortyEight: {
+        name: "2048",
+
+        /** One line, for the card on the index. */
+        tagline:
+          "Poussez le plateau et chaque tuile glisse aussi loin qu'elle le peut. Deux mêmes nombres fusionnent en un seul du double, jusqu'à 2048.",
+
+        metaDescription:
+          "Le jeu de tuiles. Poussez le plateau, fusionnez les nombres identiques, et atteignez une tuile à 2048.",
+        lead: "Poussez le plateau dans n'importe quelle direction et chaque tuile glisse aussi loin qu'elle le peut. Deux nombres identiques fusionnent en un seul du double, et le but est une tuile à 2048.",
+
+        score: "Score",
+        best: "Record",
+        highest: "Plus grande tuile",
+        newGame: "Nouvelle partie",
+        undo: "Annuler",
+        hint: "Les flèches ou WASD, et un balayage sur téléphone.",
+
+        won: {
+          title: "2048",
+          body: "La tuile est sur le plateau. Rien n'oblige à s'arrêter là : la partie continue tant que quelque chose peut bouger.",
+          keepGoing: "Continuer",
+        },
+
+        over: {
+          title: "Plus aucun coup",
+          body: "Le plateau est plein et rien ne correspond à son voisin. Un retour en arrière reste possible si c'est le dernier coup qui a tout décidé.",
+          restart: "Rejouer",
+        },
+
+        how: {
+          label: "Comment jouer",
+          items: [
+            {
+              title: "Vous poussez tout le plateau",
+              description:
+                "Les flèches ou WASD au clavier, un balayage dans n'importe quelle direction sur téléphone. Chaque tuile parcourt en un coup toute la distance possible, et non une case.",
+            },
+            {
+              title: "Les nombres égaux fusionnent",
+              description:
+                "Deux tuiles portant le même nombre n'en font plus qu'une, du double. Une tuile qui vient de fusionner en a fini pour ce coup : une rangée de quatre 2 donne donc deux 4 et non un 8.",
+            },
+            {
+              title: "Une nouvelle tuile à chaque coup",
+              description:
+                "Elle apparaît sur une case libre, et c'est un 2 neuf fois sur dix. Une poussée qui ne change rien n'est pas un coup : rien n'apparaît et rien n'est perdu à l'essayer.",
+            },
+            {
+              title: "Choisissez un coin et restez-y",
+              description:
+                "Gardez la plus grande tuile dans un coin et ne poussez jamais dans l'autre sens. L'essentiel du jeu consiste à refuser le coup qui l'en ferait sortir.",
+            },
+          ],
+        },
+
+        close: {
+          label: "Comment c'est construit",
+          paragraphs: [
+            "Pas de canvas et pas de bibliothèque de jeu. Une tuile est un élément portant deux propriétés personnalisées, sa position est une translation résolue par rapport à sa propre taille, et le glissement est composé par le navigateur. La fluidité vient de là : un coup change une transformation et rien d'autre, donc aucune de ses parties ne passe par la mise en page.",
+            "L'autre moitié, c'est que chaque tuile garde son élément tant qu'elle existe. Le plateau n'est jamais redessiné depuis l'état : un coup met à jour les nombres sur des nœuds déjà présents, et c'est pourquoi une tuile parcourt visiblement le chemin depuis sa place au lieu de disparaître pour réapparaître ailleurs.",
+            "Les chiffres sont du texte : ils sont aussi nets que le reste de la page et suivent la taille que le lecteur a choisie. Les couleurs sont des jetons dans la même feuille de style que tout le reste, et c'est pourquoi le plateau répond au sélecteur de thème de l'en-tête.",
+            "Les commandes passent par une seule fonction appelée depuis trois endroits, si bien qu'une touche, un balayage et une tape ne peuvent pas finir par vouloir dire des choses légèrement différentes. Les flèches n'appartiennent au plateau que tant qu'il est à l'écran, et un coup poussé avant que le précédent ne soit posé est mis en attente plutôt qu'abandonné : jouer vite ne coûte jamais un tour.",
+          ],
+        },
+      },
+
+      minesweeper: {
+        name: "Démineur",
+
+        tagline:
+          "Ouvrez toutes les cases qui ne sont pas une mine. Chaque nombre compte les mines qui le touchent, et le reste se déduit de là.",
+
+        metaDescription:
+          "Le démineur dans le navigateur, sur les plateaux débutant, intermédiaire et expert, avec un premier clic qui ne peut pas perdre.",
+        lead: "Ouvrez toutes les cases qui ne sont pas une mine. Un nombre dit combien des huit cases qui l'entourent sont minées, et tout le reste se déduit de là. Trois plateaux, aux tailles d'origine, et un premier clic qui ne peut pas perdre.",
+
+        boards: "Plateau",
+        levels: {
+          beginner: "Débutant",
+          intermediate: "Intermédiaire",
+          expert: "Expert",
+        },
+
+        mines: "Mines",
+        time: "Temps",
+        best: "Record",
+        newGame: "Nouvelle partie",
+        flagMode: "Drapeaux",
+        hint: "Appuyez pour ouvrir, clic droit ou F pour poser un drapeau, un appui long sur téléphone. Un nombre terminé ouvre le reste de son entourage sur un appui ou au bouton du milieu.",
+
+        gridLabel: "Champ de mines",
+        cells: {
+          hidden: "Fermée",
+          flagged: "Drapeau",
+          mine: "Mine",
+          empty: "Vide",
+          wrong: "Drapeau erroné",
+        },
+
+        won: {
+          title: "Terrain déminé",
+          body: "Toutes les cases qui n'étaient pas une mine sont ouvertes.",
+          record: "Un nouveau record sur ce plateau.",
+          again: "Rejouer",
+        },
+
+        lost: {
+          title: "Mine",
+          body: "Le terrain est montré tel qu'il était. Un drapeau posé sur une case vide est signalé, et c'est là que le raisonnement a lâché la plupart du temps.",
+          again: "Réessayer",
+        },
+
+        how: {
+          label: "Comment jouer",
+          items: [
+            {
+              title: "Le premier clic est sûr",
+              description:
+                "Les mines sont posées après lui, autour de l'endroit appuyé : le premier coup ne peut donc pas perdre et ouvre toujours sur du terrain libre. Commencez n'importe où.",
+            },
+            {
+              title: "Un nombre compte ses voisines",
+              description:
+                "C'est le nombre de mines parmi les huit cases qui le touchent. Une case sans aucune mine autour d'elle ouvre toute la région en un seul appui.",
+            },
+            {
+              title: "Marquez ce que vous avez déduit",
+              description:
+                "Clic droit sur ordinateur, F au clavier, appui long sur téléphone. L'appui long ne fait que poser, si bien qu'un doigt lent ne peut pas retirer ce qu'il vient de mettre : c'est le mode drapeau qui en enlève un, et c'est de toute façon lui qu'il faut quand il y en a toute une série. Le compteur affiche les mines moins les drapeaux.",
+            },
+            {
+              title: "Appuyez sur un nombre terminé",
+              description:
+                "Dès qu'un nombre a autant de drapeaux autour de lui qu'il l'annonce, appuyer dessus ouvre le reste de son entourage d'un coup, et le bouton du milieu fait la même chose. Gardez le bouton enfoncé et les cases qui s'ouvriraient s'enfoncent avec lui : vous voyez les huit avant de vous engager. C'est de là que vient la vitesse dans ce jeu, et la plupart des joueurs ne le découvrent jamais.",
+            },
+          ],
+        },
+
+        close: {
+          label: "Comment c'est construit",
+          paragraphs: [
+            "Pas de canvas et pas de bibliothèque de jeu, et contrairement à l'autre jeu ici, pas de mouvement non plus. Il n'y a pas de boucle et rien en vol : une case est un bouton, elle change d'état ou non, et tout le plateau en compte quatre cent quatre-vingts à la taille expert. Ce que cela coûte à faire tourner, c'est une classe sur un élément.",
+            "Les mines sont posées au premier appui plutôt qu'au départ, autour de la case appuyée et des huit qui la touchent. Un terrain distribué à l'avance doit soit laisser le premier coup perdre, ce qui relève du pile ou face et non du jeu, soit redistribuer jusqu'à ce que ce ne soit plus le cas, ce qui fausse discrètement les probabilités partout ailleurs. Poser tard donne un terrain honnête et un premier coup qui ouvre toujours une région.",
+            "Ouvrir une région se fait avec une file et non par récursion, qu'un téléphone est en droit de refuser à quatre cents niveaux de profondeur, et cette file offre au passage son minutage à l'animation : l'anneau sur lequel une case a été trouvée est sa distance à l'appui, donc chacune attend ce nombre de pas avant de s'ouvrir. L'ouverture arrive comme quelque chose qui se propage vers l'extérieur au lieu d'un plateau qui change d'un bloc, et cela coûte une propriété personnalisée et un délai.",
+            "Le plateau est une vraie grille : des lignes, des cellules, un nombre de lignes et de colonnes, et une seule case dans l'ordre de tabulation pour que les flèches la parcourent plutôt que la touche Tab. C'est la raison d'être de ce jeu ici. L'autre doit être masqué aux lecteurs d'écran et décrit par une région live, parce que seize tuiles réécrites à chaque touche sont illisibles. Un champ de mines est un tableau qui reste immobile et attend, ce à quoi une grille sert exactement.",
+          ],
+        },
+      },
+      accretion: {
+        name: "Accrétion",
+
+        tagline:
+          "Laissez tomber des corps célestes. Deux identiques deviennent le suivant, de la Lune jusqu'au Soleil.",
+
+        metaDescription:
+          "Un jeu de fusion dans le navigateur : laissez tomber des corps célestes et deux identiques deviennent le suivant, de la Lune au Soleil.",
+        lead: "Laissez tomber un corps céleste. Deux identiques fusionnent en le suivant, de la Lune aux planètes jusqu'au Soleil, et l'espace se remplit que vous soyez prêt ou non.",
+
+        score: "Score",
+        best: "Record",
+        next: "Suivant",
+        newGame: "Nouvelle partie",
+        hint: "Déplacez pour viser et appuyez pour lâcher. Les flèches visent, la barre d'espace lâche.",
+        sequence: "La séquence, du plus petit au plus grand",
+
+        planets: [
+          "Lune",
+          "Mercure",
+          "Mars",
+          "Vénus",
+          "Terre",
+          "Neptune",
+          "Uranus",
+          "Saturne",
+          "Jupiter",
+          "Soleil",
+        ],
+
+        won: {
+          title: "Une étoile",
+          body: "La séquence n'a plus nulle part où aller. Deux Soleils ne peuvent rien devenir, alors ils disparaissent, et la place qu'ils laissent est la seule façon de vider un espace plein.",
+          keepGoing: "Continuer",
+        },
+
+        over: {
+          title: "Plus de place",
+          body: "Quelque chose repose au-dessus de la ligne depuis trop longtemps. Il n'y a pas de plafond ici, seulement une ligne, et un corps qui s'arrête au-dessus n'a plus nulle part où aller.",
+          restart: "Rejouer",
+        },
+
+        how: {
+          label: "Comment jouer",
+          items: [
+            {
+              title: "Visez, puis lâchez",
+              description:
+                "Déplacez-vous au-dessus du champ pour aligner un corps et appuyez pour le laisser partir. Seuls les cinq plus petits arrivent, donc tout ce qui dépasse la Terre doit être construit.",
+            },
+            {
+              title: "Deux identiques se touchent et fusionnent",
+              description:
+                "Nul besoin de les presser ni de les maintenir : dès que deux corps égaux s'immobilisent l'un contre l'autre, ils deviennent le suivant, et une fusion qui tombe à côté d'une autre déclenche une chaîne.",
+            },
+            {
+              title: "Construisez en largeur, pas en hauteur",
+              description:
+                "Un corps lâché sur une pile haute roule, et l'endroit où il atterrit n'est pas celui visé. Garder les gros le long du fond est l'essentiel du jeu, car ce sont eux qui n'ont plus nulle part où aller.",
+            },
+            {
+              title: "La ligne est un délai, pas un mur",
+              description:
+                "Rien n'empêche un corps de la dépasser. Ce n'est fini que si l'un d'eux est encore là-haut une seconde plus tard : une éclaboussure se survit, un Jupiter posé là non.",
+            },
+          ],
+        },
+
+        close: {
+          label: "Comment c'est construit",
+          paragraphs: [
+            "Pas de canvas, pas de bibliothèque de physique et aucune dépendance. Un corps est un div avec un rayon de bordure, sa couleur est un dégradé dans la même feuille de style que le reste de la page, et l'image écrit une transformation sur chacun. Les planètes suivent donc l'échelle de la page, restent nettes à tout zoom et ne coûtent aucune requête. Un moteur physique aurait pesé six fois cette page entière.",
+            "Le solveur travaille sur les positions : un corps retient où il est et où il était, et l'écart entre les deux est sa vitesse. Rien ne calcule d'impulsion. Un contact écarte deux corps, et comme la position précédente ne bouge pas, cet écartement retire exactement la vitesse qui les avait rapprochés, ce qui est la définition d'une collision inélastique. Quarante de ces passes tournent par image, chacune sur des positions déjà déplacées, et un champ plein de quarante-six corps coûte moins d'un dixième de milliseconde sur un budget de près de dix-sept.",
+            "Le travail a été de le faire se stabiliser. Trois choses distinctes ajoutaient discrètement de l'énergie au lieu d'en retirer : un mur qui bornait la position d'un corps sans déplacer la précédente, transformant la profondeur d'un atterrissage en vitesse de rebond ; un frottement tangentiel calculé à partir d'une vitesse que la même passe était en train de changer, qui laissait une pile serrée projeter des corps après huit secondes ; et une règle de fusion exigeant tant de recouvrement que rien ne fusionnait jamais. Chacune a été trouvée en mesurant et non en relisant, et les nombres qui en sont sortis figurent à côté des constantes qu'ils justifient.",
+            "La simulation tourne dans son propre espace de mille unités et n'apprend jamais à quelle taille elle est montrée. Une seule transformation sur un seul élément projette tout le champ sur la largeur que la page lui a donnée : un redimensionnement change ce nombre et rien d'autre, ni un rayon, ni une position, ni un pas. C'est pourquoi la même partie se joue à l'identique sur téléphone et sur ordinateur, au lieu d'avoir deux fois la gravité sur l'un des deux.",
+          ],
+        },
       },
     },
   },

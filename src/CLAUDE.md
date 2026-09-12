@@ -11,7 +11,7 @@ Routes and the layout. [src/components](./components/CLAUDE.md) and
 
 ## A route file holds no markup
 
-Eight route files cover four logical pages, because every route exists twice: once
+Sixteen route files cover eight logical pages, because every route exists twice: once
 unprefixed for English and once under `[lang]` for the other three. That is only tolerable
 because a page resolves `lang`, reads its meta strings, and renders `Base` around **one
 shared body component**:
@@ -22,6 +22,21 @@ shared body component**:
 | project index | [pages/projects/index.astro](./pages/projects/index.astro) | [pages/\[lang\]/projects/index.astro](<./pages/[lang]/projects/index.astro>) | [ProjectIndex.astro](./components/ProjectIndex.astro) |
 | project page | [pages/projects/\[slug\]/index.astro](<./pages/projects/[slug]/index.astro>) | [pages/\[lang\]/projects/\[slug\]/index.astro](<./pages/[lang]/projects/[slug]/index.astro>) | [ProjectDetail.astro](./components/ProjectDetail.astro) |
 | 404 | [pages/404.astro](./pages/404.astro) | [pages/\[lang\]/404.astro](<./pages/[lang]/404.astro>) | [NotFound.astro](./components/NotFound.astro) |
+| game index | [pages/games/index.astro](./pages/games/index.astro) | [pages/\[lang\]/games/index.astro](<./pages/[lang]/games/index.astro>) | [GameIndex.astro](./components/GameIndex.astro) |
+| 2048 | [pages/games/2048/index.astro](./pages/games/2048/index.astro) | [pages/\[lang\]/games/2048/index.astro](<./pages/[lang]/games/2048/index.astro>) | [Game2048.astro](./components/Game2048.astro) |
+| Minesweeper | [pages/games/minesweeper/index.astro](./pages/games/minesweeper/index.astro) | [pages/\[lang\]/games/minesweeper/index.astro](<./pages/[lang]/games/minesweeper/index.astro>) | [Minesweeper.astro](./components/Minesweeper.astro) |
+| Accretion | [pages/games/accretion/index.astro](./pages/games/accretion/index.astro) | [pages/\[lang\]/games/accretion/index.astro](<./pages/[lang]/games/accretion/index.astro>) | [Accretion.astro](./components/Accretion.astro) |
+
+⚠️ **Games are not a `[slug]` route and must not become one.** The URLs look the same
+either way - `/games/2048/` has a slug in it - but on disk `games/2048/` is a real
+directory rather than a parameter, and there is one route file per game instead of one for
+all of them. Three games, three directories.
+
+Projects can be parameterised because every project page is the same page with different
+data. A game is its own program with its own script, so a `[slug]` route would have to
+import every game's component and choose one at render time. Vite resolves those imports
+statically, so **every game's code would end up in every game's bundle**. One directory per
+game is what stops that.
 
 **Adding a route means adding both halves and a body component.** Markup in one of the pair
 is how the languages start disagreeing, and nothing in the build will tell you.

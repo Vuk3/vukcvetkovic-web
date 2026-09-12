@@ -26,6 +26,7 @@ const en = {
     projects: "Projects",
     services: "Services",
     contact: "Contact",
+    games: "Games",
     themeToggle: "Toggle dark theme",
     language: "Language",
   },
@@ -583,6 +584,290 @@ const en = {
           "The lesson that carried was that open data is not the same as usable data. Five endpoints that reference each other by id, a national scale, and no way to ask a geographic question means the value is entirely in the mirroring and the joining. Deciding what to copy, how often, and how to make copying it twice harmless is where the engineering actually was.",
           "The other half is that the answer has to arrive without being asked for. Someone with an allergy does not open an app to check - they want to be told, at a radius and an interval they set once. Push notifications on top of a scheduled backend are what turn a public dataset into something that reaches a person on the day it matters.",
         ],
+      },
+    },
+  },
+
+  /*
+   * The games, at /games/ and one page per game.
+   *
+   * Same three layers as `projects`: the index, and an `items` map keyed by
+   * the id in src/site.ts. A game's name and slug are not here - "2048" is
+   * four characters in every language, so they are facts.
+   *
+   * ⚠️ Unlike a project, a game is not rendered by one shared component. Each
+   * has its own implementation and its own route pair, so `items` only has to
+   * carry the copy around a board, and two games are free to need different
+   * keys. Read docs/content-and-i18n.md before adding one.
+   */
+  games: {
+    label: "Games",
+
+    /**
+     * The two words a game's status can carry: on the ribbon across the corner
+     * of its card, and on the badge beside its title. Which one a game gets is
+     * `status` in src/site.ts, and a status with no word here is a type error
+     * there.
+     *
+     * Both stay as they are in all four dictionaries, which is unusual enough
+     * to be worth the note. "Beta" is the same loanword everywhere, and "live"
+     * is the one that would go wrong if it were translated: "uživo" and "en
+     * ligne" both say live *play* - an opponent on the other end - which is
+     * the opposite of what a single-player game wants on its card.
+     */
+    status: {
+      live: "Live",
+      beta: "Beta",
+    },
+
+    index: {
+      metaTitle: "Games - Vuk Cvetković",
+      metaDescription:
+        "Browser games by Vuk Cvetković: 2048, Minesweeper, and a game about merging worlds into bigger ones. Each gets a page of its own.",
+      heading: "Games",
+      intro:
+        "Games worth more than one go. Each has a page of its own, and underneath it a write-up on how it was built, for anyone who wants that too.",
+    },
+
+    items: {
+      twentyFortyEight: {
+        /**
+         * The title, in the page head, the card and the browser tab.
+         *
+         * Here rather than in site.ts, even though this one is the same in four
+         * languages: the next one is not, and a rule with an exception in it is
+         * not a rule. See the note on `Game` in src/site.ts.
+         */
+        name: "2048",
+
+        /** One line, for the card on the index. */
+        tagline:
+          "Push the board and every tile slides as far as it can. Two of the same number merge into one worth double, all the way up to 2048.",
+
+        metaDescription:
+          "The tile game. Slide the board, merge matching numbers, and get to a single tile worth 2048.",
+        lead: "Push the board in any direction and every tile slides as far as it can. Two of the same number merge into one worth double, and the aim is a single tile worth 2048.",
+
+        score: "Score",
+        best: "Best",
+        /** Only ever read out, in the live region that stands in for the board. */
+        highest: "Highest tile",
+        newGame: "New game",
+        undo: "Undo",
+        hint: "Arrow keys or WASD, and a swipe on a phone.",
+
+        won: {
+          title: "2048",
+          body: "The tile is on the board. It does not have to stop here, though - the game runs until nothing can move.",
+          keepGoing: "Keep going",
+        },
+
+        over: {
+          title: "No moves left",
+          body: "The board is full and nothing beside anything matches. One step back is still there if the last move was the one that did it.",
+          restart: "Play again",
+        },
+
+        how: {
+          label: "How to play",
+          items: [
+            {
+              title: "Push the whole board",
+              description:
+                "Arrow keys or WASD on a keyboard, a swipe in any direction on a phone. Every tile travels as far as it can in one move, not one square.",
+            },
+            {
+              title: "Equal numbers merge",
+              description:
+                "Two tiles carrying the same number become one worth double. A tile that has just merged is finished for that move, so a row of four 2s gives you two 4s rather than one 8.",
+            },
+            {
+              title: "A new tile every move",
+              description:
+                "It arrives in a free cell and it is a 2 nine times out of ten. A push that changes nothing is not a move, so nothing new appears and nothing is lost by trying one.",
+            },
+            {
+              title: "Pick a corner and stay there",
+              description:
+                "Keep the largest tile in one corner and never push away from it. Most of the game is refusing the move that lifts it out.",
+            },
+          ],
+        },
+
+        close: {
+          label: "How it is built",
+          paragraphs: [
+            "No canvas and no game library. A tile is an element with two custom properties on it, its position is a translate resolved against its own size, and the browser composites the slide. That is where the smoothness comes from: a move changes a transform and nothing else, so no part of it goes through layout.",
+            "Keeping every tile's element for the life of that tile is the other half. The board is never re-rendered from the state - a move updates the numbers on nodes that are already there, which is why a tile visibly travels from where it was instead of disappearing and reappearing somewhere else.",
+            "The numbers are text, so they are as sharp as the rest of the page and they scale with whatever size the reader has set. The colours are tokens in the same stylesheet as everything else, which is why the board answers the theme toggle in the header.",
+            "Input runs through one function from three places, so a key, a swipe and a tap cannot drift into meaning slightly different things. The arrow keys belong to the board only while the board is on screen, and a move pushed before the last one has landed is held rather than dropped - which is why pushing quickly never costs you a turn.",
+          ],
+        },
+      },
+
+      minesweeper: {
+        name: "Minesweeper",
+
+        tagline:
+          "Open every cell that is not a mine. Each number counts the mines touching it, and the rest is worked out from there.",
+
+        metaDescription:
+          "Minesweeper in the browser, on the beginner, intermediate and expert boards, with a first click that can never lose.",
+        lead: "Open every cell that is not a mine. A number says how many of the eight cells around it are mined, and everything else is worked out from there. Three boards, the sizes the original shipped with, and a first click that can never lose.",
+
+        boards: "Board",
+        levels: {
+          beginner: "Beginner",
+          intermediate: "Intermediate",
+          expert: "Expert",
+        },
+
+        mines: "Mines",
+        time: "Time",
+        best: "Best",
+        newGame: "New game",
+        flagMode: "Flag mode",
+        hint: "Press to open, right click or F to flag, a long press on a phone. A finished number opens the rest of its ring on a press or the middle button.",
+
+        /** The board itself, and the five words a screen reader reads off it.
+         *  A revealed number needs none of them - the digit is real text. */
+        gridLabel: "Minefield",
+        cells: {
+          hidden: "Hidden",
+          flagged: "Flagged",
+          mine: "Mine",
+          empty: "Empty",
+          wrong: "Wrong flag",
+        },
+
+        won: {
+          title: "Cleared",
+          body: "Every cell that was not a mine is open.",
+          record: "A new best for this board.",
+          again: "Play again",
+        },
+
+        lost: {
+          title: "Mine",
+          body: "The field is shown as it was. A flag on a clear cell is marked, which is usually where the reasoning went.",
+          again: "Try again",
+        },
+
+        how: {
+          label: "How to play",
+          items: [
+            {
+              title: "The first click is safe",
+              description:
+                "The mines are laid after it, around wherever you pressed, so the opening move cannot lose and always breaks into open ground. Start anywhere.",
+            },
+            {
+              title: "A number counts its neighbours",
+              description:
+                "It is how many of the eight cells touching it hold a mine. A cell with nothing near it opens the whole region around it in one press.",
+            },
+            {
+              title: "Flag what you have worked out",
+              description:
+                "Right click on a desktop, F on a keyboard, a long press on a phone. A long press only ever plants one, so a slow finger cannot take back what it just put down - flag mode is what removes one, and it is what you want for a whole run of them anyway. The counter shows mines less flags.",
+            },
+            {
+              title: "Press a number you have finished",
+              description:
+                "Once a number has as many flags around it as it says, pressing it opens the rest of its ring at once, and so does the middle button. Hold the button down first and the cells it would open go down with it, so you can see the eight before you commit. That is where the speed in this game is, and most players never find it.",
+            },
+          ],
+        },
+
+        close: {
+          label: "How it is built",
+          paragraphs: [
+            "No canvas and no game library, and unlike the other game here no motion either. There is no loop and nothing in flight: a cell is a button, it changes state or it does not, and the whole board is four hundred and eighty of them at the expert size. What it costs to run is a class on an element.",
+            "The mines are laid on the first press rather than at the start, around the cell that was pressed and the eight touching it. A field dealt in advance has to either let the opening move lose, which is a coin toss rather than a game, or deal again until it does not, which quietly bends the odds everywhere else. Laying them late gets an honest field and a first move that always opens into a region.",
+            "Opening a region is a queue rather than a recursion, which a four hundred deep fill on a phone is entitled to refuse, and the queue hands the animation its timing for free: the ring a cell was found on is how far it is from the press, so each one waits that many steps before it opens. The fill arrives as something spreading outward instead of the board changing all at once, and it costs one custom property and a delay.",
+            "The board is a real grid: rows, cells, a row and column count, and one cell in the tab order at a time so the arrow keys walk it rather than the Tab key. That is why this game is here. The other one has to be hidden from a screen reader and described through a live region, because sixteen tiles that rewrite themselves on every keypress cannot be read. A minefield is a table that sits still and waits, which is exactly what a grid is for.",
+          ],
+        },
+      },
+      accretion: {
+        name: "Accretion",
+
+        tagline:
+          "Let one body fall onto another. Two of the same merge into the next one up, from the Moon all the way to the Sun.",
+
+        metaDescription:
+          "A merge game in the browser: let celestial bodies fall, and two of the same become the next one up, from the Moon to the Sun.",
+        lead: "Let a body fall. Two of the same merge into the next one up, from the Moon through the planets to the Sun, and the space fills whether you are ready or not.",
+
+        score: "Score",
+        best: "Best",
+        next: "Next",
+        newGame: "New game",
+        hint: "Move to aim and press to drop. Arrow keys aim, space drops.",
+        sequence: "The sequence, from smallest to largest",
+
+        /** The ten bodies, in order. The order is the solar system, the sizes
+         *  are the game's - see the note on the radius table in game.ts. */
+        planets: [
+          "Moon",
+          "Mercury",
+          "Mars",
+          "Venus",
+          "Earth",
+          "Neptune",
+          "Uranus",
+          "Saturn",
+          "Jupiter",
+          "Sun",
+        ],
+
+        won: {
+          title: "A star",
+          body: "The sequence has nowhere left to go. Two Suns cannot become anything, so they go off instead, and the room they leave behind is the only way a full field ever empties.",
+          keepGoing: "Keep going",
+        },
+
+        over: {
+          title: "Out of room",
+          body: "Something has been resting above the line for too long. There is no ceiling here, only a line, and a body that stops above it has nowhere to go.",
+          restart: "Play again",
+        },
+
+        how: {
+          label: "How to play",
+          items: [
+            {
+              title: "Aim, then drop",
+              description:
+                "Move across the top to line a body up and press to let it go. Only the five smallest ever arrive, so everything past Earth has to be built.",
+            },
+            {
+              title: "Two of the same touch and merge",
+              description:
+                "They do not have to be pressed together or held: the moment two equal bodies come to rest against each other they become the next one up, and a merge that lands next to another sets off a chain.",
+            },
+            {
+              title: "Build sideways, not upward",
+              description:
+                "A body dropped onto a tall pile rolls, and where it lands is not where it was aimed. Keeping the larger ones along the bottom is most of the game, because they are the ones with nowhere left to go.",
+            },
+            {
+              title: "The line is a delay, not a wall",
+              description:
+                "Nothing stops a body going above it. It is only over when one is still resting up there a second later, so a splash is survivable and a settled Jupiter is not.",
+            },
+          ],
+        },
+
+        close: {
+          label: "How it is built",
+          paragraphs: [
+            "No canvas, no physics library and no dependency of any kind. A body is a div with a border radius, its colour is a gradient in the same stylesheet as the rest of the page, and the frame writes one transform onto each. So the planets scale with the page, stay sharp at any zoom, and cost nothing to serve. A physics engine would have been six times the weight of this whole page.",
+            "The solver is position based: a body stores where it is and where it was, and the gap between the two is its velocity. Nothing computes an impulse. A contact pushes two bodies apart, and because the previous position stays put, the push removes exactly the speed that drove them together - which is what an inelastic collision is. Forty of those passes run per frame, each against positions that have already moved, and a full field of forty-six bodies costs under a tenth of a millisecond against a budget of nearly seventeen.",
+            "Getting it to settle was the work. Three separate things quietly added energy instead of removing it: a wall that clamped a body's position without moving its previous one, which turned the depth of a landing into the speed of a bounce; tangential friction computed from a velocity the same pass was changing, which had a crowded pile still throwing bodies around after eight seconds; and a merge rule that asked for so much overlap that nothing ever merged at all. Each was found by measuring rather than by reading, and the numbers that came out of it are written next to the constants they justify.",
+            "The simulation runs in its own thousand unit space and never learns how big it is being shown. One transform on one element scales the whole field onto whatever width the page has given it, so a resize changes that single number and nothing else - not a radius, not a position, not a step. It is why the same game plays identically on a phone and on a desktop instead of having twice the gravity on one of them.",
+          ],
+        },
       },
     },
   },

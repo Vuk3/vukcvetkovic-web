@@ -1,0 +1,24 @@
+---
+import Accretion from '../../../components/Accretion.astro';
+import { defaultLocale } from '../../../i18n/types';
+import { getDict } from '../../../i18n/utils';
+import Base from '../../../layouts/Base.astro';
+import { site } from '../../../site';
+
+/*
+ * Accretion, in the unprefixed default locale. The other three come from
+ * [lang]/games/accretion/index.astro.
+ *
+ * ⚠️ A route pair per game, deliberately, rather than one `games/[slug]` pair.
+ * A game is its own program with its own bundle, and a `[slug]` route choosing
+ * a component from a map would put every game's script into every game's page.
+ */
+const lang = defaultLocale;
+const dict = getDict(lang);
+
+const title = `${dict.games.items.accretion.name} - ${site.name}`;
+---
+
+<Base lang={lang} title={title} description={dict.games.items.accretion.metaDescription}>
+  <Accretion lang={lang} />
+</Base>

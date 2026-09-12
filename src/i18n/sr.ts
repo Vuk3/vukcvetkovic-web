@@ -27,6 +27,7 @@ const sr: Dict = {
     projects: "Projekti",
     services: "Usluge",
     contact: "Kontakt",
+    games: "Igre",
     themeToggle: "Promeni temu",
     language: "Jezik",
   },
@@ -538,6 +539,256 @@ const sr: Dict = {
           "Lekcija koja je ostala je da otvoreni podaci nisu isto što i upotrebljivi podaci. Pet endpointa koji se pozivaju jedan na drugi preko id-jeva, razmera na nivou države i nikakav način da se postavi geografsko pitanje znače da je vrednost u potpunosti u preslikavanju i spajanju. Odluka šta kopirati, koliko često, i kako kopiranje dva puta učiniti bezopasnim je mesto gde je inženjerski posao zaista bio.",
           "Druga polovina je to da odgovor mora da dođe a da se ne traži. Čovek sa alergijom ne otvara aplikaciju da proveri - želi da mu se kaže, u radijusu i intervalu koje postavi jednom. Push notifikacije nad backendom koji radi po rasporedu su ono što javni skup podataka pretvara u nešto što stigne do čoveka onog dana kada mu treba.",
         ],
+      },
+    },
+  },
+
+  games: {
+    label: "Igre",
+
+    /** Left in English on purpose: "uživo" says live *play*, not released. See
+     *  the note in en.ts. */
+    status: {
+      live: "Live",
+      beta: "Beta",
+    },
+
+    index: {
+      metaTitle: "Igre - Vuk Cvetković",
+      metaDescription:
+        "Igre u pretraživaču Vuka Cvetkovića: 2048, Minolovac, i igra spajanja svetova u veće. Svaka dobija svoju stranicu.",
+      heading: "Igre",
+      intro:
+        "Igre koje vrede više od jednog pokušaja. Svaka ima svoju stranicu, a ispod nje i tekst o tome kako je napravljena, za onoga koga i to zanima.",
+    },
+
+    items: {
+      twentyFortyEight: {
+        name: "2048",
+
+        /** One line, for the card on the index. */
+        tagline:
+          "Gurni tablu i svaka pločica klizi dokle može. Dva ista broja se spajaju u jedan dvostruki, sve do 2048.",
+
+        metaDescription:
+          "Igra sa pločicama. Gurni tablu, spoji iste brojeve, i stigni do jedne pločice od 2048.",
+        lead: "Gurni tablu u bilo kom smeru i svaka pločica klizi dokle može. Dve iste se spajaju u jednu dvostruku, a cilj je jedna pločica od 2048.",
+
+        score: "Rezultat",
+        best: "Najbolje",
+        highest: "Najveća pločica",
+        newGame: "Nova igra",
+        undo: "Poništi",
+        hint: "Strelice ili WASD, a na telefonu prevlačenje.",
+
+        won: {
+          title: "2048",
+          body: "Pločica je na tabli. Ne mora tu da se stane - igra traje dok ima šta da se pomeri.",
+          keepGoing: "Nastavi",
+        },
+
+        over: {
+          title: "Nema više poteza",
+          body: "Tabla je puna i ništa se ni sa čim ne poklapa. Jedan korak unazad i dalje stoji ako je poslednji potez bio taj koji je odlučio.",
+          restart: "Igraj ponovo",
+        },
+
+        how: {
+          label: "Kako se igra",
+          items: [
+            {
+              title: "Guraš celu tablu",
+              description:
+                "Strelice ili WASD na tastaturi, prevlačenje u bilo kom smeru na telefonu. Svaka pločica u jednom potezu putuje dokle god može, a ne jedno polje.",
+            },
+            {
+              title: "Isti brojevi se spajaju",
+              description:
+                "Dve pločice sa istim brojem postaju jedna dvostruka. Pločica koja se upravo spojila je gotova za taj potez, pa red od četiri dvojke daje dve četvorke a ne jednu osmicu.",
+            },
+            {
+              title: "Nova pločica posle svakog poteza",
+              description:
+                "Pojavi se na slobodnom polju i u devet od deset slučajeva je dvojka. Guranje koje ništa ne promeni nije potez, pa se ništa novo ne pojavljuje i ništa se ne gubi ako probaš.",
+            },
+            {
+              title: "Izaberi ugao i ostani u njemu",
+              description:
+                "Drži najveću pločicu u jednom uglu i nikad ne guraj od njega. Veći deo igre je odbijanje poteza koji je odatle diže.",
+            },
+          ],
+        },
+
+        close: {
+          label: "Kako je napravljeno",
+          paragraphs: [
+            "Nema canvasa ni biblioteke za igre. Pločica je element sa dve custom property vrednosti, njena pozicija je translate izračunat u odnosu na njenu sopstvenu veličinu, a klizanje kompozituje pretraživač. Odatle dolazi glatkoća: potez menja transform i ništa drugo, pa nijedan njegov deo ne prolazi kroz layout.",
+            "Druga polovina je to da svaka pločica zadržava svoj element dok postoji. Tabla se nikad ne iscrtava iz stanja - potez ažurira brojeve na čvorovima koji su već tu, i zato pločica vidljivo putuje odakle je bila umesto da nestane i pojavi se na drugom mestu.",
+            "Brojevi su tekst, pa su oštri kao i ostatak stranice i skaliraju se sa veličinom koju je čitalac podesio. Boje su tokeni u istom stilu kao i sve drugo, i zato tabla odgovara na prekidač teme u zaglavlju.",
+            "Unos ide kroz jednu funkciju sa tri mesta, pa taster, prevlačenje i dodir ne mogu da počnu da znače malo različite stvari. Strelice pripadaju tabli samo dok je tabla na ekranu, a potez gurnut pre nego što je prethodni sleteo se zadržava umesto da se odbaci - i zato brzo igranje nikad ne košta potez.",
+          ],
+        },
+      },
+
+      minesweeper: {
+        name: "Minolovac",
+
+        tagline:
+          "Otvori svako polje koje nije mina. Svaki broj broji mine koje ga dodiruju, a ostalo se izvodi odatle.",
+
+        metaDescription:
+          "Minolovac u pretraživaču, na početničkoj, srednjoj i ekspertskoj tabli, sa prvim klikom koji ne može da izgubi.",
+        lead: "Otvori svako polje koje nije mina. Broj kaže koliko od osam polja oko njega ima minu, a sve ostalo se izvodi odatle. Tri table, u veličinama u kojima je original izašao, i prvi klik koji ne može da izgubi.",
+
+        boards: "Tabla",
+        levels: {
+          beginner: "Početnik",
+          intermediate: "Srednje",
+          expert: "Ekspert",
+        },
+
+        mines: "Mine",
+        time: "Vreme",
+        best: "Najbolje",
+        newGame: "Nova igra",
+        flagMode: "Zastavice",
+        hint: "Pritisak otvara, desni klik ili F postavlja zastavicu, na telefonu dug pritisak. Gotov broj otvara ostatak svog kruga na pritisak ili na srednji klik.",
+
+        gridLabel: "Minsko polje",
+        cells: {
+          hidden: "Zatvoreno",
+          flagged: "Zastavica",
+          mine: "Mina",
+          empty: "Prazno",
+          wrong: "Pogrešna zastavica",
+        },
+
+        won: {
+          title: "Očišćeno",
+          body: "Svako polje koje nije bilo mina je otvoreno.",
+          record: "Novi najbolji rezultat za ovu tablu.",
+          again: "Igraj ponovo",
+        },
+
+        lost: {
+          title: "Mina",
+          body: "Polje je prikazano onakvo kakvo je bilo. Zastavica na praznom polju je označena, i tu obično zapne rasuđivanje.",
+          again: "Probaj ponovo",
+        },
+
+        how: {
+          label: "Kako se igra",
+          items: [
+            {
+              title: "Prvi klik je siguran",
+              description:
+                "Mine se postavljaju posle njega, oko mesta koje si pritisnuo, pa prvi potez ne može da izgubi i uvek otvori slobodan prostor. Počni bilo gde.",
+            },
+            {
+              title: "Broj broji svoje susede",
+              description:
+                "To je koliko od osam polja koja ga dodiruju ima minu. Polje bez ijedne mine oko sebe otvara ceo predeo u jednom pritisku.",
+            },
+            {
+              title: "Označi ono što si izveo",
+              description:
+                "Desni klik na računaru, F na tastaturi, dug pritisak na telefonu. Dug pritisak samo postavlja, pa spor prst ne može da skloni ono što je upravo spustio - sklanja se u režimu zastavica, koji ti ionako treba kad ih ide više zaredom. Brojač pokazuje mine manje zastavice.",
+            },
+            {
+              title: "Pritisni broj koji si završio",
+              description:
+                "Kad broj ima oko sebe onoliko zastavica koliko kaže, pritisak na njega otvara ostatak njegovog kruga odjednom, a isto radi i srednji klik. Drži taster i polja koja bi se otvorila utonu zajedno sa njim, pa vidiš tih osam pre nego što se odlučiš. Odatle dolazi brzina u ovoj igri, a većina igrača za to nikad ne sazna.",
+            },
+          ],
+        },
+
+        close: {
+          label: "Kako je napravljeno",
+          paragraphs: [
+            "Nema canvasa ni biblioteke za igre, a za razliku od druge igre ovde nema ni kretanja. Nema petlje i nema ničega u letu: polje je dugme, ono menja stanje ili ne menja, a cela tabla je četiristo osamdeset takvih na ekspertskoj veličini. Ono što košta da radi je klasa na elementu.",
+            "Mine se postavljaju na prvi pritisak a ne na početku, oko polja koje je pritisnuto i osam koja ga dodiruju. Polje podeljeno unapred mora ili da dozvoli da prvi potez izgubi, što je bacanje novčića a ne igra, ili da deli ponovo dok ne prođe, čime se tiho krive šanse svuda drugde. Kasno postavljanje daje pošteno polje i prvi potez koji uvek otvori predeo.",
+            "Otvaranje predela je red a ne rekurzija, koju bi telefon na četiristo nivoa dubine s pravom odbio, a taj red usput besplatno daje animaciji njen tajming: krug u kome je polje pronađeno jeste koliko je daleko od pritiska, pa svako čeka toliko koraka pre nego što se otvori. Otvaranje stiže kao nešto što se širi spolja umesto kao tabla koja se promeni odjednom, a košta jednu custom property vrednost i kašnjenje.",
+            "Tabla je prava mreža: redovi, polja, broj redova i kolona, i jedno polje u redosledu tabulatora da bi je strelice obilazile umesto tastera Tab. Zbog toga je ova igra ovde. Druga mora da bude sakrivena od čitača ekrana i opisana kroz live region, jer šesnaest pločica koje se prepisuju na svaki pritisak ne mogu da se pročitaju. Minsko polje je tabela koja miruje i čeka, a mreža postoji tačno zbog toga.",
+          ],
+        },
+      },
+      accretion: {
+        name: "Akrecija",
+
+        tagline:
+          "Pusti nebesko telo na drugo. Dva ista se spajaju u sledeće po redu, od Meseca sve do Sunca.",
+
+        metaDescription:
+          "Igra spajanja u pretraživaču: puštaj nebeska tela, a dva ista postaju sledeće po redu, od Meseca do Sunca.",
+        lead: "Pusti nebesko telo da padne. Dva ista se spajaju u sledeće po redu, od Meseca preko planeta do Sunca, a prostor se puni bez obzira na to jesi li spreman.",
+
+        score: "Rezultat",
+        best: "Najbolje",
+        next: "Sledeće",
+        newGame: "Nova igra",
+        hint: "Pomeraj da nanišaniš i pritisni da pustiš. Strelice nišane, razmak pušta.",
+        sequence: "Niz, od najmanjeg do najvećeg",
+
+        planets: [
+          "Mesec",
+          "Merkur",
+          "Mars",
+          "Venera",
+          "Zemlja",
+          "Neptun",
+          "Uran",
+          "Saturn",
+          "Jupiter",
+          "Sunce",
+        ],
+
+        won: {
+          title: "Zvezda",
+          body: "Niz nema više kuda. Dva Sunca ne mogu da postanu ništa, pa umesto toga nestanu, a mesto koje ostave jedini je način da se pun prostor isprazni.",
+          keepGoing: "Nastavi",
+        },
+
+        over: {
+          title: "Nema više mesta",
+          body: "Nešto predugo stoji iznad linije. Ovde nema tavanice nego linija, a telo koje se zaustavi iznad nje nema gde dalje.",
+          restart: "Igraj ponovo",
+        },
+
+        how: {
+          label: "Kako se igra",
+          items: [
+            {
+              title: "Nanišani pa pusti",
+              description:
+                "Pomeraj se preko vrha da poravnaš telo i pritisni da ga pustiš. Stižu samo pet najmanjih, pa sve preko Zemlje mora da se izgradi.",
+            },
+            {
+              title: "Dva ista se dodirnu i spoje",
+              description:
+                "Ne moraju da se stisnu ni da se drže: čim se dva jednaka tela smire jedno uz drugo, postaju sledeće po redu, a spajanje koje padne pored drugog pokreće lanac.",
+            },
+            {
+              title: "Gradi u širinu a ne u visinu",
+              description:
+                "Telo pušteno na visoku gomilu se otkotrlja, i gde sleti nije gde je nanišanjeno. Držati veća uz dno je veći deo igre, jer su baš ona ta koja nemaju gde dalje.",
+            },
+            {
+              title: "Linija je odlaganje a ne zid",
+              description:
+                "Ništa ne brani telu da ode iznad nje. Gotovo je tek ako neko i sekundu kasnije još stoji gore, pa se pljusak preživi a Jupiter koji se tu smirio ne.",
+            },
+          ],
+        },
+
+        close: {
+          label: "Kako je napravljeno",
+          paragraphs: [
+            "Nema canvasa, nema biblioteke za fiziku i nema nijedne zavisnosti. Telo je div sa zaobljenjem, njegova boja je gradijent u istom stilu kao i ostatak stranice, a kadar upisuje po jedan transform na svako. Zato se planete skaliraju sa stranicom, ostaju oštre na svakom zumu i ne koštaju nijedan zahtev. Fizički engine bi bio šest puta teži od cele ove stranice.",
+            "Rešavač radi nad pozicijama: telo pamti gde je i gde je bilo, a razlika između to dvoje je njegova brzina. Ništa ne računa impuls. Kontakt razdvoji dva tela, a pošto prethodna pozicija ostaje na mestu, to razdvajanje oduzme tačno onoliko brzine koliko ih je i sastavilo, što neelastičan sudar i jeste. Četrdeset takvih prolaza ide po kadru, svaki nad pozicijama koje su se već pomerile, a pun prostor od četrdeset šest tela košta manje od desetine milisekunde od skoro sedamnaest koliko ih ima.",
+            "Posao je bio naterati to da se smiri. Tri odvojene stvari su tiho dodavale energiju umesto da je oduzimaju: zid koji je ograničavao poziciju tela a nije dirao prethodnu, čime se dubina pada pretvarala u brzinu odskoka; tangencijalno trenje računato iz brzine koju isti prolaz menja, zbog čega je zbijena gomila i posle osam sekundi bacala tela okolo; i pravilo spajanja koje je tražilo toliki preklop da se ništa nikad nije ni spojilo. Svaka je nađena merenjem a ne čitanjem, a brojevi koji su iz toga izašli stoje pored konstanti koje opravdavaju.",
+            "Simulacija radi u sopstvenom prostoru od hiljadu jedinica i nikad ne sazna koliko se veliko prikazuje. Jedan transform na jednom elementu prenosi ceo prostor na širinu koju mu je stranica dala, pa promena veličine menja taj jedan broj i ništa više, ni poluprečnik, ni poziciju, ni korak. Zato ista igra radi isto na telefonu i na računaru umesto da na jednom ima dvostruku gravitaciju.",
+          ],
+        },
       },
     },
   },

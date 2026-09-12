@@ -18,6 +18,8 @@ type RoleId = keyof Dict["experience"]["roles"];
 type DegreeId = keyof Dict["education"]["degrees"];
 type ProjectId = keyof Dict["projects"]["items"];
 type StackGroupId = keyof Dict["projects"]["stackGroups"];
+type GameId = keyof Dict["games"]["items"];
+type GameStatus = keyof Dict["games"]["status"];
 
 interface SkillGroup {
   id: SkillGroupId;
@@ -291,6 +293,66 @@ const projects: Project[] = [
   },
 ];
 
+/**
+ * One browser game, at /games/<slug>/.
+ *
+ * No date, unlike a project. A project page is a record of work and the year
+ * is part of the claim, while a game is either fun to play now or it is not -
+ * stamping it with a year only invites the reader to wonder whether it is
+ * stale.
+ */
+export interface Game {
+  /**
+   * Last path segment under /games/, and the only fact a game has.
+   *
+   * ⚠️ **The title is not here, it is `games.items.<id>.name` in the
+   * dictionaries.** It was here while 2048 was the only game, on the argument
+   * that a title reads the same in four languages. Minesweeper is Minolovac in
+   * Serbian and Démineur in French, so the argument was only ever true of that
+   * one title. Writing "2048" out four times is what the rule costs, and it is
+   * cheaper than a Serbian page with an English game on it.
+   *
+   * The slug stays a fact. It is a URL, it is the directory the route lives in,
+   * and it is the same in every locale.
+   */
+  slug: string;
+
+  /**
+   * How finished the game is: `live` for one that is done, `beta` for one that
+   * is still being worked on.
+   *
+   * A fact, not copy - whether Accretion is finished is the same in four
+   * languages, and only the word for it is not (`games.status.<id>`).
+   *
+   * Required rather than optional with `live` as the default, because the
+   * default would be the wrong way round: a game is at its least finished on
+   * the day it is added, and an omitted line should not quietly claim
+   * otherwise. It is also the one switch that matters - flipping it to `live`
+   * takes the ribbon off the card and the badge off the page together.
+   */
+  status: GameStatus;
+}
+
+/**
+ * The games, keyed by the id that joins each to `games.items` in the
+ * dictionaries.
+ *
+ * A Record and not a list, unlike `projects`, because the two are reached
+ * differently. Every project goes through one shared component, so the list is
+ * iterated and an entry is never named. A game has its own implementation and
+ * its own route pair, so its page names it - `site.games.twentyFortyEight` -
+ * and a lookup by slug would only be a way of losing the type.
+ *
+ * The index iterates it, and declaration order is display order: string keys
+ * enumerate in insertion order, so putting a new game first here puts it first
+ * on the page.
+ */
+const games: Record<GameId, Game> = {
+  twentyFortyEight: { slug: "2048", status: "live" },
+  minesweeper: { slug: "minesweeper", status: "live" },
+  accretion: { slug: "accretion", status: "beta" },
+};
+
 export const site = {
   name: "Vuk Cvetković",
   domain: "vukcvetkovic.com",
@@ -310,6 +372,7 @@ export const site = {
   experience,
   education,
   projects,
+  games,
 };
 
 /** Autonyms — shown in their own language in every locale, so never translated. */

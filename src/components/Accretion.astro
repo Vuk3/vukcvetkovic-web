@@ -1,0 +1,277 @@
+---
+/**
+ * The Accretion page, shared by the four locales.
+ *
+ * The well is empty in the markup and filled by the module, because every body
+ * in it is created by play. What the markup does own is the frame, the two
+ * panels, the readouts and the sequence under the board - and the sequence is
+ * worth having: a merge game is unreadable until you know what turns into what,
+ * and the answer here is ten objects everyone already knows the order of.
+ *
+ * ⚠️ The scaled layer and the panels are siblings, not nested. `.acc-world`
+ * carries a `scale()` that maps the simulation onto whatever width the page
+ * gave it, and anything inside it is scaled with it - which is right for a
+ * planet and wrong for a sentence.
+ */
+import { ArrowLeft, RotateCcw } from "@lucide/astro";
+import type { Lang } from "../i18n/types";
+import { getDict, localizePath } from "../i18n/utils";
+import { LOSS_Y, TIERS, WORLD_H, WORLD_W } from "../games/accretion/game";
+import { site } from "../site";
+import Section from "./Section.astro";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = getDict(lang);
+
+const copy = dict.games.items.accretion;
+const index = localizePath("/games/", lang);
+
+/*
+ * The badge beside the title, read from the registry rather than written out
+ * here, so `status: "live"` in src/site.ts is the single line that finishes the
+ * game: the ribbon leaves the card and the badge leaves this page together.
+ *
+ * Only a game that is not finished says anything. The index badges every card
+ * because there a "Live" is what gives the one "Beta" its meaning, and here
+ * there is nothing to compare against - "Live" over a game you already opened
+ * would be a label with no work to do.
+ */
+const { status } = site.games.accretion;
+
+/*
+ * The sequence, from the module rather than written out again.
+ *
+ * `TIERS` is the length of the radius table in the game, and `copy.planets` is
+ * ten names in each dictionary, so a body added to the sequence with no name
+ * behind it is a type error on the line below rather than a blank in the list.
+ */
+const sequence = Array.from({ length: TIERS }, (_, tier) => tier);
+
+/* The box the well is drawn into, so the markup and the simulation cannot
+   disagree about its shape or about where the line sits. */
+const shape = `--acc-ratio:${WORLD_W} / ${WORLD_H}; --acc-line-at:${Math.round((LOSS_Y / WORLD_H) * 1000) / 10}%`;
+---
+
+<div class="page-head">
+  <div class="shell shell-wide">
+    <a href={index} class="crumb enter">
+      <ArrowLeft class="size-4" aria-hidden="true" />
+      {dict.games.label}
+    </a>
+
+    <h1 class="page-title enter" style="--enter-delay:80ms">
+      {copy.name}
+      {status !== "live" && <span class="page-status">{dict.games.status[status]}</span>}
+    </h1>
+
+    <p class="page-lead enter" style="--enter-delay:160ms">{copy.lead}</p>
+  </div>
+</div>
+
+<div class="sec-lite">
+  <div class="shell shell-wide">
+    <div class="acc enter" style="--enter-delay:240ms" data-game data-state="playing" data-ready>
+      <div class="acc-bar">
+        <div class="acc-meter">
+          <span class="acc-meter-label">{copy.score}</span>
+          <span class="acc-meter-value" data-score>0</span>
+        </div>
+
+        <div class="acc-meter">
+          <span class="acc-meter-label">{copy.best}</span>
+          <span class="acc-meter-value" data-best>0</span>
+        </div>
+
+        {/* What is coming, which is the only information a player plans with. */}
+        <div class="acc-next">
+          <span class="acc-meter-label">{copy.next}</span>
+          <span class="acc-next-body acc-body" data-tier="0" data-next aria-hidden="true"></span>
+          <span class="acc-next-name" data-next-name>{copy.planets[0]}</span>
+        </div>
+
+        <div class="acc-actions">
+          <button type="button" class="cta-ghost" data-action="restart">
+            <RotateCcw class="size-4 shrink-0" aria-hidden="true" />
+            {copy.newGame}
+          </button>
+        </div>
+      </div>
+
+      <div class="acc-field" style={shape} data-field>
+        {/* Everything in here is in world units and scaled as one. */}
+        <div class="acc-world" data-world></div>
+
+        {/*
+          ⚠️ The line is a sibling of the world, not a child of it. Inside, it
+          was drawn in world units and then scaled with everything else, so any
+          rounding in the scale left it stopping short of the right-hand wall.
+          Out here it is a percentage of the field and always spans it exactly.
+        */}
+        <div class="acc-line" aria-hidden="true"></div>
+
+        <div class="acc-panel" data-panel="won">
+          <p class="acc-panel-title">{copy.won.title}</p>
+          <p class="acc-panel-body">{copy.won.body}</p>
+
+          <div class="acc-panel-actions">
+            <button type="button" class="cta" data-action="keep-going">{copy.won.keepGoing}</button>
+            <button type="button" class="cta-ghost" data-action="restart">{copy.newGame}</button>
+          </div>
+        </div>
+
+        <div class="acc-panel" data-panel="over">
+          <p class="acc-panel-title">{copy.over.title}</p>
+          <p class="acc-panel-body">{copy.over.body}</p>
+
+          <div class="acc-panel-actions">
+            <button type="button" class="cta" data-action="restart">{copy.over.restart}</button>
+          </div>
+        </div>
+      </div>
+
+      <p class="acc-hint">{copy.hint}</p>
+
+      {/*
+        The sequence. It is the legend and it is also the drawing: the same
+        `.acc-body` the well is full of, at a size that fits a line of text, so
+        the card cannot show one thing and the game another.
+      */}
+      <ol class="acc-chain" aria-label={copy.sequence}>
+        {
+          sequence.map((tier) => (
+            <li class="acc-link" data-reached={tier === 0 ? "" : undefined}>
+              <span class="acc-chain-body acc-body" data-tier={tier} aria-hidden="true" />
+              <span class="acc-chain-name">{copy.planets[tier]}</span>
+            </li>
+          ))
+        }
+      </ol>
+
+      <p class="sr-only" aria-live="polite" data-live></p>
+    </div>
+  </div>
+</div>
+
+<Section id="how" label={copy.how.label} width="wide" tone="band">
+  <ul class="svc-grid">
+    {
+      copy.how.items.map((item) => (
+        <li class="card reveal-item">
+          <h3 class="svc-title">{item.title}</h3>
+          <p class="mt-2.5 text-muted">{item.description}</p>
+        </li>
+      ))
+    }
+  </ul>
+</Section>
+
+<Section id="build" label={copy.close.label} width="wide" tone="panel">
+  <div class="prose-columns text-muted">
+    {copy.close.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+  </div>
+</Section>
+
+<script>
+  import { mount } from "../games/accretion/game";
+  import { scoreRecord } from "../games/record";
+
+  /*
+   * The page's side of the game: the two figures, what is coming next, how far
+   * up the sequence the well has got, and the record.
+   *
+   * Everything about the simulation is in the module. Nothing here knows what a
+   * body weighs or where it is.
+   */
+  const root = document.querySelector<HTMLElement>("[data-game]");
+  const field = root?.querySelector<HTMLElement>("[data-field]");
+  const world = root?.querySelector<HTMLElement>("[data-world]");
+
+  if (root && field && world) {
+    const scoreOut = root.querySelector<HTMLElement>("[data-score]");
+    const bestOut = root.querySelector<HTMLElement>("[data-best]");
+    const nextOut = root.querySelector<HTMLElement>("[data-next]");
+    const nextName = root.querySelector<HTMLElement>("[data-next-name]");
+    const live = root.querySelector<HTMLElement>("[data-live]");
+    const links = root.querySelectorAll<HTMLElement>(".acc-link");
+
+    const lang = document.documentElement.lang || "en";
+    const format = new Intl.NumberFormat(lang);
+
+    // The names are in the markup already, in the sequence under the board, so
+    // the script reads them back rather than being handed a second copy.
+    const names = [...links].map((link) => link.querySelector(".acc-chain-name")?.textContent ?? "");
+
+    /*
+     * No predicate. A score here is a sum of triangular numbers and a hundred
+     * and twenty for each pair of Suns, which has no property a single figure
+     * can be tested against - and inventing a bound would be a guess wearing
+     * the clothes of a check.
+     */
+    const record = scoreRecord("game-accretion-best");
+
+    let best = record.read() ?? 0;
+    if (bestOut) bestOut.textContent = format.format(best);
+
+    const controller = mount({
+      root,
+      field,
+      world,
+
+      onScore(score, gained) {
+        if (scoreOut) scoreOut.textContent = format.format(score);
+
+        /*
+         * What the merge was worth, floating off the figure. Without it a
+         * chain of four merges reads as the score jumping on its own. The node
+         * removes itself when its animation ends.
+         */
+        if (gained > 0 && scoreOut?.parentElement) {
+          const gain = document.createElement("span");
+          gain.className = "acc-gain";
+          gain.textContent = `+${format.format(gained)}`;
+          gain.addEventListener("animationend", () => gain.remove());
+          scoreOut.parentElement.append(gain);
+        }
+
+        if (score <= best) return;
+        best = score;
+        if (bestOut) bestOut.textContent = format.format(best);
+        record.write(best);
+      },
+
+      onNext(tier) {
+        if (nextOut) nextOut.dataset.tier = String(tier);
+        if (nextName) nextName.textContent = names[tier] ?? "";
+      },
+
+      onState(state) {
+        root.dataset.state = state;
+      },
+
+      onReach(tier) {
+        // The sequence lights up as far as the well has got, which is the
+        // clearest answer to "how am I doing" that a merge game has.
+        links.forEach((link, i) => {
+          if (i <= tier) link.dataset.reached = "";
+          else delete link.dataset.reached;
+        });
+
+        // Announced rather than only shown: the well itself cannot be read by
+        // a screen reader, so the one fact worth following is said out loud.
+        if (live && tier > 0) live.textContent = names[tier] ?? "";
+      },
+    });
+
+    root.addEventListener("click", (event) => {
+      const action = (event.target as Element | null)?.closest<HTMLElement>("[data-action]")?.dataset
+        .action;
+
+      if (action === "restart") controller.restart();
+      if (action === "keep-going") controller.keepGoing();
+    });
+  }
+</script>

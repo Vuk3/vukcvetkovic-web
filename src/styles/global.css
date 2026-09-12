@@ -77,6 +77,121 @@
   --site-radius: 8px;
   --site-radius-card: 18px;
   --site-radius-pill: 999px;
+
+  /*
+   * The 2048 ramp.
+   *
+   * ⚠️ This, the minefield below and the technology marks in src/tech.ts are
+   * the only colour on the
+   * site outside the accent, and unlike the rest of the page it is not a
+   * decision about taste: eleven values have to be told apart at a glance and
+   * at speed, and a near-monochrome board makes that impossible. The ramp is
+   * the one place the palette is allowed to open up.
+   *
+   * It is a single sequence rather than eleven picked colours. Paper and sand
+   * for the two smallest, then the site's own cobalt, then indigo, violet,
+   * magenta, rose, coral and amber - hue and heat both moving one way, so
+   * bigger always looks hotter and the board can be read without reading a
+   * number on it.
+   *
+   * Every chromatic step carries white at 3.5:1 or better, which is the large
+   * bold text threshold and what these are. The two pale ones and the 2048
+   * itself take the ink instead.
+   */
+  --g2048-tray: #d8d4c9;
+  --g2048-cell: #e5e1d8;
+
+  /* A tile is a piece resting on the tray, and the tray is a well cut into
+     the page. Both are quiet - two shadows this size across sixteen elements
+     is the difference between pieces and coloured rectangles, and anything
+     heavier turns the board into a pile of buttons. */
+  --g2048-tile-lift:
+    0 1px 2px color-mix(in oklab, #14161a 12%, transparent),
+    0 4px 14px color-mix(in oklab, #14161a 8%, transparent);
+  --g2048-tray-inset: inset 0 2px 7px color-mix(in oklab, #14161a 9%, transparent);
+
+  --g2048-low-fg: #14161a;
+  --g2048-on-dark: #ffffff;
+  --g2048-t11-fg: #14161a;
+
+  --g2048-t1: #faf8f3;
+  --g2048-t2: #f2dfaf;
+  --g2048-t3: #1c74c8;
+  --g2048-t4: #2331c8;
+  --g2048-t5: #5320cc;
+  --g2048-t6: #7a17c2;
+  --g2048-t7: #9f13ae;
+  --g2048-t8: #be1487;
+  --g2048-t9: #cf1b57;
+  --g2048-t10: #db3e28;
+  --g2048-t11: #efa80e;
+  --g2048-t12: #14161a;
+
+  /*
+   * Minesweeper, and the same argument as the ramp above rather than a second
+   * indulgence: eight numbers have to be told apart at a glance, in a cell the
+   * size of a fingertip, while the eye is somewhere else on the board.
+   *
+   * ⚠️ **These are not the original's colours and must not be.** That palette
+   * is blue, green, red, navy, maroon, teal, black, grey, and two of those
+   * pairs collapse at this size - navy against blue, and black against grey on
+   * a light ground. The order of the sequence is kept, because a player who
+   * has met this game before reads 1 as blue and 3 as red and should not have
+   * to relearn it, but navy becomes violet and the last two are separated by
+   * weight of colour rather than by hue.
+   *
+   * A covered cell lifts and an open one is flat, which is the whole of the
+   * board's depth. The original drew bevels, which is a picture of a button
+   * from a system that no longer exists.
+   */
+  --ms-tray: #cfcbc0;
+  --ms-cell: #e9e6de;
+  --ms-cell-hover: #f4f2ed;
+  --ms-open: #ddd8ce;
+
+  --ms-flag: #c8202b;
+  --ms-mine: #14161a;
+  --ms-boom: #cf2130;
+  --ms-wrong: #8a8f98;
+
+  --ms-n1: #1c62d6;
+  --ms-n2: #18803a;
+  --ms-n3: #cf2130;
+  --ms-n4: #5b2bc4;
+  --ms-n5: #a8442a;
+  --ms-n6: #0d7b86;
+  --ms-n7: #14161a;
+  --ms-n8: #6b7280;
+
+  /*
+   * Accretion, and the fourth and last place the palette opens up.
+   *
+   * ⚠️ **Unlike the other three, these colours were not chosen to be told
+   * apart.** They are the planets' own, and they happen to be distinguishable
+   * because planets are: rusty Mars, banded sand for Jupiter, the pale gold of
+   * Saturn, ice blue for Uranus against the deeper blue of Neptune. That is
+   * the whole argument for using the solar system rather than fruit - the
+   * sequence brings its own palette and its own order, and a player already
+   * knows both.
+   *
+   * The well is deliberately darker than any surface on the site. It is the
+   * one place that reads as a window rather than as paper, in both themes,
+   * because a sky that answers the light mode toggle is not a sky.
+   */
+  --acc-well: #12151c;
+  --acc-well-edge: #262d3a;
+  --acc-line: #e0574f;
+
+  --acc-p0: #b9b6ae;
+  --acc-p1: #8e8579;
+  --acc-p2: #c2603a;
+  --acc-p3: #e0c48a;
+  --acc-p4: #3d7fc4;
+  --acc-p5: #2f56c8;
+  --acc-p6: #74c8cf;
+  --acc-p7: #e3c583;
+  --acc-p8: #d29a6a;
+  --acc-p9: #ffcb45;
 }
 
 .dark {
@@ -120,6 +235,76 @@
   --site-panel-muted: #a8aeba;
   --site-panel-hairline: #3b4351;
   --site-panel-accent: #a2b1ff;
+
+  /*
+   * The ramp again, on a dark ground.
+   *
+   * The two pale steps become greys, because paper on a dark board reads as
+   * the brightest thing on it and the smallest tile should be the quietest.
+   * The chromatic steps are lifted rather than re-picked: the same sequence,
+   * bright enough to hold against the tray instead of against paper.
+   */
+  --g2048-tray: #131820;
+  --g2048-cell: #1d2430;
+
+  --g2048-tile-lift:
+    0 1px 2px color-mix(in oklab, #000 45%, transparent),
+    0 6px 18px color-mix(in oklab, #000 30%, transparent);
+  --g2048-tray-inset: inset 0 2px 9px color-mix(in oklab, #000 38%, transparent);
+
+  --g2048-low-fg: #e8ebf0;
+
+  --g2048-t1: #303844;
+  --g2048-t2: #46505f;
+  --g2048-t3: #2e86d9;
+  --g2048-t4: #3341dc;
+  --g2048-t5: #6430de;
+  --g2048-t6: #8a24d2;
+  --g2048-t7: #b01fc0;
+  --g2048-t8: #d0209a;
+  --g2048-t9: #e02a66;
+  --g2048-t10: #ec5238;
+  --g2048-t11: #f7b622;
+  --g2048-t12: #07090c;
+
+  /*
+   * The minefield on a dark ground.
+   *
+   * The covered cell is the *lighter* of the two here and the open one sinks
+   * towards the tray, which is the reverse of light mode and is the same
+   * inversion `--site-band` makes two blocks up. A covered cell is a thing
+   * resting on the board in both themes, and on a dark page a thing resting on
+   * something catches light rather than casting shadow.
+   *
+   * The eight numbers are lifted rather than re-picked: the same sequence,
+   * bright enough to hold against a dark cell instead of against paper.
+   */
+  --ms-tray: #11161d;
+  --ms-cell: #252d39;
+  --ms-cell-hover: #313a48;
+  --ms-open: #171d26;
+
+  --ms-flag: #ff6b74;
+  --ms-mine: #e8ebf0;
+  --ms-boom: #b41f2b;
+  --ms-wrong: #6c7480;
+
+  --ms-n1: #6fa4ff;
+  --ms-n2: #4fc878;
+  --ms-n3: #ff6b74;
+  --ms-n4: #ab8cff;
+  --ms-n5: #e08a63;
+  --ms-n6: #3fc9d4;
+  --ms-n7: #e8ebf0;
+  --ms-n8: #97a0ac;
+
+  /*
+   * The well barely moves between themes, because it is a window onto the same
+   * sky either way. Only its edge lifts, so the frame still reads against a
+   * dark page instead of dissolving into it.
+   */
+  --acc-well: #0b0e14;
+  --acc-well-edge: #2b3342;
 }
 
 /*
@@ -280,12 +465,16 @@
    * flash.
    */
   .card {
+    /* Named, so a block inside a card can cancel it and bleed to the edges -
+       see `.game-art`. The number is unchanged. */
+    --card-pad: clamp(1.25rem, 2vw, 1.75rem);
+
     position: relative;
     border: 1px solid var(--site-hairline);
     border-radius: var(--site-radius-card);
     background-color: var(--site-card);
     box-shadow: var(--site-lift);
-    padding: clamp(1.25rem, 2vw, 1.75rem);
+    padding: var(--card-pad);
     transition:
       border-color 240ms var(--site-ease),
       box-shadow 240ms var(--site-ease),
@@ -682,6 +871,35 @@
   .head-btn:hover {
     border-color: color-mix(in oklab, var(--site-fg) 25%, transparent);
     color: var(--site-fg);
+  }
+
+  /*
+   * The way into the game, from every page.
+   *
+   * It borrows `.head-btn`'s pill so it reads as one of the header's controls
+   * rather than as an eighth section. The seven in the rail are anchors on the
+   * homepage and this is a page, and that difference is the whole reason it
+   * sits beside the rail instead of inside it.
+   *
+   * The label is the game's name set in the numerals' own voice, which is what
+   * makes a four-character link legible as a title rather than as a figure.
+   */
+  .head-game {
+    height: 2.25rem;
+    gap: 0.45rem;
+    padding-inline: 0.6rem;
+    font-stretch: 108%;
+    font-weight: 580;
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  /* The same link inside the phone menu, ruled off from the anchors above it. */
+  .head-game-row {
+    margin-top: 0.4rem;
+    padding-top: 0.4rem;
+    border-top: 1px solid var(--site-hairline);
   }
 
   /* ---- Hero ------------------------------------------------------------ */
@@ -1462,6 +1680,41 @@
     transform: translateX(-3px);
   }
 
+  /*
+   * Running prose across the full measure, in two columns rather than one long
+   * line or one short one with a hole beside it.
+   *
+   * `columns` rather than a two-cell grid, because the browser balances them:
+   * a grid puts one paragraph per cell and a row is as tall as its taller
+   * half, so a short paragraph beside a long one opens exactly the hole this
+   * is here to close. Balancing is only safe because the whole block fits on
+   * one screen - reading down and back up costs a scroll otherwise.
+   *
+   * ⚠️ Spacing is `margin-bottom`, never `margin-top`. A top margin on the
+   * paragraph that happens to begin the second column indents that column
+   * against the first, and which paragraph that is changes with the viewport.
+   */
+  .prose-columns {
+    column-gap: clamp(2rem, 5vw, 4rem);
+  }
+
+  @media (min-width: 60rem) {
+    .prose-columns {
+      columns: 2;
+    }
+  }
+
+  .prose-columns > p {
+    /* A paragraph split across the break reads as two, and the second half
+       arrives with no subject. */
+    break-inside: avoid;
+    margin-bottom: clamp(0.9rem, 2vw, 1.4rem);
+  }
+
+  .prose-columns > p:last-child {
+    margin-bottom: 0;
+  }
+
   .page-title {
     margin-top: clamp(1rem, 2vw, 1.5rem);
     font-stretch: 118%;
@@ -1471,9 +1724,45 @@
     letter-spacing: -0.04em;
   }
 
+  /*
+   * A status beside a page title: a pill rather than the ribbon the card
+   * carries, because a ribbon needs a corner to cut and a heading has none.
+   *
+   * It sits inside the `<h1>` so it is part of the heading a screen reader
+   * reads out - "Accretion, Beta" is the whole claim, and a mark that only
+   * sighted readers get would be half of it. Everything the title does to its
+   * own letters is undone here: the badge is a label about the page, not a word
+   * in its name, so it keeps label size and label tracking at any viewport.
+   */
+  .page-status {
+    display: inline-block;
+    vertical-align: middle;
+    /* Against the title's own size rather than the badge's, so the gap stays
+       proportional to the word it follows as the title clamps up. */
+    margin-left: 0.3em;
+    border-radius: var(--site-radius-pill);
+    padding: 0.4em 0.9em;
+    background-color: var(--site-accent);
+    /* The same pairing the one filled thing on the site uses - see `.cta`. */
+    color: var(--site-bg);
+    font-stretch: 106%;
+    font-weight: 620;
+    font-size: 0.875rem;
+    letter-spacing: 0.14em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  /*
+   * ⚠️ **No `max-width`, deliberately.** It was capped at 38rem, which inside a
+   * 68rem or 72rem shell put the lead in the left half of the screen and left
+   * the right half empty - the page reading as though it stopped halfway. The
+   * long line that a full-width lead buys is the lesser problem, and it is the
+   * trade Vuk asked for. Where prose genuinely needs two columns, that is what
+   * `.prose-columns` is for.
+   */
   .page-lead {
     margin-top: clamp(1rem, 2vw, 1.375rem);
-    max-width: 38rem;
     font-size: clamp(1.0625rem, 1.7vw, 1.375rem);
     line-height: 1.5;
     letter-spacing: -0.012em;
@@ -1591,6 +1880,2026 @@
     font-weight: 620;
     letter-spacing: -0.01em;
     text-align: left;
+  }
+
+  /* ---- 2048 ---------------------------------------------------------------
+   *
+   * The board, the tiles, and the colour ramp the numbers are read off. There
+   * is no canvas and no renderer: a tile is a div that moves by changing two
+   * custom properties, and the transition on it is the whole animation system.
+   * See src/games/2048/game.ts and src/components/Game2048.astro.
+   */
+
+  .g2048 {
+    /*
+     * The gutter between cells, and the padding of the tray, which are the
+     * same measurement - that is what makes the frame read as one grid rather
+     * than as a grid inside a box.
+     */
+    --g2048-gap: clamp(0.5rem, 1.8vw, 0.8rem);
+
+    /* Overwritten from the module at mount so the slide, the delay on a
+       spawning tile and the merge timer are one number. The value here is only
+       what applies for the frame before the script runs. */
+    --g2048-slide: 140ms;
+
+    /*
+     * Two curves, because a slide and a pop want opposite things.
+     *
+     * ⚠️ A tile must not overshoot its cell. The board is a grid of hard
+     * edges, and a position that sails past its column and comes back reads
+     * as a tile passing through the wall rather than stopping at it. So the
+     * glide is a hard ease-out: most of the distance early, then a long
+     * settle, which is what makes 140ms feel quick without feeling abrupt.
+     *
+     * Scale has no wall to hit, so the pop and the arrival are free to
+     * overshoot, and that is where the life in the board comes from.
+     */
+    --g2048-glide: cubic-bezier(0.16, 0.84, 0.28, 1);
+    --g2048-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    max-width: 36rem;
+    margin-inline: auto;
+  }
+
+  .g2048-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: clamp(0.75rem, 2vw, 1.1rem);
+  }
+
+  /*
+   * A figure with its label above it. Narrow, because the two of them sit
+   * beside the controls and the board is what the eye should land on.
+   */
+  .g2048-meter {
+    position: relative;
+    min-width: 5.5rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius);
+    background-color: var(--site-card);
+    padding: 0.45rem 0.8rem 0.5rem;
+    text-align: center;
+  }
+
+  .g2048-meter-label {
+    display: block;
+    font-size: 0.6875rem;
+    line-height: 1.3;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--site-muted);
+  }
+
+  .g2048-meter-value {
+    display: block;
+    font-stretch: 112%;
+    font-weight: 660;
+    font-size: 1.25rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+  }
+
+  /*
+   * The points a move was worth, floating off the score.
+   *
+   * Without it the total jumps and nothing on screen says why. It is taken out
+   * of flow so the card cannot change size under it, which would shift the
+   * board every time a merge landed.
+   */
+  .g2048-gain {
+    position: absolute;
+    inset: auto 0 0.35rem 0;
+    font-stretch: 110%;
+    font-weight: 640;
+    font-size: 1rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--site-accent);
+    pointer-events: none;
+    animation: g2048-gain 620ms var(--site-ease) forwards;
+  }
+
+  .g2048-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  .g2048-actions .cta-ghost {
+    padding: 0.55rem 0.9rem;
+    font-size: 0.875rem;
+  }
+
+  .g2048-actions .cta-ghost:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .g2048-actions .cta-ghost:disabled:hover {
+    border-color: var(--site-hairline);
+    color: inherit;
+    transform: none;
+  }
+
+  /* Two figures and two controls do not fit on one line on a small phone, so
+     the controls take the next row rather than being squeezed. `.g2048-bar`
+     wraps, and this is what makes them wrap together instead of one at a time. */
+  @media (max-width: 30rem) {
+    .g2048-actions {
+      width: 100%;
+      margin-left: 0;
+    }
+
+    .g2048-actions .cta-ghost {
+      flex: 1;
+      justify-content: center;
+      padding: 0.55rem 0.7rem;
+    }
+  }
+
+  /*
+   * The tray.
+   *
+   * `container-type` is what lets a tile's number be sized off the board
+   * rather than off the viewport, so the digits hold their proportion whether
+   * the board is 320px on a phone or capped at 36rem on a desktop. A vw-based
+   * clamp cannot do that: past the cap the board stops growing and the numbers
+   * would carry on.
+   */
+  .g2048-board {
+    position: relative;
+    container-type: inline-size;
+    aspect-ratio: 1;
+    border-radius: var(--site-radius-card);
+    background-color: var(--g2048-tray);
+    box-shadow: var(--g2048-tray-inset);
+    padding: var(--g2048-gap);
+    /* A swipe is a move, so the browser must not also read it as a scroll. */
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /*
+   * Rows are spelled out rather than left implicit. Auto rows do stretch to a
+   * definite height, but a cell has to be exactly the size a tile computes for
+   * itself - and a tile's height comes from `(100% - 3 gaps) / 4`, not from
+   * however the grid algorithm decided to distribute the leftovers.
+   */
+  .g2048-cells {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: var(--g2048-gap);
+    height: 100%;
+  }
+
+  .g2048-cell {
+    border-radius: calc(var(--site-radius-card) - 8px);
+    background-color: var(--g2048-cell);
+  }
+
+  /* Exactly over the cells, so a tile's percentage width is one cell wide. */
+  .g2048-layer {
+    position: absolute;
+    inset: var(--g2048-gap);
+  }
+
+  /*
+   * A tile.
+   *
+   * Position is `--x` and `--y`, in cells, and the translate resolves them
+   * against the tile's own size - which is why nothing here needs to know how
+   * big the board is, and why a resize costs no JavaScript at all.
+   *
+   * ⚠️ `transform` is the only thing that transitions. Animating `left` or a
+   * grid position would put every move through layout, on sixteen elements,
+   * and no amount of tuning gets that back to sixty frames on a phone.
+   */
+  .g2048-tile {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: grid;
+    place-items: center;
+    width: calc((100% - 3 * var(--g2048-gap)) / 4);
+    height: calc((100% - 3 * var(--g2048-gap)) / 4);
+    border-radius: calc(var(--site-radius-card) - 8px);
+    font-stretch: 112%;
+    font-weight: 680;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.045em;
+    line-height: 1;
+    transform: translate(
+      calc(var(--x) * (100% + var(--g2048-gap))),
+      calc(var(--y) * (100% + var(--g2048-gap)))
+    );
+    box-shadow: var(--g2048-tile-lift);
+    transition: transform var(--g2048-slide) var(--g2048-glide);
+    /* Sixteen of these at most, and every one of them is a transform away from
+       moving. Promoting them up front is what keeps the first move of a game
+       as smooth as the hundredth. */
+    will-change: transform;
+  }
+
+  /* Under the tile it is merging into, so the one that pops is on top. */
+  .g2048-tile.is-gone {
+    z-index: 0;
+  }
+
+  .g2048-tile.is-merged {
+    z-index: 2;
+    animation: g2048-pop 260ms var(--site-ease);
+  }
+
+  /*
+   * A spawning tile.
+   *
+   * `backwards` is doing the work: the animation is delayed by exactly one
+   * slide and holds its opening frame through the wait, so the tile is already
+   * in the DOM and invisible while the board is still moving, and lands the
+   * instant everything else stops. No second timer, and it cannot arrive early
+   * on a slow frame.
+   */
+  .g2048-tile.is-new {
+    animation: g2048-appear 240ms var(--g2048-spring) var(--g2048-slide) backwards;
+  }
+
+  /*
+   * Numbers, sized off the board and stepped down by digit count so 2 and 1024
+   * both fill their tile. Set on the span rather than the tile so the pop
+   * scales the whole thing, digits included.
+   */
+  .g2048-tile > span {
+    font-size: 8.5cqi;
+  }
+
+  .g2048-tile[data-digits='3'] > span {
+    font-size: 7cqi;
+  }
+
+  .g2048-tile[data-digits='4'] > span {
+    font-size: 5.5cqi;
+  }
+
+  .g2048-tile[data-digits='5'] > span,
+  .g2048-tile[data-digits='6'] > span {
+    font-size: 4.3cqi;
+  }
+
+  /*
+   * One step per doubling, off the ramp declared at the top of this file.
+   *
+   * On `.g2048-tier` rather than on `.g2048-tile`, because the board is not the
+   * only thing that wears the ramp: the thumbnail on the games index is a
+   * still of a board and has to be the same eleven colours in both themes.
+   * A tile carries both classes.
+   */
+  .g2048-tier[data-tier='1'] {
+    background-color: var(--g2048-t1);
+    color: var(--g2048-low-fg);
+  }
+
+  .g2048-tier[data-tier='2'] {
+    background-color: var(--g2048-t2);
+    color: var(--g2048-low-fg);
+  }
+
+  .g2048-tier[data-tier='3'] {
+    background-color: var(--g2048-t3);
+    color: var(--g2048-on-dark);
+  }
+
+  .g2048-tier[data-tier='4'] {
+    background-color: var(--g2048-t4);
+    color: var(--g2048-on-dark);
+  }
+
+  .g2048-tier[data-tier='5'] {
+    background-color: var(--g2048-t5);
+    color: var(--g2048-on-dark);
+  }
+
+  .g2048-tier[data-tier='6'] {
+    background-color: var(--g2048-t6);
+    color: var(--g2048-on-dark);
+  }
+
+  .g2048-tier[data-tier='7'] {
+    background-color: var(--g2048-t7);
+    color: var(--g2048-on-dark);
+  }
+
+  .g2048-tier[data-tier='8'] {
+    background-color: var(--g2048-t8);
+    color: var(--g2048-on-dark);
+  }
+
+  .g2048-tier[data-tier='9'] {
+    background-color: var(--g2048-t9);
+    color: var(--g2048-on-dark);
+  }
+
+  .g2048-tier[data-tier='10'] {
+    background-color: var(--g2048-t10);
+    color: var(--g2048-on-dark);
+  }
+
+  /* 2048 itself, which is the one tile allowed to announce itself. */
+  .g2048-tier[data-tier='11'] {
+    background-color: var(--g2048-t11);
+    color: var(--g2048-t11-fg);
+    box-shadow:
+      var(--g2048-tile-lift),
+      0 6px 26px color-mix(in oklab, var(--g2048-t11) 55%, transparent);
+  }
+
+  /* Everything past it, so a long game does not run off the end of the ramp. */
+  .g2048-tier[data-tier='12'] {
+    background-color: var(--g2048-t12);
+    color: var(--g2048-t11);
+    box-shadow:
+      var(--g2048-tile-lift),
+      0 6px 26px color-mix(in oklab, var(--g2048-t11) 30%, transparent);
+  }
+
+  /*
+   * Won and lost. Both cover the board, because both are asking a question
+   * that has to be answered before play carries on, and a panel beside the
+   * board would let a reader keep pressing arrows past it.
+   */
+  .g2048-panel {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    border-radius: var(--site-radius-card);
+    padding: var(--site-pad);
+    text-align: center;
+    background-color: color-mix(in oklab, var(--g2048-tray) 82%, transparent);
+    backdrop-filter: blur(4px);
+    animation: g2048-panel 240ms var(--site-ease);
+  }
+
+  .g2048[data-state='won'] .g2048-panel[data-panel='won'],
+  .g2048[data-state='over'] .g2048-panel[data-panel='over'] {
+    display: flex;
+  }
+
+  .g2048-panel-title {
+    font-stretch: 116%;
+    font-weight: 680;
+    font-size: clamp(1.75rem, 8cqi, 2.75rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+  }
+
+  .g2048-panel-body {
+    max-width: 24rem;
+    font-size: clamp(0.9375rem, 3.4cqi, 1.0625rem);
+    line-height: 1.5;
+    color: var(--site-muted);
+  }
+
+  .g2048-panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 0.7rem;
+  }
+
+  /* ---- Accretion ----------------------------------------------------------
+   *
+   * A physics game drawn entirely in CSS. Every body is a div with a border
+   * radius and a background, and the only thing the frame writes onto it is a
+   * transform - so the planets are stylesheet, not pictures, and they stay
+   * sharp at any zoom and at any board size.
+   *
+   * See src/games/accretion/game.ts and src/components/Accretion.astro.
+   */
+
+  .acc {
+    max-width: 30rem;
+    margin-inline: auto;
+  }
+
+  .acc-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: clamp(0.75rem, 2vw, 1.1rem);
+  }
+
+  .acc-meter {
+    position: relative;
+    min-width: 5.25rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius);
+    background-color: var(--site-card);
+    padding: 0.45rem 0.8rem 0.5rem;
+    text-align: center;
+  }
+
+  .acc-meter-label {
+    display: block;
+    font-size: 0.6875rem;
+    line-height: 1.3;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--site-muted);
+  }
+
+  .acc-meter-value {
+    display: block;
+    font-stretch: 112%;
+    font-weight: 660;
+    font-size: 1.25rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+  }
+
+  /* Out of flow, so the card cannot change size under it and shift the well
+     every time a merge lands. */
+  .acc-gain {
+    position: absolute;
+    inset: auto 0 0.35rem 0;
+    font-stretch: 110%;
+    font-weight: 640;
+    font-size: 1rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--site-accent);
+    pointer-events: none;
+    animation: acc-gain 700ms var(--site-ease) forwards;
+  }
+
+  /* What is coming. The one readout that is a picture rather than a figure,
+     because the answer is an object and not a number. */
+  .acc-next {
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    gap: 0 0.55rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius);
+    background-color: var(--site-card);
+    padding: 0.4rem 0.8rem 0.45rem;
+  }
+
+  .acc-next .acc-meter-label {
+    grid-column: 1 / -1;
+    text-align: left;
+  }
+
+  .acc-next-body {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+
+  .acc-next-name {
+    font-stretch: 108%;
+    font-weight: 620;
+    font-size: 0.9375rem;
+    line-height: 1.2;
+  }
+
+  .acc-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  .acc-actions .cta-ghost {
+    padding: 0.55rem 0.9rem;
+    font-size: 0.875rem;
+  }
+
+  @media (max-width: 30rem) {
+    .acc-actions {
+      width: 100%;
+      margin-left: 0;
+    }
+
+    .acc-actions .cta-ghost {
+      flex: 1;
+      justify-content: center;
+    }
+  }
+
+  /*
+   * The well.
+   *
+   * `--acc-ratio` and `--acc-line` come from the module's own constants
+   * through an inline style, so the box and the simulation cannot disagree
+   * about the shape of the well or where the line across it sits.
+   */
+  .acc-field {
+    position: relative;
+    aspect-ratio: var(--acc-ratio);
+    overflow: hidden;
+    border: 1px solid var(--acc-well-edge);
+    border-radius: var(--site-radius-card);
+    /*
+     * A sky rather than a dark rectangle.
+     *
+     * Two nebulae and a band of faint stars across them, all of it gradients
+     * on the one element - so it costs no image, no request and no second
+     * node, and it is as sharp on a phone as on a desktop. The stars are in
+     * pixels on purpose: they are points of light and must not grow with the
+     * board the way everything inside it does.
+     */
+    background:
+      radial-gradient(1.5px 1.5px at 12% 18%, #fff 50%, transparent),
+      radial-gradient(1px 1px at 27% 9%, #cfd8ff 50%, transparent),
+      radial-gradient(1.5px 1.5px at 41% 25%, #fff 50%, transparent),
+      radial-gradient(1px 1px at 58% 12%, #ffe9c4 50%, transparent),
+      radial-gradient(2px 2px at 71% 30%, #fff 50%, transparent),
+      radial-gradient(1px 1px at 86% 16%, #cfd8ff 50%, transparent),
+      radial-gradient(1.5px 1.5px at 94% 38%, #fff 50%, transparent),
+      radial-gradient(1px 1px at 8% 44%, #fff 50%, transparent),
+      radial-gradient(1.5px 1.5px at 21% 61%, #ffe9c4 50%, transparent),
+      radial-gradient(1px 1px at 35% 52%, #cfd8ff 50%, transparent),
+      radial-gradient(1px 1px at 49% 70%, #fff 50%, transparent),
+      radial-gradient(1.5px 1.5px at 64% 57%, #fff 50%, transparent),
+      radial-gradient(1px 1px at 78% 74%, #cfd8ff 50%, transparent),
+      radial-gradient(2px 2px at 90% 63%, #fff 50%, transparent),
+      radial-gradient(1px 1px at 15% 82%, #fff 50%, transparent),
+      radial-gradient(1.5px 1.5px at 33% 91%, #ffe9c4 50%, transparent),
+      radial-gradient(1px 1px at 55% 86%, #cfd8ff 50%, transparent),
+      radial-gradient(1px 1px at 73% 95%, #fff 50%, transparent),
+      radial-gradient(1.5px 1.5px at 88% 88%, #fff 50%, transparent),
+      /* The band, drawn across the corner rather than through the middle, so
+         the busiest part of the sky is where the fewest bodies end up. */
+      linear-gradient(
+        163deg,
+        transparent 0 22%,
+        color-mix(in oklab, #6f7cc8 11%, transparent) 38%,
+        color-mix(in oklab, #8e7ec8 9%, transparent) 50%,
+        transparent 68% 100%
+      ),
+      radial-gradient(60% 42% at 78% 14%, color-mix(in oklab, #5b4ea8 22%, transparent) 0%, transparent 72%),
+      radial-gradient(52% 38% at 16% 34%, color-mix(in oklab, #2f5c99 18%, transparent) 0%, transparent 70%),
+      radial-gradient(80% 50% at 50% 104%, color-mix(in oklab, #1a2340 60%, transparent) 0%, transparent 78%),
+      var(--acc-well);
+    /* The pointer aims and drops, so the browser must not also read a drag
+       across the well as a scroll. */
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: crosshair;
+  }
+
+  /*
+   * ⚠️ **One transform carries the whole simulation onto the box.**
+   *
+   * The solver runs in its own thousand-unit space and never learns how wide
+   * it is being shown, so a resize is this one number changing and nothing
+   * else: not a radius, not a position, not a step. `transform-origin` has to
+   * be the top left corner or the scale would also move the world.
+   */
+  .acc-world {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1000px;
+    height: 1450px;
+    transform: scale(var(--acc-scale, 0.4));
+    transform-origin: 0 0;
+  }
+
+  /*
+   * The line the well must not stay above.
+   *
+   * It warns before it decides: the module sets `data-full` a third of the way
+   * into the count, and a line that only appears once the game is lost is a
+   * line that told the player nothing.
+   */
+  .acc-line {
+    position: absolute;
+    top: var(--acc-line-at);
+    right: 0;
+    left: 0;
+    height: 3px;
+    background:
+      linear-gradient(90deg, transparent, color-mix(in oklab, var(--acc-line) 70%, transparent) 8% 92%, transparent),
+      repeating-linear-gradient(
+        90deg,
+        color-mix(in oklab, var(--acc-line) 55%, transparent) 0 12px,
+        transparent 12px 22px
+      );
+    /* Sitting under the bodies, so a planet crossing it passes in front rather
+       than being cut in half by it. */
+    z-index: 0;
+    opacity: 0.55;
+    transition:
+      opacity 260ms var(--site-ease),
+      box-shadow 260ms var(--site-ease);
+  }
+
+  .acc[data-full] .acc-line {
+    opacity: 1;
+    box-shadow: 0 0 14px 2px color-mix(in oklab, var(--acc-line) 45%, transparent);
+    animation: acc-warn 900ms var(--site-ease) infinite;
+  }
+
+  /*
+   * A body.
+   *
+   * ⚠️ **Every planet is gradients on one div, and that is the whole renderer.**
+   * There is no image, no SVG and no sprite, so a body is sharp at any zoom,
+   * costs no request, and scales with the well rather than with the viewport.
+   *
+   * The sphere itself is `--acc-sphere`, held in a custom property so the ten
+   * planets below can stack their own detail on top of it without writing it
+   * out again. Layers paint front to back, so a planet reads as: markings,
+   * then clouds, then the lit ball underneath.
+   *
+   * Every length in here is a percentage, which is what makes one rule work for
+   * a body 15px across in the sequence and 230px across in the well.
+   */
+  .acc-body {
+    --acc-sphere: radial-gradient(
+      circle at 32% 26%,
+      color-mix(in oklab, var(--acc-tint) 52%, white) 0%,
+      color-mix(in oklab, var(--acc-tint) 84%, white) 22%,
+      var(--acc-tint) 48%,
+      color-mix(in oklab, var(--acc-tint) 74%, black) 84%,
+      color-mix(in oklab, var(--acc-tint) 52%, black) 100%
+    );
+
+    /*
+     * ⚠️ **The three layers that make a circle read as a sphere**, and they go
+     * over the surface markings rather than under them - a highlight sits on
+     * the clouds, and the shadow darkens them.
+     *
+     * The specular is small and tight, because a large soft one reads as a
+     * bubble. The rim is the piece most often missed: real spheres are lit a
+     * second time along the dark limb by light bouncing back, and without it
+     * the shaded side dies into a flat edge. The terminator then does the bulk
+     * of the work, following the curve rather than fading straight down.
+     *
+     * All of it in percentages, because `box-shadow` takes none and these have
+     * to hold from a 15px body in the sequence to a 230px one in the field.
+     */
+    --acc-shade:
+      radial-gradient(
+        circle at 31% 25%,
+        color-mix(in oklab, white 62%, transparent) 0 3%,
+        color-mix(in oklab, white 28%, transparent) 7%,
+        transparent 15%
+      ),
+      radial-gradient(
+        circle at 50% 50%,
+        transparent 0 66%,
+        color-mix(in oklab, white 13%, transparent) 88%,
+        color-mix(in oklab, white 4%, transparent) 100%
+      ),
+      radial-gradient(
+        circle at 34% 28%,
+        transparent 0 30%,
+        color-mix(in oklab, black 18%, transparent) 74%,
+        color-mix(in oklab, black 42%, transparent) 95%,
+        color-mix(in oklab, black 30%, transparent) 100%
+      );
+
+    /* Kept for the planets that were written against it. */
+    --acc-limb: radial-gradient(
+      circle at 62% 68%,
+      transparent 0 58%,
+      color-mix(in oklab, black 12%, transparent) 92%,
+      color-mix(in oklab, black 20%, transparent) 100%
+    );
+
+    /*
+     * ⚠️ **`position` belongs here and nowhere else below.**
+     *
+     * It is `relative` so that Saturn's ring, an absolutely positioned
+     * pseudo-element, anchors to its own planet in the readout and in the
+     * sequence under the board. Inside the field `.acc-world .acc-body`
+     * overrides it to `absolute`, and that works only because this selector is
+     * one class and that one is two.
+     *
+     * A `position` on any `.acc-body[data-tier=…]` rule ties that two-class
+     * specificity and, coming later in the file, wins. Saturn carried exactly
+     * that and was quietly dropped out of absolute positioning inside the
+     * field: the solver held it in one place and the browser drew it wherever
+     * normal flow had put it, so bodies stacked against a Saturn that was not
+     * there.
+     */
+    position: relative;
+
+    display: block;
+    border-radius: 50%;
+    background-image: var(--acc-shade), var(--acc-limb), var(--acc-sphere);
+    background-repeat: no-repeat;
+  }
+
+  /* ⚠️ Two classes on purpose: this has to outrank the `position` on
+     `.acc-body`, and it must stay stronger than anything keyed on a tier. */
+  .acc-world .acc-body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* Forty of these, each a transform away from moving on every frame.
+       Promoting them is what keeps a full well at sixty frames on a phone. */
+    will-change: transform;
+  }
+
+  /* ---- The Moon: maria and craters ---- */
+  .acc-body[data-tier='0'] {
+    --acc-tint: var(--acc-p0);
+    background-image:
+      var(--acc-shade),
+      radial-gradient(circle at 61% 60%, color-mix(in oklab, var(--acc-p0) 58%, black) 0 11%, transparent 12%),
+      radial-gradient(circle at 37% 71%, color-mix(in oklab, var(--acc-p0) 64%, black) 0 8%, transparent 9%),
+      radial-gradient(circle at 70% 34%, color-mix(in oklab, var(--acc-p0) 66%, black) 0 6%, transparent 7%),
+      radial-gradient(ellipse 24% 19% at 44% 40%, color-mix(in oklab, var(--acc-p0) 70%, black) 0 70%, transparent 100%),
+      radial-gradient(ellipse 17% 14% at 66% 72%, color-mix(in oklab, var(--acc-p0) 74%, black) 0 70%, transparent 100%),
+      var(--acc-limb),
+      var(--acc-sphere);
+  }
+
+  /* ---- Mercury: cratered, and one bright ray system ---- */
+  .acc-body[data-tier='1'] {
+    --acc-tint: var(--acc-p1);
+    background-image:
+      var(--acc-shade),
+      radial-gradient(circle at 30% 35%, color-mix(in oklab, var(--acc-p1) 55%, white) 0 5%, transparent 6%),
+      radial-gradient(circle at 58% 52%, color-mix(in oklab, var(--acc-p1) 62%, black) 0 10%, transparent 11%),
+      radial-gradient(circle at 72% 68%, color-mix(in oklab, var(--acc-p1) 66%, black) 0 7%, transparent 8%),
+      radial-gradient(circle at 42% 76%, color-mix(in oklab, var(--acc-p1) 68%, black) 0 6%, transparent 7%),
+      radial-gradient(circle at 26% 58%, color-mix(in oklab, var(--acc-p1) 70%, black) 0 5%, transparent 6%),
+      var(--acc-limb),
+      var(--acc-sphere);
+  }
+
+  /* ---- Mars: two polar caps and the dark highlands ---- */
+  .acc-body[data-tier='2'] {
+    --acc-tint: var(--acc-p2);
+    background-image:
+      var(--acc-shade),
+      radial-gradient(ellipse 30% 13% at 50% 3%, color-mix(in oklab, white 88%, var(--acc-p2)) 0 62%, transparent 100%),
+      radial-gradient(ellipse 20% 9% at 50% 98%, color-mix(in oklab, white 76%, var(--acc-p2)) 0 60%, transparent 100%),
+      radial-gradient(ellipse 26% 17% at 62% 44%, color-mix(in oklab, var(--acc-p2) 58%, black) 0 68%, transparent 100%),
+      radial-gradient(ellipse 18% 11% at 32% 62%, color-mix(in oklab, var(--acc-p2) 64%, black) 0 68%, transparent 100%),
+      radial-gradient(ellipse 30% 8% at 45% 78%, color-mix(in oklab, var(--acc-p2) 88%, white) 0 70%, transparent 100%),
+      var(--acc-limb),
+      var(--acc-sphere);
+  }
+
+  /* ---- Venus: nothing but cloud, in slow bands ---- */
+  .acc-body[data-tier='3'] {
+    --acc-tint: var(--acc-p3);
+    background-image:
+      var(--acc-shade),
+      radial-gradient(ellipse 44% 12% at 40% 30%, color-mix(in oklab, white 52%, var(--acc-p3)) 0 60%, transparent 100%),
+      radial-gradient(ellipse 50% 10% at 58% 55%, color-mix(in oklab, var(--acc-p3) 72%, #8a6a2e) 0 60%, transparent 100%),
+      radial-gradient(ellipse 40% 9% at 44% 74%, color-mix(in oklab, white 40%, var(--acc-p3)) 0 60%, transparent 100%),
+      var(--acc-limb),
+      var(--acc-sphere);
+  }
+
+  /* ---- Earth: ocean, two landmasses, ice, and one cloud band ---- */
+  .acc-body[data-tier='4'] {
+    --acc-tint: var(--acc-p4);
+    background-image:
+      var(--acc-shade),
+      radial-gradient(ellipse 34% 10% at 52% 28%, color-mix(in oklab, white 70%, transparent) 0 55%, transparent 100%),
+      radial-gradient(ellipse 26% 8% at 40% 66%, color-mix(in oklab, white 58%, transparent) 0 55%, transparent 100%),
+      radial-gradient(ellipse 26% 12% at 50% 2%, color-mix(in oklab, white 86%, var(--acc-p4)) 0 60%, transparent 100%),
+      radial-gradient(ellipse 24% 11% at 50% 99%, color-mix(in oklab, white 86%, var(--acc-p4)) 0 60%, transparent 100%),
+      radial-gradient(ellipse 22% 26% at 33% 42%, #3d8a4f 0 72%, transparent 100%),
+      radial-gradient(ellipse 15% 13% at 58% 34%, #4a9159 0 72%, transparent 100%),
+      radial-gradient(ellipse 19% 21% at 66% 66%, #3f8752 0 72%, transparent 100%),
+      var(--acc-limb),
+      var(--acc-sphere);
+  }
+
+  /* ---- Neptune: banded, with the dark spot ---- */
+  .acc-body[data-tier='5'] {
+    --acc-tint: var(--acc-p5);
+    background-image:
+      var(--acc-shade),
+      radial-gradient(ellipse 13% 9% at 63% 38%, color-mix(in oklab, var(--acc-p5) 52%, black) 0 70%, transparent 100%),
+      radial-gradient(ellipse 15% 5% at 63% 46%, color-mix(in oklab, white 60%, transparent) 0 60%, transparent 100%),
+      repeating-linear-gradient(
+        176deg,
+        color-mix(in oklab, var(--acc-p5) 86%, white) 0 6%,
+        transparent 6% 13%,
+        color-mix(in oklab, var(--acc-p5) 84%, black) 13% 18%,
+        transparent 18% 26%
+      ),
+      var(--acc-limb),
+      var(--acc-sphere);
+  }
+
+  /* ---- Uranus: almost featureless, and tipped on its side ---- */
+  .acc-body[data-tier='6'] {
+    --acc-tint: var(--acc-p6);
+    background-image:
+      var(--acc-shade),
+      radial-gradient(ellipse 30% 20% at 38% 32%, color-mix(in oklab, white 30%, transparent) 0 60%, transparent 100%),
+      radial-gradient(ellipse 22% 14% at 66% 64%, color-mix(in oklab, var(--acc-p6) 70%, #1d6f88) 0 65%, transparent 100%),
+      repeating-linear-gradient(
+        92deg,
+        color-mix(in oklab, var(--acc-p6) 92%, white) 0 11%,
+        transparent 11% 24%,
+        color-mix(in oklab, var(--acc-p6) 92%, #2a7d96) 24% 32%,
+        transparent 32% 46%
+      ),
+      var(--acc-limb),
+      var(--acc-sphere);
+  }
+
+  /* ---- Saturn: banded, and the ring below ---- */
+  .acc-body[data-tier='7'] {
+    --acc-tint: var(--acc-p7);
+    /*
+     * ⚠️ **Saturn paints above every other body, ring and all.** The ring
+     * reaches 1.7 diameters across, so on a full field it always has a
+     * neighbour under one of its tips, and a ring that disappears behind a
+     * planet reads as a rendering fault rather than as depth - the tip is a
+     * thin ellipse and half of it simply goes missing.
+     *
+     * ⚠️ It is `z-index` alone, and must stay that way: a `position` here
+     * would tie `.acc-world .acc-body` on specificity, win on order, and drop
+     * Saturn out of the field's absolute positioning. See the warning on
+     * `.acc-body`.
+     *
+     * 1 is under `.acc-panel` at 3, so a game that ends still covers it.
+     *
+     * The `z-index` also makes the stacking context the ring's back half
+     * needs: its `-1` stays behind this planet rather than falling behind the
+     * whole field. `isolation` did that job before and is now redundant.
+     */
+    z-index: 1;
+    background-image:
+      var(--acc-shade),
+      repeating-linear-gradient(
+        177deg,
+        color-mix(in oklab, var(--acc-p7) 88%, white) 0 7%,
+        transparent 7% 15%,
+        color-mix(in oklab, var(--acc-p7) 86%, #8a6330) 15% 21%,
+        transparent 21% 30%
+      ),
+      var(--acc-limb),
+      var(--acc-sphere);
+  }
+
+  /* ---- Jupiter: the belts, the zones, and the spot ---- */
+  .acc-body[data-tier='8'] {
+    --acc-tint: var(--acc-p8);
+    background-image:
+      var(--acc-shade),
+      radial-gradient(ellipse 15% 9% at 64% 61%, #b03f28 0 62%, color-mix(in oklab, #b03f28 60%, transparent) 80%, transparent 100%),
+      radial-gradient(ellipse 46% 4% at 50% 44%, color-mix(in oklab, white 46%, transparent) 0 60%, transparent 100%),
+      repeating-linear-gradient(
+        178deg,
+        color-mix(in oklab, var(--acc-p8) 72%, #7a4a28) 0 5%,
+        transparent 5% 11%,
+        color-mix(in oklab, var(--acc-p8) 70%, white) 11% 17%,
+        transparent 17% 23%,
+        color-mix(in oklab, var(--acc-p8) 76%, #6b3f22) 23% 27%,
+        transparent 27% 34%
+      ),
+      var(--acc-limb),
+      var(--acc-sphere);
+  }
+
+  /*
+   * ---- The Sun ----
+   *
+   * The one body that is not lit from outside, so it does not get the sphere
+   * gradient: it brightens from the middle and its limb is the coolest part,
+   * which is the opposite of every planet above it.
+   */
+  /*
+   * ⚠️ **The Sun takes no shading stack.** It is not lit from outside, so a
+   * terminator across it is simply wrong: it brightens from the middle and its
+   * limb is the coolest part, which is the opposite of every planet above it.
+   * The three speckles are granulation, and they are the only relief on it.
+   */
+  .acc-body[data-tier='9'] {
+    --acc-tint: var(--acc-p9);
+    background-image:
+      radial-gradient(circle at 38% 34%, color-mix(in oklab, white 40%, transparent) 0 6%, transparent 7%),
+      radial-gradient(circle at 62% 58%, color-mix(in oklab, #d8571a 34%, transparent) 0 8%, transparent 9%),
+      radial-gradient(circle at 52% 72%, color-mix(in oklab, #d8571a 26%, transparent) 0 6%, transparent 7%),
+      radial-gradient(
+        circle at 50% 50%,
+        color-mix(in oklab, white 80%, var(--acc-p9)) 0%,
+        var(--acc-p9) 52%,
+        color-mix(in oklab, var(--acc-p9) 72%, #e0651f) 88%,
+        color-mix(in oklab, var(--acc-p9) 55%, #c8420f) 100%
+      );
+  }
+
+  /* ⚠️ The glow is in pixels and therefore only in the well, where a Sun is
+     always about the same size. `box-shadow` takes no percentages at all, so a
+     glow that scaled with the element is not available - and one sized for the
+     well would swallow the 15px Sun in the sequence under the board. */
+  .acc-world .acc-body[data-tier='9'] {
+    box-shadow:
+      0 0 26px 8px color-mix(in oklab, var(--acc-p9) 45%, transparent),
+      0 0 70px 26px color-mix(in oklab, var(--acc-p9) 18%, transparent);
+  }
+
+  /*
+   * Saturn's ring, in two halves.
+   *
+   * ⚠️ The order is what sells it. `::before` sits behind the planet, so the
+   * far side of the ring passes behind it, and `::after` is the same ellipse
+   * clipped to its lower half and drawn on top, so the near side passes in
+   * front. One ellipse on top of everything reads as a hoop around a circle
+   * rather than as a ring around a sphere.
+   */
+  .acc-body[data-tier='7']::before,
+  .acc-body[data-tier='7']::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /*
+     * ⚠️ **The ring may not reach past the body, and at 208% it did.** Turned
+     * sixteen degrees it hung 0.11 of a radius below Saturn, so a Saturn
+     * resting on the floor had the ring sliced off by the edge of the field -
+     * which reads as the planet having sunk halfway through the bottom. At
+     * 170% the furthest point of the ring is 0.93 of a radius from the centre,
+     * inside the body's own silhouette, so nothing can be cut that the body
+     * would not have been cut with it.
+     *
+     * It is closer to the real thing as well. Saturn's rings reach about 2.3
+     * planet radii and 208% of the diameter is 4.2 of them.
+     */
+    width: 170%;
+    height: 48%;
+    translate: -50% -50%;
+    rotate: -16deg;
+    /* ⚠️ An annulus drawn with a gradient, not a border. `border-width` takes
+       no percentages either, and a ring in pixels would be a hairline in the
+       well and a slab in the sequence. Gradient stops are percentages of the
+       element, so this one ring works at every size the game draws it. The gap
+       at 74% is the Cassini division. */
+    background: radial-gradient(
+      ellipse 50% 50% at 50% 50%,
+      transparent 0 58%,
+      color-mix(in oklab, var(--acc-p7) 52%, white) 60% 72%,
+      color-mix(in oklab, var(--acc-p7) 40%, transparent) 73% 76%,
+      color-mix(in oklab, var(--acc-p7) 64%, white) 77% 86%,
+      transparent 88%
+    );
+  }
+
+  .acc-body[data-tier='7']::before {
+    z-index: -1;
+  }
+
+  .acc-body[data-tier='7']::after {
+    z-index: 1;
+    clip-path: inset(50% 0 0 0);
+  }
+
+  /*
+   * ⚠️ **Uranus has no ring here, and it did.** The real ones are nearly
+   * vertical because the planet is tipped on its side, which is the one fact
+   * about it everybody knows - and drawn at the size a body actually appears
+   * at, a tall thin ellipse around a small circle stops reading as a planet at
+   * all. It looked like a bug, and on a board where every other body is
+   * plainly round it is worse than a missing detail.
+   */
+
+  /* Arriving, and leaving. A merge removes two and adds one, so the two that
+     go have to be seen going or the board reads as a body vanishing. */
+  .acc-body.is-born {
+    animation: acc-born 260ms var(--site-ease);
+  }
+
+  .acc-body.is-gone {
+    animation: acc-gone 220ms var(--site-ease) forwards;
+    pointer-events: none;
+  }
+
+  /* Two Suns meeting. The only thing on the board that is not a body. */
+  .acc-nova {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    margin: -4px 0 0 -4px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff 0%, var(--acc-p9) 40%, transparent 72%);
+    pointer-events: none;
+    animation: acc-nova 780ms var(--site-ease) forwards;
+  }
+
+  .acc-panel {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    border-radius: var(--site-radius-card);
+    padding: var(--site-pad);
+    text-align: center;
+
+    /*
+     * ⚠️ **The palette is re-declared here rather than the buttons restyled**,
+     * which is the move `.panel` makes and the note on it explains.
+     *
+     * It has more cause than `.panel` does. The well is dark space in both
+     * themes - a sky that answers the theme toggle is not a sky - so in the
+     * light theme every token underneath this panel is the wrong way round.
+     * `.cta-ghost` was the visible cost: it painted `--site-card` at near-white
+     * and then took the panel's near-white text on top of it, so New game was a
+     * button that was not there.
+     *
+     * The other two games need none of this. Their trays follow the theme, so
+     * the tokens are already right over them.
+     */
+    --site-fg: #f2f4f8;
+    --site-bg: var(--acc-well);
+    --site-muted: color-mix(in oklab, var(--site-fg) 74%, transparent);
+    --site-card: color-mix(in oklab, var(--acc-well) 55%, transparent);
+    --site-hairline: color-mix(in oklab, var(--site-fg) 26%, transparent);
+    /* The dark-surface accent, in both themes: cobalt on a night sky is a
+       button you have to look for, and `.cta` fills itself with this. */
+    --site-accent: var(--site-panel-accent);
+
+    color: var(--site-fg);
+    background-color: color-mix(in oklab, var(--acc-well) 84%, transparent);
+    backdrop-filter: blur(4px);
+    animation: acc-panel 260ms var(--site-ease);
+  }
+
+  .acc[data-state='won'] .acc-panel[data-panel='won'],
+  .acc[data-state='over'] .acc-panel[data-panel='over'] {
+    display: flex;
+  }
+
+  .acc-panel-title {
+    font-stretch: 116%;
+    font-weight: 680;
+    font-size: clamp(1.75rem, 9vw, 2.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+  }
+
+  .acc-panel-body {
+    max-width: 24rem;
+    font-size: clamp(0.9375rem, 3.4vw, 1.0625rem);
+    line-height: 1.5;
+    /* The panel's own muted, which is what the other two games write here too. */
+    color: var(--site-muted);
+  }
+
+  .acc-panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 0.7rem;
+  }
+
+  .acc-hint {
+    margin-top: clamp(0.75rem, 2vw, 1.1rem);
+    font-size: 0.875rem;
+    text-align: center;
+    color: var(--site-muted);
+  }
+
+  /*
+   * The sequence, which is the legend and the drawing at once.
+   *
+   * A merge game is unreadable until you know what becomes what, and this is
+   * the answer in one line. It fills in as the well climbs, so it doubles as
+   * the only progress the game has.
+   */
+  .acc-chain {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.35rem 0.6rem;
+    margin-top: clamp(0.9rem, 2.4vw, 1.4rem);
+  }
+
+  .acc-link {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    /* Unreached steps are present but quiet: the sequence is a map of where
+       the game goes, and greying it out entirely would hide the map. */
+    opacity: 0.42;
+    transition: opacity 320ms var(--site-ease);
+  }
+
+  .acc-link[data-reached] {
+    opacity: 1;
+  }
+
+  .acc-chain-body {
+    width: 0.95rem;
+    height: 0.95rem;
+    flex-shrink: 0;
+  }
+
+  .acc-chain-name {
+    font-size: 0.75rem;
+    line-height: 1.2;
+    color: var(--site-muted);
+  }
+
+  .acc-link[data-reached] .acc-chain-name {
+    color: var(--site-fg);
+  }
+
+  /* ---- The games index ----------------------------------------------- */
+
+  /*
+   * Three across, fixed, and a short row stays short.
+   *
+   * Not one big card with a row under it either. That shape was borrowed from
+   * the projects section and it was the wrong loan: a project is a write-up,
+   * so the first one earns the extra room, while a game is a thing you either
+   * want to play or you do not.
+   *
+   * `auto-fit` was tried here so that one game would stretch to fill the row
+   * rather than sitting in the first third of it, and it is the wrong answer:
+   * a card is a fixed-size object and stretching it to 72rem turns the
+   * thumbnail into a wall. An unfilled track reads as a grid waiting for the
+   * next entry, which is what it is.
+   */
+  .game-grid {
+    display: grid;
+    gap: clamp(0.875rem, 1.5vw, 1.25rem);
+  }
+
+  @media (min-width: 40rem) {
+    .game-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .game-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  /*
+   * The thumbnail's frame: the bleed, the corners and the clip.
+   *
+   * Negative margins of exactly `--card-pad`, which is why `.card` names it:
+   * the picture is the top of the card rather than something sitting inside
+   * it with a frame of ground around it. The radius is the card's own, less
+   * the border, so the two curves sit on each other rather than beside.
+   *
+   * ⚠️ **It is a separate element from `.game-art` because it clips.** The
+   * status ribbon is a straight band laid across the bottom-right corner, long
+   * enough to run off both of the edges it crosses, and something has to cut
+   * it there. Putting the clip on `.game-art` instead would work and would put
+   * the ribbon inside the `aria-hidden` the art carries, which is right for a
+   * drawing of a board and wrong for the word "Beta".
+   */
+  .game-shot {
+    position: relative;
+    overflow: clip;
+    margin: calc(-1 * var(--card-pad)) calc(-1 * var(--card-pad)) clamp(1rem, 1.6vw, 1.35rem);
+    border-radius: calc(var(--site-radius-card) - 1px) calc(var(--site-radius-card) - 1px) 0 0;
+  }
+
+  /*
+   * The thumbnail itself, which fills the frame above.
+   *
+   * `container-type` so everything inside is sized off the thumbnail. Three of
+   * these across a 72rem shell and one across a phone are very different
+   * widths, and a viewport clamp cannot tell them apart.
+   *
+   * ⚠️ **The container declares no `cqi` of its own, and cannot.** An element
+   * is not its own query container, so a `cqi` length in a rule on this
+   * selector resolves against the nearest container *above* it - and where
+   * there is none, against the viewport. Putting the gap and the padding here
+   * is what made the first version look the way it did: 2.5% of the window
+   * between cells, on a card a third of the window wide, so the cells were
+   * squeezed down to the size of their own text. Everything measured in `cqi`
+   * belongs on `.game-art-board` below.
+   */
+  .game-art {
+    container-type: inline-size;
+    aspect-ratio: 5 / 2;
+  }
+
+  /*
+   * The status ribbon, cut across the thumbnail's bottom-right corner.
+   *
+   * A corner ribbon rather than a pill in the card body, because the card's own
+   * bottom-right corner is where the tagline ends and a band there would lie
+   * across the last line of it. The thumbnail has a real corner with nothing in
+   * it, and a band on a picture reads as a stamp on the picture.
+   *
+   * Every card carries one, because a mark that only the odd one out has is a
+   * mark the reader has nothing to compare against - "Beta" means something
+   * once "Live" is sitting on the two cards beside it.
+   *
+   * Only the odd one out is coloured, though. Beta takes the accent, which is
+   * the page's one way of saying look here, and Live is a paper band at the
+   * card's own tone. Three accent ribbons would point at nothing.
+   */
+  .game-status {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    /* Longer than the corner it cuts, because both ends run off the thumbnail
+       and are cut by it. 16rem clears the widest a card ever gets. */
+    width: 16rem;
+    padding: 0.3rem 0;
+    text-align: center;
+
+    /* The page's label voice. At this size the three words it can carry - LIVE,
+       BETA, BÊTA - come to about 2.6rem, well inside the 4.2rem of band the
+       corner leaves visible. */
+    font-size: 0.75rem;
+    font-stretch: 106%;
+    font-weight: 620;
+    letter-spacing: 0.14em;
+    line-height: 1.3;
+    text-transform: uppercase;
+
+    background-color: color-mix(in oklab, var(--site-card) 92%, transparent);
+    color: var(--site-muted);
+    box-shadow: var(--site-lift);
+
+    /*
+     * Rotated about the corner it cuts, and both numbers are arithmetic rather
+     * than taste. `translate(50%)` centres the band on the corner's vertical,
+     * and the y lifts it up that vertical; rotating about the corner then lays
+     * it on the diagonal without changing how far from the corner it sits. So
+     * its centre line ends up 1.31rem + half of its 1.575rem height = 2.1rem
+     * from the corner. A diagonal that far off a right angle crosses each edge
+     * 2.97rem out and leaves 4.2rem of band between the two, which is the
+     * visible width quoted above.
+     *
+     * ⚠️ The order matters. Transforms read right to left, so the band moves in
+     * its own upright axes and is rotated after. Swapping the two sends it off
+     * along the diagonal instead.
+     */
+    transform-origin: 100% 100%;
+    transform: rotate(-45deg) translate(50%, -1.31rem);
+  }
+
+  .game-status[data-status='beta'] {
+    background-color: var(--site-accent);
+    /* The same pairing the one filled thing on the site uses - see `.cta`. */
+    color: var(--site-bg);
+  }
+
+  /* The tray is the one thing a thumbnail cannot inherit: each game brings its
+     own board colour, and a shared default here would only be whichever game
+     was written first. */
+  .game-art-2048 {
+    background-color: var(--g2048-tray);
+  }
+
+  .game-art-ms {
+    background-color: var(--ms-tray);
+  }
+
+  .game-art-acc {
+    background:
+      radial-gradient(120% 90% at 50% 0%, color-mix(in oklab, var(--acc-well) 78%, white) 0%, transparent 72%),
+      var(--acc-well);
+  }
+
+  /*
+   * A packed field rather than a row.
+   *
+   * Every body is placed by its own centre, in `cqi` against the thumbnail, so
+   * the whole arrangement keeps its proportions whether the card is a third of
+   * a 72rem shell or the full width of a phone - the same reason the 2048 still
+   * is sized that way.
+   */
+  .game-art-well {
+    position: relative;
+    height: 100%;
+  }
+
+  /* `--cx`, `--cy` and `--d` are percentages of the card's width, so the
+     arithmetic stays beside the numbers it comes from in the component. */
+  .game-art-orb {
+    position: absolute;
+    top: calc((var(--cy) - var(--d) / 2) * 1cqi);
+    left: calc((var(--cx) - var(--d) / 2) * 1cqi);
+    width: calc(var(--d) * 1cqi);
+    height: calc(var(--d) * 1cqi);
+  }
+
+  /* The Sun carries a glow in the field, in pixels, which would swallow the
+     whole card at this size. Here it gets one sized for a thumbnail. */
+  .game-art-well .acc-body[data-tier='9'] {
+    box-shadow: 0 0 2cqi 0.5cqi color-mix(in oklab, var(--acc-p9) 40%, transparent);
+  }
+
+  /*
+   * The minefield still, which is the real board's cells at a different size.
+   *
+   * Reusing `.ms-cell` rather than restyling a copy is what keeps the card
+   * honest: the flag and the mine are the same two pseudo-elements, and the
+   * numbers are the same eight tokens, so the thumbnail cannot drift away from
+   * the game it is advertising. Only the three things that are about being a
+   * thumbnail are overridden.
+   */
+  .game-art-ms .ms-cell {
+    width: auto;
+    height: auto;
+    border-radius: 1.4cqi;
+    font-size: 7cqi;
+    /* The board's opening wave has no meaning on a still, and `--d` is not set
+       out here for it to run against anyway. */
+    animation: none;
+  }
+
+  /*
+   * Five across and two down, against that 5:2 box. It is the one pairing that
+   * keeps the cells square whatever the card is doing, and a 2048 board with
+   * oblong cells does not read as a 2048 board.
+   *
+   * Gap and padding are equal, and both are the same fraction of a cell that
+   * `--g2048-gap` is on the real board, so the still is in the game's own
+   * proportions rather than near them.
+   */
+  .game-art-board {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 2cqi;
+    height: 100%;
+    padding: 2cqi;
+  }
+
+  /* `.project-title` carries a top margin to clear the year tag above it on a
+     project card. A game card has no year, and the thumbnail's own bottom
+     margin is the whole gap. */
+  .game-grid .project-title {
+    margin-top: 0;
+  }
+
+  .game-art-cell {
+    display: grid;
+    place-items: center;
+    /* 8% of a cell, which is exactly what the real board's 10px radius is on
+       its 128px cell. Squarer than a chip and squarer than it looks like it
+       should be, and that is the point - it has to read as the same object. */
+    border-radius: 1.4cqi;
+    background-color: var(--g2048-cell);
+    font-stretch: 110%;
+    font-weight: 680;
+    font-size: 7cqi;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  /* Stepped by digit count, which the tier stands in for: 128 up is three
+     digits and 1024 up is four. The steps are the board's own ratios. */
+  .game-art-cell[data-tier='7'],
+  .game-art-cell[data-tier='8'],
+  .game-art-cell[data-tier='9'] {
+    font-size: 5.7cqi;
+  }
+
+  .game-art-cell[data-tier='10'],
+  .game-art-cell[data-tier='11'],
+  .game-art-cell[data-tier='12'] {
+    font-size: 4.5cqi;
+  }
+
+  .g2048-hint {
+    margin-top: clamp(0.75rem, 2vw, 1.1rem);
+    font-size: 0.875rem;
+    text-align: center;
+    color: var(--site-muted);
+  }
+
+  /* ---- Minesweeper --------------------------------------------------------
+   *
+   * A grid of buttons, and that is the whole renderer. Nothing here moves
+   * except a cell opening, so unlike the 2048 board there is no transition to
+   * tune and no compositor argument to win - what this block has to get right
+   * is that a covered cell reads as something to press and an open one reads
+   * as ground, in both themes, at three board sizes.
+   *
+   * See src/games/minesweeper/game.ts and src/components/Minesweeper.astro.
+   */
+
+  .ms {
+    /* Thin enough that the field reads as one surface rather than as a pile of
+       separate keys, wide enough that a fingertip landing between two cells
+       hits neither instead of the wrong one. */
+    --ms-gap: 3px;
+
+    /* Written from the module at build, so the step the opening wave moves at
+       is one number in one file. What is here is only what applies for the
+       frame before the script runs. */
+    --ms-wave: 14ms;
+  }
+
+  /*
+   * The three boards.
+   *
+   * A fieldset of real radios, so the label is the control: `:has(:checked)`
+   * paints the chosen one and `:has(:focus-visible)` draws the ring the
+   * clipped input cannot draw for itself.
+   */
+  .ms-levels {
+    display: flex;
+    gap: 4px;
+    width: fit-content;
+    margin: 0 auto clamp(0.75rem, 2vw, 1.1rem);
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-pill);
+    background-color: var(--site-inset);
+    padding: 4px;
+  }
+
+  .ms-level {
+    border-radius: var(--site-radius-pill);
+    padding: 0.4rem 0.95rem;
+    font-size: 0.875rem;
+    font-weight: 560;
+    line-height: 1.2;
+    color: var(--site-muted);
+    cursor: pointer;
+    transition:
+      background-color 160ms var(--site-ease),
+      color 160ms var(--site-ease);
+  }
+
+  .ms-level:hover {
+    color: var(--site-fg);
+  }
+
+  .ms-level:has(:checked) {
+    background-color: var(--site-card);
+    box-shadow: var(--site-lift);
+    color: var(--site-fg);
+  }
+
+  .ms-level:has(:focus-visible) {
+    outline: 2px solid var(--site-accent);
+    outline-offset: 2px;
+  }
+
+  .ms-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: clamp(0.75rem, 2vw, 1.1rem);
+  }
+
+  /* Three figures rather than 2048's two, and narrower for it. They are a
+     readout and not the subject: the board is what the eye should land on. */
+  .ms-meter {
+    min-width: 4.75rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius);
+    background-color: var(--site-card);
+    padding: 0.45rem 0.7rem 0.5rem;
+    text-align: center;
+  }
+
+  .ms-meter-label {
+    display: block;
+    font-size: 0.6875rem;
+    line-height: 1.3;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--site-muted);
+  }
+
+  .ms-meter-value {
+    display: block;
+    font-stretch: 112%;
+    font-weight: 660;
+    font-size: 1.25rem;
+    /* The clock changes every second and the mine count on every flag. Without
+       tabular figures both twitch sideways as the digits change width. */
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+  }
+
+  .ms-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  .ms-actions .cta-ghost {
+    padding: 0.55rem 0.9rem;
+    font-size: 0.875rem;
+  }
+
+  /* Flag mode is on. It is a mode the board is in, so it has to be visible
+     from the board rather than only from the button. */
+  .ms-actions .cta-ghost[aria-pressed='true'] {
+    border-color: var(--ms-flag);
+    background-color: color-mix(in oklab, var(--ms-flag) 12%, transparent);
+    color: var(--ms-flag);
+  }
+
+  @media (max-width: 34rem) {
+    .ms-actions {
+      width: 100%;
+      margin-left: 0;
+    }
+
+    .ms-actions .cta-ghost {
+      flex: 1;
+      justify-content: center;
+      padding: 0.55rem 0.7rem;
+    }
+
+    .ms-meter {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  /* The panels cover the board, so they are positioned against the frame and
+     not against the scroller - a panel inside a scrolling box would slide off
+     the top of an expert board along with it. */
+  .ms-frame {
+    position: relative;
+  }
+
+  /*
+   * The tray, and the query container.
+   *
+   * ⚠️ **Expert is 30 columns wide and scrolls sideways on a phone rather than
+   * shrinking.** Below about 25px a cell stops being a touch target, and a
+   * board nobody can press accurately is worse than a board that has to be
+   * pushed around. The clamp on `--ms-size` decides which of the two happens,
+   * and the overflow here is what makes the first one survivable.
+   *
+   * ⚠️ The `cqi` lengths are on `.ms-board` below, never here. An element is
+   * not its own query container - see the same warning on `.game-art`.
+   */
+  .ms-scroll {
+    container-type: inline-size;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    border-radius: var(--site-radius-card);
+    background-color: var(--ms-tray);
+    padding: clamp(0.5rem, 1.5vw, 0.75rem);
+  }
+
+  /*
+   * `fit-content` and auto margins rather than `justify-content: center`.
+   *
+   * Centred tracks that overflow their container are clipped at the *start* in
+   * a scroll box, so the first two columns of an expert board become
+   * unreachable. Auto margins resolve to zero when there is no free space, so
+   * the board centres while it fits and simply overflows to the right when it
+   * does not.
+   */
+  .ms-board {
+    --ms-size: clamp(1.55rem, calc(100cqi / var(--ms-cols) - var(--ms-gap)), 2.4rem);
+
+    display: grid;
+    grid-template-columns: repeat(var(--ms-cols), var(--ms-size));
+    gap: var(--ms-gap);
+    width: fit-content;
+    margin-inline: auto;
+  }
+
+  /* A row has to exist for the grid roles to mean anything and must not exist
+     for the layout, which is exactly what `contents` is for: the cells become
+     items of the board while the reader is still told which row they are in. */
+  .ms-row {
+    display: contents;
+  }
+
+  .ms-cell {
+    display: grid;
+    place-items: center;
+    width: var(--ms-size);
+    height: var(--ms-size);
+    border-radius: 4px;
+    /* Off the cell, so a 9 by 9 board and a 30 by 16 board both carry digits
+       in the same proportion to the square they sit in. */
+    font-size: calc(var(--ms-size) * 0.56);
+    font-stretch: 108%;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    /* Panning is allowed because the board scrolls, but double-tap zoom is
+       not: two quick presses are two moves, not a gesture. */
+    touch-action: pan-x pan-y;
+    -webkit-user-select: none;
+    user-select: none;
+    /* A long press is how you flag on a phone, so the selection callout that
+       iOS would otherwise put over the board has to go. */
+    -webkit-touch-callout: none;
+    /* Short enough to read as the cell going down under the button rather than
+       as a fade. It carries the hover as well, which wants the same speed. */
+    transition: background-color 90ms var(--site-ease);
+  }
+
+  .ms-cell:focus-visible {
+    outline: 2px solid var(--site-accent);
+    outline-offset: 1px;
+    z-index: 1;
+  }
+
+  .ms-cell.is-hidden,
+  .ms-cell.is-flag,
+  .ms-cell.is-wrong {
+    background-color: var(--ms-cell);
+    box-shadow: var(--site-lift);
+    cursor: pointer;
+  }
+
+  .ms-cell.is-hidden:hover,
+  .ms-cell.is-flag:hover {
+    background-color: var(--ms-cell-hover);
+  }
+
+  /*
+   * Held down, and showing what a release would open.
+   *
+   * The whole trick of the original's chord is here: the ring goes down with
+   * the button so you can see which eight cells are about to go, and comes
+   * back up if you let go somewhere else. It is a class and nothing more - the
+   * model does not know this is happening.
+   *
+   * ⚠️ It has to win over `:hover` above, which is why it comes after and why
+   * the shadow is cleared explicitly: a covered cell lifts, and something
+   * pressed in cannot still be casting the shadow of something resting on top.
+   */
+  .ms-cell.is-armed {
+    background-color: var(--ms-open);
+    box-shadow: none;
+  }
+
+  .ms-cell.is-open,
+  .ms-cell.is-mine {
+    background-color: var(--ms-open);
+    animation: ms-open 190ms var(--site-ease) calc(var(--d) * var(--ms-wave)) backwards;
+  }
+
+  /* An open number is still pressable - that is the chord - so it keeps the
+     pointer. An open blank has nothing left to do. */
+  .ms-cell.is-open[data-near] {
+    cursor: pointer;
+  }
+
+  .ms-cell[data-near='1'] {
+    color: var(--ms-n1);
+  }
+
+  .ms-cell[data-near='2'] {
+    color: var(--ms-n2);
+  }
+
+  .ms-cell[data-near='3'] {
+    color: var(--ms-n3);
+  }
+
+  .ms-cell[data-near='4'] {
+    color: var(--ms-n4);
+  }
+
+  .ms-cell[data-near='5'] {
+    color: var(--ms-n5);
+  }
+
+  .ms-cell[data-near='6'] {
+    color: var(--ms-n6);
+  }
+
+  .ms-cell[data-near='7'] {
+    color: var(--ms-n7);
+  }
+
+  .ms-cell[data-near='8'] {
+    color: var(--ms-n8);
+  }
+
+  /*
+   * The flag and the mine are drawn, not set in a font and not fetched.
+   *
+   * An emoji is a different picture on every platform and a third of them are
+   * colour fonts that ignore `color` entirely, which would put the one shape
+   * that has to answer the theme outside the theme. Two pseudo-elements and a
+   * clip path cost nothing and look the same everywhere.
+   */
+  .ms-cell.is-flag,
+  .ms-cell.is-wrong,
+  .ms-cell.is-mine {
+    position: relative;
+  }
+
+  /* The pole. */
+  .ms-cell.is-flag::before,
+  .ms-cell.is-wrong::before {
+    content: '';
+    width: 2px;
+    height: 46%;
+    border-radius: 1px;
+    background-color: currentColor;
+    translate: 26% 0;
+  }
+
+  /* The pennant, hanging off the top of it. */
+  .ms-cell.is-flag::after,
+  .ms-cell.is-wrong::after {
+    content: '';
+    position: absolute;
+    top: 27%;
+    right: 50%;
+    width: 30%;
+    height: 24%;
+    clip-path: polygon(100% 0, 100% 100%, 0 50%);
+    background-color: currentColor;
+  }
+
+  .ms-cell.is-flag {
+    color: var(--ms-flag);
+  }
+
+  /* A flag that was wrong, shown only once the game is over. Until then it is
+     a guess, and marking it would be the game answering itself. */
+  .ms-cell.is-wrong {
+    color: var(--ms-wrong);
+    opacity: 0.75;
+  }
+
+  .ms-cell.is-mine {
+    color: var(--ms-mine);
+  }
+
+  /* The body. */
+  .ms-cell.is-mine::before {
+    content: '';
+    width: 44%;
+    height: 44%;
+    border-radius: 50%;
+    background-color: currentColor;
+  }
+
+  /* The spikes, as two bars crossing behind it. */
+  .ms-cell.is-mine::after {
+    content: '';
+    position: absolute;
+    inset: 22%;
+    background:
+      linear-gradient(currentColor, currentColor) center / 2px 100% no-repeat,
+      linear-gradient(currentColor, currentColor) center / 100% 2px no-repeat;
+  }
+
+  /* The one that was pressed. Everything else on a lost board is information;
+     this is the answer to what happened. */
+  .ms-cell.is-hit {
+    background-color: var(--ms-boom);
+    color: var(--site-bg);
+  }
+
+  .ms-panel {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    border-radius: var(--site-radius-card);
+    padding: var(--site-pad);
+    text-align: center;
+    background-color: color-mix(in oklab, var(--ms-tray) 84%, transparent);
+    backdrop-filter: blur(4px);
+    animation: ms-panel 240ms var(--site-ease);
+  }
+
+  .ms[data-state='won'] .ms-panel[data-panel='won'],
+  .ms[data-state='lost'] .ms-panel[data-panel='lost'] {
+    display: flex;
+  }
+
+  .ms-panel-title {
+    font-stretch: 116%;
+    font-weight: 680;
+    font-size: clamp(1.75rem, 7vw, 2.75rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+  }
+
+  .ms-panel-body {
+    max-width: 28rem;
+    font-size: clamp(0.9375rem, 3vw, 1.0625rem);
+    line-height: 1.5;
+    color: var(--site-muted);
+  }
+
+  .ms-panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 0.7rem;
+  }
+
+  .ms-hint {
+    margin-top: clamp(0.75rem, 2vw, 1.1rem);
+    font-size: 0.875rem;
+    text-align: center;
+    color: var(--site-muted);
+  }
+}
+
+/*
+ * 2048 motion.
+ *
+ * Outside the components layer with the rest of the keyframes, and reduced
+ * along with everything else by the block at the end of this file - a merge
+ * still has to be visible without motion, so the pop and the appear are
+ * shortened rather than removed.
+ */
+/* Two stops only, so the spring curve is the whole shape. Opacity rides the
+   same curve and clamps at 1 well before the scale settles, which is what
+   stops a new tile from looking faded while it is still growing. */
+@keyframes g2048-appear {
+  from {
+    opacity: 0;
+    scale: 0.2;
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes g2048-pop {
+  0% {
+    scale: 1;
+  }
+
+  38% {
+    scale: 1.22;
+  }
+
+  100% {
+    scale: 1;
+  }
+}
+
+@keyframes g2048-gain {
+  from {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  to {
+    opacity: 0;
+    translate: 0 -1.6rem;
+  }
+}
+
+@keyframes g2048-panel {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/*
+ * Minesweeper motion, which is one animation used twice.
+ *
+ * A cell opening, and every mine arriving at the end of a lost game. The delay
+ * is `--d` steps of `--ms-wave`, both written from the module, and `backwards`
+ * is what makes the wait work: the cell holds this opening frame through its
+ * delay instead of sitting there finished and then jumping back to start.
+ *
+ * That is the same trick a spawning 2048 tile uses, and it is here for the
+ * same reason - it removes the timer that would otherwise have to exist, and
+ * a cell cannot land early on a slow frame.
+ */
+@keyframes ms-open {
+  from {
+    opacity: 0;
+    scale: 0.82;
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes ms-panel {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/*
+ * Accretion motion.
+ *
+ * Almost nothing here is animated, because almost everything that moves is
+ * moved by the solver writing a transform. What is left is the three moments
+ * the simulation cannot express: a body arriving, two leaving, and the flash
+ * where a pair of Suns used to be.
+ */
+@keyframes acc-born {
+  from {
+    scale: 0.4;
+  }
+
+  to {
+    scale: 1;
+  }
+}
+
+/* Into the one it merged with, rather than away. A body that shrinks in place
+   reads as deleted, and a body that shrinks towards its partner reads as
+   becoming it. */
+@keyframes acc-gone {
+  from {
+    opacity: 1;
+    scale: 1;
+  }
+
+  to {
+    opacity: 0;
+    scale: 0.55;
+  }
+}
+
+@keyframes acc-nova {
+  0% {
+    opacity: 1;
+    scale: 1;
+  }
+
+  100% {
+    opacity: 0;
+    scale: 46;
+  }
+}
+
+@keyframes acc-gain {
+  from {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  to {
+    opacity: 0;
+    translate: 0 -1.7rem;
+  }
+}
+
+/* The line, once something has been sitting above it. A pulse rather than a
+   colour change, because a colour change on a thin line is easy to miss. */
+@keyframes acc-warn {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes acc-panel {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
   }
 }
 

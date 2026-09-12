@@ -1,0 +1,27 @@
+---
+import GameIndex from '../../components/GameIndex.astro';
+import { defaultLocale } from '../../i18n/types';
+import { getDict } from '../../i18n/utils';
+import Base from '../../layouts/Base.astro';
+
+/*
+ * The games index, in the unprefixed default locale. `/sr/games/` and the
+ * other two come from [lang]/games/index.astro.
+ *
+ * ⚠️ Unlike /projects/, the pages under this one are **not** a `[slug]` route.
+ * Every project is the same page with different data, so one route pair and
+ * one component cover all four. A game is its own program: it has its own
+ * markup, its own script and its own bundle, so each gets a route pair of its
+ * own and this page only lists them. See src/CLAUDE.md.
+ */
+const lang = defaultLocale;
+const dict = getDict(lang);
+---
+
+<Base
+  lang={lang}
+  title={dict.games.index.metaTitle}
+  description={dict.games.index.metaDescription}
+>
+  <GameIndex lang={lang} />
+</Base>

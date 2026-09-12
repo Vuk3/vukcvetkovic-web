@@ -38,12 +38,23 @@ walk you through every place it has to go.
 | Written | once | four times |
 | Test | does it read identically in all four languages? | would a translator change it? |
 
-Two entries sit on the surprising side of that line, and both are deliberate:
+Three entries sit on the surprising side of that line, and all three are deliberate:
 
 - **`company` is a fact, `school` is prose.** "Ncoded Solutions" is the same word
   everywhere, but the faculty is "Elektronski fakultet" in Serbian, so `education` in
   [src/site.ts](../src/site.ts) carries only the period and the school name lives in each
   dictionary.
+- **A game's slug and its status are facts, its name is not.** An entry in `site.games`
+  carries a `slug` - a URL, the same in every locale - and a `status`, because whether a
+  game is finished does not change with the language either. Only the word for it does,
+  and that sits in `games.status`. The title sits in
+  `games.items.<id>.name` in each dictionary. The title was a fact while 2048 was the only
+  game, on the argument that it reads the same in four languages, and that argument was
+  only ever true of that one title: Minesweeper is Minolovac in Serbian and Démineur in
+  French. Writing "2048" out four times is what the rule costs, and it is cheaper than a
+  Serbian page with an English game on it. The page title is still composed -
+  `${dict.games.items.minesweeper.name} - ${site.name}` in the route - rather than a
+  `metaTitle` per locale.
 - **A results table is split, not sorted onto one side.** The figures are
   language-neutral and live in [src/site.ts](../src/site.ts), while every word in the
   table - the column heads and the row labels - lives in the dictionaries, because whether
@@ -296,13 +307,63 @@ visible without reading `dist/client/sitemap-0.xml` by hand.
 
 ---
 
-## 7. What throws, what warns, what falls back silently
+## 7. Adding a game
+
+Five steps, and the compiler names the next one every time. Unlike a project, a game is
+not data fed to a shared component - it is a program with a page around it - so two of the
+five are code.
+
+1. **`en.ts`, under `games.items`.** A new key with a `name` (the title, in the page head,
+   the card and the browser tab), a `tagline` (the line on the index) and whatever copy that
+   game's own page needs. ⚠️ Games do **not** share a shape the way
+   `projects.items` entries must: each is rendered by its own component, so 2048's `score`
+   and `undo` mean nothing to the next one and nothing forces them to appear in it.
+2. **The other three dictionaries**, which are now type errors until they match.
+3. **[src/site.ts](../src/site.ts)**, a new entry in `games` keyed by the same id, with a
+   `slug` and a `status`. There is no date on a game, unlike a project, and the title is
+   prose and lives in the dictionaries. `status` is `live` or `beta`, and it is required
+   rather than defaulting: it puts the ribbon on the card and the badge beside the title,
+   and flipping it to `live` is the one line that takes both off. `GameId` is
+   `keyof Dict["games"]["items"]`, so a
+   registry entry with no copy behind it fails `astro check`, and the id has to be spelled
+   the same in both files or neither compiles. Declaration order is the order the index
+   lists them.
+4. **A component**, `src/components/<Name>.astro`, and its logic under
+   `src/games/<slug>/`. It names its own dictionary entry -
+   `dict.games.items.<id>` - rather than being handed one, because there is exactly one
+   page that renders it. **A thumbnail too**, `src/components/games/Art<Name>.astro`,
+   registered in the `art` map in [GameIndex.astro](../src/components/GameIndex.astro) -
+   that map is a `Record<GameId, …>`, so a game with no art is a type error rather than a
+   card with a hole in it. Make it markup rather than an image: a still of the real thing
+   built from the tokens costs nothing to serve and follows the theme.
+5. **A route pair**, `src/pages/games/<slug>/index.astro` and its `[lang]` twin, both
+   rendering that component. ⚠️ **Not a `[slug]` route.** Projects share one because every
+   project page is the same page; a `[slug]` route for games would resolve a component out
+   of a map and put every game's script into every game's bundle. Two files per game is the
+   price of each game paying only for itself.
+
+Beyond that map, the index needs no editing -
+[GameIndex.astro](../src/components/GameIndex.astro) iterates the registry into a grid
+three cards wide.
+
+**Keeping a best score is already written.** `scoreRecord(name, plausible)` in
+[games/record.ts](../src/games/record.ts) owns the storage key and the signature, and the
+game supplies one predicate saying what its own scoring could have produced. Do not write
+a second copy of it, and read the warning at the top of that file before describing it to
+anybody as protection - see
+[design-system.md §9](./design-system.md#9-the-game-boards-and-the-one-place-the-palette-opens-up).
+
+---
+
+## 8. What throws, what warns, what falls back silently
 
 **Fails `astro check`, so fails `npm run build`:**
 
 - a key missing, misspelled or the wrong shape in `sr.ts`, `fr.ts` or `de.ts`
 - an `id` in [src/site.ts](../src/site.ts) with no matching copy in `en.ts`
 - a technology name with no entry in [src/tech.ts](../src/tech.ts)
+- a `games` entry in [src/site.ts](../src/site.ts) whose id has no copy under
+  `games.items`, and the reverse (§7)
 - a `Record<Lang, …>` map missing a locale after `locales` is widened
 
 **Silently degrades:**
@@ -319,6 +380,25 @@ visible without reading `dist/client/sitemap-0.xml` by hand.
 
 ## Changelog
 
+- 2026-09-12 - a game carries a `status`, `live` or `beta`, and Accretion is the first
+  `beta`. The two words it can take are `games.status` in the dictionaries and they are the
+  same in all four, which the note there explains: "beta" is one loanword everywhere, and
+  translating "live" gives "uživo" and "en ligne", both of which say live *play* rather
+  than released (§1, §7).
+- 2026-09-11 - a third game, `accretion`. Its copy carries a ten-name `planets` array, which
+  is the first list in the dictionaries whose length is checked: the game exports the number
+  of bodies and the component indexes the names by it (§7).
+- 2026-09-11 - a game's title moved from `site.games` into `games.items.<id>.name`, because
+  Minesweeper is Minolovac and Démineur while 2048 is 2048. A `site.games` entry is now a
+  slug and nothing else (§1, §7).
+- 2026-09-11 - adding a game no longer means writing its best score by hand. `scoreRecord`
+  in [games/record.ts](../src/games/record.ts) keeps and signs it for every game, and §7
+  says what the caller still owns.
+- 2026-09-11 - a `games` key in every dictionary and a `site.games` registry beside it,
+  joined by id the way `projects` is. It is a `Record` rather than a list, because a game
+  is reached by name from its own page instead of being iterated into a shared one. ⚠️
+  Entries under `games.items` are **not** required to share a shape, which is the opposite
+  of the rule for `projects.items`, and §7 says why.
 - 2026-09-10 - adding a locale is five places instead of six: `astro.config.ts`
   imports the list rather than repeating it, so every place is compiler-checked (§6).
 - 2026-09-09 - `flow` names its parts by role (`entry`, `entryLabel`, `core`, `branches`,

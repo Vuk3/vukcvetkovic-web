@@ -1,0 +1,21 @@
+---
+import GameIndex from '../../../components/GameIndex.astro';
+import { prefixedLocales } from '../../../i18n/types';
+import { getDict, resolveLang } from '../../../i18n/utils';
+import Base from '../../../layouts/Base.astro';
+
+export function getStaticPaths() {
+  return prefixedLocales.map((lang) => ({ params: { lang } }));
+}
+
+const lang = resolveLang(Astro.params.lang);
+const dict = getDict(lang);
+---
+
+<Base
+  lang={lang}
+  title={dict.games.index.metaTitle}
+  description={dict.games.index.metaDescription}
+>
+  <GameIndex lang={lang} />
+</Base>

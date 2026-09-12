@@ -1,0 +1,81 @@
+---
+/**
+ * The thumbnail for Accretion on the games index.
+ *
+ * The real bodies at a different size, not a picture of them: the same
+ * `.acc-body` the field is full of, so every gradient, Saturn's ring and the
+ * Sun's glow come from one place and the card cannot drift away from the game
+ * it advertises.
+ *
+ * All ten, spread across the whole card rather than lined up along the bottom.
+ * A row wastes most of a 5:2 box on empty sky and squeezes the sequence into a
+ * strip, which reads as a diagram rather than as the game.
+ *
+ * ⚠️ **Nothing here may touch anything else**, and it is easy to get wrong by
+ * eye. The layout is checked rather than judged, against four things at once:
+ *
+ * - Every pair of bodies, by centres and radii.
+ * - Saturn's ring, as the ellipse it actually is - 1.7 diameters wide, 0.48
+ *   tall, turned sixteen degrees - rather than as a circle around it. A circle
+ *   that covers the ring has more than twice Saturn's own radius and would eat
+ *   a fifth of the field for room nothing needs.
+ * - The Sun's glow, which reads about 2.4 units past the disc, and which the
+ *   edges now cut: `.game-shot` clips, so a glow hanging off the top is a soft
+ *   edge with a hard line through it.
+ * - The status ribbon across the bottom-right corner. On the narrowest card a
+ *   game gets - one column on a phone - its outer edge is about 20 units in
+ *   along each edge, and that corner is the ribbon's.
+ *
+ * The tightest gap in what is below is 2.96 units, which is about ten pixels
+ * on that phone.
+ *
+ * ⚠️ The sizes are not the game's radius table. Real ratios put the Sun at nine
+ * and a half Moons, which in a box this shape leaves the Moon at four pixels
+ * and the card saying nothing. These are compressed to about five to one.
+ */
+
+/**
+ * Centre and diameter of each body, in percent of the card's width, smallest
+ * first so the index is the tier.
+ *
+ * Placed rather than laid out, because what is wanted is a spread field with no
+ * dead corner, and nothing in CSS packs circles.
+ *
+ * The composition is a choice and the numbers are not: the three that cannot
+ * fit above or below each other take the upper band, the seven that can go
+ * along the floor, and the corners get the small ones so the field has no hole
+ * in it. Within that, the exact centres come from a relaxation that opens the
+ * tightest gap as far as it will go.
+ */
+const bodies = [
+  { cx: 23.9, cy: 33.1, d: 4.24 },
+  { cx: 8.4, cy: 5.5, d: 5.09 },
+  { cx: 38.5, cy: 6.2, d: 6.15 },
+  { cx: 8.2, cy: 32.8, d: 7.42 },
+  { cx: 48, cy: 32, d: 8.9 },
+  { cx: 35.3, cy: 30.1, d: 10.6 },
+  { cx: 62.1, cy: 30.6, d: 12.72 },
+  { cx: 18.5, cy: 16.9, d: 15.26 },
+  { cx: 53.6, cy: 12.7, d: 18.34 },
+  { cx: 80.1, cy: 16.5, d: 22.26 },
+];
+---
+
+{/*
+  Two elements, not one. The outer is the query container and the inner is the
+  field, because a container cannot size itself in its own `cqi` - see the
+  warning on `.game-art` in global.css.
+*/}
+<div class="game-art game-art-acc" aria-hidden="true">
+  <div class="game-art-well">
+    {
+      bodies.map(({ cx, cy, d }, tier) => (
+        <span
+          class="acc-body game-art-orb"
+          data-tier={tier}
+          style={`--cx:${cx}; --cy:${cy}; --d:${d}`}
+        />
+      ))
+    }
+  </div>
+</div>

@@ -1,0 +1,42 @@
+---
+/**
+ * The thumbnail for Minesweeper on the games index.
+ *
+ * The real board's cells at a different size, not a picture of them: the same
+ * `.ms-cell` classes, the same eight number tokens, and the flag and the mine
+ * drawn by the same two pseudo-elements. So it costs no image, stays sharp at
+ * any size, answers the theme toggle, and cannot drift away from the game it
+ * is advertising.
+ *
+ * The contents walk the palette rather than being a position that could occur:
+ * all eight numbers and both glyphs, which is exactly ten cells and exactly
+ * what the card has room for.
+ */
+
+/** Row-major, 5 across and 2 down, against the 5:2 box every game card uses. */
+const cells = [
+  [1, 2, 3, 4, 'flag'],
+  [5, 6, 7, 8, 'mine'],
+].flat();
+---
+
+{/*
+  Two elements, not one. The outer is the query container and the inner is the
+  board, because a container cannot size itself in its own `cqi` - see the
+  warning on `.game-art` in global.css.
+*/}
+<div class="game-art game-art-ms" aria-hidden="true">
+  <div class="game-art-board">
+    {
+      cells.map((cell) =>
+        typeof cell === 'number' ? (
+          <span class="ms-cell is-open" data-near={cell}>
+            {cell}
+          </span>
+        ) : (
+          <span class={`ms-cell is-${cell}`} />
+        ),
+      )
+    }
+  </div>
+</div>
