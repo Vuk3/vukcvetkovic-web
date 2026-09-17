@@ -207,28 +207,11 @@ const projects: Project[] = [
     year: "2026",
     /* The one round trip: the front end asks, and the front end is answered. */
     flowShape: "roundTrip",
-    tech: [
-      "React",
-      "NestJS",
-      "FastAPI",
-      "Ultralytics",
-      "ASP.NET Core",
-      "ML.NET",
-    ],
+    tech: ["React", "NestJS", "FastAPI", "Ultralytics", "ASP.NET Core", "ML.NET"],
     stack: [
       { id: "frontend", items: ["React"] },
       { id: "gateway", items: ["NestJS"] },
-      {
-        id: "pythonService",
-        items: [
-          "Python",
-          "FastAPI",
-          "Ultralytics",
-          "PyTorch",
-          "OpenCV",
-          "NumPy",
-        ],
-      },
+      { id: "pythonService", items: ["Python", "FastAPI", "Ultralytics", "PyTorch", "OpenCV", "NumPy"] },
       { id: "dotnetService", items: ["ASP.NET Core", "C#", "ML.NET"] },
       { id: "data", items: ["Roboflow"] },
     ],
@@ -261,7 +244,10 @@ const projects: Project[] = [
     ],
     results: {
       formats: ["count", "seconds", "seconds"],
-      rows: [{ values: [150, 68.91, 70.13] }, { values: [150, 44.16, 40.39] }],
+      rows: [
+        { values: [150, 68.91, 70.13] },
+        { values: [150, 44.16, 40.39] },
+      ],
     },
     links: {},
   },
