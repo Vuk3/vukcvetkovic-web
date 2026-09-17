@@ -351,6 +351,7 @@ const games: Record<GameId, Game> = {
   twentyFortyEight: { slug: "2048", status: "live" },
   minesweeper: { slug: "minesweeper", status: "live" },
   accretion: { slug: "accretion", status: "beta" },
+  battleship: { slug: "battleship", status: "beta" },
 };
 
 export const site = {

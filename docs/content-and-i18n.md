@@ -343,8 +343,8 @@ five are code.
    price of each game paying only for itself.
 
 Beyond that map, the index needs no editing -
-[GameIndex.astro](../src/components/GameIndex.astro) iterates the registry into a grid
-three cards wide.
+[GameIndex.astro](../src/components/GameIndex.astro) iterates the registry into a grid three
+cards wide.
 
 **Keeping a best score is already written.** `scoreRecord(name, plausible)` in
 [games/record.ts](../src/games/record.ts) owns the storage key and the signature, and the
@@ -380,6 +380,27 @@ anybody as protection - see
 
 ## Changelog
 
+- 2026-09-17 - Battleship's `levels` entries went from a name to `{ name, note }`, and the
+  legend over them from the clipped word "Opponent" to an instruction. The note says how
+  hard an opponent is rather than how it works, in the number of shots it needs - which is
+  the one figure the game is already scored in, so it needs no second scale explaining it.
+  Which algorithm is behind a rank stays in the write-up further down the page (§7).
+- 2026-09-17 - Battleship's record label carries its unit and its direction: "Fewest shots"
+  rather than "Best". ⚠️ It is a count where fewer wins, and a bare number under the word
+  "Best" reads as a score where more does - which is exactly what it means on the other two
+  games that keep one. The explanation was in the how-to-play copy further down the page,
+  which is too late to be read (§7).
+- 2026-09-17 - a fourth game, `battleship`. Its copy is the largest of the four and the
+  first to carry a message template: `messages.sunk` holds `{ship}` and the game substitutes
+  a name out of the five-entry `ships` array, which is the second list here whose length is
+  checked against the code (the fleet in the module). ⚠️ The Serbian, French and German
+  wordings deliberately say the ship *sinks* rather than that it *is sunk*: krstarica and
+  podmornica are feminine while razarač is masculine, so an adjective would be right for two
+  of the five and a verb is right for all of them (§7).
+- 2026-09-17 - ship counts are not a number in any locale. What is left to place and what
+  is still afloat are figures beside a label rather than a sentence with a count in it,
+  because "3 ships left" needs three plural forms in Serbian and a different rule again in
+  French, and none of the four dictionaries has any machinery for that (§7).
 - 2026-09-12 - a game carries a `status`, `live` or `beta`, and Accretion is the first
   `beta`. The two words it can take are `games.status` in the dictionaries and they are the
   same in all four, which the note there explains: "beta" is one loanword everywhere, and

@@ -1,0 +1,78 @@
+---
+/**
+ * The thumbnail for Battleship on the games index.
+ *
+ * A real board at a card's size, not a picture of one: the same `.bs-board`,
+ * the same squares, and the ships drawn from the same symbols the game uses.
+ * So it costs no image, stays sharp at any size, answers the theme toggle, and
+ * cannot drift away from the game it is advertising. The same arrangement as
+ * the minefield's still.
+ *
+ * ⚠️ **The sprite sheet comes with it.** A `<use>` only resolves against a
+ * symbol in the same document, and the game's own sheet is on the game's page -
+ * so this card has to bring its own copy or it draws empty water.
+ *
+ * What is drawn is the moment the game is about rather than a walk through the
+ * palette: a cruiser found and burning, a destroyer already down, and two shots
+ * that went nowhere.
+ */
+
+import BattleshipSprites from './BattleshipSprites.astro';
+
+/** Row-major, 5 across and 2 down, against the 5:2 box every game card uses. */
+const cells = [
+  'sea',
+  'hit',
+  'hit',
+  'sea',
+  'miss',
+  'miss',
+  'sea',
+  'sea',
+  'sunk',
+  'sunk',
+];
+
+/**
+ * The two ships, positioned the way the game positions them: which of the five,
+ * a column, a row and an axis. The stylesheet does the rest.
+ *
+ * ⚠️ One drawing each, where the board gives a ship six. The extra five are the
+ * flank and the shadow, and they are only visible on a tilted board - the card
+ * is flat, so they would be five copies of a thing nobody can see.
+ */
+const fleet = [
+  { ship: 2, len: 3, x: 1, y: 0, sunk: false },
+  { ship: 4, len: 2, x: 3, y: 1, sunk: true },
+];
+---
+
+<BattleshipSprites />
+
+{/*
+  Two elements, not one. The outer is the query container and the inner is the
+  board, because a container cannot size itself in its own `cqi` - see the
+  warning on `.game-art` in global.css.
+*/}
+<div class="game-art game-art-bs" aria-hidden="true">
+  <div class="bs-board">
+    {cells.map((state) => <span class={`bs-cell is-${state}`} />)}
+
+    <div class="bs-hulls">
+      {
+        fleet.map((ship) => (
+          <div
+            class={`bs-hull${ship.sunk ? " is-sunk" : ""}`}
+            data-axis="h"
+            data-ship={ship.ship}
+            style={`--len:${ship.len};--x:${ship.x};--y:${ship.y}`}
+          >
+            <svg class="bs-hull-art" viewBox={`0 0 ${ship.len * 100} 100`} focusable="false">
+              <use href={`#bs-ship-${ship.ship}`} />
+            </svg>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</div>

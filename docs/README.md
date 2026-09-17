@@ -20,12 +20,12 @@ plus a project write-up section, in **four languages** (English, Serbian, French
   [src/styles/global.css](../src/styles/global.css).
 - **Cloudflare** through `@astrojs/cloudflare`, whose only job here is `imageService:
   'compile'` and the assets shape. Nothing in the repository runs the deploy.
-- **44 pages**, 4 locales, 4 projects, 3 games. Three woff2 faces, a handful of webp
+- **48 pages**, 4 locales, 4 projects, 4 games. Three woff2 faces, a handful of webp
   variants, and **no CSS file at all** - the stylesheet is inlined into every document, and
   four small inline blocks cover the pre-paint theme script, the theme toggle, menu
   dismissal and the active-section indicator.
-- **JavaScript on three routes only.** The games have real scripts: 2.4 KB, 3.2 KB and
-  3.2 KB gz, plus a 0.4 KB chunk they share, requested by those routes and their locale
+- **JavaScript on four routes only.** The games have real scripts: 2.4 KB, 3.2 KB, 3.2 KB
+  and 5.1 KB gz, plus a 0.4 KB chunk they share, requested by those routes and their locale
   twins and by nothing else.
 
 ## Where things are

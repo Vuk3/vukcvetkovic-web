@@ -556,7 +556,7 @@ const sr: Dict = {
     index: {
       metaTitle: "Igre - Vuk Cvetković",
       metaDescription:
-        "Igre u pretraživaču Vuka Cvetkovića: 2048, Minolovac, i igra spajanja svetova u veće. Svaka dobija svoju stranicu.",
+        "Igre u pretraživaču Vuka Cvetkovića: 2048, Minolovac, Potapanje brodova protiv četiri protivnika, i igra spajanja svetova u veće. Svaka dobija svoju stranicu.",
       heading: "Igre",
       intro:
         "Igre koje vrede više od jednog pokušaja. Svaka ima svoju stranicu, a ispod nje i tekst o tome kako je napravljena, za onoga koga i to zanima.",
@@ -787,6 +787,136 @@ const sr: Dict = {
             "Rešavač radi nad pozicijama: telo pamti gde je i gde je bilo, a razlika između to dvoje je njegova brzina. Ništa ne računa impuls. Kontakt razdvoji dva tela, a pošto prethodna pozicija ostaje na mestu, to razdvajanje oduzme tačno onoliko brzine koliko ih je i sastavilo, što neelastičan sudar i jeste. Četrdeset takvih prolaza ide po kadru, svaki nad pozicijama koje su se već pomerile, a pun prostor od četrdeset šest tela košta manje od desetine milisekunde od skoro sedamnaest koliko ih ima.",
             "Posao je bio naterati to da se smiri. Tri odvojene stvari su tiho dodavale energiju umesto da je oduzimaju: zid koji je ograničavao poziciju tela a nije dirao prethodnu, čime se dubina pada pretvarala u brzinu odskoka; tangencijalno trenje računato iz brzine koju isti prolaz menja, zbog čega je zbijena gomila i posle osam sekundi bacala tela okolo; i pravilo spajanja koje je tražilo toliki preklop da se ništa nikad nije ni spojilo. Svaka je nađena merenjem a ne čitanjem, a brojevi koji su iz toga izašli stoje pored konstanti koje opravdavaju.",
             "Simulacija radi u sopstvenom prostoru od hiljadu jedinica i nikad ne sazna koliko se veliko prikazuje. Jedan transform na jednom elementu prenosi ceo prostor na širinu koju mu je stranica dala, pa promena veličine menja taj jedan broj i ništa više, ni poluprečnik, ni poziciju, ni korak. Zato ista igra radi isto na telefonu i na računaru umesto da na jednom ima dvostruku gravitaciju.",
+          ],
+        },
+      },
+
+      battleship: {
+        name: "Potapanje brodova",
+
+        tagline:
+          "Sakrij pet brodova, pa nađi njihove prvi. Četiri protivnika, od onog koji puca nasumično do onog koji izbroji svaki položaj na kom tvoja flota još može da bude.",
+
+        metaDescription:
+          "Potapanje brodova u pretraživaču, protiv četiri protivnika: klasična flota na tabli deset sa deset, i protivnik koji broji svaki raspored koji dosadašnji hici još dozvoljavaju.",
+        lead: "Sakrij pet brodova, pa nađi njihove pre nego što oni nađu tvoje. Puca se naizmenično, jedan hitac po potezu, a protivnik koga izabereš je cela težina igre: najslabiji puca gde još nije, a najjači izbroji svaki položaj na kom tvoja flota još može da bude i gađa polje koje se javlja u najviše njih.",
+
+        /** Činovi, a ne pridevi: "lako" i "teško" govore kako će proći tebi, a
+         *  čin govori ko je s druge strane, a to je ono što se bira. */
+        opponents: "Izaberi protivnika",
+        levels: {
+          sailor: {
+            name: "Mornar",
+            note: "Puca nasumično. Oko 95 hitaca da očisti tablu, pa treba se potruditi da izgubiš od njega.",
+          },
+          gunner: {
+            name: "Nišandžija",
+            note: "Dovršava pogodak. Oko 60 hitaca, i kazniće te za spor početak.",
+          },
+          captain: {
+            name: "Kapetan",
+            note: "Pretražuje tablu kako treba. Oko 51 hitac, i poštena borba.",
+          },
+          admiral: {
+            name: "Admiral",
+            note: "Oko 45 hitaca, blizu najboljeg što je iko postigao. Računaj da ćeš izgubiti.",
+          },
+        },
+
+        shots: "Hici",
+        /** ⚠️ Ne "Najbolje". Broj kod kog manje znači bolje, a pod tom rečju se
+         *  čita kao poen gde veće znači bolje. Oznaka nosi i jedinicu i smer. */
+        best: "Najmanje hitaca",
+        toPlace: "Preostalo",
+        rotate: "Okreni",
+        shuffle: "Rasporedi",
+        start: "Počni",
+        newGame: "Nova igra",
+
+        /** Naslov iznad svake table, i ime same mreže. */
+        sides: {
+          enemy: "Njihove vode",
+          own: "Tvoja flota",
+        },
+
+        /** Šta polje kaže kad na njemu nema šta da se pročita. */
+        cells: {
+          water: "Voda",
+          ship: "Brod",
+          miss: "Promašaj",
+          hit: "Pogodak",
+          sunk: "Potopljeno",
+        },
+
+        ships: ["Nosač aviona", "Bojni brod", "Krstarica", "Podmornica", "Razarač"],
+
+        /**
+         * Red ispod table posle hica na nju. `{ship}` se zamenjuje imenom iz
+         * liste iznad.
+         *
+         * ⚠️ Brod je glagolom a ne pridevom: krstarica i podmornica su ženskog
+         * roda, a razarač i nosač muškog, pa bi "Potopljen" bilo tačno za dva
+         * od pet. "Tone" je isto za sve.
+         */
+        messages: {
+          hit: "Pogodak.",
+          miss: "Promašaj.",
+          sunk: "{ship} tone.",
+          waiting: "Nišani.",
+          ready: "Tvoj hitac.",
+        },
+
+        setupHint:
+          "Flota ti je već na vodi. Pritisni brod da ga uzmeš, pritisni vodu da ga spustiš, a pre toga ga okreni kako treba.",
+        hint: "Pritisni polje u njihovim vodama da pucaš. Strelice šetaju po tabli, Enter puca, a R okreće brod dok ga postavljaš.",
+
+        won: {
+          title: "Njihova flota je potopljena",
+          body: "Svih pet na dnu, i tvoja je stigla prva.",
+          record: "U manje hitaca nego ikad protiv ovog protivnika.",
+          again: "Igraj ponovo",
+        },
+
+        lost: {
+          title: "Tvoja flota je potopljena",
+          body: "Njihovi brodovi su prikazani tamo gde su stajali, da vidiš šta si tražio.",
+          again: "Pokušaj ponovo",
+        },
+
+        how: {
+          label: "Kako se igra",
+          items: [
+            {
+              title: "Spusti pet brodova u vodu",
+              description:
+                "Flota ti je već raspoređena čim se stranica otvori, pa možeš odmah da kreneš. Pritisni brod da ga uzmeš, okreni ga, i pritisni polje da ga spustiš. Brodovi smeju da se dodiruju, što je standardno pravilo i ono koje manje odaje.",
+            },
+            {
+              title: "Po jedan hitac, naizmenično",
+              description:
+                "Pogodak ne donosi drugi hitac, ni tebi ni njemu. Ti pucaš prvi, protivnik odgovara, i gotovo je čim jedna flota ostane bez svih sedamnaest polja.",
+            },
+            {
+              title: "Pogodak je konac koji se vuče",
+              description:
+                "Nešto je tu i pruža se na jednu od četiri strane. Dva pogotka u liniji rešavaju smer, i krajevi te linije su jedina polja koja još nešto vrede dok brod ne potone.",
+            },
+            {
+              title: "Biraš protiv koga igraš",
+              description:
+                "Mornaru treba oko devedeset pet hitaca da očisti tablu, nišandžiji šezdeset, kapetanu pedeset jedan, a admiralu četrdeset pet. Sedamnaest je donja granica. Rekord se čuva posebno za svakog, jer pobeda nad jednim nije pobeda nad drugim.",
+            },
+          ],
+        },
+
+        close: {
+          label: "Kako je napravljena",
+          paragraphs: [
+            "Nema canvasa ni biblioteke za igre, kao ni kod ostalih. More je mreža dugmadi, a flota je sloj iznad nje: po jedan element za svaki brod, preko svih njegovih polja, sa crtežom unutra. Nosač ima poletnu palubu, ostrvo i oznake, podmornica leži nisko i na palubi nema ničega, a ništa od toga ne preživi sečenje na kvadratiće - zato je trup jedan oblik celom dužinom, a ne zaobljen kraj zalepljen na svako polje. Svaki brod je nacrtan dva puta: ceo, sa kupolama, dimnjacima i poletnom palubom, i sama silueta. Siluetu koriste kopije naslagane ispod trupa da mu daju bok, pa se detalj računa jednom po brodu umesto osam puta. Brod okrenut na drugu stranu je isti crtež zarotiran za četvrtinu.",
+            "Tabla je nagnuta i brodovi stoje iznad nje, i jedno i drugo stvarno a ne nacrtano. Tabla je zarotirana u tri dimenzije, a flota podignuta po osi koju ta rotacija ostavlja, pa je trup iznad sopstvene senke i okreće svoj bok zajedno sa sobom. Perspektive nema nigde, i to namerno: nedogled bi udaljenu ivicu napravio užom od bliže, a mreža na kojoj imenuješ polja ne sme da dozvoli da joj kolone prestanu da budu paralelne. I hitac je nacrtan, kako leti sa nekog tvog trupa do polja u koje pada, jer je potez ovde jedna flota koja gađa drugu a ne oznaka koja se pojavi.",
+            "Protivnik ne vidi flotu na koju puca, i to je strukturno a ne obećanje dato u komentaru. Funkcija koja bira polje dobija dve stvari: zapis sopstvenih hitaca i dužine brodova koje je već potopio. Raspored nije ni dostupan tamo gde se odluka donosi, pa nema linije na koju treba paziti. Koji brod je potonuo jeste javno, isto kao kad igrač to kaže naglas, i upravo to sužava zaključivanje.",
+            "Najjači od četvorice ne pogađa. Za svaki brod koji je još na vodi prođe svaki položaj koji taj brod može da zauzme, izbaci one koje promašaj ili olupina isključuju, i doda glas svakom nepoznatom polju koje preživeli pokrivaju. Polje sa najviše glasova je hitac. Traženje i dovršavanje pogotka su ista računica a ne dva režima: kad nema ničeg nerazjašnjenog dobija se poznato zvono nad sredinom table, a kad pogodak stoji, položaji koji ga ne objašnjavaju otpadaju i sva težina se skupi oko njega.",
+            "Dovršavanje pogotka se obično piše kao red polja koja treba probati, i taj red je mesto gde ovakav program ume da pođe naopako: mora da se čisti svaki put kad brod potone, svaki put kad neki drugi hitac reši jedan njegov unos, i svaki put kad dva broda legnu jedan uz drugi. Ovde se polja za dovršavanje izvode iz table svakog poteza, pa nema šta da se čuva ni šta da zastari. Četiri protivnika, četrdeset hiljada odigranih partija protiv nezavisno napisanog branioca, i nijedan nedozvoljen hitac među njima.",
           ],
         },
       },

@@ -560,7 +560,7 @@ const fr: Dict = {
     index: {
       metaTitle: "Jeux - Vuk Cvetković",
       metaDescription:
-        "Les jeux de navigateur de Vuk Cvetković : 2048, le démineur, et un jeu où l'on fusionne des mondes en de plus grands. Chacun a sa propre page.",
+        "Les jeux de navigateur de Vuk Cvetković : 2048, le démineur, la bataille navale contre quatre adversaires, et un jeu où l'on fusionne des mondes en de plus grands. Chacun a sa propre page.",
       heading: "Jeux",
       intro:
         "Des jeux qui valent plus d'une partie. Chacun a sa page, et en dessous un texte sur la façon dont il est construit, pour qui veut aussi cela.",
@@ -791,6 +791,131 @@ const fr: Dict = {
             "Le solveur travaille sur les positions : un corps retient où il est et où il était, et l'écart entre les deux est sa vitesse. Rien ne calcule d'impulsion. Un contact écarte deux corps, et comme la position précédente ne bouge pas, cet écartement retire exactement la vitesse qui les avait rapprochés, ce qui est la définition d'une collision inélastique. Quarante de ces passes tournent par image, chacune sur des positions déjà déplacées, et un champ plein de quarante-six corps coûte moins d'un dixième de milliseconde sur un budget de près de dix-sept.",
             "Le travail a été de le faire se stabiliser. Trois choses distinctes ajoutaient discrètement de l'énergie au lieu d'en retirer : un mur qui bornait la position d'un corps sans déplacer la précédente, transformant la profondeur d'un atterrissage en vitesse de rebond ; un frottement tangentiel calculé à partir d'une vitesse que la même passe était en train de changer, qui laissait une pile serrée projeter des corps après huit secondes ; et une règle de fusion exigeant tant de recouvrement que rien ne fusionnait jamais. Chacune a été trouvée en mesurant et non en relisant, et les nombres qui en sont sortis figurent à côté des constantes qu'ils justifient.",
             "La simulation tourne dans son propre espace de mille unités et n'apprend jamais à quelle taille elle est montrée. Une seule transformation sur un seul élément projette tout le champ sur la largeur que la page lui a donnée : un redimensionnement change ce nombre et rien d'autre, ni un rayon, ni une position, ni un pas. C'est pourquoi la même partie se joue à l'identique sur téléphone et sur ordinateur, au lieu d'avoir deux fois la gravité sur l'un des deux.",
+          ],
+        },
+      },
+
+      battleship: {
+        name: "Bataille navale",
+
+        tagline:
+          "Cachez cinq navires, puis trouvez les leurs en premier. Quatre adversaires, du tireur au hasard à celui qui compte chaque position où votre flotte peut encore se trouver.",
+
+        metaDescription:
+          "La bataille navale dans le navigateur, contre quatre adversaires : la flotte classique sur une grille de dix sur dix, et un adversaire qui compte chaque disposition que les tirs déjà joués autorisent encore.",
+        lead: "Cachez cinq navires, puis trouvez les leurs avant qu'ils ne trouvent les vôtres. Les tirs alternent un par un, et l'adversaire que vous choisissez fait toute la difficulté : le plus faible tire là où il n'a pas encore tiré, et le plus fort compte chaque position où votre flotte peut encore se trouver et vise la case qui apparaît dans le plus grand nombre d'entre elles.",
+
+        /** Des grades plutôt que des adjectifs : « facile » et « difficile »
+         *  disent comment cela va se passer pour vous, un grade dit qui est en
+         *  face, et c'est cela que l'on choisit. */
+        opponents: "Choisissez votre adversaire",
+        levels: {
+          sailor: {
+            name: "Matelot",
+            note: "Tire au hasard. Environ 95 tirs pour nettoyer une grille, il faut donc vraiment y mettre du sien pour perdre.",
+          },
+          gunner: {
+            name: "Canonnier",
+            note: "Poursuit un coup au but. Environ 60 tirs, et il punit un début trop lent.",
+          },
+          captain: {
+            name: "Capitaine",
+            note: "Fouille la grille méthodiquement. Environ 51 tirs, et un combat équitable.",
+          },
+          admiral: {
+            name: "Amiral",
+            note: "Environ 45 tirs, tout près du meilleur jamais atteint. Attendez-vous à perdre.",
+          },
+        },
+
+        shots: "Tirs",
+        /** ⚠️ Pas "Record" : un décompte où moins vaut mieux, et sous ce mot un
+         *  nombre nu se lit comme un score où plus vaut mieux. */
+        best: "Minimum de tirs",
+        toPlace: "À placer",
+        rotate: "Pivoter",
+        shuffle: "Redisposer",
+        start: "Commencer",
+        newGame: "Nouvelle partie",
+
+        /** Le titre au-dessus de chaque grille, et le nom de la grille. */
+        sides: {
+          enemy: "Leurs eaux",
+          own: "Votre flotte",
+        },
+
+        /** Ce que dit une case quand il n'y a rien à y lire. */
+        cells: {
+          water: "Eau",
+          ship: "Navire",
+          miss: "Manqué",
+          hit: "Touché",
+          sunk: "Coulé",
+        },
+
+        ships: ["Porte-avions", "Cuirassé", "Croiseur", "Sous-marin", "Contre-torpilleur"],
+
+        /** La ligne sous une grille après un tir. `{ship}` est remplacé par le
+         *  nom pris dans la liste ci-dessus. */
+        messages: {
+          hit: "Touché.",
+          miss: "Manqué.",
+          sunk: "{ship} coule.",
+          waiting: "Il vise.",
+          ready: "À vous de tirer.",
+        },
+
+        setupHint:
+          "Votre flotte est déjà à l'eau. Appuyez sur un navire pour le prendre, sur l'eau pour le poser, et pivotez-le avant.",
+        hint: "Appuyez sur une case dans leurs eaux pour tirer. Les flèches parcourent une grille, Entrée tire, et R pivote un navire pendant que vous le placez.",
+
+        won: {
+          title: "Leur flotte est coulée",
+          body: "Les cinq au fond, et la vôtre y est arrivée la première.",
+          record: "En moins de tirs que jamais contre cet adversaire.",
+          again: "Rejouer",
+        },
+
+        lost: {
+          title: "Votre flotte est coulée",
+          body: "Leurs navires sont montrés là où ils se tenaient, pour voir ce que vous cherchiez.",
+          again: "Réessayer",
+        },
+
+        how: {
+          label: "Comment jouer",
+          items: [
+            {
+              title: "Mettez cinq navires à l'eau",
+              description:
+                "Une flotte vous est distribuée dès l'ouverture de la page, vous pouvez donc commencer tout de suite. Appuyez sur un navire pour le prendre, pivotez-le, et appuyez sur une case pour le poser. Les navires ont le droit de se toucher, c'est la règle courante et celle qui en dit le moins.",
+            },
+            {
+              title: "Un tir chacun, à tour de rôle",
+              description:
+                "Un coup au but ne donne pas de second tir, ni d'un côté ni de l'autre. Vous tirez en premier, l'adversaire répond, et la partie s'arrête dès qu'une flotte a ses dix-sept cases touchées.",
+            },
+            {
+              title: "Un coup au but est un fil à tirer",
+              description:
+                "Quelque chose est là et s'étend dans l'une des quatre directions. Deux coups au but alignés fixent le sens, et les extrémités de cette ligne sont les seules cases qui valent encore quelque chose jusqu'à ce que le navire coule.",
+            },
+            {
+              title: "Choisissez contre qui vous jouez",
+              description:
+                "Le matelot met environ quatre-vingt-quinze tirs à nettoyer une grille, le canonnier soixante, le capitaine cinquante et un, et l'amiral quarante-cinq. Dix-sept est le plancher. Votre record est gardé séparément pour chacun, car une victoire contre l'un n'est pas une victoire contre l'autre.",
+            },
+          ],
+        },
+
+        close: {
+          label: "Comment c'est construit",
+          paragraphs: [
+            "Pas de canvas et pas de bibliothèque de jeu, comme pour les autres. La mer est une grille de boutons et la flotte est une couche au-dessus : un élément par navire, couvrant ses cases, avec un dessin à l'intérieur. Un porte-avions a un pont d'envol, un îlot et des marquages, un sous-marin flotte bas et n'a rien sur le pont, et rien de tout cela ne survit au découpage en cases. Une coque est donc une seule forme sur toute sa longueur, et non une extrémité arrondie collée sur chaque case. Chaque navire est dessiné deux fois : le plan complet, avec ses tourelles, ses cheminées et son pont d'envol, et la silhouette seule. C'est la silhouette qu'utilisent les copies empilées sous une coque pour lui donner un flanc, si bien que le détail n'est résolu qu'une fois par navire au lieu de huit. Un navire posé dans l'autre sens est le même dessin tourné d'un quart.",
+            "La grille est inclinée et les navires se tiennent au-dessus, et les deux sont réels plutôt que dessinés. Le plan est pivoté en trois dimensions et la flotte est soulevée le long de l'axe que cette rotation laisse libre, si bien qu'une coque est au-dessus de sa propre ombre et tourne son flanc avec elle. Il n'y a de perspective nulle part, volontairement : un point de fuite rendrait le bord lointain plus étroit que le bord proche, et une grille où l'on nomme des cases ne peut pas se permettre que ses colonnes cessent d'être parallèles. Un tir est dessiné lui aussi, traversant depuis l'une de vos propres coques jusqu'à la case où il tombe, parce qu'un tour ici est une flotte qui tire sur une autre et non une marque qui apparaît.",
+            "L'adversaire ne voit pas la flotte sur laquelle il tire, et c'est structurel plutôt qu'une promesse faite en commentaire. La fonction qui choisit une case reçoit deux choses : le relevé de ses propres tirs, et les longueurs des navires qu'il a déjà coulés. La disposition n'est pas accessible là où la décision se prend, il n'y a donc aucune ligne à surveiller. Quel navire a coulé est public, comme lorsqu'un joueur le dit à voix haute, et c'est ce qui resserre le raisonnement.",
+            "Le plus fort des quatre ne devine pas. Pour chaque navire encore à flot, il parcourt chaque position que ce navire pourrait occuper, écarte celles qu'un tir manqué ou une épave excluent, et ajoute une voix à chaque case inconnue que les survivantes couvrent. La case la plus lourde est le tir. Chercher et achever un coup au but sont le même calcul plutôt que deux modes : sans rien d'inexpliqué, on retrouve la cloche familière au centre de la grille, et dès qu'un coup au but est sur la table, les positions qui ne l'expliquent pas disparaissent et tout le poids se rassemble autour de lui.",
+            "Achever un coup au but s'écrit d'ordinaire comme une file de cases à essayer, et cette file est l'endroit où ce genre de programme se trompe : il faut la purger à chaque navire coulé, à chaque fois qu'un autre tir résout l'une de ses entrées, et à chaque fois que deux navires sont côte à côte. Ici les cases de relance sont déduites de la grille à chaque tour, il n'y a donc rien à garder et rien qui puisse périmer. Quatre adversaires, quarante mille parties simulées contre un défenseur écrit indépendamment, et pas un seul tir illégal entre eux.",
           ],
         },
       },
