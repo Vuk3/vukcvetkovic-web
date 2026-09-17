@@ -1121,6 +1121,10 @@ cancelling the arrival of an old one.
 
 ## Changelog
 
+- 2026-09-17 - the wreck on Battleship's thumbnail sits one column further in, so the status
+  ribbon cut across the bottom-right corner lands on open water instead of across the ship
+  it is advertising. ⚠️ That corner is spoken for on every game card, so a still has to be
+  composed around it rather than filled evenly (§3, §9).
 - 2026-09-17 - the opponent selector gained a visible legend, four strength marks per card
   and one line under the set about whichever is chosen. The marks are on every card rather
   than only the chosen one, because the question is not "how good is this one" but "which of

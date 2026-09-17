@@ -19,7 +19,13 @@
 
 import BattleshipSprites from './BattleshipSprites.astro';
 
-/** Row-major, 5 across and 2 down, against the 5:2 box every game card uses. */
+/**
+ * Row-major, 5 across and 2 down, against the 5:2 box every game card uses.
+ *
+ * ⚠️ **Nothing sits in the bottom-right corner.** The status ribbon is cut
+ * across it, and the wreck used to be under it - see the fleet below, which is
+ * placed to leave that corner as open water.
+ */
 const cells = [
   'sea',
   'hit',
@@ -28,9 +34,9 @@ const cells = [
   'miss',
   'miss',
   'sea',
+  'sunk',
+  'sunk',
   'sea',
-  'sunk',
-  'sunk',
 ];
 
 /**
@@ -43,7 +49,9 @@ const cells = [
  */
 const fleet = [
   { ship: 2, len: 3, x: 1, y: 0, sunk: false },
-  { ship: 4, len: 2, x: 3, y: 1, sunk: true },
+  /* One column further in than it looks like it should be, so the ribbon
+     across the bottom-right corner lands on water rather than on the wreck. */
+  { ship: 4, len: 2, x: 2, y: 1, sunk: true },
 ];
 ---
 
