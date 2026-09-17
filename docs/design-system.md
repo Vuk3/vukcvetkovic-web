@@ -690,18 +690,18 @@ open item 1.
 
 ## 9. The game boards, and the one place the palette opens up
 
-Three pages carry a game, and all three are built the way the rest of the site is: markup,
+Four pages carry a game, and all four are built the way the rest of the site is: markup,
 tokens, and no canvas or game library anywhere. They are deliberately different from each
 other, which is most of what this section is about.
 
-| | [2048](../src/games/2048/game.ts) | [Minesweeper](../src/games/minesweeper/game.ts) | [Accretion](../src/games/accretion/game.ts) |
-|---|---|---|---|
-| what it is made of | 16 divs that move | up to 480 buttons that change state | up to 46 circles that fall |
-| the hard part | motion, at sixty frames | the rules, and the keyboard | the solver, and making it settle |
-| the board in the markup | yes, 16 cells, fixed | no, the module builds it | no, play creates every body |
-| to a screen reader | hidden, narrated by a live region | a real `role="grid"` | a live region, and the sequence below it |
-| what a turn costs | two custom properties | a class | a frame of simulation |
-| runs when idle | no | no | **yes** |
+| | [2048](../src/games/2048/game.ts) | [Minesweeper](../src/games/minesweeper/game.ts) | [Accretion](../src/games/accretion/game.ts) | [Battleship](../src/games/battleship/game.ts) |
+|---|---|---|---|---|
+| what it is made of | 16 divs that move | up to 480 buttons that change state | up to 46 circles that fall | 200 buttons, and 10 drawn ships over them |
+| the hard part | motion, at sixty frames | the rules, and the keyboard | the solver, and making it settle | the opponent, and what it is not allowed to see |
+| the board in the markup | yes, 16 cells, fixed | no, the module builds it | no, play creates every body | no, and the fleet is a layer of its own |
+| to a screen reader | hidden, narrated by a live region | a real `role="grid"` | a live region, and the sequence below it | two `role="grid"`s and a live region for the turn |
+| what a turn costs | two custom properties | a class | a frame of simulation | a class, and a count over 200 placements |
+| runs when idle | no | no | **yes** | no |
 
 ### A tile keeps its element for its whole life
 
@@ -1040,6 +1040,73 @@ meant something to other people would have to be **derived by a server** from a
 server-issued seed and the move log, with the client's own claim about its score ignored,
 and that is a feature rather than a hardening step.
 
+### Three layers, and why a ship is not a square
+
+The sea is a grid of buttons with **no gap between them**, over a board that carries the
+ruling itself as two repeating gradients stepped by `--bs-size`. So it is one surface rather
+than a hundred tiles, which is what makes the rest possible: a hull cut into five squares
+with a channel of background between each pair is a row of counters, not a ship.
+
+⚠️ **The ruling has to be on the board and not on the squares.** It was an inset shadow per
+cell, and a cell carrying a mark has to sit *above* the fleet for that mark to be readable
+over a hull - which dragged its two grid lines up there with it, and a line drawn across a
+ship reads as the ship being cut in half.
+
+So the fleet is a layer over the water, one element per ship spanning its squares, with
+inline `<svg>`s inside it that are `<use>`s of symbols in
+[BattleshipSprites.astro](../src/components/games/BattleshipSprites.astro) - a carrier with
+a flight deck, an island and parked aircraft, a battleship with three twin turrets and two
+capped funnels, a submarine that is a teardrop with a sail and a cruciform tail. A third
+layer over both carries what a shot left behind, so a peg or a burst reads the same over a
+hull as over open water.
+
+⚠️ **There are two symbols per ship and the pair is deliberate.** `bs-ship-N` carries every
+detail and `bs-hull-N` is the outline alone, because a hull is drawn eight times over to
+give it a side (below) and only the top copy is ever looked at. Seven clones of a carrier's
+flight deck, island and aircraft is seven times the geometry for a shape nobody can see the
+inside of.
+
+⚠️ **The rounding is bands, not gradients.** A `<linearGradient>` declared inside a symbol
+is not reliably resolved from inside a `<use>` shadow tree, while a flat fill mixed off
+`--bs-hull` always is. Four bands - a lit sheer, the flank, the shaded flank, and the boot
+topping at the waterline - read as a round hull and cost nothing.
+
+⚠️ **Colour reaches a symbol through `style`, never through a `fill` attribute.** A
+document stylesheet cannot select into a `<use>` shadow tree, and inherited custom
+properties are the only thing that gets in. That is also what makes a wreck one rule:
+`.bs-hull.is-sunk` redefines three tokens and every shape in every symbol follows.
+
+### The tilt has no perspective in it, deliberately
+
+The plot is `rotateX(22deg)` with `transform-style: preserve-3d` down to each hull, and
+**no `perspective` anywhere**. A vanishing point makes the far edge narrower than the near
+one, which turns a square board into a trapezoid: the columns stop being parallel and the
+ten rows stop being equal, and a grid a reader names squares on cannot afford either.
+Rotating without one is an orthographic view - a true rectangle, shortened front to back by
+the cosine of the angle, which at twenty-two degrees is seven per cent.
+
+The depth survives it. Under `rotateX` alone a `translateZ` still lifts a thing off the
+surface, by the sine of the angle, so a ship is drawn eight times up the Z axis: the bottom
+copy is its shadow on the water, six in the middle are the flank, and the top one is the
+deck. Six rather than four because at a third of a square the gaps between four were visible
+as banding down the side. ⚠️ A `filter` or an `opacity` anywhere on the chain from the plot down to the hull
+flattens it and the whole fleet drops onto the water - which is why the shadow's
+`brightness(0)` is on a leaf and never on the hull.
+
+### A shot crosses the table, and the board opens before it lands
+
+A round is positioned against `.bs-frame`, which holds both boards, because it leaves one of
+your own hulls and lands in their water. Both ends are measured off the squares with
+`getBoundingClientRect`, so the tilt is already in the numbers rather than being computed a
+second time.
+
+⚠️ **It is decoration over a result that has already happened.** `fire` has run and the
+board is settled before a round is created: what waits for the flight is the *paint*. Three
+timer slots rather than one - your round landing, theirs landing, and the pause between -
+because the board unlocks the moment they fire rather than when their round arrives, so two
+flights are genuinely in the air at once and a single handle would have a new shot
+cancelling the arrival of an old one.
+
 ---
 
 ## 10. Open items
@@ -1054,6 +1121,105 @@ and that is a feature rather than a hardening step.
 
 ## Changelog
 
+- 2026-09-17 - the opponent selector gained a visible legend, four strength marks per card
+  and one line under the set about whichever is chosen. The marks are on every card rather
+  than only the chosen one, because the question is not "how good is this one" but "which of
+  these four should I pick", and that is a comparison - it needs all four answers at once.
+  Strength is position in the list, so there is no figure kept anywhere (§9).
+- 2026-09-17 - the placement preview is put away when the pointer leaves the *chart*, not
+  when it leaves the *grid*. The grid has a one pixel border and sits in a tray with padding
+  around it, so a pointer moving anywhere near the edge leaves it into the tray and comes
+  straight back, several times a second - and every one of those put the carried ship away
+  while the next move brought it back, which is a ship blinking at frame rate. This was the
+  flicker, through four wrong diagnoses before it. ⚠️ **It never reproduced under synthetic
+  events, because dispatching `pointermove` does not generate the boundary events a real
+  pointer does** - it was found by logging the stack behind every hide while a person moved
+  a real mouse, and 58 of 60 came from this one listener (§9).
+- 2026-09-17 - pressing the chip of the ship you are already holding does nothing, where it
+  used to deselect. That left the ship lifted off the board and in nobody's hand: the count
+  said one still to place, the water showed nothing, and the preview showed nothing either,
+  because there was nothing to preview. A ship in hand has to go somewhere, so there is
+  nothing for cancelling to mean (§9).
+- 2026-09-17 - the preview's layer is flattened out of the board's 3D scene. It was a second
+  `preserve-3d` layer directly over the fleet's, with its hull at the same `translateZ` as
+  every real deck - two sibling 3D contexts whose contents are coplanar, which is the
+  textbook recipe for z-fighting: the surfaces swap places on any compositor tick, so the
+  ship winks in and out while nothing changes. That is why the flicker was worst with the
+  pointer moving *inside* one square, where 120 pointer events produce zero DOM writes and
+  the only thing being asked to work is the compositor (§9).
+- 2026-09-17 - hulls are placed by `translate` rather than by `left` and `top`, and the
+  preview skips any pointer event that does not change which square it is on. Those two
+  together are what finally made carrying a ship smooth, and neither shows up in the DOM:
+  `left` and `top` are layout, so moving a hull with them re-laid the board out and, inside
+  a `preserve-3d` context, rasterised the whole 3D scene again - once per pointer event.
+  Measured after: 171 pointer events across four squares produce 14 attribute writes, where
+  every one of the 171 used to write. A square is forty pixels across and a pointer reports
+  every few, so nineteen events in twenty never needed to do anything at all (§9).
+- 2026-09-17 - Turn now turns the ship in your hand, instead of waiting for the hand to
+  move. The keyboard's R always redrew the preview and the button did not, which is the
+  whole of why the button read as unresponsive (§9).
+- 2026-09-17 - the preview no longer transitions its position, and a square no longer lights
+  up under a ship you are carrying. Between them these were the flicker that survived making
+  the element permanent, and both only showed on the line between two squares: a ninety
+  millisecond slide turns the pointer's own jitter into motion, because holding still on a
+  boundary crosses it a dozen times a second and each crossing reverses the last, while the
+  hover underneath flicked on and off with it. A preview snapped to a grid should snap (§9).
+- 2026-09-17 - the placement preview is built with the board and never removed from it. It
+  is hidden by a class and moved by two numbers, and that is its whole life. Creating it on
+  the way in and removing it on the way out is the obvious shape and it is what made a
+  carried ship blink: every path that cleared it dropped the element for a frame before the
+  next event put it back, and a frame is exactly long enough to see. Found by stepping a
+  screen recording frame by frame - the ship is simply absent in one frame out of thirty
+  while the pointer has not moved (§9).
+- 2026-09-17 - the preview's green is a signal green rather than a sea green, now that the
+  cruiser is painted green and a preview in the same family read as a sixth ship (§9).
+- 2026-09-17 - nothing a square draws takes a press any more. The ring a shot throws out ends
+  its animation two and a half times the size of its square and is held there by `both`,
+  invisible at zero opacity - and a square carrying a mark sits above the fleet, so that ring
+  was covering its eight neighbours and swallowing clicks aimed at them. The more of the
+  board you had fired at, the more squares refused to be pressed (§9).
+- 2026-09-17 - the placement preview rewrites a `<use>`'s `href` only when the vessel
+  changes. Setting it tears down and rebuilds the shadow tree even when the value is already
+  there, and the preview writes on every pointer event - eight rebuilt shadow trees a frame
+  is what the ship flickering in your hand was (§9).
+- 2026-09-17 - the five ship colours pulled apart into five hues. They were taken from real
+  naval camouflage and came out as five shades of one grey, with four of the five within a
+  few points of each other - a fleet you cannot read without counting squares is not worth
+  drawing in detail. The deck's white was cut back at the same time, because the deck is the
+  largest surface in a plan view and was washing every hull out to the same pale grey (§9).
+- 2026-09-17 - picking a ship up redraws the fleet layer, not just the squares. Lifting it
+  from the model while the board still showed it meant putting it down left two of the same
+  ship on the water, and taking one off the board with no preview in its place meant it
+  simply vanished until the pointer moved (§9).
+- 2026-09-17 - every ship redrawn with the detail a plan view needs, and split into two
+  symbols: the drawing and its outline. Turrets with barrels, capped funnels, vertical
+  launch cells, deck markings, a landing circle and a boot topping at every waterline. The
+  submarine was the one that had to change rather than grow - it had a trapezoid for a
+  conning tower and read as a sausage turned a quarter, and it is now a teardrop with a sail,
+  dive planes crossing it and a cruciform tail (§9).
+- 2026-09-17 - the games index is back to three cards a row. Two filled a square exactly at
+  four games, and the games are a growing list rather than a set of four (§3).
+- 2026-09-17 - the grid ruling moved from an inset shadow per square onto the board's own
+  background. A square carrying a mark sits above the fleet so the mark reads over a hull,
+  and it was taking its two grid lines up with it and drawing them across the ship (§9).
+- 2026-09-17 - the placement preview is one element that moves rather than one built per
+  pointer event, and its position is transitioned. Six elements and six `<use>` resolutions
+  per frame read as the ship blinking rather than following, and a pointer crossing the
+  board's border cleared it entirely - which is why a ship vanished whenever it got near the
+  edge (§9).
+- 2026-09-17 - `.bs-sprites` is taken out of flow. An `<svg>` holding nothing but `<defs>`
+  still has a default inline size, and it was spending about a hundred and fifty points at
+  the top of the game page and making the Battleship card taller than the other three (§9).
+- 2026-09-17 - a fourth game, [Battleship](../src/games/battleship/game.ts), and the first
+  board here with an opponent on the other side of it. Three new things in §9: the sea is a
+  gapless grid so a ship can be drawn across it, the tilt is orthographic because a
+  perspective would stop the columns being parallel, and a shot is an element on the frame
+  that crosses from one board to the other. `--bs-*` on `:root` and `.dark`, including one
+  base colour per ship class and a steel ground for the four rank portraits, which a light
+  page would otherwise swallow along with the sailor's white cap.
+- 2026-09-17 - the games index is two columns at every width and no longer three. A fourth
+  game would have left one card alone on a second row beside two empty thirds, and four in a
+  square fill the shell with bigger thumbnails than three ever did (§3).
 - 2026-09-12 - games say how finished they are. `.game-status` is a band cut across the
   bottom-right corner of a thumbnail and `.page-status` the same word beside a page title;
   only Beta takes the accent (§3). The thumbnail grew a frame, `.game-shot`, which is what

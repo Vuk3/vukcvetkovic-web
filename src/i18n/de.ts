@@ -559,7 +559,7 @@ const de: Dict = {
     index: {
       metaTitle: 'Spiele - Vuk Cvetković',
       metaDescription:
-        'Browserspiele von Vuk Cvetković: 2048, Minesweeper und ein Spiel, in dem Welten zu größeren verschmelzen. Jedes bekommt eine eigene Seite.',
+        'Browserspiele von Vuk Cvetković: 2048, Minesweeper, Schiffe versenken gegen vier Gegner und ein Spiel, in dem Welten zu größeren verschmelzen. Jedes bekommt eine eigene Seite.',
       heading: 'Spiele',
       intro:
         'Spiele, die mehr als eine Runde wert sind. Jedes hat eine eigene Seite, und darunter einen Text dazu, wie es gebaut ist, für alle die das auch wissen wollen.',
@@ -790,6 +790,131 @@ const de: Dict = {
             'Der Solver arbeitet über Positionen: ein Körper merkt sich, wo er ist und wo er war, und der Abstand dazwischen ist seine Geschwindigkeit. Nichts berechnet einen Impuls. Ein Kontakt drückt zwei Körper auseinander, und weil die vorige Position stehen bleibt, nimmt dieses Auseinanderdrücken genau die Geschwindigkeit heraus, die sie zusammengebracht hat - und das ist ein unelastischer Stoß. Vierzig solcher Durchgänge laufen pro Bild, jeder gegen Positionen, die sich schon bewegt haben, und ein voller Raum mit sechsundvierzig Körpern kostet unter einem Zehntel einer Millisekunde bei einem Budget von fast siebzehn.',
             'Die Arbeit war, es zur Ruhe zu bringen. Drei getrennte Dinge fügten still Energie hinzu, statt sie zu entziehen: eine Wand, die die Position eines Körpers begrenzte, ohne die vorige mitzunehmen, wodurch die Tiefe einer Landung zur Geschwindigkeit eines Abprallers wurde; tangentiale Reibung, berechnet aus einer Geschwindigkeit, die derselbe Durchgang gerade änderte, weshalb ein dichter Haufen nach acht Sekunden immer noch Körper herumwarf; und eine Verschmelzungsregel, die so viel Überlappung verlangte, dass überhaupt nie etwas verschmolz. Jedes davon wurde durch Messen gefunden und nicht durch Lesen, und die Zahlen, die dabei herauskamen, stehen neben den Konstanten, die sie begründen.',
             'Die Simulation läuft in ihrem eigenen Raum aus tausend Einheiten und erfährt nie, wie groß sie gezeigt wird. Eine Transformation auf einem Element bringt den ganzen Raum auf die Breite, die die Seite ihm gegeben hat, eine Größenänderung ändert also diese eine Zahl und sonst nichts - keinen Radius, keine Position, keinen Schritt. Deshalb spielt sich dasselbe Spiel auf dem Telefon genau wie am Rechner, statt auf einem von beiden die doppelte Schwerkraft zu haben.',
+          ],
+        },
+      },
+
+      battleship: {
+        name: 'Schiffe versenken',
+
+        tagline:
+          'Verstecke fünf Schiffe und finde ihre zuerst. Vier Gegner, vom zufälligen Schützen bis zu einem, der jede Stellung zählt, in der deine Flotte noch stehen kann.',
+
+        metaDescription:
+          'Schiffe versenken im Browser, gegen vier Gegner: die klassische Flotte auf einem Feld von zehn mal zehn, und ein Gegner, der jede Aufstellung zählt, die die bisherigen Schüsse noch zulassen.',
+        lead: 'Verstecke fünf Schiffe und finde ihre, bevor sie deine finden. Es wird abwechselnd geschossen, ein Schuss pro Zug, und der Gegner, den du wählst, ist die ganze Schwierigkeit: der schwächste schießt dorthin, wo er noch nicht war, und der stärkste zählt jede Stellung, in der deine Flotte noch stehen kann, und trifft das Feld, das in den meisten davon vorkommt.',
+
+        /** Ränge statt Adjektive: "leicht" und "schwer" sagen, wie es für dich
+         *  ausgeht, ein Rang sagt, wer gegenüber sitzt, und das ist es, was
+         *  gewählt wird. */
+        opponents: 'Wähle deinen Gegner',
+        levels: {
+          sailor: {
+            name: 'Matrose',
+            note: 'Schießt zufällig. Etwa 95 Schüsse für ein Feld, man muss sich also anstrengen, um zu verlieren.',
+          },
+          gunner: {
+            name: 'Kanonier',
+            note: 'Bleibt an einem Treffer dran. Etwa 60 Schüsse, und er bestraft einen langsamen Start.',
+          },
+          captain: {
+            name: 'Kapitän',
+            note: 'Durchsucht das Feld richtig. Etwa 51 Schüsse, ein fairer Kampf.',
+          },
+          admiral: {
+            name: 'Admiral',
+            note: 'Etwa 45 Schüsse, nahe am Besten, was je erreicht wurde. Rechne damit zu verlieren.',
+          },
+        },
+
+        shots: 'Schüsse',
+        /** ⚠️ Nicht "Bestwert": eine Zählung, bei der weniger besser ist, und
+         *  unter diesem Wort liest sich eine nackte Zahl als Punktestand. */
+        best: 'Wenigste Schüsse',
+        toPlace: 'Offen',
+        rotate: 'Drehen',
+        shuffle: 'Neu verteilen',
+        start: 'Starten',
+        newGame: 'Neues Spiel',
+
+        /** Die Überschrift über jedem Feld, und der Name des Rasters selbst. */
+        sides: {
+          enemy: 'Ihre Gewässer',
+          own: 'Deine Flotte',
+        },
+
+        /** Was ein Feld sagt, wenn darauf nichts zu lesen ist. */
+        cells: {
+          water: 'Wasser',
+          ship: 'Schiff',
+          miss: 'Daneben',
+          hit: 'Treffer',
+          sunk: 'Versenkt',
+        },
+
+        ships: ['Flugzeugträger', 'Schlachtschiff', 'Kreuzer', 'U-Boot', 'Zerstörer'],
+
+        /** Die Zeile unter einem Feld nach einem Schuss darauf. `{ship}` wird
+         *  durch den Namen aus der Liste darüber ersetzt. */
+        messages: {
+          hit: 'Treffer.',
+          miss: 'Daneben.',
+          sunk: '{ship} sinkt.',
+          waiting: 'Er zielt.',
+          ready: 'Du bist dran.',
+        },
+
+        setupHint:
+          'Deine Flotte liegt schon im Wasser. Drücke auf ein Schiff, um es aufzunehmen, auf das Wasser, um es abzusetzen, und drehe es vorher richtig.',
+        hint: 'Drücke auf ein Feld in ihren Gewässern, um zu schießen. Die Pfeiltasten laufen über ein Feld, Enter schießt, und R dreht ein Schiff beim Setzen.',
+
+        won: {
+          title: 'Ihre Flotte ist versenkt',
+          body: 'Alle fünf unten, und deine war zuerst da.',
+          record: 'Mit weniger Schüssen als je gegen diesen Gegner.',
+          again: 'Noch einmal',
+        },
+
+        lost: {
+          title: 'Deine Flotte ist versenkt',
+          body: 'Ihre Schiffe stehen da, wo sie standen, damit du siehst, wonach du gesucht hast.',
+          again: 'Neu versuchen',
+        },
+
+        how: {
+          label: 'So wird gespielt',
+          items: [
+            {
+              title: 'Setze fünf Schiffe ins Wasser',
+              description:
+                'Eine Flotte wird verteilt, sobald die Seite aufgeht, du kannst also sofort anfangen. Drücke auf ein Schiff, um es aufzunehmen, drehe es, und drücke auf ein Feld, um es abzusetzen. Schiffe dürfen sich berühren, das ist die übliche Regel und die, die am wenigsten verrät.',
+            },
+            {
+              title: 'Ein Schuss pro Seite, abwechselnd',
+              description:
+                'Ein Treffer bringt keinen zweiten Schuss, auf keiner Seite. Du schießt zuerst, der Gegner antwortet, und vorbei ist es, sobald eine Flotte alle siebzehn Felder getroffen hat.',
+            },
+            {
+              title: 'Ein Treffer ist ein Faden zum Ziehen',
+              description:
+                'Da ist etwas, und es läuft in eine von vier Richtungen. Zwei Treffer in einer Linie legen die Richtung fest, und die Enden dieser Linie sind die einzigen Felder, die noch etwas wert sind, bis das Schiff sinkt.',
+            },
+            {
+              title: 'Wähle, gegen wen du spielst',
+              description:
+                'Der Matrose braucht etwa fünfundneunzig Schüsse für ein Feld, der Kanonier sechzig, der Kapitän einundfünfzig und der Admiral fünfundvierzig. Siebzehn ist die Untergrenze. Der Bestwert wird für jeden getrennt gehalten, denn ein Sieg über den einen ist kein Sieg über den anderen.',
+            },
+          ],
+        },
+
+        close: {
+          label: 'Wie es gebaut ist',
+          paragraphs: [
+            'Kein Canvas und keine Spielbibliothek, wie bei den anderen auch. Das Meer ist ein Raster aus Schaltflächen und die Flotte eine Schicht darüber: ein Element je Schiff, über all seinen Feldern, mit einer Zeichnung darin. Ein Flugzeugträger hat ein Flugdeck, eine Insel und Markierungen, ein U-Boot liegt tief und hat gar nichts an Deck, und nichts davon übersteht das Zerschneiden in Felder. Ein Rumpf ist deshalb eine Form über die ganze Länge und kein abgerundetes Ende, das auf jedes Feld geklebt wurde. Jedes Schiff ist zweimal gezeichnet: der ganze Grundriss, mit Türmen, Schornsteinen und Flugdeck, und die Silhouette allein. Die Silhouette verwenden die Kopien, die unter einem Rumpf gestapelt sind, um ihm eine Flanke zu geben, so wird das Detail einmal je Schiff aufgelöst statt achtmal. Ein quer gelegtes Schiff ist dieselbe Zeichnung, um eine Vierteldrehung gedreht.',
+            'Das Feld ist geneigt und die Schiffe stehen darüber, und beides ist echt statt gezeichnet. Die Karte ist dreidimensional gedreht und die Flotte entlang der Achse angehoben, die diese Drehung übrig lässt, also steht ein Rumpf über seinem eigenen Schatten und dreht seine Flanke mit, wenn er sich dreht. Perspektive gibt es nirgends, und zwar mit Absicht: ein Fluchtpunkt würde die hintere Kante schmaler machen als die vordere, und ein Raster, auf dem man Felder benennt, kann es sich nicht leisten, dass seine Spalten aufhören parallel zu sein. Auch ein Schuss wird gezeichnet, wie er von einem deiner eigenen Rümpfe zu dem Feld fliegt, auf dem er landet, denn ein Zug ist hier eine Flotte, die auf eine andere schießt, und keine Markierung, die erscheint.',
+            'Der Gegner sieht die Flotte nicht, auf die er schießt, und das ist strukturell und kein Versprechen in einem Kommentar. Die Funktion, die ein Feld wählt, bekommt zwei Dinge: das Protokoll ihrer eigenen Schüsse, und die Längen der Schiffe, die sie schon versenkt hat. Die Aufstellung ist dort, wo entschieden wird, gar nicht erreichbar, es gibt also keine Zeile, auf die man aufpassen müsste. Welches Schiff gesunken ist, ist öffentlich, genau wie wenn ein Spieler es laut sagt, und genau das engt die Überlegung ein.',
+            'Der stärkste der vier rät nicht. Für jedes Schiff, das noch schwimmt, geht er jede Stellung durch, die dieses Schiff einnehmen könnte, wirft die weg, die ein Fehlschuss oder ein Wrack ausschließt, und gibt jedem unbekannten Feld eine Stimme, das die übrigen abdecken. Das schwerste Feld ist der Schuss. Suchen und einen Treffer zu Ende bringen sind dieselbe Rechnung und nicht zwei Betriebsarten: ohne etwas Ungeklärtes entsteht die bekannte Glocke über der Mitte des Feldes, und sobald ein Treffer daliegt, fallen die Stellungen weg, die ihn nicht erklären, und das ganze Gewicht sammelt sich um ihn.',
+            'Einen Treffer zu Ende zu bringen schreibt man sonst als Warteschlange von Feldern, die noch zu probieren sind, und genau diese Warteschlange ist die Stelle, an der ein solches Programm schiefgeht: sie muss aufgeräumt werden, wenn ein Schiff sinkt, wenn ein anderer Schuss einen ihrer Einträge erledigt, und wenn zwei Schiffe nebeneinander liegen. Hier werden die Folgefelder in jedem Zug aus dem Feld abgeleitet, es gibt also nichts zu behalten und nichts, was veralten kann. Vier Gegner, vierzigtausend simulierte Partien gegen einen unabhängig geschriebenen Verteidiger, und kein einziger unerlaubter Schuss darunter.',
           ],
         },
       },

@@ -623,7 +623,7 @@ const en = {
     index: {
       metaTitle: "Games - Vuk Cvetković",
       metaDescription:
-        "Browser games by Vuk Cvetković: 2048, Minesweeper, and a game about merging worlds into bigger ones. Each gets a page of its own.",
+        "Browser games by Vuk Cvetković: 2048, Minesweeper, Battleship against four opponents, and a game about merging worlds into bigger ones. Each gets a page of its own.",
       heading: "Games",
       intro:
         "Games worth more than one go. Each has a page of its own, and underneath it a write-up on how it was built, for anyone who wants that too.",
@@ -866,6 +866,143 @@ const en = {
             "The solver is position based: a body stores where it is and where it was, and the gap between the two is its velocity. Nothing computes an impulse. A contact pushes two bodies apart, and because the previous position stays put, the push removes exactly the speed that drove them together - which is what an inelastic collision is. Forty of those passes run per frame, each against positions that have already moved, and a full field of forty-six bodies costs under a tenth of a millisecond against a budget of nearly seventeen.",
             "Getting it to settle was the work. Three separate things quietly added energy instead of removing it: a wall that clamped a body's position without moving its previous one, which turned the depth of a landing into the speed of a bounce; tangential friction computed from a velocity the same pass was changing, which had a crowded pile still throwing bodies around after eight seconds; and a merge rule that asked for so much overlap that nothing ever merged at all. Each was found by measuring rather than by reading, and the numbers that came out of it are written next to the constants they justify.",
             "The simulation runs in its own thousand unit space and never learns how big it is being shown. One transform on one element scales the whole field onto whatever width the page has given it, so a resize changes that single number and nothing else - not a radius, not a position, not a step. It is why the same game plays identically on a phone and on a desktop instead of having twice the gravity on one of them.",
+          ],
+        },
+      },
+
+      battleship: {
+        name: "Battleship",
+
+        tagline:
+          "Hide five ships, then find theirs first. Four opponents, from one that fires at random to one that counts every position your fleet could still be in.",
+
+        metaDescription:
+          "Battleship in the browser, against four opponents: a classic fleet on a ten by ten grid, and an opponent that counts every placement the evidence still allows.",
+        lead: "Hide five ships, then find theirs before they find yours. Shots alternate one at a time, and the opponent you pick is the whole of the difficulty: the weakest fires wherever it has not fired yet, and the strongest counts every position your fleet could still be in and shoots the square that appears in most of them.",
+
+        /** The four opponents. Ranks rather than adjectives, because "easy" and
+         *  "hard" say how it will go for you while a rank says who you are up
+         *  against, and that is the thing being chosen. */
+        opponents: "Choose your opponent",
+        /**
+         * A name and one line on how good each one is.
+         *
+         * ⚠️ **The line says how hard it will be, not how it works.** Which
+         * algorithm is behind a rank is the write-up's job, further down the
+         * page. What a reader needs before choosing is whether they are about
+         * to be beaten, and the honest answer to that is the number of shots it
+         * needs - which is also the one figure the whole game is scored in.
+         */
+        levels: {
+          sailor: {
+            name: "Sailor",
+            note: "Fires at random. About 95 shots to clear a board, so losing to it takes real effort.",
+          },
+          gunner: {
+            name: "Gunner",
+            note: "Follows up on a hit. About 60 shots, and it will punish a slow start.",
+          },
+          captain: {
+            name: "Captain",
+            note: "Searches the board properly. About 51 shots, and a fair fight.",
+          },
+          admiral: {
+            name: "Admiral",
+            note: "About 45 shots, close to the best anyone has managed. Expect to lose.",
+          },
+        },
+
+        shots: "Shots",
+        /** ⚠️ Not "Best". It is a count where fewer wins, and a bare number under
+         *  that word reads as a score where more does - which is what it means in
+         *  2048 and Accretion. The label carries the unit and the direction. */
+        best: "Fewest shots",
+        toPlace: "To place",
+        rotate: "Turn",
+        shuffle: "Rearrange",
+        start: "Start",
+        newGame: "New game",
+
+        /** The heading over each board, and the grid's own name. */
+        sides: {
+          enemy: "Their waters",
+          own: "Your fleet",
+        },
+
+        /** What a square says when there is no number or glyph to read. */
+        cells: {
+          water: "Water",
+          ship: "Ship",
+          miss: "Miss",
+          hit: "Hit",
+          sunk: "Sunk",
+        },
+
+        /** The five ships, largest first. The lengths are in the game module
+         *  and the order is what joins the two, the way the ten planets are. */
+        ships: ["Carrier", "Battleship", "Cruiser", "Submarine", "Destroyer"],
+
+        /** One line under a board after a shot at it. `{ship}` is replaced with
+         *  the name from the list above. */
+        messages: {
+          hit: "Hit.",
+          miss: "Miss.",
+          sunk: "Sunk: {ship}.",
+          waiting: "Taking aim.",
+          ready: "Your shot.",
+        },
+
+        setupHint:
+          "Your fleet is already at sea. Press a ship to pick it up, press the water to put it down, and turn it before you do.",
+        hint: "Press a square in their waters to fire. Arrow keys walk a board, Enter fires, and R turns a ship while you are placing one.",
+
+        won: {
+          title: "Their fleet is down",
+          body: "All five sunk, and yours got there first.",
+          record: "In fewer shots than ever against this opponent.",
+          again: "Play again",
+        },
+
+        lost: {
+          title: "Your fleet is down",
+          body: "Their ships are shown where they were standing, so you can see what you were looking for.",
+          again: "Try again",
+        },
+
+        how: {
+          label: "How to play",
+          items: [
+            {
+              title: "Put five ships in the water",
+              description:
+                "A fleet is dealt for you the moment the page opens, so you can start straight away. Press a ship to pick it up, turn it, and press a square to set it down. Ships are allowed to touch, which is the standard rule and the one that gives less away.",
+            },
+            {
+              title: "One shot each, in turn",
+              description:
+                "A hit does not buy a second shot, on either side. You fire first, the opponent answers, and the game is over as soon as one fleet has all seventeen of its squares hit.",
+            },
+            {
+              title: "A hit is a thread to pull",
+              description:
+                "Something is there and it runs one of four ways. Two hits in a line settle the direction, and the ends of that line are the only squares still worth anything until the ship goes down.",
+            },
+            {
+              title: "Pick who you are playing",
+              description:
+                "The sailor takes about ninety-five shots to clear a board, the gunner sixty, the captain fifty-one and the admiral forty-five. Seventeen is the floor. Your best is kept separately for each of them, because a win against one of them is not a win against another.",
+            },
+          ],
+        },
+
+        close: {
+          label: "How it is built",
+          paragraphs: [
+            "No canvas and no game library, like the rest of them. The sea is a grid of buttons and the fleet is a layer over it: one element per ship, spanning its squares, with a drawing inside it. A carrier has a flight deck, an island and markings, a submarine sits low with nothing on deck at all, and none of that survives being cut into squares - so a hull is one shape across its whole length rather than a rounded end stuck on each square. Each vessel is drawn twice over: the full plan, with its turrets and funnels and flight deck, and the outline alone. The outline is what the copies stacked underneath a hull use to give it a side, so the detail is resolved once per ship rather than eight times. A ship laid the other way is the same drawing turned a quarter.",
+            "The board is tilted and the ships stand off it, and both are real rather than drawn. The chart is rotated in three dimensions and the fleet is lifted along the axis that rotation leaves, so a hull is above its own shadow and turns its side with it when it turns. There is no perspective anywhere, deliberately: a vanishing point would make the far edge narrower than the near one, and a grid you name squares on cannot afford to have its columns stop being parallel. A shot is drawn too, crossing from one of your own hulls to the square it lands on, because a turn here is one fleet firing at another rather than a mark appearing.",
+            "The opponent cannot see the fleet it is shooting at, and that is structural rather than a promise made in a comment. The function that picks a square takes two things: the record of its own shots, and the lengths of the ships it has already sunk. The layout is not in scope where the decision happens, so there is no line to be careful about. Which ship sank is public, the same way a player says it out loud, and it is what lets the reasoning narrow.",
+            "The strongest of the four does not guess. For every ship still afloat it walks every position that ship could occupy, drops the ones a miss or a wreck has ruled out, and adds a vote to each unknown square the survivors cover. The heaviest square is the shot. Hunting and following up a hit are the same calculation rather than two modes: with nothing unexplained it produces the familiar bell over the middle of the board, and with a hit on the table the positions that fail to account for it are dropped and the weight collapses around it.",
+            "Following up a hit is usually written as a queue of squares to try, and that queue is where this kind of program goes wrong: it has to be weeded every time a ship sinks, every time another shot resolves one of its entries, and every time two ships lie alongside each other. Here the follow-up squares are worked out from the board every turn, so there is nothing to keep and nothing to go stale. Four opponents, forty thousand simulated games against an independently written defender, and not one illegal shot between them.",
           ],
         },
       },

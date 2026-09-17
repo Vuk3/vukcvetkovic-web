@@ -11,7 +11,7 @@ Routes and the layout. [src/components](./components/CLAUDE.md) and
 
 ## A route file holds no markup
 
-Sixteen route files cover eight logical pages, because every route exists twice: once
+Eighteen route files cover nine logical pages, because every route exists twice: once
 unprefixed for English and once under `[lang]` for the other three. That is only tolerable
 because a page resolves `lang`, reads its meta strings, and renders `Base` around **one
 shared body component**:
@@ -26,11 +26,12 @@ shared body component**:
 | 2048 | [pages/games/2048/index.astro](./pages/games/2048/index.astro) | [pages/\[lang\]/games/2048/index.astro](<./pages/[lang]/games/2048/index.astro>) | [Game2048.astro](./components/Game2048.astro) |
 | Minesweeper | [pages/games/minesweeper/index.astro](./pages/games/minesweeper/index.astro) | [pages/\[lang\]/games/minesweeper/index.astro](<./pages/[lang]/games/minesweeper/index.astro>) | [Minesweeper.astro](./components/Minesweeper.astro) |
 | Accretion | [pages/games/accretion/index.astro](./pages/games/accretion/index.astro) | [pages/\[lang\]/games/accretion/index.astro](<./pages/[lang]/games/accretion/index.astro>) | [Accretion.astro](./components/Accretion.astro) |
+| Battleship | [pages/games/battleship/index.astro](./pages/games/battleship/index.astro) | [pages/\[lang\]/games/battleship/index.astro](<./pages/[lang]/games/battleship/index.astro>) | [Battleship.astro](./components/Battleship.astro) |
 
 ⚠️ **Games are not a `[slug]` route and must not become one.** The URLs look the same
 either way - `/games/2048/` has a slug in it - but on disk `games/2048/` is a real
 directory rather than a parameter, and there is one route file per game instead of one for
-all of them. Three games, three directories.
+all of them. Four games, four directories.
 
 Projects can be parameterised because every project page is the same page with different
 data. A game is its own program with its own script, so a `[slug]` route would have to
