@@ -18,6 +18,7 @@ import type { Lang } from "../i18n/types";
 import { getDict, localizePath } from "../i18n/utils";
 import { LOSS_Y, TIERS, WORLD_H, WORLD_W } from "../games/accretion/game";
 import { site } from "../site";
+import GameStamp from "./GameStamp.astro";
 import Section from "./Section.astro";
 
 interface Props {
@@ -40,7 +41,7 @@ const index = localizePath("/games/", lang);
  * there is nothing to compare against - "Live" over a game you already opened
  * would be a label with no work to do.
  */
-const { status } = site.games.accretion;
+const { status, date } = site.games.accretion;
 
 /*
  * The sequence, from the module rather than written out again.
@@ -58,10 +59,14 @@ const shape = `--acc-ratio:${WORLD_W} / ${WORLD_H}; --acc-line-at:${Math.round((
 
 <div class="page-head">
   <div class="shell shell-wide">
-    <a href={index} class="crumb enter">
-      <ArrowLeft class="size-4" aria-hidden="true" />
-      {dict.games.label}
-    </a>
+    <div class="crumb-row">
+      <a href={index} class="crumb enter">
+        <ArrowLeft class="size-4" aria-hidden="true" />
+        {dict.games.label}
+      </a>
+
+      <GameStamp lang={lang} date={date} />
+    </div>
 
     <h1 class="page-title enter" style="--enter-delay:80ms">
       {copy.name}

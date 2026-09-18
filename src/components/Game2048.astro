@@ -15,6 +15,8 @@
 import { ArrowLeft, RotateCcw, Undo2 } from "@lucide/astro";
 import type { Lang } from "../i18n/types";
 import { getDict, localizePath } from "../i18n/utils";
+import { site } from "../site";
+import GameStamp from "./GameStamp.astro";
 import Section from "./Section.astro";
 
 interface Props {
@@ -42,10 +44,14 @@ const cells = Array.from({ length: 16 });
 
 <div class="page-head">
   <div class="shell shell-wide">
-    <a href={index} class="crumb enter">
-      <ArrowLeft class="size-4" aria-hidden="true" />
-      {dict.games.label}
-    </a>
+    <div class="crumb-row">
+      <a href={index} class="crumb enter">
+        <ArrowLeft class="size-4" aria-hidden="true" />
+        {dict.games.label}
+      </a>
+
+      <GameStamp lang={lang} date={site.games.twentyFortyEight.date} />
+    </div>
 
     <h1 class="page-title enter" style="--enter-delay:80ms">{copy.name}</h1>
 

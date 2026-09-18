@@ -1801,6 +1801,27 @@
   }
 
   /*
+   * The line the crumb sits on, where a game page also hangs the day it was
+   * written. Only the games use it: a project page's crumb has nothing to share
+   * the line with, and wrapping it in this would buy an empty flex row.
+   *
+   * The far end of the breadcrumb line is the quietest spot in the head - above
+   * the title, off to one side, and already read as navigation rather than as
+   * content - which is what a date belongs in. Under the lead it would sit in
+   * the reading line and be the second thing the page says.
+   *
+   * `space-between` rather than a margin on the stamp, and `wrap` so a narrow
+   * screen drops the pill under the crumb instead of squeezing both.
+   */
+  .crumb-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem 1.5rem;
+  }
+
+  /*
    * Running prose across the full measure, in two columns rather than one long
    * line or one short one with a hole beside it.
    *

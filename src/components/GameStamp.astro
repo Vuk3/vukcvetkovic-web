@@ -1,0 +1,49 @@
+---
+/**
+ * The day a game was written, at the far end of the line its crumb starts.
+ *
+ * One component rather than the same six lines in four game pages, for the
+ * reason every other shared body here exists: four copies of a date format are
+ * four chances for one page to print a different one. It is the only thing the
+ * four games share besides the head itself.
+ *
+ * ⚠️ It is a `.tag` - the hairline pill a year already uses - and not the
+ * `.page-status` badge beside the title. That one is filled with the accent
+ * because "Beta" is a warning; this is a footnote, and a footnote that competes
+ * with the title is in the wrong place.
+ */
+import { dateLocales, type Lang } from "../i18n/types";
+import { getDict } from "../i18n/utils";
+
+interface Props {
+  lang: Lang;
+  /** `YYYY-MM-DD`, from the game's entry in src/site.ts. */
+  date: string;
+}
+
+const { lang, date } = Astro.props;
+const dict = getDict(lang);
+
+/*
+ * The day is stored once and spelled out here, so one value reads "September
+ * 11, 2026" in English and "11. septembar 2026." in Serbian.
+ *
+ * ⚠️ UTC at both ends. `new Date('2026-09-11')` is midnight UTC, and formatting
+ * that in any zone behind it prints the 10th - which would make the date on the
+ * page a fact about where the build ran.
+ *
+ * `dateLocales` rather than `lang`, because bare `sr` prints Cyrillic and this
+ * site's Serbian is Latin. See the note on it in i18n/types.ts.
+ */
+const written = new Intl.DateTimeFormat(dateLocales[lang], {
+  dateStyle: "long",
+  timeZone: "UTC",
+}).format(new Date(date));
+---
+
+{/* `<time>` so the date is machine-readable in the one format every reader of
+    it agrees on, whatever the four locales print. */}
+<span class="tag enter" style="--enter-delay:40ms">
+  <span>{dict.games.built}</span>
+  <time datetime={date}>{written}</time>
+</span>

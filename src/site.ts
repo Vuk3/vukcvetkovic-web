@@ -296,14 +296,13 @@ const projects: Project[] = [
 /**
  * One browser game, at /games/<slug>/.
  *
- * No date, unlike a project. A project page is a record of work and the year
- * is part of the claim, while a game is either fun to play now or it is not -
- * stamping it with a year only invites the reader to wonder whether it is
- * stale.
+ * A day rather than a year, unlike a project. A project is measured in months
+ * and the year is the whole of the claim, while a game was written in an
+ * afternoon and the day is the only honest unit for it.
  */
 export interface Game {
   /**
-   * Last path segment under /games/, and the only fact a game has.
+   * Last path segment under /games/.
    *
    * ⚠️ **The title is not here, it is `games.items.<id>.name` in the
    * dictionaries.** It was here while 2048 was the only game, on the argument
@@ -331,6 +330,22 @@ export interface Game {
    * takes the ribbon off the card and the badge off the page together.
    */
   status: GameStatus;
+
+  /**
+   * The day the game was written, `YYYY-MM-DD` and read as UTC.
+   *
+   * A fact: the day is the same in four languages and only the way it is
+   * spelled out is not, so it is stored raw and `Intl.DateTimeFormat` writes it
+   * per locale in GameStamp.astro. Three of the four share a date because three
+   * of them were written on one day.
+   *
+   * ⚠️ It is stamped on the game's own page and deliberately nowhere on the
+   * index. Four dates down a grid of cards get read against each other, and the
+   * oldest of them starts looking like the stale one - which is a claim about
+   * the games nobody made. On the page of a game already opened, the same date
+   * is what it is: a note saying when this was written.
+   */
+  date: string;
 }
 
 /**
@@ -348,10 +363,10 @@ export interface Game {
  * on the page.
  */
 const games: Record<GameId, Game> = {
-  twentyFortyEight: { slug: "2048", status: "live" },
-  minesweeper: { slug: "minesweeper", status: "live" },
-  accretion: { slug: "accretion", status: "beta" },
-  battleship: { slug: "battleship", status: "beta" },
+  twentyFortyEight: { slug: "2048", status: "live", date: "2026-09-11" },
+  minesweeper: { slug: "minesweeper", status: "live", date: "2026-09-11" },
+  accretion: { slug: "accretion", status: "beta", date: "2026-09-11" },
+  battleship: { slug: "battleship", status: "beta", date: "2026-09-17" },
 };
 
 export const site = {

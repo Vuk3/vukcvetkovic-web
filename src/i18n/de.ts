@@ -549,6 +549,11 @@ const de: Dict = {
   games: {
     label: 'Spiele',
 
+    /** "Erstellt" rather than "Gebaut": it is what German says of a piece of
+     *  software that was written, not of a thing that was assembled. See the
+     *  note in en.ts. */
+    built: 'Erstellt:',
+
     /** Both are the loanwords German already uses for this. See the note in
      *  en.ts. */
     status: {

@@ -41,3 +41,24 @@ export const ogLocales: Record<Lang, string> = {
   fr: 'fr_FR',
   de: 'de_DE',
 };
+
+/**
+ * The tag `Intl` is handed when a date is written out, which is not always the
+ * one in the URL.
+ *
+ * ⚠️ `sr` on its own prints Cyrillic - "11. септембар 2026." - and this site's
+ * Serbian is Latin from end to end, so the script has to be named. The other
+ * three resolve to what they should unaided and are listed anyway, because a
+ * `Record<Lang, …>` is what makes a fifth locale a type error here rather than
+ * a date quietly formatted as English.
+ *
+ * Numbers do not need this and do not have it: `Intl.NumberFormat(lang)` is
+ * called with the bare tag wherever a figure is printed, and grouping and the
+ * decimal mark are the same in both Serbian scripts.
+ */
+export const dateLocales: Record<Lang, string> = {
+  en: 'en',
+  sr: 'sr-Latn',
+  fr: 'fr',
+  de: 'de',
+};

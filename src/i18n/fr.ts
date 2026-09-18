@@ -550,6 +550,11 @@ const fr: Dict = {
   games: {
     label: "Jeux",
 
+    /** The space before the colon is French typography and therefore part of
+     *  the string, which is why the label carries its own punctuation. See the
+     *  note in en.ts. */
+    built: "Réalisé :",
+
     /** Left in English on purpose: "en ligne" says live *play*, not released.
      *  See the note in en.ts. */
     status: {

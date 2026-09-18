@@ -546,6 +546,11 @@ const sr: Dict = {
   games: {
     label: "Igre",
 
+    /** The colon is doing grammatical work here: the date Intl prints is
+     *  nominative, and "Napravljeno" running into it would want the genitive.
+     *  See the note in en.ts. */
+    built: "Napravljeno:",
+
     /** Left in English on purpose: "uživo" says live *play*, not released. See
      *  the note in en.ts. */
     status: {

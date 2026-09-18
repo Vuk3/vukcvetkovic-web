@@ -604,6 +604,19 @@ const en = {
     label: "Games",
 
     /**
+     * What the date on a game's own page is called. The day itself is a fact
+     * and lives in `site.games.<id>.date`, written out per locale.
+     *
+     * ⚠️ The colon belongs to the label rather than to the markup, because it
+     * is punctuation and punctuation is prose: French sets a space before it
+     * and the other three do not. It also earns its keep grammatically - the
+     * Serbian line reads "Napravljeno: 11. septembar 2026." because the date
+     * Intl produces is nominative, and "Napravljeno" running straight into it
+     * would want the genitive.
+     */
+    built: "Built:",
+
+    /**
      * The two words a game's status can carry: on the ribbon across the corner
      * of its card, and on the badge beside its title. Which one a game gets is
      * `status` in src/site.ts, and a status with no word here is a type error
