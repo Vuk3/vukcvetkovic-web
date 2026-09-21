@@ -25,7 +25,7 @@ plus a project write-up section, in **four languages** (English, Serbian, French
   four small inline blocks cover the pre-paint theme script, the theme toggle, menu
   dismissal and the active-section indicator.
 - **JavaScript on four routes only.** The games have real scripts: 2.4 KB, 3.2 KB, 3.2 KB
-  and 5.1 KB gz, plus a 0.4 KB chunk they share, requested by those routes and their locale
+  and 5.4 KB gz, plus a 0.4 KB chunk they share, requested by those routes and their locale
   twins and by nothing else.
 
 ## Where things are

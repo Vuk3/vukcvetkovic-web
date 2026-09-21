@@ -816,11 +816,11 @@ const sr: Dict = {
           },
           gunner: {
             name: "Nišandžija",
-            note: "Dovršava pogodak. Oko 60 hitaca, i kazniće te za spor početak.",
+            note: "Dovršava pogodak. Oko 55 hitaca, i kazniće te za spor početak.",
           },
           captain: {
             name: "Kapetan",
-            note: "Pretražuje tablu kako treba. Oko 51 hitac, i poštena borba.",
+            note: "Pretražuje tablu kako treba. Oko 50 hitaca, i poštena borba.",
           },
           admiral: {
             name: "Admiral",
@@ -909,7 +909,7 @@ const sr: Dict = {
             {
               title: "Biraš protiv koga igraš",
               description:
-                "Mornaru treba oko devedeset pet hitaca da očisti tablu, nišandžiji šezdeset, kapetanu pedeset jedan, a admiralu četrdeset pet. Sedamnaest je donja granica. Rekord se čuva posebno za svakog, jer pobeda nad jednim nije pobeda nad drugim.",
+                "Mornaru treba oko devedeset pet hitaca da očisti tablu, nišandžiji pedeset pet, kapetanu pedeset, a admiralu četrdeset pet. Sedamnaest je donja granica. Rekord se čuva posebno za svakog, jer pobeda nad jednim nije pobeda nad drugim.",
             },
           ],
         },

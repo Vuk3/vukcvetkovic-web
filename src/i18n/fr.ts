@@ -821,11 +821,11 @@ const fr: Dict = {
           },
           gunner: {
             name: "Canonnier",
-            note: "Poursuit un coup au but. Environ 60 tirs, et il punit un début trop lent.",
+            note: "Poursuit un coup au but. Environ 55 tirs, et il punit un début trop lent.",
           },
           captain: {
             name: "Capitaine",
-            note: "Fouille la grille méthodiquement. Environ 51 tirs, et un combat équitable.",
+            note: "Fouille la grille méthodiquement. Environ 50 tirs, et un combat équitable.",
           },
           admiral: {
             name: "Amiral",
@@ -908,7 +908,7 @@ const fr: Dict = {
             {
               title: "Choisissez contre qui vous jouez",
               description:
-                "Le matelot met environ quatre-vingt-quinze tirs à nettoyer une grille, le canonnier soixante, le capitaine cinquante et un, et l'amiral quarante-cinq. Dix-sept est le plancher. Votre record est gardé séparément pour chacun, car une victoire contre l'un n'est pas une victoire contre l'autre.",
+                "Le matelot met environ quatre-vingt-quinze tirs à nettoyer une grille, le canonnier cinquante-cinq, le capitaine cinquante, et l'amiral quarante-cinq. Dix-sept est le plancher. Votre record est gardé séparément pour chacun, car une victoire contre l'un n'est pas une victoire contre l'autre.",
             },
           ],
         },

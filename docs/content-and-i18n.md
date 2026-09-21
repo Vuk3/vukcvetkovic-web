@@ -380,6 +380,15 @@ anybody as protection - see
 
 ## Changelog
 
+- 2026-09-21 - Battleship's level notes and the shots-per-rank line in the how-to-play copy
+  carry the re-measured figures: the gunner is about 55 shots where it was 60 and the
+  captain about 50 where it was 51. ⚠️ **A note here quotes a number the algorithm owns**,
+  so tuning an opponent is a copy change in all four dictionaries or it is a lie on three of
+  them. ⚠️ Only the numbers changed, and the first attempt at this changed the wording too -
+  the captain's note gained "and never the same way twice", which is true of the search and
+  meaningless to a reader who has never seen the search. A note here says how hard an
+  opponent is, in the one unit the game is already scored in. What it does belongs in the
+  write-up further down the page, and how it does it belongs in the module (§7).
 - 2026-09-17 - Battleship's `levels` entries went from a name to `{ name, note }`, and the
   legend over them from the clipped word "Opponent" to an instruction. The note says how
   hard an opponent is rather than how it works, in the number of shots it needs - which is

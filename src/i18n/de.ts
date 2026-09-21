@@ -820,11 +820,11 @@ const de: Dict = {
           },
           gunner: {
             name: 'Kanonier',
-            note: 'Bleibt an einem Treffer dran. Etwa 60 Schüsse, und er bestraft einen langsamen Start.',
+            note: 'Bleibt an einem Treffer dran. Etwa 55 Schüsse, und er bestraft einen langsamen Start.',
           },
           captain: {
             name: 'Kapitän',
-            note: 'Durchsucht das Feld richtig. Etwa 51 Schüsse, ein fairer Kampf.',
+            note: 'Durchsucht das Feld richtig. Etwa 50 Schüsse, ein fairer Kampf.',
           },
           admiral: {
             name: 'Admiral',
@@ -907,7 +907,7 @@ const de: Dict = {
             {
               title: 'Wähle, gegen wen du spielst',
               description:
-                'Der Matrose braucht etwa fünfundneunzig Schüsse für ein Feld, der Kanonier sechzig, der Kapitän einundfünfzig und der Admiral fünfundvierzig. Siebzehn ist die Untergrenze. Der Bestwert wird für jeden getrennt gehalten, denn ein Sieg über den einen ist kein Sieg über den anderen.',
+                'Der Matrose braucht etwa fünfundneunzig Schüsse für ein Feld, der Kanonier fünfundfünfzig, der Kapitän fünfzig und der Admiral fünfundvierzig. Siebzehn ist die Untergrenze. Der Bestwert wird für jeden getrennt gehalten, denn ein Sieg über den einen ist kein Sieg über den anderen.',
             },
           ],
         },

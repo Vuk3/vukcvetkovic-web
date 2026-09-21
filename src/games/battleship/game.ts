@@ -79,6 +79,43 @@ export type Side = 'enemy' | 'own';
 export const LEVELS = ['sailor', 'gunner', 'captain', 'admiral'] as const;
 export type LevelId = (typeof LEVELS)[number];
 
+/**
+ * The habits one opponent is drawn with for one game.
+ *
+ * ⚠️ **This exists because a fixed search is a solved search.** Three of the
+ * four opponents sweep the board on a rule, and a rule with no dial on it runs
+ * the same way every game: the captain always walked the same diagonals, and
+ * the admiral always opened in the middle because that is where the count is
+ * highest. Both are worth knowing exactly once. After that you put your fleet
+ * where it looks last and the opponent never recovers, which is not the game
+ * being easy, it is the game being over before the first shot.
+ *
+ * ⚠️ **Nothing in here costs a single shot, and that is the whole point of
+ * taking it from the square's own symmetry.** A ship of length n crosses every
+ * residue of `x + y` and of `x - y` exactly once, so *any* family and *any*
+ * phase covers the board exactly as well as the one that used to be written
+ * into the file. There are eight such sweeps, they are the eight images of one
+ * sweep under the symmetries of a square, and they are all equally good - so
+ * drawing one at random is variety with no price attached rather than a
+ * difficulty dial.
+ */
+export interface Plan {
+  /** Which diagonal family the lattice runs along, `x + y` or `x - y`. */
+  readonly rising: boolean;
+  /** Where the lattice starts, taken modulo whatever spacing is in force. */
+  readonly offset: number;
+}
+
+/** One game's worth of habits. Called once per game, never mid-game. */
+export function planFor(): Plan {
+  return {
+    rising: Math.random() < 0.5,
+    // The widest spacing any lattice here uses is the length of the longest
+    // ship, so a phase drawn under that can be taken modulo anything narrower.
+    offset: Math.floor(Math.random() * Math.max(...FLEET)),
+  };
+}
+
 interface Ship {
   length: number;
   /** The bow: the leftmost cell of a horizontal ship, the topmost of a vertical one. */
@@ -269,18 +306,31 @@ function fire(board: Board, i: number): Shot | null {
  * still afloat, so none of them can cheat even by accident, and any of them can
  * be run against a position by hand.
  *
- * Measured over ten thousand games each against an independently written
+ * Measured over twenty thousand games each against an independently written
  * defender, in shots to sink all seventeen cells. Seventeen is the floor and a
- * hundred is the ceiling:
+ * hundred is the ceiling. Mean, then the ninetieth percentile and the worst
+ * game seen, because an opponent is felt through its bad games as much as
+ * through its average one:
  *
- *   sailor    95.3   picks a square it has not tried
- *   gunner    59.6   follows up a hit
- *   captain   50.9   and only hunts where the shortest ship cannot slip through
- *   admiral   44.7   counts every placement the evidence still allows
+ *   sailor    95.4   100  100   picks a square it has not tried
+ *   gunner    55.1    71   86   follows up a hit, and never fires into a pocket
+ *                             that could not hold a ship
+ *   captain   49.6    60   68   and sweeps on a lattice the shortest ship
+ *                             cannot slip through
+ *   admiral   44.7    56   66   counts every placement the evidence still
+ *                             allows
  *
  * The last of those is where published probability-density players land as
  * well, and the gap from there down to the low forties is the price of counting
  * positions of one ship rather than arrangements of five - see `density`.
+ *
+ * ⚠️ **The admiral's mean is at the floor of this family of algorithms, and
+ * trying to move it was how the rest of this got written.** Weighting a
+ * placement by ship length, by its square, by its reciprocal, and leaning the
+ * count towards a corner all land inside the noise of a twenty-thousand game
+ * measurement. What did move was the shape of its bad games - the lattice below
+ * took the ninetieth percentile from 58 to 56 and the worst game from 73 to 66
+ * for nothing.
  */
 
 /** Squares nothing is known about. */
@@ -298,6 +348,68 @@ function liveHits(shots: Uint8Array): number[] {
 }
 
 const pick = (list: number[]) => list[Math.floor(Math.random() * list.length)];
+
+/**
+ * The unknown squares a ship still afloat could actually be standing on.
+ *
+ * ⚠️ **A square nothing fits through is a wasted turn, and there are more of
+ * them than there look to be.** Late in a game the misses cut the board into
+ * pockets, and a pocket three wide with only a four and a five left cannot hold
+ * either of them - so every shot into it is spent proving something the board
+ * already said. The admiral gets this for free out of `density`, because a
+ * position that crosses a miss is never counted. The two below it used to fire
+ * into the pockets anyway.
+ *
+ * Ships may touch here, so a square is ruled out by a miss or a wreck and by
+ * nothing else. A live hit does not rule anything out - it is the opposite.
+ */
+function viable(shots: Uint8Array, remaining: readonly number[]): number[] {
+  const room = new Uint8Array(CELLS);
+
+  for (const length of remaining) {
+    for (let y = 0; y < SIZE; y++) {
+      for (let x = 0; x < SIZE; x++) {
+        for (const horizontal of [true, false]) {
+          if (horizontal ? x + length > SIZE : y + length > SIZE) continue;
+
+          const cells = span(length, x, y, horizontal);
+
+          let allowed = true;
+          for (const i of cells) {
+            const known = shots[i];
+            if (known === MISS || known === DEAD) {
+              allowed = false;
+              break;
+            }
+          }
+
+          if (!allowed) continue;
+          for (const i of cells) if (shots[i] === UNKNOWN) room[i] = 1;
+        }
+      }
+    }
+  }
+
+  const out: number[] = [];
+  for (let i = 0; i < CELLS; i++) if (room[i] === 1) out.push(i);
+  return out;
+}
+
+/**
+ * Whether a square is on this game's lattice at this spacing.
+ *
+ * A ship of length n laid anywhere covers n consecutive values of `x + y` and n
+ * consecutive values of `x - y`, so it must cross every residue of either one
+ * exactly once. That is what makes the spacing free: nothing can hide between
+ * the lines whichever family they run along and wherever they start, so the
+ * family and the phase are pure variety - see `Plan`.
+ */
+function onLattice(i: number, step: number, plan: Plan): boolean {
+  if (step <= 1) return true;
+
+  const diagonal = plan.rising ? xOf(i) + yOf(i) : xOf(i) - yOf(i);
+  return ((diagonal % step) + step) % step === plan.offset % step;
+}
 
 /**
  * The squares worth shooting because of a hit that is not finished.
@@ -381,6 +493,38 @@ function targets(shots: Uint8Array): number[] {
 const HIT_WEIGHT = 12;
 
 /**
+ * How sharply the admiral prefers a heavier square while it is hunting.
+ *
+ * The exponent on a square's share of the best count, which decides how far a
+ * draw may wander from the top of it. Both ends of it are bad: at infinity the
+ * opponent opens the same eight squares in every game it will ever play, and at
+ * 1 it is barely counting at all.
+ *
+ * Swept at twenty thousand games a step against the greedy version's 44.6: 3
+ * costs 1.2 shots, 5 costs 0.6, 8 costs 0.3, 10 costs 0.3, and past that it
+ * only gets more predictable for a mean that is already at the floor.
+ */
+const SPREAD = 10;
+
+/**
+ * How far below the best count a square may be and still be drawn at all.
+ *
+ * ⚠️ **This is what makes the spread cost nothing, and without it the draw
+ * costs about a third of a shot.** The exponent alone still reaches squares
+ * worth half the best one now and then, and those are simply bad shots. A floor
+ * under the draw bounds how bad the worst one can be: at 0.88 the opponent will
+ * never fire at a square more than an eighth off the best it can see, so the
+ * shots it takes are shots the greedy version would have been happy with.
+ *
+ * ⚠️ **The exchange rate is steep and it is worth knowing before moving this.**
+ * Measured at twenty thousand games a step: 0.88 opens 32 squares for a mean of
+ * 44.6, 0.80 opens 52 for 44.8, 0.70 opens 60 for 44.9, and no floor at all
+ * opens 91 for 44.9. Four times the opening variety is free. Eleven times it is
+ * not.
+ */
+const FLOOR = 0.88;
+
+/**
  * Every placement the evidence still allows, counted.
  *
  * For each ship still afloat, every position it could occupy is tested against
@@ -404,7 +548,7 @@ const HIT_WEIGHT = 12;
  * one, for a shot that is already the right one in almost every position a real
  * game reaches.
  */
-function density(shots: Uint8Array, remaining: readonly number[]): number {
+function density(shots: Uint8Array, remaining: readonly number[], plan: Plan): number {
   const score = new Float64Array(CELLS);
   const hunting = liveHits(shots).length === 0;
 
@@ -441,26 +585,89 @@ function density(shots: Uint8Array, remaining: readonly number[]): number {
   }
 
   /*
-   * The heaviest square, with ties drawn at random rather than resolved by
-   * index. Early in a hunt the middle of the board is a wide plateau of equal
-   * counts, and taking the first of them would make every game against this
-   * opponent open identically.
+   * ⚠️ **While hunting, the count is taken on this game's lattice and leaned
+   * one way.** Both only apply with nothing unexplained on the board: once
+   * there is a live hit the count is the whole answer and must not be touched.
+   *
+   * The lattice is free and is worth about a shot and a half - a square off it
+   * cannot be the only one a ship of the shortest length crosses, so a shot
+   * there learns strictly less than a shot on it. The lean is not free and is
+   * why `DRIFT` is small: the count alone opens in the middle of the board
+   * every single game, because that is where the count is highest, and a
+   * six-percent tilt is enough to decide between squares the count cannot tell
+   * apart without ever overriding a square it can.
    */
+  if (hunting) {
+    const step = Math.min(...remaining);
+
+    let survives = false;
+    for (let i = 0; i < CELLS; i++) {
+      if (score[i] > 0 && onLattice(i, step, plan)) survives = true;
+    }
+
+    // The guard is not decoration: a board can reach a state where every
+    // placement that is still allowed misses the lattice entirely, and a mask
+    // applied there would leave the opponent with nowhere to shoot.
+    if (survives) {
+      for (let i = 0; i < CELLS; i++) {
+        if (score[i] > 0 && !onLattice(i, step, plan)) score[i] = 0;
+      }
+    }
+  }
+
   let best = 0;
+  for (let i = 0; i < CELLS; i++) if (score[i] > best) best = score[i];
+  if (best <= 0) return -1;
+
+  /*
+   * ⚠️ **While hunting it draws in proportion to the count rather than taking
+   * the top of it**, and this is the fix for the one thing that made the
+   * strongest opponent the easiest to beat.
+   *
+   * Taking the maximum is the right shot and the wrong habit. The count on an
+   * empty board peaks in the middle, so the admiral opened in the middle every
+   * single game: measured over four thousand games it used **eight squares** in
+   * its first four shots and never touched the other ninety-two, with one
+   * square taking an eighth of every opening shot it ever fired. One game
+   * teaches you that, and from then on you put the fleet down the edges and it
+   * spends twenty shots walking out to find you.
+   *
+   * A draw weighted by `(score / best) ** SPREAD`, over squares no worse than
+   * `FLOOR` of the best, makes the opening a different shape every game and
+   * costs nothing: the floor means every square it can reach is one the greedy
+   * version would have been happy to take. It is only ever done with nothing
+   * unexplained on the board. Once there is a live hit the count is the whole
+   * answer and the heaviest square is taken outright.
+   */
+  if (hunting) {
+    let total = 0;
+    const weight = new Float64Array(CELLS);
+
+    for (let i = 0; i < CELLS; i++) {
+      if (score[i] < best * FLOOR) continue;
+      weight[i] = (score[i] / best) ** SPREAD;
+      total += weight[i];
+    }
+
+    let draw = Math.random() * total;
+    for (let i = 0; i < CELLS; i++) {
+      if (weight[i] <= 0) continue;
+      draw -= weight[i];
+      if (draw <= 0) return i;
+    }
+  }
+
+  /*
+   * The heaviest square, with ties drawn at random rather than resolved by
+   * index. It is also where a hunting draw lands if the running total falls
+   * through on a rounding error.
+   */
   let chosen = -1;
   let seen = 0;
 
   for (let i = 0; i < CELLS; i++) {
-    if (score[i] <= 0) continue;
-
-    if (score[i] > best) {
-      best = score[i];
-      chosen = i;
-      seen = 1;
-      continue;
-    }
-
-    if (score[i] === best && Math.random() < 1 / ++seen) chosen = i;
+    if (score[i] < best) continue;
+    if (Math.random() < 1 / ++seen) chosen = i;
   }
 
   return chosen;
@@ -477,14 +684,18 @@ export function chooseShot(
   shots: Uint8Array,
   remaining: readonly number[],
   level: LevelId,
+  plan: Plan,
 ): number {
   const open = openCells(shots);
   if (open.length === 0) return -1;
 
+  // The sailor is the one opponent with nothing in it, and it stays that way.
+  // Somebody has to be the floor, and an opponent that fires at random is a
+  // thing a player recognises rather than a difficulty setting.
   if (level === 'sailor') return pick(open);
 
   if (level === 'admiral') {
-    const shot = density(shots, remaining);
+    const shot = density(shots, remaining, plan);
     // Only reachable from a position no placement fits, which a consistent
     // board cannot produce. A fallback costs one line and turns a mistake
     // somewhere else into a poor shot instead of a turn that never happens.
@@ -494,19 +705,24 @@ export function chooseShot(
   const follow = targets(shots);
   if (follow.length > 0) return pick(follow);
 
-  if (level === 'gunner') return pick(open);
+  // Neither of the two below counts anything, but neither of them has any
+  // business firing into a pocket that cannot hold a ship - see `viable`.
+  const room = viable(shots, remaining);
+  const hunt = room.length > 0 ? room : open;
+
+  if (level === 'gunner') return pick(hunt);
 
   /*
-   * The captain hunts on a lattice instead of on the whole board. A ship of
-   * length n laid anywhere must cross a square where `(x + y) % n === 0`, so
-   * nothing can hide between the lines and roughly half the board never has to
-   * be tried at all. The spacing follows the shortest ship still afloat, which
-   * widens as the game goes on and the twos are the last thing left.
+   * The captain hunts on a lattice instead of on the whole board, so nothing
+   * can hide between the lines and roughly half the board never has to be tried
+   * at all. The spacing follows the shortest ship still afloat, which widens as
+   * the game goes on and the twos are the last thing left, and the family and
+   * the phase come from this game's `Plan` rather than from the file.
    */
   const step = Math.min(...remaining);
-  const lattice = open.filter((i) => (xOf(i) + yOf(i)) % step === 0);
+  const lines = hunt.filter((i) => onLattice(i, step, plan));
 
-  return pick(lattice.length > 0 ? lattice : open);
+  return pick(lines.length > 0 ? lines : hunt);
 }
 
 /* ---- The page ------------------------------------------------------------ */
@@ -608,6 +824,10 @@ export function mount(options: Options, initial: LevelId): Controller {
   /* ---- Model ------------------------------------------------------------- */
 
   let level: LevelId = initial;
+  /* Redrawn by `restart`, so two games in a row are never swept the same way -
+     see `Plan`. It is not redrawn when the opponent is changed mid-placement:
+     the plan belongs to the game rather than to whoever is playing it. */
+  let plan: Plan = planFor();
   let state: State = 'placing';
 
   let enemy = emptyBoard();
@@ -1263,7 +1483,7 @@ export function mount(options: Options, initial: LevelId): Controller {
     const remaining: number[] = [];
     for (const ship of own.ships) if (ship && ship.hits < ship.length) remaining.push(ship.length);
 
-    const i = chooseShot(own.shots, remaining, level);
+    const i = chooseShot(own.shots, remaining, level, plan);
     const shot = i < 0 ? null : fire(own, i);
 
     if (!shot) {
@@ -1371,6 +1591,7 @@ export function mount(options: Options, initial: LevelId): Controller {
     own = emptyBoard();
     arrange(enemy);
     arrange(own);
+    plan = planFor();
 
     state = 'placing';
     shots = 0;

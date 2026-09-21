@@ -1174,6 +1174,19 @@ cancelling the arrival of an old one.
 
 ## Changelog
 
+- 2026-09-21 - the three opponents that search got harder and, more to the point, stopped
+  searching the same way twice. The gunner and the captain no longer fire into a pocket too
+  small to hold anything still afloat (60 shots to 55, and 51 to 50), and the captain's
+  lattice takes its family and its phase from a plan drawn per game rather than from the
+  file. ⚠️ **A fixed search is a solved search**: the captain used exactly 50 of the 100
+  squares to open a game and the admiral used 8, with one square taking an eighth of every
+  opening shot it ever fired, so one game taught you where to hide a fleet for good. The
+  admiral now draws its opening in proportion to the count instead of taking the top of it,
+  bounded to squares within an eighth of the best, which opens 32 squares instead of 8 for a
+  mean that is unchanged at 44.7 and a worst game that improved from 73 shots to 66. ⚠️ Its
+  mean is at the floor of this family of algorithms and several attempts to move it all
+  landed inside the noise - the write-up is on `chooseShot` in
+  [games/battleship/game.ts](../src/games/battleship/game.ts) (§9).
 - 2026-09-21 - every ship in the fleet redrawn at production detail: the carrier gained an
   angled deck with its centreline, arrestor wires, two catapult tracks, deck-edge lifts and
   sponsons; the battleship triple turrets on barbette rings, an armour belt, deck planking

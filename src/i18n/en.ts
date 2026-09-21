@@ -913,11 +913,11 @@ const en = {
           },
           gunner: {
             name: "Gunner",
-            note: "Follows up on a hit. About 60 shots, and it will punish a slow start.",
+            note: "Follows up on a hit. About 55 shots, and it will punish a slow start.",
           },
           captain: {
             name: "Captain",
-            note: "Searches the board properly. About 51 shots, and a fair fight.",
+            note: "Searches the board properly. About 50 shots, and a fair fight.",
           },
           admiral: {
             name: "Admiral",
@@ -1003,7 +1003,7 @@ const en = {
             {
               title: "Pick who you are playing",
               description:
-                "The sailor takes about ninety-five shots to clear a board, the gunner sixty, the captain fifty-one and the admiral forty-five. Seventeen is the floor. Your best is kept separately for each of them, because a win against one of them is not a win against another.",
+                "The sailor takes about ninety-five shots to clear a board, the gunner fifty-five, the captain fifty and the admiral forty-five. Seventeen is the floor. Your best is kept separately for each of them, because a win against one of them is not a win against another.",
             },
           ],
         },

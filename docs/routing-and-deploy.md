@@ -227,8 +227,8 @@ dismissal and the active-section indicator - are all small enough that Astro inl
 into each page rather than emitting a bundle. 1.7 KB of JS per page, in a 26 KB gz home
 page, with no extra request. Keep it that way: see [src/components/CLAUDE.md](../src/components/CLAUDE.md).
 
-The four files in `_astro` are the three game engines and the piece they share. 2048 is
-2.4 KB gz, Minesweeper 3.2 KB, Accretion 3.2 KB, and
+The five files in `_astro` are the four game engines and the piece they share. 2048 is
+2.4 KB gz, Minesweeper 3.2 KB, Accretion 3.2 KB, Battleship 5.4 KB, and
 [games/record.ts](../src/games/record.ts) 0.4 KB. Each engine is requested by its own route
 and that route's three locale twins, and by nothing else, which is the point: a game pays
 for itself and the rest of the site is unchanged.
