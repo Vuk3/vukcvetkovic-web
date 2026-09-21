@@ -25,12 +25,24 @@
   `bs-hull-N` is the outline alone, which is what the seven copies underneath
   use. Detail is resolved once per ship instead of eight times.
 
+  ⚠️ **The two outlines have to stay the same shape.** The detailed symbol
+  starts with the same path the silhouette is, because the silhouette is what
+  the flank underneath is extruded from - change one without the other and the
+  side of the ship stops lining up with the deck on top of it.
+
   ⚠️ **Every vessel is a plan view, bow to the right, lit from the top.** The
   rounding is bands rather than gradients: a `<linearGradient>` inside a symbol
   is not reliably resolved from inside a `<use>` shadow tree, while a flat fill
-  mixed off `--bs-hull` always is. Four bands - a lit sheer, the flank, the
-  shaded flank, and the boot topping at the waterline - read as a round hull and
-  cost nothing to resolve.
+  mixed off `--bs-hull` always is. Five bands - a lit sheer, the deck, the
+  flank, the shaded flank and the boot topping at the waterline - read as a
+  round hull and cost nothing to resolve.
+
+  ⚠️ **Detail is layered by contrast, not by count.** Everything that has to
+  survive a ship two centimetres long - the silhouette, the deck, the turrets,
+  the island, the sail - carries a full step of tone. Everything that is there
+  for the close look - plating seams, panel lines, guardrails, hatch covers -
+  is a hairline a few percent off its ground, so it enriches the hull at size
+  and fades out rather than turning into noise on the board.
 
   ⚠️ **Colour goes in through `style`, never through a `fill` attribute.** These
   are `<use>`d, and a document stylesheet cannot reach inside that shadow tree -
@@ -79,44 +91,97 @@
       to one side, an angled deck across the port quarter and aircraft parked
       on it. Those four together are what make this readable as a carrier at
       two centimetres long, and none of them is a detail that can be dropped.
+
+      Everything else - the deck-edge lifts hanging off both sides, the two bow
+      catapult tracks, the arrestor wires across the landing area, the blast
+      deflectors behind the cats, the sponsons under the deck edge - is what
+      the deck is *for*, and it is what stops a carrier reading as a grey
+      lozenge with arrows on it once the board is any bigger than a thumbnail.
     */}
     <symbol id="bs-ship-0" viewBox="0 0 500 100">
       <path
         d="M8 58 L8 78 L112 92 L442 90 L498 52 L492 46 L440 86 L114 88 L14 72 Z"
         style="fill:var(--bs-boot)"></path>
+
+      {/* The hull under the deck, and the sponsons hung off its sides. */}
       <path d="M26 30 L52 18 L406 16 L478 50 L406 84 L52 82 Z" style="fill:var(--bs-hull)"></path>
       <path
         d="M26 50 L52 82 L406 84 L478 50 Z"
         style="fill:color-mix(in oklab, var(--bs-hull) 74%, #000)"></path>
+      <g style="fill:color-mix(in oklab, var(--bs-hull) 62%, #000)">
+        <rect x="150" y="14" width="26" height="8" rx="2"></rect>
+        <rect x="236" y="14" width="26" height="8" rx="2"></rect>
+        <rect x="150" y="78" width="26" height="8" rx="2"></rect>
+        <rect x="300" y="78" width="26" height="8" rx="2"></rect>
+      </g>
 
+      {/* The flight deck: the widest thing on the ship and the reason it is
+          shaped nothing like the hull under it. */}
       <path
         d="M8 24 L112 10 L440 12 L494 50 L440 88 L112 90 L8 76 Z"
         style="fill:var(--bs-hull-edge)"></path>
       <path
         d="M8 50 L8 76 L112 90 L440 88 L494 50 Z"
         style="fill:color-mix(in oklab, var(--bs-hull-edge) 78%, #000)"></path>
+      {/* ⚠️ The lit sheer is a strip along the deck edge, not a pane across
+          the deck. It was a quarter of the flight deck filled at two thirds
+          white, which over the angled deck and the aircraft read as a sheet of
+          glass laid over the bow rather than as light on an edge. */}
       <path
-        d="M12 26 L114 13 L254 15 L156 40 L12 42 Z"
-        style="fill:color-mix(in oklab, var(--bs-hull-edge) 66%, #fff)"></path>
-      <path
-        d="M8 24 L112 10 L440 12 L494 50 L440 88 L112 90 L8 76 Z"
-        style="fill:none;stroke:color-mix(in oklab, var(--bs-hull-deck) 70%, #fff);stroke-width:2"
-      ></path>
+        d="M11 25 L113 11 L438 13 L470 33 L438 18 L115 16 L17 29 Z"
+        style="fill:color-mix(in oklab, var(--bs-hull-edge) 62%, #fff)"></path>
 
+      {/* Deck plating, fore and aft, at a couple of percent off the deck. */}
+      <g
+        style="fill:none;stroke:color-mix(in oklab, var(--bs-hull-edge) 90%, #000);stroke-width:1"
+      >
+        <path d="M60 18 L60 86"></path>
+        <path d="M120 12 L120 90"></path>
+        <path d="M190 13 L190 89"></path>
+        <path d="M260 14 L260 89"></path>
+        <path d="M330 14 L330 89"></path>
+        <path d="M400 13 L400 89"></path>
+      </g>
+
+      {/* The deck-edge lifts, which hang off the deck rather than sit on it. */}
+      <g style="fill:color-mix(in oklab, var(--bs-hull-edge) 84%, #000)">
+        <rect x="146" y="4" width="46" height="9" rx="2"></rect>
+        <rect x="256" y="88" width="46" height="9" rx="2"></rect>
+        <rect x="372" y="88" width="40" height="9" rx="2"></rect>
+      </g>
+
+      {/* The angled deck, and the landing area inside it. */}
+      <path
+        d="M16 70 L292 34 L300 50 L26 86 Z"
+        style="fill:color-mix(in oklab, var(--bs-hull-edge) 88%, #000)"></path>
       <g style="fill:var(--bs-mark)">
-        <rect x="56" y="47" width="72" height="6" rx="3"></rect>
-        <rect x="148" y="47" width="48" height="6" rx="3"></rect>
-        <rect x="216" y="47" width="48" height="6" rx="3"></rect>
-        <rect x="284" y="47" width="48" height="6" rx="3"></rect>
-        <rect x="352" y="47" width="48" height="6" rx="3"></rect>
+        <path d="M20 74 L40 71 L41 76 L21 79 Z"></path>
+        <path d="M58 68 L78 65 L79 70 L59 73 Z"></path>
+        <path d="M96 63 L116 60 L117 65 L97 68 Z"></path>
+        <path d="M134 58 L154 55 L155 60 L135 63 Z"></path>
+        <path d="M172 53 L192 50 L193 55 L173 58 Z"></path>
+        <path d="M210 48 L230 45 L231 50 L211 53 Z"></path>
       </g>
 
-      <g style="fill:color-mix(in oklab, var(--bs-hull-edge) 62%, #000)">
-        <rect x="170" y="66" width="48" height="18" rx="3"></rect>
-        <rect x="298" y="66" width="48" height="18" rx="3"></rect>
-        <rect x="124" y="16" width="44" height="16" rx="3"></rect>
+      {/* Arrestor wires across the landing area, and the two catapult tracks
+          up the bow. */}
+      <g
+        style="fill:none;stroke:color-mix(in oklab, var(--bs-hull-edge) 60%, #000);stroke-width:1.6"
+      >
+        <path d="M46 62 L54 82"></path>
+        <path d="M70 59 L78 79"></path>
+        <path d="M94 55 L102 75"></path>
+        <path d="M118 52 L126 72"></path>
+        <path d="M312 20 L470 40"></path>
+        <path d="M306 66 L462 54"></path>
+      </g>
+      <g style="fill:color-mix(in oklab, var(--bs-hull-edge) 70%, #000)">
+        <path d="M300 16 L322 18 L320 26 L298 24 Z"></path>
+        <path d="M296 62 L318 60 L320 68 L298 70 Z"></path>
       </g>
 
+      {/* The island, in three steps up: hangar face, bridge, and the mast with
+          its radar faces and whip antennas. */}
       <rect x="284" y="12" width="70" height="26" rx="5" style="fill:var(--bs-hull-deck)"></rect>
       <rect
         x="284"
@@ -125,16 +190,31 @@
         height="10"
         rx="4"
         style="fill:color-mix(in oklab, var(--bs-hull-deck) 66%, #000)"></rect>
+      <rect
+        x="288"
+        y="14"
+        width="62"
+        height="5"
+        rx="2"
+        style="fill:color-mix(in oklab, var(--bs-hull-deck) 74%, #fff)"></rect>
       <g style="fill:color-mix(in oklab, var(--bs-hull) 34%, #000)">
         <rect x="292" y="16" width="30" height="8" rx="3"></rect>
         <rect x="328" y="16" width="18" height="8" rx="3"></rect>
+      </g>
+      {/* The funnel uptakes, aft on the island. */}
+      <g style="fill:color-mix(in oklab, var(--bs-hull-deck) 58%, #000)">
+        <rect x="290" y="30" width="14" height="6" rx="2"></rect>
+        <rect x="308" y="30" width="14" height="6" rx="2"></rect>
       </g>
       <g style="fill:var(--bs-hull-deck)">
         <rect x="336" y="2" width="5" height="12" rx="2.5"></rect>
         <rect x="322" y="2" width="28" height="5" rx="2.5"></rect>
         <rect x="300" y="4" width="4" height="10" rx="2"></rect>
+        <rect x="312" y="6" width="3" height="8" rx="1.5"></rect>
       </g>
 
+      {/* Aircraft, parked the way they are parked: nose out along the deck
+          edge, and one spotted on each catapult. */}
       <g style="fill:var(--bs-hull-deck)">
         <path d="M78 63 L104 63 L114 68 L104 73 L78 73 Z"></path>
         <path d="M86 54 L94 54 L106 68 L94 82 L86 82 L98 68 Z"></path>
@@ -142,13 +222,33 @@
         <path d="M194 54 L202 54 L214 68 L202 82 L194 82 L206 68 Z"></path>
         <path d="M380 24 L404 24 L413 29 L404 34 L380 34 Z"></path>
         <path d="M387 16 L395 16 L406 29 L395 42 L387 42 L398 29 Z"></path>
+        <path d="M382 60 L406 60 L415 65 L406 70 L382 70 Z"></path>
+        <path d="M389 52 L397 52 L408 65 L397 78 L389 78 L400 65 Z"></path>
+        <path d="M232 20 L254 20 L262 24 L254 28 L232 28 Z"></path>
+        <path d="M238 13 L245 13 L255 24 L245 35 L238 35 L248 24 Z"></path>
       </g>
+      <g style="fill:color-mix(in oklab, var(--bs-hull-deck) 62%, #000)">
+        <path d="M86 68 L98 68 L94 82 L86 82 Z"></path>
+        <path d="M194 68 L206 68 L202 82 L194 82 Z"></path>
+        <path d="M387 29 L398 29 L395 42 L387 42 Z"></path>
+      </g>
+
+      {/* The deck edge itself, last, so nothing parked on it crosses the line. */}
+      <path
+        d="M8 24 L112 10 L440 12 L494 50 L440 88 L112 90 L8 76 Z"
+        style="fill:none;stroke:color-mix(in oklab, var(--bs-hull-deck) 70%, #fff);stroke-width:2"
+      ></path>
     </symbol>
 
     {/*
-      Battleship. Two twin turrets forward and one aft with its guns trained
+      Battleship. Two triple turrets forward and one aft with its guns trained
       astern, a tower bridge between two capped funnels, and secondary mounts
       down both sides.
+
+      The armour belt is drawn as a band a shade darker along the waterline and
+      the citadel as a plate a shade lighter amidships, which is what a
+      battleship actually looks like from above: a ship built around the middle
+      third of itself.
     */}
     <symbol id="bs-ship-1" viewBox="0 0 400 100">
       <path
@@ -164,35 +264,81 @@
         d="M14 36 L32 21 L350 19 L368 33 L352 27 L34 29 L20 40 Z"
         style="fill:color-mix(in oklab, var(--bs-hull) 66%, #fff)"></path>
 
+      {/* The armour belt, along both sides at the waterline. */}
+      <g
+        style="fill:none;stroke:color-mix(in oklab, var(--bs-hull) 60%, #000);stroke-width:2.2"
+      >
+        <path d="M34 25 L346 23"></path>
+        <path d="M34 77 L346 79"></path>
+      </g>
+
+      {/* The weather deck. */}
       <path
         d="M28 42 L44 28 L346 26 L372 50 L346 74 L44 72 L28 58 Z"
         style="fill:var(--bs-hull-edge)"></path>
       <path
         d="M28 50 L44 72 L346 74 L372 50 Z"
         style="fill:color-mix(in oklab, var(--bs-hull-edge) 78%, #000)"></path>
+      {/* The citadel: the armoured box the machinery and the magazines sit in.
+          A hairline off the deck rather than a step, because at a full step it
+          is a white slab across the middle of the ship. */}
+      <path
+        d="M96 34 L268 32 L272 50 L268 68 L96 66 L92 50 Z"
+        style="fill:color-mix(in oklab, var(--bs-hull-edge) 96%, #fff)"></path>
 
-      <g style="fill:color-mix(in oklab, var(--bs-hull-edge) 62%, #000)">
-        <rect x="326" y="40" width="34" height="3" rx="1.5"></rect>
-        <rect x="326" y="57" width="34" height="3" rx="1.5"></rect>
+      {/* Deck planking, fore and aft of the citadel. */}
+      <g
+        style="fill:none;stroke:color-mix(in oklab, var(--bs-hull-edge) 90%, #000);stroke-width:0.9"
+      >
+        <path d="M40 38 L88 36"></path>
+        <path d="M40 44 L88 42"></path>
+        <path d="M40 56 L88 58"></path>
+        <path d="M40 62 L88 64"></path>
+        <path d="M276 36 L344 34"></path>
+        <path d="M276 44 L346 42"></path>
+        <path d="M276 56 L346 58"></path>
+        <path d="M276 64 L344 66"></path>
       </g>
 
+      {/* The aft turret, guns trained astern. */}
+      <g style="fill:color-mix(in oklab, var(--bs-hull-edge) 62%, #000)">
+        <rect x="326" y="39" width="36" height="3" rx="1.5"></rect>
+        <rect x="326" y="48.5" width="36" height="3" rx="1.5"></rect>
+        <rect x="326" y="58" width="36" height="3" rx="1.5"></rect>
+      </g>
+
+      {/* Turrets: a barbette ring, the house on it, and the shaded back half.
+          Three guns each, which is what makes them read as main battery
+          rather than as a lump. */}
       <g style="fill:var(--bs-hull-deck)">
-        <rect x="294" y="43" width="56" height="7" rx="3.5"></rect>
-        <rect x="294" y="52" width="56" height="7" rx="3.5"></rect>
+        <rect x="294" y="42" width="56" height="5" rx="2.5"></rect>
+        <rect x="294" y="47.5" width="56" height="5" rx="2.5"></rect>
+        <rect x="294" y="53" width="56" height="5" rx="2.5"></rect>
         <path d="M262 35 L296 35 L303 50 L296 65 L262 65 L255 50 Z"></path>
-        <rect x="244" y="44" width="46" height="6" rx="3"></rect>
-        <rect x="244" y="52" width="46" height="6" rx="3"></rect>
+        <rect x="244" y="43" width="46" height="4.5" rx="2.25"></rect>
+        <rect x="244" y="48" width="46" height="4.5" rx="2.25"></rect>
+        <rect x="244" y="53" width="46" height="4.5" rx="2.25"></rect>
         <path d="M214 38 L244 38 L250 50 L244 62 L214 62 L208 50 Z"></path>
-        <rect x="24" y="44" width="48" height="6" rx="3"></rect>
-        <rect x="24" y="52" width="48" height="6" rx="3"></rect>
+        <rect x="24" y="43" width="48" height="4.5" rx="2.25"></rect>
+        <rect x="24" y="48" width="48" height="4.5" rx="2.25"></rect>
+        <rect x="24" y="53" width="48" height="4.5" rx="2.25"></rect>
         <path d="M70 38 L100 38 L106 50 L100 62 L70 62 L64 50 Z"></path>
       </g>
       <g style="fill:color-mix(in oklab, var(--bs-hull-deck) 66%, #000)">
-        <path d="M262 50 L296 50 L303 50 L296 65 L262 65 L255 50 Z"></path>
-        <path d="M214 50 L244 50 L250 50 L244 62 L214 62 L208 50 Z"></path>
-        <path d="M70 50 L100 50 L106 50 L100 62 L70 62 L64 50 Z"></path>
+        <path d="M262 50 L303 50 L296 65 L262 65 L255 50 Z"></path>
+        <path d="M214 50 L250 50 L244 62 L214 62 L208 50 Z"></path>
+        <path d="M70 50 L106 50 L100 62 L70 62 L64 50 Z"></path>
+      </g>
+      <g
+        style="fill:none;stroke:color-mix(in oklab, var(--bs-hull-deck) 72%, #fff);stroke-width:1"
+      >
+        <circle cx="279" cy="50" r="19"></circle>
+        <circle cx="229" cy="50" r="16"></circle>
+        <circle cx="85" cy="50" r="16"></circle>
       </g>
 
+      {/* The tower bridge: four steps up, a rangefinder across the top, and the
+          director above that. */}
       <rect x="150" y="26" width="52" height="48" rx="7" style="fill:var(--bs-hull-deck)"></rect>
       <rect
         x="150"
@@ -201,6 +347,13 @@
         height="24"
         rx="6"
         style="fill:color-mix(in oklab, var(--bs-hull-deck) 66%, #000)"></rect>
+      <rect
+        x="156"
+        y="30"
+        width="40"
+        height="5"
+        rx="2"
+        style="fill:color-mix(in oklab, var(--bs-hull-deck) 74%, #fff)"></rect>
       <rect
         x="158"
         y="32"
@@ -212,8 +365,17 @@
         <rect x="164" y="13" width="24" height="16" rx="4"></rect>
         <rect x="172" y="3" width="6" height="12" rx="3"></rect>
         <rect x="160" y="4" width="30" height="4" rx="2"></rect>
+        <rect x="156" y="70" width="40" height="6" rx="3"></rect>
       </g>
+      <rect
+        x="166"
+        y="16"
+        width="20"
+        height="4"
+        rx="2"
+        style="fill:color-mix(in oklab, var(--bs-hull) 34%, #000)"></rect>
 
+      {/* Two capped funnels, with grating across the top of each. */}
       <g style="fill:var(--bs-hull-deck)">
         <rect x="108" y="27" width="30" height="7" rx="3.5"></rect>
         <rect x="112" y="30" width="22" height="40" rx="6"></rect>
@@ -224,18 +386,37 @@
         <rect x="112" y="52" width="22" height="18" rx="5"></rect>
         <rect x="226" y="52" width="22" height="18" rx="5"></rect>
       </g>
+      <g style="fill:color-mix(in oklab, var(--bs-hull-deck) 48%, #000)">
+        <rect x="116" y="36" width="14" height="4" rx="1.5"></rect>
+        <rect x="116" y="43" width="14" height="4" rx="1.5"></rect>
+        <rect x="230" y="36" width="14" height="4" rx="1.5"></rect>
+        <rect x="230" y="43" width="14" height="4" rx="1.5"></rect>
+      </g>
 
+      {/* Secondary mounts down both sides, and the boat deck between them. */}
       <g style="fill:var(--bs-hull-deck)">
         <circle cx="128" cy="22" r="6"></circle>
         <circle cx="172" cy="22" r="6"></circle>
         <circle cx="128" cy="78" r="6"></circle>
         <circle cx="172" cy="78" r="6"></circle>
+        <rect x="142" y="17" width="18" height="6" rx="3"></rect>
+        <rect x="142" y="77" width="18" height="6" rx="3"></rect>
+      </g>
+      <g style="fill:color-mix(in oklab, var(--bs-hull-deck) 60%, #000)">
+        <rect x="124" y="19" width="8" height="2.4" rx="1.2"></rect>
+        <rect x="168" y="19" width="8" height="2.4" rx="1.2"></rect>
+        <rect x="124" y="78.6" width="8" height="2.4" rx="1.2"></rect>
+        <rect x="168" y="78.6" width="8" height="2.4" rx="1.2"></rect>
       </g>
     </symbol>
 
     {/*
-      Cruiser. One turret forward, a missile box amidships, a single funnel and
-      a flight deck aft with a landing circle on it.
+      Cruiser. One gun forward, a missile box amidships, a single funnel and a
+      flight deck aft with a landing circle on it.
+
+      The launcher is the piece worth the cells: sixteen hatches in a raised
+      coaming reads as a vertical launch system, and one grey block reads as a
+      crate on the deck.
     */}
     <symbol id="bs-ship-2" viewBox="0 0 300 100">
       <path
@@ -251,6 +432,14 @@
         d="M14 37 L30 23 L250 21 L268 34 L252 29 L32 31 L20 41 Z"
         style="fill:color-mix(in oklab, var(--bs-hull) 66%, #fff)"></path>
 
+      {/* The knuckle: the fold down the side that a flared bow leaves. */}
+      <g
+        style="fill:none;stroke:color-mix(in oklab, var(--bs-hull) 62%, #000);stroke-width:1.6"
+      >
+        <path d="M34 26 L248 24"></path>
+        <path d="M34 76 L248 78"></path>
+      </g>
+
       <path
         d="M26 43 L42 30 L248 28 L272 50 L248 72 L42 70 L26 57 Z"
         style="fill:var(--bs-hull-edge)"></path>
@@ -258,6 +447,18 @@
         d="M26 50 L42 70 L248 72 L272 50 Z"
         style="fill:color-mix(in oklab, var(--bs-hull-edge) 78%, #000)"></path>
 
+      {/* Plating seams across the deck. */}
+      <g
+        style="fill:none;stroke:color-mix(in oklab, var(--bs-hull-edge) 90%, #000);stroke-width:0.9"
+      >
+        <path d="M96 30 L96 70"></path>
+        <path d="M140 29 L140 71"></path>
+        <path d="M184 29 L184 71"></path>
+        <path d="M228 29 L228 71"></path>
+      </g>
+
+      {/* The flight deck aft: a landing circle, the approach line into it and
+          the hangar door it leads to. */}
       <g
         style="fill:none;stroke:color-mix(in oklab, var(--bs-hull-edge) 55%, #000);stroke-width:2.5"
       >
@@ -270,25 +471,60 @@
         height="3"
         rx="1.5"
         style="fill:color-mix(in oklab, var(--bs-hull-edge) 62%, #000)"></rect>
+      <rect
+        x="86"
+        y="36"
+        width="6"
+        height="28"
+        rx="2"
+        style="fill:color-mix(in oklab, var(--bs-hull-edge) 70%, #000)"></rect>
 
+      {/* The forward gun, on its barbette. */}
       <g style="fill:var(--bs-hull-deck)">
         <rect x="216" y="47" width="42" height="6" rx="3"></rect>
         <path d="M188 36 L218 36 L224 50 L218 64 L188 64 L182 50 Z"></path>
       </g>
       <path
-        d="M188 50 L218 50 L224 50 L218 64 L188 64 L182 50 Z"
+        d="M188 50 L224 50 L218 64 L188 64 L182 50 Z"
         style="fill:color-mix(in oklab, var(--bs-hull-deck) 66%, #000)"></path>
+      <circle
+        cx="203"
+        cy="50"
+        r="17"
+        style="fill:none;stroke:color-mix(in oklab, var(--bs-hull-deck) 72%, #fff);stroke-width:1"
+      ></circle>
 
-      <g style="fill:color-mix(in oklab, var(--bs-hull-deck) 78%, #000)">
-        <rect x="146" y="34" width="30" height="32" rx="3"></rect>
-      </g>
+      {/* The launcher: a coaming, and sixteen hatches inside it. */}
+      <rect
+        x="144"
+        y="32"
+        width="34"
+        height="36"
+        rx="3"
+        style="fill:color-mix(in oklab, var(--bs-hull-deck) 78%, #000)"></rect>
+      <rect
+        x="146"
+        y="34"
+        width="30"
+        height="32"
+        rx="2"
+        style="fill:color-mix(in oklab, var(--bs-hull-deck) 52%, #000)"></rect>
       <g style="fill:var(--bs-hull-deck)">
-        <rect x="149" y="37" width="10" height="10" rx="2"></rect>
-        <rect x="163" y="37" width="10" height="10" rx="2"></rect>
-        <rect x="149" y="53" width="10" height="10" rx="2"></rect>
-        <rect x="163" y="53" width="10" height="10" rx="2"></rect>
+        <rect x="148" y="36" width="6" height="6" rx="1.5"></rect>
+        <rect x="156" y="36" width="6" height="6" rx="1.5"></rect>
+        <rect x="164" y="36" width="6" height="6" rx="1.5"></rect>
+        <rect x="148" y="44" width="6" height="6" rx="1.5"></rect>
+        <rect x="156" y="44" width="6" height="6" rx="1.5"></rect>
+        <rect x="164" y="44" width="6" height="6" rx="1.5"></rect>
+        <rect x="148" y="52" width="6" height="6" rx="1.5"></rect>
+        <rect x="156" y="52" width="6" height="6" rx="1.5"></rect>
+        <rect x="164" y="52" width="6" height="6" rx="1.5"></rect>
+        <rect x="148" y="60" width="6" height="4" rx="1.5"></rect>
+        <rect x="156" y="60" width="6" height="4" rx="1.5"></rect>
+        <rect x="164" y="60" width="6" height="4" rx="1.5"></rect>
       </g>
 
+      {/* The bridge, with the mast and the air-search radar over it. */}
       <rect x="104" y="28" width="36" height="44" rx="6" style="fill:var(--bs-hull-deck)"></rect>
       <rect
         x="104"
@@ -298,17 +534,31 @@
         rx="5"
         style="fill:color-mix(in oklab, var(--bs-hull-deck) 66%, #000)"></rect>
       <rect
+        x="108"
+        y="31"
+        width="28"
+        height="4"
+        rx="2"
+        style="fill:color-mix(in oklab, var(--bs-hull-deck) 74%, #fff)"></rect>
+      <rect
         x="110"
         y="33"
         width="24"
         height="9"
         rx="3"
         style="fill:color-mix(in oklab, var(--bs-hull) 34%, #000)"></rect>
+      {/* The flat-panel arrays on the bridge faces. */}
+      <g style="fill:color-mix(in oklab, var(--bs-hull-deck) 56%, #000)">
+        <rect x="106" y="43" width="7" height="8" rx="1.5"></rect>
+        <rect x="131" y="43" width="7" height="8" rx="1.5"></rect>
+      </g>
       <g style="fill:var(--bs-hull-deck)">
         <rect x="118" y="12" width="6" height="18" rx="3"></rect>
         <circle cx="121" cy="10" r="7"></circle>
+        <rect x="112" y="18" width="18" height="3" rx="1.5"></rect>
       </g>
 
+      {/* The funnel, capped, with its uptake grating. */}
       <rect x="78" y="32" width="18" height="36" rx="5" style="fill:var(--bs-hull-deck)"></rect>
       <rect
         x="78"
@@ -324,6 +574,16 @@
         height="6"
         rx="3"
         style="fill:color-mix(in oklab, var(--bs-hull-deck) 66%, #000)"></rect>
+      <g style="fill:color-mix(in oklab, var(--bs-hull-deck) 48%, #000)">
+        <rect x="81" y="40" width="12" height="3.4" rx="1.4"></rect>
+        <rect x="81" y="46" width="12" height="3.4" rx="1.4"></rect>
+      </g>
+
+      {/* Boats under davits, one a side. */}
+      <g style="fill:color-mix(in oklab, var(--bs-hull-deck) 84%, #000)">
+        <rect x="118" y="24" width="22" height="6" rx="3"></rect>
+        <rect x="118" y="70" width="22" height="6" rx="3"></rect>
+      </g>
     </symbol>
 
     {/*
@@ -335,6 +595,11 @@
       This is the one hull with no deck, no funnel and no turret, so the whole
       of the shape has to do the work - and it has to do it turned a quarter as
       well, which a symmetrical blob does not.
+
+      The casing line down the spine, the limber holes along it and the flood
+      ports at the bow are what a submarine has instead of deck furniture, and
+      they are the only thing available to break up a hull that is otherwise
+      one continuous curve.
     */}
     <symbol id="bs-ship-3" viewBox="0 0 300 100">
       <path
@@ -350,6 +615,7 @@
         d="M32 64 C48 68 72 70 98 71 L206 72 C250 70 280 62 292 53 L296 58 C282 68 250 76 206 78 L98 77 C70 76 44 74 28 70 Z"
         style="fill:var(--bs-boot)"></path>
 
+      {/* The tail: rudder, planes and the screw behind them. */}
       <path
         d="M6 50 L32 34 L32 66 Z"
         style="fill:color-mix(in oklab, var(--bs-hull) 62%, #000)"></path>
@@ -358,7 +624,14 @@
         <path d="M22 68 L40 56 L36 50 L18 62 Z"></path>
         <circle cx="12" cy="50" r="6"></circle>
       </g>
+      <g
+        style="fill:none;stroke:color-mix(in oklab, var(--bs-hull-deck) 60%, #000);stroke-width:1"
+      >
+        <path d="M24 36 L38 46"></path>
+        <path d="M24 64 L38 54"></path>
+      </g>
 
+      {/* The casing: the flat walkway along the spine of the pressure hull. */}
       <rect
         x="62"
         y="44"
@@ -366,7 +639,25 @@
         height="12"
         rx="6"
         style="fill:color-mix(in oklab, var(--bs-hull-edge) 84%, #000)"></rect>
+      <rect
+        x="66"
+        y="45"
+        width="188"
+        height="3"
+        rx="1.5"
+        style="fill:color-mix(in oklab, var(--bs-hull-edge) 72%, #fff)"></rect>
+      {/* Limber holes down the casing, which is what the real line of dots is. */}
+      <g style="fill:color-mix(in oklab, var(--bs-hull) 56%, #000)">
+        <rect x="74" y="52" width="7" height="2.4" rx="1.2"></rect>
+        <rect x="88" y="52" width="7" height="2.4" rx="1.2"></rect>
+        <rect x="102" y="52" width="7" height="2.4" rx="1.2"></rect>
+        <rect x="116" y="52" width="7" height="2.4" rx="1.2"></rect>
+        <rect x="216" y="52" width="7" height="2.4" rx="1.2"></rect>
+        <rect x="230" y="52" width="7" height="2.4" rx="1.2"></rect>
+        <rect x="244" y="52" width="7" height="2.4" rx="1.2"></rect>
+      </g>
 
+      {/* The dive planes, crossing the sail. */}
       <rect x="158" y="16" width="11" height="68" rx="5.5" style="fill:var(--bs-hull-deck)"></rect>
       <rect
         x="158"
@@ -376,6 +667,7 @@
         rx="5.5"
         style="fill:color-mix(in oklab, var(--bs-hull-deck) 66%, #000)"></rect>
 
+      {/* The sail, with the bridge cut-out, the periscope and the masts. */}
       <rect x="138" y="33" width="68" height="34" rx="11" style="fill:var(--bs-hull-deck)"></rect>
       <rect
         x="138"
@@ -384,11 +676,27 @@
         height="17"
         rx="8.5"
         style="fill:color-mix(in oklab, var(--bs-hull-deck) 66%, #000)"></rect>
+      <rect
+        x="144"
+        y="36"
+        width="56"
+        height="4"
+        rx="2"
+        style="fill:color-mix(in oklab, var(--bs-hull-deck) 74%, #fff)"></rect>
+      <rect
+        x="146"
+        y="45"
+        width="18"
+        height="10"
+        rx="3"
+        style="fill:color-mix(in oklab, var(--bs-hull-deck) 50%, #000)"></rect>
       <g style="fill:color-mix(in oklab, var(--bs-hull) 40%, #000)">
         <rect x="180" y="40" width="7" height="9" rx="3.5"></rect>
         <rect x="191" y="42" width="6" height="7" rx="3"></rect>
+        <rect x="180" y="53" width="7" height="7" rx="3"></rect>
       </g>
 
+      {/* The hatches fore and aft, and the sonar dome in the bow. */}
       <g style="fill:color-mix(in oklab, var(--bs-hull-edge) 62%, #000)">
         <circle cx="100" cy="50" r="5"></circle>
         <circle cx="228" cy="50" r="5"></circle>
@@ -398,11 +706,22 @@
         cy="50"
         r="10"
         style="fill:color-mix(in oklab, var(--bs-hull) 82%, #000)"></circle>
+      {/* Flood ports along the bow, above and below the casing. */}
+      <g style="fill:color-mix(in oklab, var(--bs-hull) 58%, #000)">
+        <rect x="236" y="38" width="6" height="2.2" rx="1.1"></rect>
+        <rect x="248" y="40" width="6" height="2.2" rx="1.1"></rect>
+        <rect x="236" y="60" width="6" height="2.2" rx="1.1"></rect>
+        <rect x="248" y="58" width="6" height="2.2" rx="1.1"></rect>
+      </g>
     </symbol>
 
     {/*
       Destroyer. One gun forward, a block of vertical launch cells behind it, a
       bridge, a funnel, and a landing circle on the deck aft.
+
+      The smallest hull in the fleet and the one most often drawn, so it gets
+      the same vocabulary as the cruiser at two thirds the length: barbette
+      ring, coamed launcher, capped funnel, approach line into the circle.
     */}
     <symbol id="bs-ship-4" viewBox="0 0 200 100">
       <path
@@ -418,6 +737,13 @@
         d="M14 37 L28 23 L150 21 L168 34 L152 29 L30 31 L20 41 Z"
         style="fill:color-mix(in oklab, var(--bs-hull) 66%, #fff)"></path>
 
+      <g
+        style="fill:none;stroke:color-mix(in oklab, var(--bs-hull) 62%, #000);stroke-width:1.6"
+      >
+        <path d="M32 26 L148 24"></path>
+        <path d="M32 76 L148 78"></path>
+      </g>
+
       <path
         d="M24 43 L40 30 L148 28 L172 50 L148 72 L40 70 L24 57 Z"
         style="fill:var(--bs-hull-edge)"></path>
@@ -426,35 +752,74 @@
         style="fill:color-mix(in oklab, var(--bs-hull-edge) 78%, #000)"></path>
 
       <g
+        style="fill:none;stroke:color-mix(in oklab, var(--bs-hull-edge) 90%, #000);stroke-width:0.9"
+      >
+        <path d="M78 30 L78 70"></path>
+        <path d="M112 29 L112 71"></path>
+        <path d="M140 29 L140 71"></path>
+      </g>
+
+      {/* The landing circle aft, its approach line and the hangar door. */}
+      <g
         style="fill:none;stroke:color-mix(in oklab, var(--bs-hull-edge) 55%, #000);stroke-width:2.5"
       >
         <circle cx="52" cy="50" r="14"></circle>
       </g>
+      <rect
+        x="30"
+        y="48.5"
+        width="44"
+        height="3"
+        rx="1.5"
+        style="fill:color-mix(in oklab, var(--bs-hull-edge) 62%, #000)"></rect>
+      <rect
+        x="72"
+        y="38"
+        width="5"
+        height="24"
+        rx="2"
+        style="fill:color-mix(in oklab, var(--bs-hull-edge) 70%, #000)"></rect>
 
+      {/* The forward gun, on its barbette. */}
       <g style="fill:var(--bs-hull-deck)">
         <rect x="140" y="47" width="32" height="6" rx="3"></rect>
         <path d="M116 38 L142 38 L148 50 L142 62 L116 62 L110 50 Z"></path>
       </g>
       <path
-        d="M116 50 L142 50 L148 50 L142 62 L116 62 L110 50 Z"
+        d="M116 50 L148 50 L142 62 L116 62 L110 50 Z"
         style="fill:color-mix(in oklab, var(--bs-hull-deck) 66%, #000)"></path>
+      <circle
+        cx="129"
+        cy="50"
+        r="15"
+        style="fill:none;stroke:color-mix(in oklab, var(--bs-hull-deck) 72%, #fff);stroke-width:1"
+      ></circle>
 
+      {/* The launcher: a coaming, and the cells inside it. */}
+      <rect
+        x="90"
+        y="34"
+        width="20"
+        height="32"
+        rx="2.5"
+        style="fill:color-mix(in oklab, var(--bs-hull-deck) 78%, #000)"></rect>
       <rect
         x="92"
         y="36"
         width="16"
         height="28"
-        rx="2"
-        style="fill:color-mix(in oklab, var(--bs-hull-deck) 78%, #000)"></rect>
+        rx="1.5"
+        style="fill:color-mix(in oklab, var(--bs-hull-deck) 52%, #000)"></rect>
       <g style="fill:var(--bs-hull-deck)">
-        <rect x="94" y="38" width="5" height="5" rx="1"></rect>
-        <rect x="101" y="38" width="5" height="5" rx="1"></rect>
-        <rect x="94" y="46" width="5" height="5" rx="1"></rect>
-        <rect x="101" y="46" width="5" height="5" rx="1"></rect>
-        <rect x="94" y="54" width="5" height="5" rx="1"></rect>
-        <rect x="101" y="54" width="5" height="5" rx="1"></rect>
+        <rect x="93.5" y="37.5" width="5.5" height="5.5" rx="1.2"></rect>
+        <rect x="101" y="37.5" width="5.5" height="5.5" rx="1.2"></rect>
+        <rect x="93.5" y="45" width="5.5" height="5.5" rx="1.2"></rect>
+        <rect x="101" y="45" width="5.5" height="5.5" rx="1.2"></rect>
+        <rect x="93.5" y="52.5" width="5.5" height="5.5" rx="1.2"></rect>
+        <rect x="101" y="52.5" width="5.5" height="5.5" rx="1.2"></rect>
       </g>
 
+      {/* The bridge, with its panel arrays and the mast over it. */}
       <rect x="62" y="30" width="26" height="40" rx="5" style="fill:var(--bs-hull-deck)"></rect>
       <rect
         x="62"
@@ -464,17 +829,30 @@
         rx="4"
         style="fill:color-mix(in oklab, var(--bs-hull-deck) 66%, #000)"></rect>
       <rect
+        x="65"
+        y="32.5"
+        width="20"
+        height="3.5"
+        rx="1.75"
+        style="fill:color-mix(in oklab, var(--bs-hull-deck) 74%, #fff)"></rect>
+      <rect
         x="66"
         y="34"
         width="18"
         height="8"
         rx="3"
         style="fill:color-mix(in oklab, var(--bs-hull) 34%, #000)"></rect>
+      <g style="fill:color-mix(in oklab, var(--bs-hull-deck) 56%, #000)">
+        <rect x="63.5" y="44" width="6" height="7" rx="1.5"></rect>
+        <rect x="80.5" y="44" width="6" height="7" rx="1.5"></rect>
+      </g>
       <g style="fill:var(--bs-hull-deck)">
         <rect x="72" y="14" width="5" height="17" rx="2.5"></rect>
         <circle cx="74.5" cy="12" r="6"></circle>
+        <rect x="67" y="19" width="15" height="3" rx="1.5"></rect>
       </g>
 
+      {/* The funnel, capped, with its uptake grating. */}
       <rect x="40" y="34" width="15" height="32" rx="4" style="fill:var(--bs-hull-deck)"></rect>
       <rect
         x="40"
@@ -490,6 +868,16 @@
         height="5"
         rx="2.5"
         style="fill:color-mix(in oklab, var(--bs-hull-deck) 66%, #000)"></rect>
+      <g style="fill:color-mix(in oklab, var(--bs-hull-deck) 48%, #000)">
+        <rect x="42.5" y="41" width="10" height="3" rx="1.2"></rect>
+        <rect x="42.5" y="46" width="10" height="3" rx="1.2"></rect>
+      </g>
+
+      {/* Boats under davits, one a side. */}
+      <g style="fill:color-mix(in oklab, var(--bs-hull-deck) 84%, #000)">
+        <rect x="76" y="25" width="18" height="5" rx="2.5"></rect>
+        <rect x="76" y="70" width="18" height="5" rx="2.5"></rect>
+      </g>
     </symbol>
 
     {/*

@@ -912,21 +912,60 @@ settled body upright, then easing a moving one - were both visibly a body turnin
 nothing turned it.
 
 **The planets are gradients, not images.** One radial gradient makes the lit sphere from
-`--acc-tint`, a shared `--acc-shade` lays a specular, a bounce-lit rim and a curved
-terminator over the top, and most bodies add markings of their own underneath. Saturn's ring
-is two pseudo-elements, one behind the planet and one clipped to its lower half in front,
-because a single ellipse on top reads as a hoop around a circle rather than a ring around a
-sphere.
+`--acc-tint`, `--acc-form` lays a bounce-lit rim and a curved terminator over the top,
+`--acc-shade` is that plus a specular, and each body stacks its own markings between the
+two. Saturn's ring is two pseudo-elements, one behind the planet and one clipped to its
+lower half in front, because a single ellipse on top reads as a hoop around a circle rather
+than a ring around a sphere.
+
+⚠️ **The two are split because Earth's land re-applies the shading.** The continents are
+pseudo-elements drawn over the ocean, so without the stack on them they ignore the
+terminator and read as stickers - but with the whole stack they take the specular too, and
+the glint off the water ended up in the middle of North America. `--acc-form` is the part
+that says "sphere" and is what the land uses.
+
+**Four rules cover what each kind of body is made of, and they are worth knowing before
+editing one.** A crater is three layers - a bright raised rim, a darker floor, and a shadow
+thrown *back across the floor from the lit side*, because the wall the light falls on
+outside is the wall that shades the inside. A gas giant's belts are written out rather than
+repeated, because an even `repeating-linear-gradient` reads as a pattern laid over a ball
+instead of as weather on one. An albedo feature - Syrtis Major, a mare - is several
+hard-edged ellipses at one tone, which union into a wedge, where soft ones at different
+tones read as a bruise with a hole in it. And the Sun takes no terminator at all: it is lit
+from inside, so limb darkening is the whole of its shading, and it carries no repeating
+surface texture because every cheap way of writing granulation comes out looking either
+woven or like polka dots.
+
+⚠️ **Earth's coastlines are projected, not drawn.** Two `clip-path: polygon()` rings of
+about seventy points each, taken from the real outline in degrees and put through an
+azimuthal equidistant projection centred on 22°N 34°W. Two rings because a body has two
+pseudo-elements, and that is not a compromise - the Americas are one landmass joined at
+Panama and Afro-Eurasia is one joined at Suez. Each ring traces its inland seas as bays, so
+Hudson Bay, the Gulf of Mexico, the Mediterranean and the Red Sea stay water. ⚠️ The
+projection is equidistant rather than orthographic on purpose: orthographic is what a camera
+sees and its radius goes as the sine of the angle from the centre, which piles everything
+past sixty degrees into the rim and left Europe a smear with Asia behind it. ⚠️ The
+Mediterranean and the Red Sea are the only places the outline is not the true one, opened by
+about three degrees on each shore - at their real widths Sicily touches Tunisia and the Red
+Sea is a hairline, which on a body a centimetre across welds Europe onto Africa and leaves
+Arabia as a spike.
 
 ⚠️ **Saturn paints above every other body**, on a `z-index: 1` that sits under `.acc-panel`
 at 3. Its ring reaches 1.7 diameters across, so on a full field something is always under
 one of the tips, and a tip that disappears behind a neighbour reads as a rendering fault
-rather than as depth - it is a thin ellipse, and half of it simply goes missing. The
-`z-index` also makes the stacking context that keeps the ring's back half behind its own
-planet instead of behind the whole field, which is what `isolation: isolate` used to do
-there. ⚠️ It has to stay `z-index` alone: a `position` on that rule ties
-`.acc-world .acc-body` on specificity, wins on order, and drops Saturn out of the field's
-absolute positioning.
+rather than as depth - it is a thin ellipse, and half of it simply goes missing. ⚠️ It has
+to stay `z-index` alone: a `position` on that rule ties `.acc-world .acc-body` on
+specificity, wins on order, and drops Saturn out of the field's absolute positioning.
+
+⚠️ **That `z-index` is also why the back of the ring has to be masked rather than layered.**
+It makes Saturn a stacking context, and inside one the element's own background paints
+*before* its negative-`z-index` children - so `::before` at `-1` was never behind the
+planet, and the far half of the ring could be read straight through it. It was faint enough
+to miss while the ring was one soft band and impossible to miss once it had divisions in it.
+The fix is a `mask-image` that is transparent inside the planet's silhouette and opaque
+outside, which leaves nothing to show through. The two radii in it are arithmetic: the ring
+box is 170% by 48% of a square body and its transform is a pure rotation, so the planet's
+disc is still a circle in that box, at 50/170 of its width and 50/48 of its height.
 
 ⚠️ **`.acc-panel` re-declares the palette rather than styling its contents**, the way
 `.panel` does (§1) and with more cause. The well is dark space in both themes, so in the
@@ -1068,8 +1107,22 @@ inside of.
 
 ⚠️ **The rounding is bands, not gradients.** A `<linearGradient>` declared inside a symbol
 is not reliably resolved from inside a `<use>` shadow tree, while a flat fill mixed off
-`--bs-hull` always is. Four bands - a lit sheer, the flank, the shaded flank, and the boot
-topping at the waterline - read as a round hull and cost nothing.
+`--bs-hull` always is. Five bands - a lit sheer, the deck, the flank, the shaded flank, and
+the boot topping at the waterline - read as a round hull and cost nothing.
+
+⚠️ **Detail is layered by contrast, not by count.** Everything that has to survive a ship
+two centimetres long - the silhouette, the deck, the turrets, the island, the sail - carries
+a full step of tone. Everything that is there for the close look - plating seams, armour
+belts, guardrails, uptake gratings, limber holes, hatch covers - is a hairline a few percent
+off its own ground, so it enriches the hull at size and fades out instead of turning into
+noise on the board. The one thing that has to be watched is a *large* light shape: the
+carrier's lit sheer was a quarter of the flight deck at two thirds white and read as a sheet
+of glass laid over the bow, and the battleship's citadel at a full step was a white slab
+across the middle of the ship. Both are now a strip and a hairline respectively.
+
+⚠️ **The detailed symbol has to open with the same outline the silhouette is.** The
+silhouette is what the flank underneath is extruded from, so changing one without the other
+makes the side of the ship stop lining up with the deck on top of it.
 
 ⚠️ **Colour reaches a symbol through `style`, never through a `fill` attribute.** A
 document stylesheet cannot select into a `<use>` shadow tree, and inherited custom
@@ -1121,6 +1174,36 @@ cancelling the arrival of an old one.
 
 ## Changelog
 
+- 2026-09-21 - every ship in the fleet redrawn at production detail: the carrier gained an
+  angled deck with its centreline, arrestor wires, two catapult tracks, deck-edge lifts and
+  sponsons; the battleship triple turrets on barbette rings, an armour belt, deck planking
+  and grated funnel caps; the cruiser and the destroyer a coamed launcher with real cells,
+  panel arrays on the bridge and an approach line into the landing circle; the submarine a
+  casing with limber holes, flood ports and a bridge cut-out in the sail. ⚠️ Detail is
+  layered by contrast rather than by count, and a large light shape is the thing that breaks
+  it - the carrier's sheer is now a strip along the deck edge and the battleship's citadel a
+  hairline, where both used to be panes (§9).
+- 2026-09-21 - all ten of Accretion's bodies redrawn. Craters are three layers with the
+  shadow thrown back across the floor from the lit side, gas-giant belts are written out
+  instead of repeated, albedo features are hard-edged ellipses unioned into a wedge, Saturn's
+  ring has five rings and three real gaps and casts its own shadow on the planet, and the
+  Sun runs hot in the middle to deep red at the limb with no repeating surface texture at
+  all - every cheap way of writing granulation came out either woven or as polka dots (§9).
+- 2026-09-21 - Earth's continents are real coastlines, projected. Two `clip-path: polygon()`
+  rings of about seventy points from the outline in degrees, through an azimuthal equidistant
+  projection centred on 22°N 34°W, with the inland seas traced as bays. ⚠️ Equidistant and
+  not orthographic: orthographic piles everything past sixty degrees into the rim, which left
+  Europe a smear. Nothing built from ellipses ever became a coastline - soft they are blobs,
+  hard they are a chain of circles with the joins showing (§9).
+- 2026-09-21 - `--acc-shade` split into `--acc-form` plus a specular. Earth's land is drawn
+  over the ocean and re-applies the shading so it answers the terminator, and re-applying the
+  whole stack put the glint off the water in the middle of North America (§9).
+- 2026-09-21 - the back half of Saturn's ring is masked out of the planet's silhouette
+  instead of relying on `z-index: -1`. ⚠️ It never worked: the `z-index: 1` that lifts Saturn
+  over its neighbours makes it a stacking context, and inside one the element's own
+  background paints before its negative children - so the far side of the ring was being read
+  straight through the planet, faintly enough to miss until the ring had divisions in it
+  (§9).
 - 2026-09-17 - the wreck on Battleship's thumbnail sits one column further in, so the status
   ribbon cut across the bottom-right corner lands on open water instead of across the ship
   it is advertising. ⚠️ That corner is spoken for on every game card, so a still has to be
