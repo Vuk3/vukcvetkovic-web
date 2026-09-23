@@ -5758,6 +5758,12 @@
     outline-offset: 2px;
   }
 
+  /* The tile a cleared board just opened, which is the reward the panel points
+     at. The page adds the class and takes it away when the animation ends. */
+  .mem-level.is-unlocked {
+    animation: mem-unlock 1100ms var(--mem-spring) 380ms backwards;
+  }
+
   /* Locked. Faded rather than hidden, because seeing the size of what is
      still to come is most of what makes a level strip worth having. */
   .mem-level:has(:disabled) {
@@ -5923,6 +5929,18 @@
     font-size: 0.875rem;
   }
 
+  /* The icon is the state: a speaker with its waves when the sound is on, and
+     crossed out when it is off. Both are in the markup and the pressed state
+     picks one, so the button never changes its words. */
+  .mem-sound[aria-pressed='true'] .mem-sound-off,
+  .mem-sound[aria-pressed='false'] .mem-sound-on {
+    display: none;
+  }
+
+  .mem-sound[aria-pressed='false'] {
+    color: var(--site-muted);
+  }
+
   /*
    * Two meters a row on a phone, not four.
    *
@@ -5955,6 +5973,35 @@
 
   .mem-frame {
     position: relative;
+  }
+
+  /*
+   * The board found so far, as a gold line along the top edge of the table.
+   * It is inset from the corners so it reads as a rule on the table rather than
+   * as a border round it, and it is a `scale` of one fixed element - so a pair
+   * landing is a compositor change and never a layout one.
+   */
+  .mem-progress {
+    position: absolute;
+    top: 0;
+    left: var(--site-radius-card);
+    right: var(--site-radius-card);
+    z-index: 1;
+    height: 3px;
+    border-radius: 0 0 3px 3px;
+    background-color: color-mix(in oklab, var(--site-muted) 16%, transparent);
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .mem-progress::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, color-mix(in oklab, var(--mem-gold) 70%, #ffffff), var(--mem-gold));
+    transform-origin: 0 50%;
+    scale: var(--mem-done, 0) 1;
+    transition: scale 520ms var(--mem-spring);
   }
 
   /*
@@ -6125,6 +6172,15 @@
     cursor: default;
   }
 
+  /* The two cards of a turn are in your hand, so they are held up off the
+     table, and a pair that is found lies back down. The lift is the button's
+     `translate`, which transitions, so a pair settles rather than dropping. */
+  .mem-card[data-face='up'] {
+    --mem-card-lift: var(--mem-card-lift-hover);
+
+    translate: 0 -4px;
+  }
+
   .mem-card-body {
     position: absolute;
     inset: 0;
@@ -6215,6 +6271,46 @@
     inset: calc(var(--mem-card, 6rem) * 0.06);
     border: 1px solid color-mix(in oklab, var(--mem-back-ink) 42%, transparent);
     border-radius: calc(var(--mem-radius) * 0.6);
+  }
+
+  /*
+   * A light running across the back as the pointer arrives, the way a glossy
+   * card catches a lamp when it is tilted. An animation rather than a
+   * transition, so it runs once per arrival and does not run backwards when the
+   * pointer leaves. At rest it is parked off the card, and the face clips it.
+   */
+  .mem-back::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      115deg,
+      transparent 30%,
+      color-mix(in oklab, #ffffff 38%, transparent) 50%,
+      transparent 70%
+    );
+    translate: -120% 0;
+    pointer-events: none;
+  }
+
+  @media (hover: hover) {
+    .mem-card:is(:not([data-face]), [data-face='down']):hover .mem-back::before {
+      animation: mem-glint 820ms var(--site-ease);
+    }
+  }
+
+  /* A found pair keeps a gold edge for the rest of the board, so what is done
+     reads at a glance against what is still in play. Inset, and over the
+     picture rather than under it, since the drawing covers the whole face. */
+  .mem-card[data-face='matched'] .mem-front::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 max(2px, calc(var(--mem-card, 6rem) * 0.03))
+      color-mix(in oklab, var(--mem-gold) 78%, transparent);
+    pointer-events: none;
   }
 
   /* A light passing across a pair as it is sealed. `both` parks it off the
@@ -6728,6 +6824,33 @@
     translate: calc(var(--bx) * 56cqw) calc(var(--by) * 46cqh + 42cqh);
     rotate: var(--br);
     scale: 0.9;
+  }
+}
+
+@keyframes mem-glint {
+  from {
+    translate: -120% 0;
+  }
+
+  to {
+    translate: 120% 0;
+  }
+}
+
+@keyframes mem-unlock {
+  0% {
+    scale: 0.88;
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--mem-gold) 70%, transparent);
+  }
+
+  35% {
+    scale: 1.1;
+    box-shadow: 0 0 0 6px color-mix(in oklab, var(--mem-gold) 45%, transparent);
+  }
+
+  100% {
+    scale: 1;
+    box-shadow: 0 0 0 14px color-mix(in oklab, var(--mem-gold) 0%, transparent);
   }
 }
 

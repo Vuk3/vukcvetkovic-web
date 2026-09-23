@@ -748,6 +748,7 @@ const sr: Dict = {
         best: "Najmanje poteza",
         goal: "Zvezdice",
         newGame: "Nova igra",
+        sound: "Zvuk",
         hint: "Pritisni karticu da je okreneš, pa još jednu. Par ostaje okrenut, a sve ostalo se vraća. Strelice šetaju po stolu, a Enter okreće karticu.",
 
         gridLabel: "Kartice",
@@ -833,7 +834,7 @@ const sr: Dict = {
           label: "Kako je napravljena",
           paragraphs: [
             "Nema canvasa ni biblioteke za igre, kao ni kod ostalih. Kartica je dugme sa dve strane, a okretanje je jedna tranzicija na jednom svojstvu: sloj koji drži obe strane rotira se za pola kruga oko uspravne ose, svaka strana krije svoje naličje, i pretraživač pokazuje onu koja je okrenuta ka tebi. Okret prebaci za nekoliko stepeni i vrati se, i zato izgleda kao kartica koja ima neku težinu a ne kao kvadrat koji se vrti. Svaka kartica nosi svoju perspektivu, srazmernu njenoj veličini, pa se kartica na najmanjoj tabli i ona na najvećoj okreću kroz istu dubinu.",
-            "Trideset sličica je nacrtano a ne preuzeto: jedan sprite list u stranici, jedan simbol po sličici, i svako lice kartice je referenca na jedan od njih. Svaka je ravna boja u tri tona, sama boja, svetlina prema izvoru svetla i senka od njega, na sopstvenoj podlozi. Sličice zadržavaju boje u obe teme, a samo podloge prate stranicu, pa je jabuka zapamćena na svetlom ista jabuka i na tamnom.",
+            "Trideset sličica je nacrtano a ne preuzeto: jedan sprite list u stranici, jedan simbol po sličici, i svako lice kartice je referenca na jedan od njih. Svaka je ravna boja u tri tona, sama boja, svetlina prema izvoru svetla i senka od njega, na sopstvenoj podlozi. Sličice zadržavaju boje u obe teme, a samo podloge prate stranicu, pa je jabuka zapamćena na svetlom ista jabuka i na tamnom. Zvukovi su napravljeni na isti način, u pretraživaču, od nekoliko oscilatora i kratkog šuma kroz filter, pa na stranici nema ni audio fajla.",
             "Kartica ne zna šta je dok se ne okrene. Tabla sa zatvorenim karticama u stranici ne sadrži nijedan odgovor: lice svake kartice ne pokazuje ni na šta, a sličica se upisuje u trenutku kad kartica pređe na drugu stranu. Špil se meša jednom po tabli i živi unutar igre, gde stranica ne može da ga pročita.",
             "Granice za zvezdice su izmerene a ne izabrane. Igrač sa savršenim pamćenjem, onaj koji nikad ne okreće karticu koju je već video osim kad ona zatvara par, odigrao je dvesta hiljada partija na svakoj tabli, a tri zvezdice su broj poteza koji mu je trebao u devet partija od deset. Njegov prosek je ispao 1,61 potez po paru, što je poznat odgovor za ovu igru i način na koji je simulacija proverena.",
             "Tabla je veličine koja staje na ekran, jer tabla memorije koju moraš da skroluješ je tabla koju ne vidiš. Na telefonu koji držiš uspravno okreće se za četvrtinu, deset u redu postaje šest u redu, a nijedna kartica se ne pomera da bi se to desilo: mreža se puni po kolonama umesto po redovima, strelice menjaju ose da bi pratile, a čitač ekrana i dalje obilazi istu tabelu.",

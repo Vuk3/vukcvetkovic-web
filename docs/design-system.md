@@ -1250,6 +1250,34 @@ else - no gradient and no clip path, since both are `url(#…)` references and t
 resolve reliably from inside a `<use>`. The back is cobalt, the site's own accent, because
 it is the surface the eye spends longest on.
 
+### How a turn feels, and the timing it depends on
+
+The two cards of a turn are **held up** off the table, `translate: 0 -4px` with the heavier
+shadow, and a found pair **lies back down** wearing a gold inset edge, so what is done
+reads at a glance against what is in play. A face-down back catches a **glint** as the
+pointer arrives - an animation rather than a transition, so it runs once per arrival and
+never backwards - and only under `(hover: hover)`, since a phone keeps `:hover` on the last
+card tapped. A gold line along the top of the table is the board found so far, one element
+scaled by `--mem-done`, and the tile a cleared board unlocks pops open in the strip.
+
+**The sounds are synthesized**, in
+[games/memory/sound.ts](../src/games/memory/sound.ts): a card turning is filtered noise, a
+pair is two notes a fifth apart, a miss one low note falling, a cleared board a major
+arpeggio. No file is fetched. ⚠️ **The `AudioContext` is only created inside a gesture** -
+the page wakes it on `pointerdown` and `keydown`, which arrive before the click that turns
+a card - because a context made on load starts suspended and logs a warning for it. The
+module only emits cues, timed to what is on screen, and the page decides whether they are
+heard. The Sound toggle is remembered as a preference, not a score.
+
+⚠️ **A delayed effect is checked against the turn, never against the cards.** The shake of
+a miss waits for the pair to land, and a fast player can call the miss back and have one of
+the same cards up again in a new turn before it does. Asking "is this card still up" said
+yes, the wrong card shook, and a pair found a moment later wore the red ring instead of the
+gold one. The callback now keeps the `turned` array it was scheduled for and does nothing
+if `settle` has replaced it. Found by clearing boards at ten milliseconds a press.
+
+The clock stops while the tab is hidden, by moving its start forward by the time away.
+
 **The star marks were measured**, not chosen: a simulated player with perfect memory played
 200,000 games on every board, `three` in `LEVELS` is what it needed nine games in ten, and
 `two` is half as much again. Its mean came out at 1.61 moves a pair, which is the known
@@ -1271,6 +1299,12 @@ far a reader has got.
 
 ## Changelog
 
+- 2026-09-23 - Memory gained its feel: the cards of a turn are held up and a found pair
+  lies back down with a gold edge, a glint crosses a back on hover, a gold line along the
+  top of the table fills as pairs are found, the unlocked tile pops, and every moment has a
+  synthesized sound behind a remembered toggle. The miss shake is checked against the turn
+  it was scheduled for, which fixed a found pair wearing the red ring under very fast
+  play (§9).
 - 2026-09-23 - a fifth game, [Memory](../src/games/memory/game.ts): twelve levels from two by
   two to ten by six, a free play mode with every board open, and thirty pictures drawn as
   symbols in [MemorySprites.astro](../src/components/games/MemorySprites.astro). §9 records

@@ -12,7 +12,7 @@ inlines them into each page too - 1.7 KB total, no extra request.
 ⚠️ **The exceptions are the five games**, [Game2048.astro](./Game2048.astro),
 [Minesweeper.astro](./Minesweeper.astro), [Memory.astro](./Memory.astro),
 [Accretion.astro](./Accretion.astro) and [Battleship.astro](./Battleship.astro), whose
-scripts import a module and are therefore emitted as real files: 2.4 KB, 3.2 KB, 4.3 KB,
+scripts import a module and are therefore emitted as real files: 2.4 KB, 3.2 KB, 5.3 KB,
 3.2 KB and 5.4 KB gz, plus a shared 0.4 KB chunk for
 [games/record.ts](../games/record.ts), each requested only by its own route and that
 route's three locale twins. A game cannot be CSS. Nothing else here gets to cite them - the

@@ -846,6 +846,8 @@ const en = {
         best: "Fewest moves",
         goal: "Stars",
         newGame: "New game",
+        /** A toggle, so it names the thing rather than the action. */
+        sound: "Sound",
         hint: "Press a card to turn it, then another. A pair stays face up and anything else turns back over. The arrow keys walk the table and Enter turns a card.",
 
         /** The table, and what a card says when there is no picture to read.
@@ -940,7 +942,7 @@ const en = {
           label: "How it is built",
           paragraphs: [
             "No canvas and no game library, like the rest of them. A card is a button with two faces, and turning it is one transition on one property: the layer holding both faces rotates half a turn about its vertical axis, each face hides its own back, and the browser shows whichever one is towards you. The turn overshoots by a few degrees and settles, which is what makes it read as a card with some weight in it rather than a square spinning. Every card carries its own perspective, scaled to its size, so a card on the smallest board and one on the largest turn through the same depth.",
-            "The thirty pictures are drawn rather than downloaded: one sprite sheet in the page, one symbol per picture, and every card face is a reference to one of them. Each is flat colour in three tones, the colour itself, a highlight towards the light and a shade away from it, on a ground of its own. The pictures keep their colours in both themes and only the grounds follow the page, so an apple remembered in the light is the same apple in the dark.",
+            "The thirty pictures are drawn rather than downloaded: one sprite sheet in the page, one symbol per picture, and every card face is a reference to one of them. Each is flat colour in three tones, the colour itself, a highlight towards the light and a shade away from it, on a ground of its own. The pictures keep their colours in both themes and only the grounds follow the page, so an apple remembered in the light is the same apple in the dark. The sounds are made the same way, in the browser, from a few oscillators and a burst of filtered noise, so there is no audio file on the page either.",
             "A card does not know what it is until it is turned. The face-down table in the page holds no answers: the front of every card points at nothing, and the picture is written onto it at the moment it goes over. The deck is shuffled once per board and lives inside the game, where the page cannot read it.",
             "The star marks were measured rather than chosen. A player with perfect memory, one that never turns a card it has already seen unless that card completes a pair, played two hundred thousand games on every board, and three stars is the number of moves it needed in nine games out of ten. Its average came out at 1.61 moves a pair, which is the known answer for this game and how the simulation was checked.",
             "The board is sized to fit the screen, because a memory board you have to scroll is one you cannot see. On a phone held upright it turns a quarter, ten across becoming six across, and not one card moves to do it: the grid fills by column instead of by row, the arrow keys swap axes to match, and a screen reader still walks the same table.",

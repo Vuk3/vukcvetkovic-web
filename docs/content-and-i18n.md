@@ -389,6 +389,9 @@ anybody as protection - see
 
 ## Changelog
 
+- 2026-09-23 - the memory copy gained `sound`, the label on a toggle and so a noun rather
+  than an instruction, and one sentence in the write-up saying the sounds are synthesized
+  in the browser, in all four languages.
 - 2026-09-23 - a fifth game, `memory`, third on the index. Its copy carries `pictures`,
   thirty names **keyed by the ids in the game module** rather than a list joined by
   position the way Accretion's planets and Battleship's ships are - thirty is too many to

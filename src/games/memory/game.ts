@@ -14,6 +14,8 @@
  * holds no answers. The deck lives in this closure and nowhere else.
  */
 
+import type { Cue } from './sound';
+
 /** The three parts of the deck. The first campaign boards deal from one each,
  *  which gives a small board a subject instead of a handful of strangers. */
 export type Group = 'fruit' | 'nature' | 'things';
@@ -171,6 +173,10 @@ export interface Options {
   onTime(seconds: number): void;
   onState(state: State, moves: number, seconds: number): void;
   onAnnounce(text: string): void;
+  /** The moments a sound belongs to, timed to what is on screen rather than
+   *  to the press - a pair chimes when it lands, not when it is picked. The
+   *  module plays nothing itself: whether there is sound is the page's call. */
+  onCue(cue: Cue): void;
 }
 
 export interface Controller {
@@ -299,6 +305,27 @@ export function mount(options: Options): Controller {
     ticker = null;
   }
 
+  /*
+   * The clock stops while the tab is in the background and picks up where it
+   * was. Memory is the one game here you might walk away from mid-board to
+   * check something, and the minutes spent in another tab are not the
+   * player's. Moving the start forward by the time away is the whole of it:
+   * the reading stays a subtraction from the wall clock.
+   */
+  let hiddenAt = 0;
+
+  const onVisibility = () => {
+    if (ticker === null) return;
+
+    if (document.hidden) {
+      hiddenAt = Date.now();
+      return;
+    }
+
+    if (hiddenAt > 0) startedAt += Date.now() - hiddenAt;
+    hiddenAt = 0;
+  };
+
   /* ---- Painting ------------------------------------------------------------ */
 
   /**
@@ -334,8 +361,17 @@ export function mount(options: Options): Controller {
   function seal(i: number): void {
     const node = nodes[i];
 
+    node.classList.remove('is-miss');
     node.dataset.face = 'matched';
     node.setAttribute('aria-label', fill(labels.matched, names[cards[i].picture]));
+  }
+
+  /** How much of the board is found, for the gold line along the top of the
+   *  table. A fraction rather than a count, so the stylesheet can scale by it
+   *  without knowing how many pairs a board has. */
+  function progress(): void {
+    const total = cards.length / 2;
+    root.style.setProperty('--mem-done', total === 0 ? '0' : ((total - left) / total).toFixed(4));
   }
 
   /* ---- The turn ------------------------------------------------------------ */
@@ -347,6 +383,8 @@ export function mount(options: Options): Controller {
       timers.delete(hold);
       hold = null;
     }
+
+    if (turned.length > 0) options.onCue('flip');
 
     for (const i of turned) {
       cards[i].up = false;
@@ -383,6 +421,7 @@ export function mount(options: Options): Controller {
     card.up = true;
     turned.push(i);
     reveal(i);
+    options.onCue('flip');
 
     const name = names[card.picture];
 
@@ -405,6 +444,8 @@ export function mount(options: Options): Controller {
       later(flipMs, () => {
         seal(a);
         seal(b);
+        progress();
+        options.onCue('pair');
       });
 
       options.onAnnounce(fill(labels.pair, name));
@@ -415,12 +456,24 @@ export function mount(options: Options): Controller {
 
     options.onAnnounce(fill(labels.miss, name));
 
-    // The shake lands with the card, and only if the pair is still up by then:
-    // a pair already called back by a third press has nothing to shake.
+    /*
+     * The shake lands with the card, and only if this is still the turn on the
+     * table when it does.
+     *
+     * ⚠️ **Checked against the turn itself, not against the cards being up.**
+     * A fast player calls a miss back with the next press before it lands, and
+     * can have one of the same two cards up again in a new turn by the time
+     * this fires - so "is the card up" said yes, the wrong card shook, and a
+     * pair found a moment later wore the red ring instead of the gold one.
+     * `settle` replaces the array, so the reference is the turn's identity.
+     */
+    const pair = turned;
+
     later(flipMs, () => {
-      for (const j of [a, b]) {
-        if (cards[j].up && !cards[j].matched) nodes[j].classList.add('is-miss');
-      }
+      if (turned !== pair) return;
+
+      for (const j of pair) nodes[j].classList.add('is-miss');
+      options.onCue('miss');
     });
 
     hold = later(flipMs + HOLD_MS, settle);
@@ -456,6 +509,7 @@ export function mount(options: Options): Controller {
 
     later(cheerAt, () => {
       for (const node of nodes) node.classList.add('is-cheer');
+      options.onCue('clear');
     });
 
     const doneAt = still ? cheerAt + 200 : cheerAt + furthest * WAVE_MS + CHEER_MS * 0.7;
@@ -600,10 +654,12 @@ export function mount(options: Options): Controller {
     cursor = 0;
 
     build();
+    progress();
 
     options.onState(state, 0, 0);
     options.onMoves(0);
     options.onTime(0);
+    options.onCue('deal');
   }
 
   /* ---- Input --------------------------------------------------------------- */
@@ -675,6 +731,7 @@ export function mount(options: Options): Controller {
 
   board.addEventListener('click', onClick);
   board.addEventListener('keydown', onKeyDown);
+  document.addEventListener('visibilitychange', onVisibility);
 
   return {
     play,
@@ -684,6 +741,7 @@ export function mount(options: Options): Controller {
       stopClock();
       board.removeEventListener('click', onClick);
       board.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('visibilitychange', onVisibility);
     },
   };
 }
