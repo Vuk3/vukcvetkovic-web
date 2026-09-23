@@ -41,8 +41,9 @@ union.
   locale.
 - **TypeScript is never a listed skill or a named technology.** Naming it next to Node and
   React states the obvious.
-- The positioning is Node-first: NestJS and Node.js lead, .NET follows as the thing a client
-  already runs.
+- The positioning is Node-first: NestJS and Node.js lead and .NET follows, by order alone.
+  .NET is stated as a skill he has, never hedged with "when a project calls for it" or "po
+  potrebi".
 - Periods and other language-neutral values are not here. If you find yourself translating
   "Present", the value is in the wrong file.
 

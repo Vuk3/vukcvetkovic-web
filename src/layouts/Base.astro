@@ -70,6 +70,7 @@ const structuredData = {
       name: site.name,
       url: `${siteUrl.origin}/`,
       email: site.email,
+      // The title held at `worksFor`, not the hero's headline, since the two are read as a pair.
       ...(currentRole && {
         jobTitle: dict.experience.roles[currentRole.id].role,
         worksFor: { '@type': 'Organization', name: currentRole.company },

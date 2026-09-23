@@ -10,10 +10,10 @@
  */
 const en = {
   meta: {
-    title: "Vuk Cvetković - Backend developer",
+    title: "Vuk Cvetković - Software engineer",
     description:
-      "Backend developer in Niš, Serbia. I build services in Node.js (NestJS, Express), event-driven infrastructure on AWS, and the React interfaces in front of them.",
-    ogImageAlt: "Vuk Cvetković, backend developer",
+      "Software engineer in Niš, Serbia. I build the whole product: Node.js backend (NestJS, Express), AWS deployment and event-driven communication, React front end.",
+    ogImageAlt: "Vuk Cvetković, software engineer",
   },
 
   nav: {
@@ -32,8 +32,14 @@ const en = {
   },
 
   hero: {
+    /**
+     * The headline over the name. Not the job title at Ncoded, which stays
+     * `experience.roles.ncoded.role`: this is how he describes the work as a
+     * whole, and the lead under it says where the weight sits.
+     */
+    role: "Software engineer",
     positioning:
-      "Backend developer at Ncoded Solutions, in Niš. I build services in Node.js (NestJS, Express), and in .NET where a client already runs it, then put them on AWS: containers, queues, and the events that pass between them.",
+      "I work across the whole product, from the data model to production. I write the backend in Node.js (NestJS, Express) and .NET. On AWS I handle deployment and event-driven communication between services, and I build everything the user sees in React.",
     cta: "Contact me",
     portraitAlt: "Portrait of Vuk Cvetković",
     /** Only rendered if src/assets/portrait.* is missing. */
@@ -43,9 +49,9 @@ const en = {
   about: {
     label: "About",
     paragraphs: [
-      "Most of my work sits on the backend. I design APIs and the services behind them, mainly in Node.js (NestJS, Express), and carry the same work through to the React interfaces on top of them when a project needs it.",
-      "I care about systems that are still understandable after the first release: clear boundaries between services, types that describe the domain rather than restate the database, and infrastructure a small team can operate without ceremony. Most of what I build runs on AWS.",
-      "I am based in Niš, Serbia. I started on the full-stack side, building .NET Web API services behind ASP.NET MVC sites, and have moved steadily towards the backend and the infrastructure under it. Alongside the work I am finishing a master’s in software engineering.",
+      "I work on client projects from the first data model to the deployment on AWS. I always start from the domain: what the data is, who can access it, and which systems it has to talk to, and the API, the services and the React interface follow from that.",
+      "I have a master’s in software engineering. My thesis compared two machine learning ecosystems on the same task: a YOLOv8m model in Python and an ML.NET model in .NET, behind one NestJS gateway and one React front end. For my bachelor’s thesis I implemented the RC6 and XXTEA ciphers from their specifications.",
+      "The best example of my front end work is this site itself: four languages, and five games written without a canvas or a game library. Each game has a write-up on how it was built.",
     ],
   },
 
@@ -118,7 +124,7 @@ const en = {
     index: {
       metaTitle: "Projects - Vuk Cvetković",
       metaDescription:
-        "Projects by Vuk Cvetković, backend developer in Niš: what each system does, how it is built, and what came out of it.",
+        "Projects by Vuk Cvetković, software engineer in Niš: what each system does, how it is built, and what came out of it.",
       heading: "Projects",
       intro:
         "Work I can write about in full, with the architecture and the results rather than a screenshot. Each one gets a page of its own.",
@@ -209,7 +215,7 @@ const en = {
         },
 
         overview: [
-          "The question was not which model detects best in the abstract. It was what changes when the same detection task is built twice, once in the ecosystem research reaches for and once in the one that already runs the backend. So the system trains a YOLOv8m model in Python and an ML.NET model in .NET on the same annotated images, puts both behind one API, and runs an image through either or both.",
+          "The thesis asks what changes when the same detection task is built twice: once in Python, the ecosystem research reaches for, and once in .NET, the one that already runs the backend. The system trains a YOLOv8m model and an ML.NET model on the same annotated images, puts both behind one API, and runs an image through either or both.",
           "The domain is personal protective equipment on a work site, over six classes: helmet, vest and gloves, each as present or missing. The negative classes are the point. A system like this is only useful if it can say that someone is not wearing a helmet, not merely that a helmet is somewhere in the frame.",
         ],
 
@@ -251,7 +257,7 @@ const en = {
           },
           {
             title: "Outlines, fill, zoom and pan",
-            body: "Boxes as outlines or as filled regions, one detection or all of them, and zoom, so you can see where a box actually sits rather than roughly where it is.",
+            body: "Boxes as outlines or as filled regions, one detection or all of them, with zoom and pan for checking a box against the pixels under it.",
           },
           {
             title: "The two answers side by side",
@@ -290,7 +296,7 @@ const en = {
           notes: [
             "Reannotating moved every metric for both models. YOLOv8m went from 0.790 to 0.916 mAP@0.5 and ML.NET from 0.580 to 0.748, so in relative terms the weaker model gained the most, 29 percent against 16. The first pass had been holding it back hardest.",
             "YOLOv8m is ahead on the numbers, and the gap that matters is recall: 0.867 against 0.709 on the corrected set, at almost the same precision. For protective equipment that asymmetry is the whole story, because a missed detection is a person the system quietly reports as fine, and precision on its own cannot tell you it happened.",
-            "The two columns are readable against each other because the run was set up for it: one image domain, the same six classes, and parameters held comparable across both models rather than tuned separately. That is what makes the difference in the numbers a difference in the models and the annotations, and nothing else.",
+            "The comparison is fair because the setup was the same on both sides: one image domain, the same six classes, and comparable parameters instead of separate tuning for each model.",
           ],
         },
 
@@ -370,7 +376,7 @@ const en = {
           },
           {
             title: "Sequential or parallel",
-            body: "Both modes are built in, and a checkbox picks between them. The parallel run spreads the file list across a parallel loop, and because every file is read, transformed and written on its own there are no conflicts to resolve, so it finishes faster than taking one file at a time.",
+            body: "Both modes are built in, and a checkbox picks between them. In parallel mode the file list is split across a parallel loop, and since no file depends on another, nothing has to be locked or merged. The results below show what that is worth.",
           },
           {
             title: "A progress bar that finishes with the job",
@@ -378,7 +384,7 @@ const en = {
           },
           {
             title: "The file tree up front",
-            body: "A tree view of everything that was loaded, expanded, before you commit to encrypting it. Useful mostly for catching that you picked the wrong folder.",
+            body: "A tree view of everything that was loaded, fully expanded, so you can check what is about to be encrypted before you start.",
           },
         ],
 
@@ -389,13 +395,13 @@ const en = {
           rows: ["Sequential", "Parallel"],
           notes: [
             "The same 150 files, the same RC6 key, the same output folders, run once each way. Parallel encryption finished in 44.16 seconds against 68.91, and decryption in 40.39 against 70.13 - a third off in each direction.",
-            "The gain comes from the shape of the work. Files here never depend on each other, so the list splits across a parallel loop with no shared state to guard, no conflicts to resolve and no ordering to keep, and no file waits on the one before it. That is why running them in parallel takes about a third off the whole pass rather than a few percent.",
+            "The gain comes from the files being independent: the parallel loop needs no lock and no ordering, so no file waits for the one before it.",
           ],
         },
 
         takeaway: [
           "Implementing two of the three ciphers rather than calling them is what this project was for. They are short algorithms where almost every line is load-bearing: which direction a rotation goes, where the original length is stored, and the fact that XXTEA needs its arithmetic to wrap on overflow rather than raise. The matching hashes are what prove all of it lands correctly, byte for byte.",
-          "The client-server split is the other half of it. Putting the ciphers behind a service keeps the cryptography out of the process that draws the window, which is what lets a folder of any size be handed over without the interface stopping, and it means the same three algorithms are available to anything else that can call the service.",
+          "The client-server split is the other half of it. The cryptography runs in the service rather than in the process that draws the window, and the same three algorithms are available to anything else that can call it.",
         ],
       },
 
@@ -425,7 +431,7 @@ const en = {
         },
 
         overview: [
-          "The paper is about how network traffic is analysed and why the PCAP format is what everyone standardised on. The application is the part that had to work: point it at a capture, and it tells you what is actually inside it rather than only that packets went by.",
+          "The paper covers how network traffic is analysed and why PCAP became the standard format for it. The application puts that into practice: open a capture, and it shows what each packet carries, protocol by protocol.",
           "Wireshark runs underneath it - Pyshark drives its tshark - and that is what gives the parsing its reach. Built on top, the application asks the same fixed set of questions of every packet in a file and lays the answers out in one place, which is the shape you want when you are looking for something and do not yet know which packet it is in.",
         ],
 
@@ -463,7 +469,7 @@ const en = {
           },
           {
             title: "A tree, not a wall of text",
-            body: "Packet, then protocol, then field. The interesting part is usually three clicks down, and nothing forces you to scroll past the packets you do not care about.",
+            body: "Packet, then protocol, then field, and each level opens only when you ask for it, so a capture of thousands of packets stays readable.",
           },
           {
             title: "Protocol distribution at a glance",
@@ -552,7 +558,7 @@ const en = {
           },
           {
             title: "Your radius, your interval",
-            body: "The radius to search in kilometres and how often to check in hours, both set on the profile. The interval is there so the checking can be as frequent as someone wants without the battery deciding otherwise.",
+            body: "The radius to search in kilometres and how often to check in hours, both set on the profile. A shorter interval means fresher alerts, a longer one saves battery.",
           },
           {
             title: "A map you can read at a glance",
@@ -802,10 +808,10 @@ const en = {
         close: {
           label: "How it is built",
           paragraphs: [
-            "No canvas and no game library, and unlike the other game here no motion either. There is no loop and nothing in flight: a cell is a button, it changes state or it does not, and the whole board is four hundred and eighty of them at the expert size. What it costs to run is a class on an element.",
+            "No canvas and no game library, and unlike 2048 no motion either. There is no loop and nothing in flight: a cell is a button, it changes state or it does not, and the whole board is four hundred and eighty of them at the expert size. What it costs to run is a class on an element.",
             "The mines are laid on the first press rather than at the start, around the cell that was pressed and the eight touching it. A field dealt in advance has to either let the opening move lose, which is a coin toss rather than a game, or deal again until it does not, which quietly bends the odds everywhere else. Laying them late gets an honest field and a first move that always opens into a region.",
             "Opening a region is a queue rather than a recursion, which a four hundred deep fill on a phone is entitled to refuse, and the queue hands the animation its timing for free: the ring a cell was found on is how far it is from the press, so each one waits that many steps before it opens. The fill arrives as something spreading outward instead of the board changing all at once, and it costs one custom property and a delay.",
-            "The board is a real grid: rows, cells, a row and column count, and one cell in the tab order at a time so the arrow keys walk it rather than the Tab key. That is why this game is here. The other one has to be hidden from a screen reader and described through a live region, because sixteen tiles that rewrite themselves on every keypress cannot be read. A minefield is a table that sits still and waits, which is exactly what a grid is for.",
+            "The board is a real grid: rows, cells, a row and column count, and one cell in the tab order at a time so the arrow keys walk it rather than the Tab key. 2048 has to be hidden from a screen reader and described through a live region, because sixteen tiles that rewrite themselves on every keypress cannot be read. A minefield is a table that sits still and waits, which is exactly what a grid is for.",
           ],
         },
       },
@@ -1175,12 +1181,12 @@ const en = {
       {
         title: "Backend and API development",
         description:
-          "Services and APIs in Node.js (NestJS, Express) or .NET: data modelling, authentication, third-party integrations, and the tests that keep them honest.",
+          "REST APIs and services in Node.js (NestJS, Express) or .NET, with data modelling, authentication, role-based access and third-party integrations.",
       },
       {
         title: "Full-stack product work",
         description:
-          "A feature taken from schema to screen: the API, the React front end, and the typed contract between them.",
+          "A whole feature from one person: the database schema, the API and the React screens that use it.",
       },
       {
         title: "AWS architecture and deployment",
@@ -1190,7 +1196,7 @@ const en = {
       {
         title: "Technical review and consulting",
         description:
-          "A second pair of eyes on an existing codebase or architecture: code review, a refactoring plan, and an honest answer on whether a rewrite is worth it.",
+          "A review of an existing codebase or architecture: what to fix first, a refactoring plan, and whether a rewrite is worth it.",
       },
     ],
   },

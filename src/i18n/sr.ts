@@ -11,10 +11,10 @@ import type { Dict } from "./types";
 
 const sr: Dict = {
   meta: {
-    title: "Vuk Cvetković - Backend developer",
+    title: "Vuk Cvetković - Software engineer",
     description:
-      "Backend developer iz Niša. Pravim servise u Node.js-u (NestJS, Express), event-driven infrastrukturu na AWS-u i React interfejse ispred njih.",
-    ogImageAlt: "Vuk Cvetković, backend developer",
+      "Software engineer iz Niša. Radim ceo proizvod: backend u Node.js-u (NestJS, Express), deployment i event-driven komunikaciju na AWS-u i frontend u React-u.",
+    ogImageAlt: "Vuk Cvetković, software engineer",
   },
 
   nav: {
@@ -33,8 +33,10 @@ const sr: Dict = {
   },
 
   hero: {
+    // Left in English, as the job titles are: "softverski inženjer" reads as the academic title.
+    role: "Software engineer",
     positioning:
-      "Backend developer u Ncoded Solutions, u Nišu. Gradim servise u Node.js-u (NestJS, Express), i u .NET-u kada ga klijent već koristi, pa ih puštam na AWS: kontejneri, redovi i događaji koji prolaze između njih.",
+      "Radim ceo proizvod, od modela podataka do produkcije. Backend pišem u Node.js-u (NestJS, Express) i u .NET-u. Na AWS-u radim deployment i event-driven komunikaciju između servisa, a sve što korisnik vidi pravim u React-u.",
     cta: "Kontaktirajte me",
     portraitAlt: "Portret Vuka Cvetkovića",
     portraitPlaceholder: "portret",
@@ -43,9 +45,9 @@ const sr: Dict = {
   about: {
     label: "O meni",
     paragraphs: [
-      "Najveći deo mog posla je na backendu. Projektujem API-je i servise iza njih, pretežno u Node.js-u (NestJS, Express), i isti posao vodim do React interfejsa iznad njih kada projektu to treba.",
-      "Stalo mi je do sistema koji se i posle prvog izdanja mogu razumeti: jasne granice između servisa, tipovi koji opisuju domen a ne prepričavaju bazu, i infrastruktura kojom mali tim može da upravlja bez ceremonije. Najviše toga što gradim radi na AWS-u.",
-      "Živim u Nišu. Počeo sam sa full-stack strane, gradeći .NET Web API servise iza ASP.NET MVC sajtova, i postepeno se pomerao ka backendu i infrastrukturi ispod njega. Uz posao završavam master na softverskom inženjerstvu.",
+      "Radim na klijentskim projektima od prvog modela podataka do deploymenta na AWS-u. Uvek krećem od domena: koji su podaci, ko sme da im pristupa i sa kojim sistemima treba da komuniciraju, a iz toga proizlaze API, servisi i React interfejs.",
+      "Završio sam master studije softverskog inženjerstva. U master radu sam poredio dva ekosistema mašinskog učenja na istom zadatku: YOLOv8m model u Python-u i ML.NET model u .NET-u, iza jednog NestJS gateway-a i jednog React frontenda. Za diplomski rad sam implementirao algoritme šifrovanja RC6 i XXTEA po njihovim specifikacijama.",
+      "Najbolji primer mog frontend rada je sam ovaj sajt: četiri jezika i pet igara napisanih bez canvasa i bez biblioteke za igre. Uz svaku igru postoji tekst o tome kako je napravljena.",
     ],
   },
 
@@ -65,16 +67,16 @@ const sr: Dict = {
       ncoded: {
         role: "Backend developer",
         bullets: [
-          "Backend servisi u Node.js-u (NestJS, Express): REST API-ji, JWT autentikacija, kontrola pristupa po rolama i integracije sa trećim stranama, nad SQL i dokument bazama.",
-          "Isti posao u .NET-u kada ga klijent već koristi, po Clean Architecture, tako da poslovna logika ostane odvojiva od okvira oko sebe.",
-          "AWS strana: S3, ECS, EC2, Lambda, Route 53 i EventBridge, što pokriva deploy i event-driven putanje između servisa.",
+          "Backend servisi u Node.js-u (NestJS, Express): REST API-ji, JWT autentikacija, kontrola pristupa po rolama i integracije sa eksternim sistemima, nad SQL i NoSQL bazama.",
+          "Isti posao u .NET-u, kada klijent već radi na njemu, po principima Clean Architecture, tako da poslovna logika ostane odvojena od framework-a.",
+          "Na AWS-u: S3, ECS, EC2, Lambda, Route 53 i EventBridge, za deployment i event-driven komunikaciju između servisa.",
         ],
       },
       novateq: {
         role: "Full-stack developer",
         bullets: [
-          "Backend servisi u .NET Web API-ju i sajt firme u ASP.NET MVC-u, oba prilagođavana onome što je pojedinačnom klijentu trebalo.",
-          "Održavao Sportsbook platformu radeći na prijavljenim problemima, i pregledao casino projekte da naučim kako se ta strana pravi.",
+          "Backend servisi u .NET Web API-ju i sajt firme u ASP.NET MVC-u, prilagođeni potrebama svakog klijenta.",
+          "Rešavao prijavljene probleme na Sportsbook platformi i održavao njenu stabilnost, a prošao sam i kroz casino projekte da bih upoznao kako je taj deo napravljen.",
         ],
       },
     },
@@ -105,10 +107,10 @@ const sr: Dict = {
     index: {
       metaTitle: "Projekti - Vuk Cvetković",
       metaDescription:
-        "Projekti Vuka Cvetkovića, backend developera iz Niša: šta svaki sistem radi, kako je napravljen i šta je iz njega izašlo.",
+        "Projekti koje je napravio Vuk Cvetković, software engineer iz Niša: šta svaki sistem radi, kako je napravljen i kakvi su rezultati.",
       heading: "Projekti",
       intro:
-        "Radovi o kojima mogu da pišem u celini, sa arhitekturom i rezultatima umesto sa jednim screenshotom. Svaki dobija svoju stranicu.",
+        "Projekti o kojima mogu da pišem detaljno, sa arhitekturom i rezultatima, a ne samo sa screenshotom. Svaki ima svoju stranicu.",
     },
 
     detail: {
@@ -122,7 +124,7 @@ const sr: Dict = {
       dataset: "Skup podataka i obučavanje",
       results: "Rezultati",
       stack: "Tehnologije",
-      takeaway: "Šta sam iz ovoga izvukao",
+      takeaway: "Šta sam naučio",
     },
 
     flowCaptions: {
@@ -152,15 +154,15 @@ const sr: Dict = {
         title: "Uporedni sistem za detekciju objekata",
         tagline: "Ista slika kroz dva ekosistema mašinskog učenja, sa odgovorom u jednom formatu.",
         description:
-          "Moj master rad. Ista slika prolazi kroz YOLOv8m model u Python-u i ML.NET model u .NET-u, oba iza jednog gateway-a koji odgovara u jednom formatu, pa jedan React front end iscrtava bilo koji od dva rezultata. Ponovno anotiranje skupa podataka podiglo je YOLOv8m na 0,916 mAP@0.5 prema 0,748 za ML.NET.",
+          "Moj master rad. Ista slika prolazi kroz YOLOv8m model u Python-u i ML.NET model u .NET-u, oba iza jednog gateway-a koji odgovara u istom formatu, pa isti React frontend iscrtava rezultat bilo kog od njih. Posle ponovnog anotiranja skupa podataka YOLOv8m je dostigao 0,916 mAP@0.5, a ML.NET 0,748.",
         metaTitle: "Uporedni sistem za detekciju objekata - Vuk Cvetković",
         metaDescription:
-          "Sistem iz master rada: YOLOv8m u Python-u i ML.NET u .NET-u iza jednog NestJS gateway-a, upoređeni nad istim skupom podataka o zaštitnoj opremi.",
+          "Sistem iz master rada: YOLOv8m u Python-u i ML.NET u .NET-u iza jednog NestJS gateway-a, upoređeni na istom skupu podataka o zaštitnoj opremi.",
         context: "Master rad, Elektronski fakultet u Nišu",
         domain: "Lična zaštitna oprema na gradilištu",
 
         flow: {
-          entry: "React front end",
+          entry: "React frontend",
           entryLabel: "Slika, multipart/form-data",
           core: "NestJS gateway",
           branches: [
@@ -173,64 +175,64 @@ const sr: Dict = {
         },
 
         overview: [
-          "Pitanje nije bilo koji model detektuje najbolje u apstraktnom smislu. Pitanje je bilo šta se menja kada se isti zadatak detekcije napravi dva puta, jednom u ekosistemu za kojim istraživanje poseže, a jednom u onom koji već drži backend. Zato sistem obučava YOLOv8m model u Python-u i ML.NET model u .NET-u nad istim anotiranim slikama, stavlja oba iza jednog API-ja i pušta sliku kroz jedan ili kroz oba.",
-          "Domen je lična zaštitna oprema na gradilištu, kroz šest klasa: šlem, prsluk i rukavice, svaka kao prisutna ili odsutna. Negativne klase su ovde poenta. Takav sistem je koristan samo ako može da kaže da neko ne nosi šlem, a ne samo da se šlem nalazi negde u kadru.",
+          "Rad istražuje šta se menja kada se isti zadatak detekcije napravi dva puta: jednom u Python-u, koji je standard u istraživanju, i jednom u .NET-u, na kom već radi backend. Sistem obučava YOLOv8m i ML.NET model na istim anotiranim slikama, stavlja oba iza jednog API-ja i pušta sliku kroz jedan ili kroz oba.",
+          "Domen je lična zaštitna oprema na gradilištu, sa šest klasa: šlem, prsluk i rukavice, svaka kao prisutna ili odsutna. Ključne su negativne klase: sistem je koristan samo ako može da kaže da neko ne nosi šlem, a ne samo da se šlem nalazi negde u kadru.",
         ],
 
         steps: [
           {
             title: "Frontend šalje sliku",
-            body: "React šalje fajl kao multipart/form-data, sa izabranim modelom u drugom polju. Ako tražiš oba, ispaljuje dva zahteva paralelno, pa je poređenje nad jednom slikom u jednom trenutku.",
+            body: "React šalje fajl kao multipart/form-data, a izabrani model ide u posebnom polju. Kada se traže oba, dva zahteva idu paralelno, pa se modeli porede na istoj slici u istom trenutku.",
           },
           {
-            title: "Gateway ga usmerava",
-            body: "NestJS je jedina adresa koju frontend zna. Prima upload i prosleđuje ga FastAPI servisu ili ASP.NET Core servisu, što ostavlja dva ML servisa da se menjaju nezavisno od klijenta.",
+            title: "Gateway prosleđuje zahtev",
+            body: "NestJS je jedina adresa koju frontend poznaje. Prima upload i prosleđuje ga FastAPI ili ASP.NET Core servisu, pa se ML servisi mogu menjati nezavisno od klijenta.",
           },
           {
             title: "Servis pokreće inference",
-            body: "Python učitava sliku u RGB i predaje je YOLOv8m modelu, držeći učitane težine u memoriji da se .pt fajl ne čita na svaki zahtev. .NET strana konvertuje u MLImage i bira ML.NET model po id-u.",
+            body: "Python učitava sliku u RGB i predaje je YOLOv8m modelu. Težine modela ostaju učitane u memoriji, pa se .pt fajl ne čita pri svakom zahtevu. .NET strana pretvara sliku u MLImage i bira ML.NET model po id-u.",
           },
           {
-            title: "Oba odgovaraju u istom obliku",
-            body: "Klasa, score i okvir kao x1, y1, x2, y2, uz id modela, skup anotacija nad kojim je obučen i originalne dimenzije slike. .NET strana prvo ograničava svoje koordinate na te dimenzije, pa okvir nikada ne može da izađe iz slike.",
+            title: "Oba servisa vraćaju isti format",
+            body: "Klasa, score i okvir kao x1, y1, x2, y2, uz id modela, skup anotacija na kom je obučen i originalne dimenzije slike. .NET strana prvo ograničava koordinate na te dimenzije, pa okvir nikad ne izlazi van slike.",
           },
           {
-            title: "Frontend to iscrtava",
-            body: "Pošto je odgovor identičan u oba slučaja, u interfejsu ne postoji YOLO grana ni ML.NET grana. Skalira koordinate sa originalne na prikazanu veličinu i iscrtava okvire, nazive klasa i pouzdanosti preko slike.",
+            title: "Frontend iscrtava rezultat",
+            body: "Pošto je odgovor isti u oba slučaja, interfejs nema posebnu granu ni za YOLO ni za ML.NET. Koordinate se skaliraju sa originalne na prikazanu veličinu, a okviri, klase i pouzdanosti se iscrtavaju preko slike.",
           },
         ],
 
         features: [
           {
             title: "Jedan model ili oba",
-            body: "Bilo koji servis sam, ili oba istovremeno u dva panela nad istom slikom, sa sva četiri obučena modela dostupna po imenu.",
+            body: "Jedan servis ili oba istovremeno, u dva panela nad istom slikom, uz izbor bilo kog od četiri obučena modela.",
           },
           {
-            title: "Prag pouzdanosti koji ti kontrolišeš",
-            body: "Slajder skriva sve ispod praga, onako kako pravi sistem reaguje samo na predikcije iznad granice, a ne na sve što model vrati.",
+            title: "Podesiv prag pouzdanosti",
+            body: "Slajder skriva sve ispod praga, kao što i pravi sistem reaguje samo na predikcije iznad granice, a ne na sve što model vrati.",
           },
           {
-            title: "Svaka detekcija, u listi",
-            body: "Klasa i score po detekciji, a izborom jedne ona se izdvaja na slici, što je način da proveriš kadar sa osam okvira koji se preklapaju.",
+            title: "Lista svih detekcija",
+            body: "Klasa i score za svaku detekciju. Izborom jedne ona se izdvaja na slici, što pomaže kada se u kadru preklapa osam okvira.",
           },
           {
             title: "Okviri, ispuna, zoom i pan",
-            body: "Okviri kao linije ili kao ispunjeni regioni, jedna detekcija ili sve, i zoom, da vidiš gde okvir zaista stoji a ne gde je otprilike.",
+            body: "Okviri kao linije ili kao ispunjene površine, jedna detekcija ili sve, uz zoom i pan za proveru okvira naspram piksela ispod njega.",
           },
           {
-            title: "Dva odgovora jedan uz drugi",
+            title: "Dva odgovora uporedo",
             body: "Trajanje zahteva, broj detekcija, prosečna pouzdanost, najjača detekcija i koji servis je prvi odgovorio.",
           },
           {
-            title: "Health provere",
-            body: "Gateway, Python API i .NET API javljaju status i vreme odgovora, jer tri procesa padaju nezavisno, a prazan panel treba da kaže koji je od njih pao.",
+            title: "Provera stanja servisa",
+            body: "Gateway, Python API i .NET API javljaju status i vreme odgovora. To su tri odvojena procesa, pa kada jedan ne radi, interfejs pokazuje koji.",
           },
         ],
 
         dataset: [
-          "Skup podataka je sastavljen u Roboflow-u iz dva javna skupa, pa pregledan i objedinjen u jedan: 2.911 slika podeljenih na 2.374 za trening, 290 za validaciju i 247 za test, sa auto-orientation obradom i promenom veličine na 640x640. Python strana ga uzima u YOLO formatu, a .NET strana u COCO, jer je to ono što Model Builder očekuje za detekciju, pa oba alata dobijaju format koji im treba nad identičnim slikama i identičnim klasama.",
-          "A onda deo koji nisam planirao. Prvi prolaz je imao 8.813 anotacija, a ponovni prolaz kroz njega doveo je taj broj na 17.942, što znači da više od polovine objekata nije bilo označeno. Objekat koji postoji na slici ali ga nema u oznakama uči model tokom obučavanja da je to pozadina, a onda mu se tokom evaluacije upisuje kao greška kada ga ipak detektuje.",
-          "Oba modela su obučavana 50 epoha na 640x640 iz pretrained težina, sa parametrima koji su ostali isti između dve verzije skupa, da bi se razlika u rezultatima čitala kao razlika u kvalitetu anotacija a ne u konfiguraciji. Model Builder se zaustavlja na obučenom modelu, pa je .NET strani trebao sopstveni evaluation servis: učitava COCO anotacije, predviđa nad validacionim skupom i računa precision, recall, F1 i mAP@0.5 sa matricama konfuzije i precision-recall krivama, što je ML.NET dovelo na istu ravan sa onim što Ultralytics ispisuje sam.",
+          "Skup podataka je sastavljen u Roboflow-u od dva javna skupa, koje sam pregledao i spojio u jedan: 2.911 slika, od čega 2.374 za trening, 290 za validaciju i 247 za test, automatski orijentisanih i svedenih na 640x640. Python strana ga koristi u YOLO formatu, a .NET strana u COCO formatu, jer Model Builder za detekciju očekuje COCO. Tako oba alata dobijaju svoj format, nad istim slikama i istim klasama.",
+          "Onda je došao deo koji nisam planirao. Prva verzija je imala 8.813 anotacija, a posle ponovnog pregleda taj broj je narastao na 17.942, što znači da više od polovine objekata nije bilo označeno. Objekat koji postoji na slici, a nema ga u oznakama, tokom obučavanja uči model da je to pozadina, a tokom evaluacije mu se računa kao greška kada ga model ipak detektuje.",
+          "Oba modela su obučavana 50 epoha na 640x640, polazeći od pretrained težina, sa istim parametrima za obe verzije skupa, da bi razlika u rezultatima poticala od kvaliteta anotacija, a ne od konfiguracije. Model Builder se zaustavlja na obučenom modelu, pa je za .NET stranu trebao poseban servis za evaluaciju: učitava COCO anotacije, radi predikciju nad validacionim skupom i računa precision, recall, F1 i mAP@0.5, uz matrice konfuzije i precision-recall krive. Tako ML.NET dobija iste metrike koje Ultralytics prikazuje sam.",
         ],
 
         results: {
@@ -245,23 +247,23 @@ const sr: Dict = {
           ],
           rows: ["YOLOv8m", "YOLOv8m", "ML.NET", "ML.NET"],
           notes: [
-            "Ponovno anotiranje pomerilo je svaku metriku kod oba modela. YOLOv8m je otišao sa 0,790 na 0,916 mAP@0.5, a ML.NET sa 0,580 na 0,748, pa je u relativnom smislu slabiji model dobio najviše, 29 procenata prema 16. Prvi prolaz je njega najviše i držao.",
-            "YOLOv8m je ispred po brojevima, a razlika koja je važna je recall: 0,867 prema 0,709 na ispravljenom skupu, uz skoro isti precision. Za zaštitnu opremu ta asimetrija je cela poenta, jer propuštena detekcija je čovek koga sistem tiho prijavi kao ispravnog, a precision sam po sebi ne može da ti kaže da se to dogodilo.",
-            "Dve kolone se mogu čitati jedna prema drugoj zato što je merenje tako postavljeno: jedan domen slika, iste šest klasa, i parametri držani uporedivim kod oba modela a ne doterani odvojeno. To je ono što razliku u brojevima čini razlikom u modelima i anotacijama, i ničim drugim.",
+            "Ponovno anotiranje popravilo je svaku metriku kod oba modela. YOLOv8m je porastao sa 0,790 na 0,916 mAP@0.5, a ML.NET sa 0,580 na 0,748, pa je slabiji model relativno dobio više, 29 procenata prema 16. Loše anotacije su njega najviše i kočile.",
+            "YOLOv8m je ispred po brojevima, a najvažnija razlika je u recall-u: 0,867 prema 0,709 na ispravljenom skupu, uz skoro isti precision. Kod zaštitne opreme to je presudno, jer propuštena detekcija znači da sistem čoveka bez opreme prijavi kao ispravno opremljenog, a precision to ne može da pokaže.",
+            "Poređenje je fer jer su uslovi bili isti na obe strane: isti domen slika, istih šest klasa i uporedivi parametri, bez posebnog podešavanja za svaki model.",
           ],
         },
 
         takeaway: [
-          "Ishod je više ležao u podacima nego u izboru framework-a. Ponovno anotiranje istih 2.911 slika pomerilo je oba modela dalje nego što je razdaljina između dva ekosistema pomerila ML.NET, a to nije zaključak koji sam očekivao da ću pisati.",
-          "Inženjerska polovina je praktičnija. Python mi je dao prostor za eksperiment i sam proizveo materijal za evaluaciju, .NET mi je dao model koji ulazi u ASP.NET Core servis bez ikakvog mosta između, a standardizovan odgovor je jedini razlog zašto jedan frontend može da ih tretira kao zamenjive.",
+          "Na rezultat su više uticali podaci nego izbor framework-a. Ponovno anotiranje istih 2.911 slika popravilo je oba modela više nego što iznosi razlika između dva ekosistema, i to nije zaključak koji sam očekivao.",
+          "Sa inženjerske strane, zaključci su praktičniji. Python je dao prostor za eksperimentisanje i sam generisao materijal za evaluaciju, .NET je dao model koji se direktno uklapa u ASP.NET Core servis, a zajednički format odgovora omogućava da jedan frontend radi sa oba modela bez ikakve razlike.",
         ],
       },
 
       encryptix: {
         title: "Encryptix",
-        tagline: "Tri šifre iza jednog servisa, i heš na oba kraja kao dokaz da se fajl vratio ceo.",
+        tagline: "Tri algoritma šifrovanja iza jednog servisa, i heš na oba kraja kao dokaz da je fajl vraćen bez izmene.",
         description:
-          "Moj diplomski rad. Desktop klijent predaje ceo folder WCF servisu, koji svaki fajl šifruje pomoću AES-a, RC6 ili XXTEA - poslednja dva napisana po specifikaciji, a ne uzeta iz biblioteke - i upisuje SHA-512 heš pre i posle svakog prolaza, pa se povratak fajla može dokazati a ne pretpostaviti. Paralelna obrada fajlova skratila je prolaz kroz 150 fajlova sa 68,91 na 44,16 sekundi.",
+          "Moj diplomski rad. Desktop klijent šalje ceo folder WCF servisu, koji svaki fajl šifruje AES, RC6 ili XXTEA algoritmom - poslednja dva sam napisao po specifikaciji, bez biblioteke - i beleži SHA-512 heš pre i posle svakog koraka, pa se može dokazati da je fajl vraćen bez izmene. Paralelna obrada je skratila obradu 150 fajlova sa 68,91 na 44,16 sekundi.",
         metaTitle: "Encryptix - Vuk Cvetković",
         metaDescription:
           "Projekat iz diplomskog rada: Windows Forms klijent i WCF servis koji šifruju ceo folder pomoću AES-a, RC6 ili XXTEA, sa SHA-512 verifikacijom na oba kraja.",
@@ -274,8 +276,8 @@ const sr: Dict = {
           core: "WCF servis",
           branches: [
             { title: "AES", badge: "CBC, iz .NET biblioteke" },
-            { title: "RC6", badge: "Napisan rukom, 20 rundi" },
-            { title: "XXTEA", badge: "Napisan rukom, Fajstelova mreža" },
+            { title: "RC6", badge: "Ručna implementacija, 20 rundi" },
+            { title: "XXTEA", badge: "Ručna implementacija, Fajstelova mreža" },
           ],
           exit: "Po jedan šifrovan fajl za svaki ulazni",
           exitLabel: "",
@@ -283,57 +285,57 @@ const sr: Dict = {
         },
 
         overview: [
-          "Jedinica rada ovde je folder, ne fajl. Pokažeš aplikaciji direktorijum, ona pročita sve u njemu i u svakom podfolderu, pa jedna od tri simetrične šifre prođe kroz ceo skup - a šifrovano drvo, dešifrovano drvo i heš zapis se upisuju tamo gde ti izabereš.",
-          "Razlog zašto ih ima tri je to što je samo jedna došla gotova. AES je implementacija iz .NET biblioteke, ono što bi svaka razumna aplikacija i koristila. RC6 i XXTEA su napravljeni po svojim specifikacijama, i tu je projekat zapravo i bio: proširenje ključa, dopunjavanje bloka, rotacije i namerno prekoračenje celobrojne vrednosti na koje se XXTEA oslanja.",
+          "Aplikacija radi sa celim folderom, a ne sa pojedinačnim fajlom. Izabere se direktorijum, aplikacija pročita sve u njemu i u svim podfolderima, i jedan od tri simetrična algoritma šifruje ceo skup. Šifrovani fajlovi, dešifrovani fajlovi i heš zapisi upisuju se u foldere koje korisnik izabere.",
+          "Algoritma ima tri, a samo je jedan gotov. AES je implementacija iz .NET biblioteke, koju bi koristila svaka ozbiljna aplikacija. RC6 i XXTEA sam napisao po njihovim specifikacijama, i u tome je bio glavni deo posla: proširenje ključa, dopunjavanje blokova, rotacije i namerno prekoračenje celobrojne vrednosti na koje se XXTEA oslanja.",
         ],
 
         steps: [
           {
             title: "Klijent čita folder",
-            body: "Dijalog za izbor foldera, pa rekurzivni obilazak koji svaki fajl čita kao sirove bajtove bez obzira na ekstenziju i drži njegovo ime, ekstenziju, putanju i sadržaj zajedno kao jedan zapis. Ništa ne tumači fajl, pa .txt i .exe idu istim putem kroz program.",
+            body: "Posle izbora foldera, rekurzivni obilazak čita svaki fajl kao niz bajtova, bez obzira na ekstenziju, i čuva ime, ekstenziju, putanju i sadržaj zajedno kao jedan zapis. Sadržaj se ne tumači, pa .txt i .exe prolaze isti put kroz program.",
           },
           {
-            title: "Zadatak u pozadini drži prozor živim",
-            body: "Windows Forms daje aplikaciji jednu nit i ta nit poseduje kontrole, pa bi čitanje velikog foldera na njoj zamrzlo prozor i zaustavilo upravo onaj loader koji treba da se vrti. Čitanje se zato izvršava kao Task, a nastavak se raspoređuje natrag na sinhronizacioni kontekst same forme, što je jedino mesto sa kog se dugmići smeju ponovo omogućiti.",
+            title: "Čitanje u pozadini, da prozor ne zablokira",
+            body: "U Windows Forms-u sve kontrole pripadaju jednoj, UI niti. Kada bi se veliki folder čitao na njoj, prozor bi se zamrzao, zajedno sa loaderom koji treba da se vrti. Zato se čitanje izvršava kao Task, a nastavak se vraća na sinhronizacioni kontekst forme, jer se samo odatle dugmad smeju ponovo omogućiti.",
           },
           {
-            title: "Lista prelazi na servis",
-            body: "Klijent poziva WCF servis preko HTTP-a. Obe strane su morale da se prekonfigurišu zbog količine podataka: granice bafera idu na najveću vrednost koju int može da primi, a mod prenosa se menja sa baferovanog na streamed, pa se baferuje samo zaglavlje poruke a ne cela lista fajlova, uz tajmaut od deset minuta na svakoj strani.",
+            title: "Lista se šalje servisu",
+            body: "Klijent poziva WCF servis preko HTTP-a. Zbog količine podataka obe strane su morale drugačije da se konfigurišu: limiti bafera su podignuti na najveću vrednost koju int može da primi, a režim prenosa je prebačen sa buffered na streamed, pa se u baferu drži samo zaglavlje poruke, a ne cela lista fajlova. Tajmaut je deset minuta na obe strane.",
           },
           {
             title: "Servis šifruje, fajl po fajl",
-            body: "Izabrani algoritam dobija listu, ključ i - za AES - vektor inicijalizacije. RC6 i XXTEA zahtevaju da ulaz ispuni cele blokove, pa svaki dopunjava niz bajtova do svoje veličine bloka i upisuje originalnu dužinu u prva četiri bajta, što je ono što dešifrovanju dozvoljava da tu dopunu skrati umesto da pogađa gde se fajl završio.",
+            body: "Izabrani algoritam dobija listu, ključ i, za AES, inicijalizacioni vektor. RC6 i XXTEA rade samo sa celim blokovima, pa svaki dopunjava niz bajtova do veličine bloka i upisuje originalnu dužinu u prva četiri bajta. Tako dešifrovanje zna tačno koliko dopune da odbaci, umesto da pogađa gde se fajl završava.",
           },
           {
-            title: "Oba kraja se hešuju",
-            body: "Svaki fajl dobija tekstualni fajl pored sebe sa četiri SHA-512 linije: pre šifrovanja, posle šifrovanja, pre dešifrovanja, posle dešifrovanja. Prva i poslednja su one koje su važne, i moraju biti identične. To je cela tvrdnja o integritetu, i može da je proveri svako ko otvori fajl.",
+            title: "Heš na oba kraja",
+            body: "Pored svakog fajla nastaje tekstualni fajl sa četiri SHA-512 vrednosti: pre šifrovanja, posle šifrovanja, pre dešifrovanja i posle dešifrovanja. Važne su prva i poslednja, i moraju biti identične. Na tome se zasniva provera integriteta, i svako može da je ponovi otvaranjem tog fajla.",
           },
         ],
 
         features: [
           {
             title: "Ceo folder odjednom",
-            body: "Sa podfolderima, do bilo koje dubine. Izlazno drvo prati ulazno, a to dolazi iz razlike putanje svakog fajla prema korenu, a ne iz praćenja rekurzije.",
+            body: "Sa svim podfolderima, do bilo koje dubine. Izlazna struktura foldera prati ulaznu, a računa se iz putanje svakog fajla u odnosu na koreni folder, a ne praćenjem rekurzije.",
           },
           {
-            title: "Tri šifre, jedna forma",
-            body: "AES sa ključem od 32 znaka i IV od 16 znakova, RC6 i XXTEA sa ključem od 16 znakova. Svaki dobija svoj prozor, a svako polje se proverava pre nego što se bilo šta upiše.",
+            title: "Tri algoritma, jedna forma",
+            body: "AES sa ključem od 32 znaka i IV od 16 znakova, RC6 i XXTEA sa ključem od 16 znakova. Svaki algoritam ima svoj prozor, a svako polje se validira pre nego što se išta upiše.",
           },
           {
-            title: "Dokaz da se vratio",
-            body: "SHA-512 otvorenog teksta pre šifrovanja prema SHA-512 otvorenog teksta posle dešifrovanja. Jednaki znače da je put tamo i natrag prošao bez gubitka.",
+            title: "Dokaz da je fajl isti",
+            body: "SHA-512 originalnog sadržaja pre šifrovanja poredi se sa SHA-512 sadržaja posle dešifrovanja. Ako su jednaki, ništa nije izgubljeno.",
           },
           {
             title: "Sekvencijalno ili paralelno",
-            body: "Oba režima postoje, a polje za izbor bira između njih. Paralelni prolaz raspoređuje listu fajlova kroz paralelnu petlju, a kako se svaki fajl čita, transformiše i upisuje sam za sebe, nema konflikata koje treba rešavati, pa se završava brže od obrade fajl po fajl.",
+            body: "Oba režima postoje, a bira se jednim checkbox-om. U paralelnom režimu lista fajlova se deli kroz paralelnu petlju, a pošto nijedan fajl ne zavisi od drugog, ništa ne mora da se zaključava ni spaja. Koliko to vredi, pokazuju rezultati ispod.",
           },
           {
-            title: "Progress bar koji završi sa poslom",
-            body: "Odmeren po ukupnom broju bajtova dok servis radi, i napunjen u trenutku kada se pravi poziv vrati, preko cancellation token-a, pa prati posao i završava zajedno sa njim a ne posle njega.",
+            title: "Progress bar koji prati stvarni posao",
+            body: "Dok servis radi, napreduje prema ukupnom broju bajtova, a kada se poziv vrati, cancellation token ga odmah dopuni do kraja. Tako se završava tačno kada i posao.",
           },
           {
-            title: "Drvo fajlova unapred",
-            body: "Prikaz svega što je učitano, rašireno, pre nego što se odlučiš da to šifruješ. Korisno pre svega da uhvatiš da si izabrao pogrešan folder.",
+            title: "Pregled fajlova pre početka",
+            body: "Stablo svih učitanih fajlova, potpuno otvoreno, da se pre početka vidi šta će biti šifrovano.",
           },
         ],
 
@@ -343,22 +345,22 @@ const sr: Dict = {
           columns: ["Režim", "Fajlova", "Šifrovanje (s)", "Dešifrovanje (s)"],
           rows: ["Sekvencijalno", "Paralelno"],
           notes: [
-            "Istih 150 fajlova, isti RC6 ključ, isti izlazni folderi, pokrenuto po jednom na svaki način. Paralelno šifrovanje je završilo za 44,16 sekundi prema 68,91, a dešifrovanje za 40,39 prema 70,13 - trećina manje u oba smera.",
-            "Dobitak dolazi iz oblika samog posla. Fajlovi ovde nikada ne zavise jedan od drugog, pa se lista deli kroz paralelnu petlju bez deljenog stanja koje treba čuvati, bez konflikata koje treba rešavati i bez redosleda koji treba održati, i nijedan fajl ne čeka onaj pre sebe. Zato paralelna obrada skida oko trećine celog prolaza, a ne nekoliko procenata.",
+            "Istih 150 fajlova, isti RC6 ključ i isti izlazni folderi, jednom u svakom režimu. Paralelno šifrovanje je trajalo 44,16 sekundi umesto 68,91, a dešifrovanje 40,39 umesto 70,13, oko trećinu kraće u oba smera.",
+            "Dobitak dolazi od toga što su fajlovi nezavisni: paralelnoj petlji ne trebaju ni zaključavanje ni redosled, pa nijedan fajl ne čeka prethodni.",
           ],
         },
 
         takeaway: [
-          "Zbog toga je projekat i rađen: dve od tri šifre su implementirane a ne pozvane. To su kratki algoritmi kod kojih skoro svaka linija nosi teret: u kom smeru ide rotacija, gde se čuva originalna dužina, i činjenica da XXTEA zahteva da mu se aritmetika prelije pri prekoračenju a ne da podigne grešku. Heševi koji se poklapaju su ono što dokazuje da sve to staje na svoje mesto, bajt za bajtom.",
-          "Druga polovina je podela na klijent i servis. Time što šifre stoje iza servisa, kriptografija ostaje van procesa koji iscrtava prozor, i to je ono što dozvoljava da se folder bilo koje veličine predaje bez zastoja u interfejsu, a znači i da su ista tri algoritma dostupna svemu drugom što ume da pozove taj servis.",
+          "Poenta projekta je bila da dva od tri algoritma napišem sam, a ne da ih pozovem iz biblioteke. To su kratki algoritmi u kojima je skoro svaka linija bitna: u kom smeru ide rotacija, gde se čuva originalna dužina, i to da XXTEA zahteva da se aritmetika pri prekoračenju prelije, a ne da baci grešku. Heševi koji se poklapaju dokazuju da je sve tačno, bajt po bajt.",
+          "Druga polovina je podela na klijent i servis. Kriptografija radi u servisu, a ne u procesu koji iscrtava prozor, i ista tri algoritma može da koristi svako ko može da pozove taj servis.",
         ],
       },
 
       networkTrafficAnalyzer: {
         title: "Network Traffic Analyzer",
-        tagline: "Snimak saobraćaja pročitan jednom, pa dvanaest pitanja postavljenih svakom paketu u njemu.",
+        tagline: "Snimak mrežnog saobraćaja učitan jednom, a svaki paket u njemu proveren na dvanaest protokola.",
         description:
-          "Seminarski rad o analizi mrežnog saobraćaja, sa desktop aplikacijom koja to i pokazuje. Otvara .pcapng snimak kroz Pyshark, prolazi kroz svaki paket sloj po sloj i izvlači ono što svaki protokol nosi - HTTP zaglavlja, DNS upite, TCP flags, FTP kredencijale - u drvo koje se širi, uz grafikon kako se protokoli dele.",
+          "Seminarski rad o analizi mrežnog saobraćaja, sa desktop aplikacijom kao demonstracijom. Aplikacija otvara .pcapng snimak preko Pyshark-a, prolazi kroz svaki paket sloj po sloj i izvlači podatke svakog protokola - HTTP zaglavlja, DNS upite, TCP flagove, FTP kredencijale - u stablo koje se otvara, uz grafikon raspodele protokola.",
         metaTitle: "Network Traffic Analyzer - Vuk Cvetković",
         metaDescription:
           "Projekat iz seminarskog rada u Python-u: Tkinter aplikacija koja čita .pcapng snimke kroz Pyshark, izvlači dvanaest protokola po paketu i prikazuje raspodelu protokola.",
@@ -376,60 +378,60 @@ const sr: Dict = {
           ],
           exit: "Po jedan red za svaki paket",
           exitLabel: "",
-          exitNote: "Širi se, i ulazi u grafikone",
+          exitNote: "Otvara se u stablo i ulazi u grafikone",
         },
 
         overview: [
-          "Rad je o tome kako se analizira mrežni saobraćaj i zašto je PCAP format ono na čemu su se svi ustalili. Aplikacija je deo koji je morao da radi: pokažeš joj snimak, a ona ti kaže šta je zaista unutra, a ne samo da su paketi prošli.",
-          "Wireshark radi ispod svega ovoga - Pyshark vodi njegov tshark - i to je ono što parsiranju daje domašaj. Na tome aplikacija postavlja isti fiksni skup pitanja svakom paketu u fajlu i slaže odgovore na jedno mesto, što je oblik koji ti treba kada nešto tražiš a još ne znaš u kom je paketu.",
+          "Rad obrađuje kako se analizira mrežni saobraćaj i zašto je PCAP postao standardni format za to. Aplikacija to primenjuje u praksi: otvori se snimak, a ona pokaže šta svaki paket nosi, protokol po protokol.",
+          "Ispod svega radi Wireshark: Pyshark pokreće njegov tshark, i zato parser razume toliko protokola. Aplikacija nad tim proverava svaki paket po istom skupu pravila i sve rezultate slaže na jedno mesto, što je korisno kada se nešto traži, a još se ne zna u kom je paketu.",
         ],
 
         steps: [
           {
             title: "Snimak se čita jednom",
-            body: "Dijalog prima .pcapng ili .pcap, Pyshark ga otvori, i svi paketi se prevuku u listu u memoriji pre nego što se fajl zatvori. Ništa posle toga ne čita fajl ponovo, i to je ono što filtere čini jeftinim: oni se izvršavaju nad listom, a ne parsiraju snimak iznova.",
+            body: "Dijalog prima .pcapng ili .pcap, Pyshark ga otvara, i svi paketi se učitaju u listu u memoriji pre nego što se fajl zatvori. Fajl se posle toga više ne čita, pa su filteri brzi: izvršavaju se nad listom, bez ponovnog parsiranja snimka.",
           },
           {
-            title: "Svaki paket se obilazi sloj po sloj",
-            body: "Imena protokola dolaze iz sopstvenog niza slojeva paketa, a ne iz nekakve tabele, pa paket prijavljuje ono što zaista sadrži i zbir na kraju prebrojava stvarne slojeve. Zatim se u nizu izvršava dvanaest ekstraktora, a svaki prvo pita da li je njegov protokol prisutan pre nego što bilo šta dotakne.",
+            title: "Svaki paket se čita sloj po sloj",
+            body: "Imena protokola se uzimaju iz slojeva samog paketa, a ne iz neke tabele, pa paket pokazuje ono što stvarno sadrži, a statistika na kraju broji stvarne slojeve. Zatim se redom izvršava dvanaest ekstraktora, i svaki prvo proveri da li je njegov protokol prisutan.",
           },
           {
-            title: "Svaki ekstraktor pita pre nego što pročita",
-            body: "Polje koje dati paket ne nosi nije greška, to je normalan slučaj, pa svaki ekstraktor proverava da li atribut postoji pre čitanja i prosto preskoči ono čega nema. Zato je drvo neravno: jedan HTTP paket pokaže desetak polja, sledeći dva, i oba su ispravna.",
+            title: "Svaki ekstraktor proverava pre čitanja",
+            body: "Ako paket nema neko polje, to nije greška nego normalan slučaj, pa svaki ekstraktor proveri da li atribut postoji i preskoči ono čega nema. Zato stablo nije ujednačeno: jedan HTTP paket ima desetak polja, sledeći dva, i oba su ispravna.",
           },
           {
-            title: "Ono što je u čistom tekstu i izlazi kao čist tekst",
-            body: "HTTP Basic kredencijali su base64, a ne šifrovanje, pa ih ekstraktor dekodira. FTP šalje korisničko ime i lozinku kao tekst, pa i oni izađu. To je iskren prikaz koji je rad i tražio: ne tvrdnja da su ti protokoli nesigurni, nego dekodiran string koji ti stoji u drvetu pred očima.",
+            title: "Ono što ide kao čist tekst, tako se i prikazuje",
+            body: "HTTP Basic kredencijali su samo base64, bez šifrovanja, pa ih ekstraktor dekodira. FTP šalje korisničko ime i lozinku kao običan tekst, pa se i oni prikažu. To je demonstracija koja je radu trebala: umesto tvrdnje da su ti protokoli nesigurni, dekodirana lozinka stoji u stablu.",
           },
           {
-            title: "Rezultati završavaju u drvetu i u grafikonima",
-            body: "Svaki paket postane jedan red - vreme, izvorna i odredišna IP adresa, dužina, lista protokola - koji se širi u čvor po protokolu i list po polju. Isti prolaz vrati i broj pojavljivanja po protokolu, što Matplotlib iscrta kao pie i bar grafikon ugrađen pravo u prozor.",
+            title: "Rezultati u stablu i na grafikonima",
+            body: "Svaki paket postaje jedan red - vreme, izvorna i odredišna IP adresa, dužina, lista protokola - koji se otvara u čvor za svaki protokol i list za svako polje. Isti prolaz vraća i broj pojavljivanja svakog protokola, koji Matplotlib crta kao pie i bar grafikon, direktno u prozoru.",
           },
         ],
 
         features: [
           {
-            title: "Dvanaest protokola, po paketu",
+            title: "Dvanaest protokola u svakom paketu",
             body: "HTTP, HTTPS, DNS, FTP, SMTP, ARP, ICMP, IP, Ethernet, TCP, UDP i FPP, svaki sa svojim ekstraktorom i svojim skupom polja.",
           },
           {
             title: "Filteri po pet kriterijuma",
-            body: "Opseg datuma i vremena, izvorna IP adresa, odredišna IP adresa i lista protokola razdvojena zapetama. Prazno vreme se vraća na ceo dan, od 00:00:00 do 23:59:59.",
+            body: "Opseg datuma i vremena, izvorna IP adresa, odredišna IP adresa i lista protokola razdvojena zapetama. Prazno vreme znači ceo dan, od 00:00:00 do 23:59:59.",
           },
           {
-            title: "Drvo, a ne zid teksta",
-            body: "Paket, pa protokol, pa polje. Zanimljiv deo je obično tri klika niže, a ništa te ne tera da skroluješ pored paketa koji te ne zanimaju.",
+            title: "Stablo umesto zida teksta",
+            body: "Paket, pa protokol, pa polje, a svaki nivo se otvara tek na klik, pa i snimak sa hiljadama paketa ostaje pregledan.",
           },
           {
             title: "Raspodela protokola na prvi pogled",
-            body: "Pie grafikon za udeo i bar grafikon za broj, iscrtani ponovo svaki put kada se primeni filter, pa se vidi šta je filter zaista izbacio.",
+            body: "Pie grafikon za udeo i bar grafikon za broj, ponovo iscrtani posle svakog filtera, pa se vidi šta je filter izbacio.",
           },
           {
-            title: "Kredencijali u čistom tekstu, prikazani kao takvi",
-            body: "Dekodirana HTTP Basic autentikacija i FTP korisnička imena i lozinke, što je najkraći mogući argument zašto se ti protokoli ne koriste nešifrovani.",
+            title: "Kredencijali u čistom tekstu",
+            body: "Dekodirani HTTP Basic kredencijali i FTP korisnička imena i lozinke, što je najkraći dokaz zašto se ti protokoli ne koriste bez šifrovanja.",
           },
           {
-            title: "Obe generacije PCAP-a",
+            title: "Oba PCAP formata",
             body: "Dijalog prima .pcapng i .pcap. Noviji format nosi više metapodataka i više interfejsa, a čita se kroz isti kod.",
           },
         ],
@@ -443,19 +445,19 @@ const sr: Dict = {
         },
 
         takeaway: [
-          "Disciplina koju format nameće je ono zbog čega ovo radi nad bilo kojim snimkom. Paket ne obećava ništa o tome koja polja nosi, pa je svako čitanje osigurano a polje kog nema je normalan ishod a ne otkaz. Pisanje dvanaest ekstraktora jednog po jednog je ono što to drži izričitim, i zato snimak sa dva paketa i snimak sa dve hiljade prolaze kroz isti kod bez ijednog specijalnog slučaja.",
-          "To što se snimak čita jednom je ono zbog čega sve ostalo deluje trenutno. Svaki filter, svako prebrojavanje i svaki ponovo iscrtan grafikon rade nad listom koja je već u memoriji, pa promena datuma ili IP adrese odmah vraća novi pogled na isti snimak, bez vraćanja na fajl.",
+          "Aplikacija radi sa bilo kojim snimkom zato što nijedno polje ne podrazumeva. Paket ne garantuje koja polja nosi, pa je svako čitanje zaštićeno, a polje koje nedostaje je normalan slučaj, ne greška. Dvanaest ekstraktora napisanih pojedinačno to drže eksplicitnim, pa snimak sa dva paketa i snimak sa dve hiljade prolaze kroz isti kod, bez ijednog posebnog slučaja.",
+          "Zato što se snimak čita samo jednom, sve ostalo radi odmah. Svaki filter, svako prebrojavanje i svaki novi grafikon rade nad listom koja je već u memoriji, pa promena datuma ili IP adrese odmah daje novi prikaz, bez ponovnog čitanja fajla.",
         ],
       },
 
       easyBreathe: {
         title: "Easy Breathe",
-        tagline: "Javna merenja polena u Srbiji, svedena na ona koja jednom čoveku zaista trebaju.",
+        tagline: "Javna merenja polena u Srbiji, svedena na ona koja su važna jednom korisniku.",
         description:
-          "Mobilna aplikacija nad otvorenim podacima države. Agencija za zaštitu životne sredine objavljuje merenja polena sa stanica širom Srbije, a aplikacija ih po rasporedu preslikava u sopstvenu bazu, pa ih svodi na alergene koje je jedan korisnik izabrao, u radijusu koji je sam odredio - na mapi, po nivou koncentracije, i kao push notifikaciju kada nivo poraste.",
+          "Mobilna aplikacija nad otvorenim podacima države. Agencija za zaštitu životne sredine objavljuje merenja polena sa stanica širom Srbije, a aplikacija ih po rasporedu kopira u svoju bazu i filtrira na alergene koje je korisnik izabrao, u radijusu koji je sam podesio - na mapi, po nivou koncentracije i kao push notifikaciju kada nivo poraste.",
         metaTitle: "Easy Breathe - Vuk Cvetković",
         metaDescription:
-          "React Native i Expo aplikacija nad NestJS API-jem: otvoreni podaci o polenu u Srbiji, preslikani po rasporedu i filtrirani po lokaciji, radijusu i alergenima koje korisnik izabere.",
+          "React Native i Expo aplikacija nad NestJS API-jem: otvoreni podaci o polenu u Srbiji, preuzeti po rasporedu i filtrirani po lokaciji, radijusu i alergenima koje korisnik izabere.",
         context: "Seminarski rad o sistemima e-Uprave, Elektronski fakultet u Nišu",
         domain: "Otvoreni podaci države, polen i alergeni",
 
@@ -465,7 +467,7 @@ const sr: Dict = {
           core: "Seedovanje po rasporedu",
           branches: [
             { title: "Mesečno", badge: "Alergeni, tipovi, lokacije" },
-            { title: "Na sat, od 9 do 12", badge: "Poleni, koncentracije" },
+            { title: "Svakog sata, od 9 do 12", badge: "Poleni, koncentracije" },
           ],
           exit: "Jedna baza, bez duplikata",
           exitLabel: "",
@@ -473,57 +475,57 @@ const sr: Dict = {
         },
 
         overview: [
-          "Javni podaci postoje i dobri su: Agencija za zaštitu životne sredine svakodnevno objavljuje merenja polena sa mernih stanica širom Srbije, kao otvoreni API bez ključa i bez ograničenja. Ono što ne radi jeste da čoveku alergičnom na ambroziju kaže da li je danas loš dan tamo gde se on baš nalazi. Ta praznina je cela aplikacija.",
-          "Zato se posao deli na dve strane. API preslikava otvorene podatke u sopstvenu bazu po rasporedu, jer telefon ne treba da prolazi kroz stotine hiljada merenja na nivou države da bi odgovorio na lokalno pitanje. Aplikacija onda postavlja jedno pitanje nad tim preslikom - šta je u vazduhu oko mene, od onoga na šta reagujem - i odgovara na mapi, u četiri nivoa, i u notifikaciji.",
+          "Javni podaci postoje i dobri su: Agencija za zaštitu životne sredine svakog dana objavljuje merenja polena sa mernih stanica širom Srbije, kao otvoreni API bez ključa i bez ograničenja. Ali čoveku alergičnom na ambroziju ne kažu da li je danas loš dan tamo gde se nalazi. Aplikacija postoji da bi to rešila.",
+          "Zato je posao podeljen na dva dela. API po rasporedu kopira otvorene podatke u svoju bazu, jer telefon ne treba da prolazi kroz stotine hiljada merenja iz cele zemlje da bi odgovorio na lokalno pitanje. Aplikacija zatim nad tom kopijom postavlja jedno pitanje - šta od onoga na šta sam alergičan ima u vazduhu oko mene - i odgovara na mapi, u četiri nivoa i notifikacijom.",
         ],
 
         steps: [
           {
-            title: "Otvoreni podaci se preslikavaju po dva sata",
-            body: "Pet endpointa se ne menja istom brzinom, pa se ne ni pribavlja istom brzinom. Alergeni, tipovi alergena i lokacije se seeduju u devet, prvog u mesecu. Poleni i koncentracije, koji su ono što se menja, pribavljaju se na svaki sat između devet i podneva, kada se dnevna merenja i pojave.",
+            title: "Podaci se preuzimaju u dva ritma",
+            body: "Pet endpointa se ne menja istom brzinom, pa se ni ne preuzimaju istom brzinom. Alergeni, tipovi alergena i lokacije preuzimaju se prvog u mesecu u devet časova. Poleni i koncentracije, koji se stvarno menjaju, preuzimaju se svakog sata od devet do podne, kada se objavljuju dnevna merenja.",
           },
           {
-            title: "Seedovanje se bezbedno ponavlja",
-            body: "Svaki seeder prvo pogleda koje id-jeve već ima, zadrži samo one koje nema, i njih ubaci. Tako posao na sat koji ne nađe ništa novo ne upiše ništa, isto pokretanje se može ponoviti bez dupliranja merenja, a prozor koji traži ide nedelju dana unazad - i to je ono što uhvati merenje objavljeno par dana posle nego što je uzeto.",
+            title: "Seedovanje može bezbedno da se ponovi",
+            body: "Svaki seeder prvo proveri koje id-jeve već ima i ubaci samo nove. Tako satni job koji ne nađe ništa novo ne upiše ništa, isto pokretanje može da se ponovi bez dupliranja merenja, a period koji se traži ide nedelju dana unazad, pa se uhvate i merenja objavljena nekoliko dana nakon što su izmerena.",
           },
           {
-            title: "Lokacija i radijus postaju skup stanica",
-            body: "Korisnikove koordinate i njegov izabrani radijus u kilometrima ulaze u MongoDB geoprostorni upit, uz deljenje radijusa Zemljinim da bi se dobila sfera koju upit traži. Ono što se vrati je svaka merna stanica dovoljno blizu da tom čoveku bude važna.",
+            title: "Od lokacije i radijusa do liste stanica",
+            body: "Koordinate korisnika i izabrani radijus u kilometrima idu u MongoDB geoprostorni upit, a radijus se deli poluprečnikom Zemlje, jer upit tako očekuje radijus sfere. Rezultat su sve merne stanice dovoljno blizu korisnika.",
           },
           {
-            title: "Stanice i datum postaju merenja koja se računaju",
-            body: "Ti id-jevi stanica i današnji datum izdvajaju dnevne zapise o polenu, a svaki od njih nosi id-jeve koncentracija izmerenih sa njim. Te koncentracije se onda pribave i skrate na alergene koje je korisnik stvarno izabrao, pa odgovor drži samo merenja koja su i blizu i relevantna.",
+            title: "Od stanica i datuma do relevantnih merenja",
+            body: "Id-jevi tih stanica i današnji datum izdvajaju dnevne zapise o polenu, a svaki zapis sadrži id-jeve koncentracija izmerenih uz njega. Te koncentracije se zatim učitaju i filtriraju na alergene koje je korisnik izabrao, pa odgovor sadrži samo merenja koja su i blizu i relevantna.",
           },
           {
             title: "Svako merenje dobija nivo i mesto",
-            body: "Broj u vazduhu sam po sebi ne znači ništa, pa se svaka koncentracija poredi sa objavljenim marginama sopstvenog alergena i izađe kao Low, Normal, High ili Very high. Merenje se onda formatira sa alergenom i stanicom sa koje je došlo, a to je ono što marker na mapi i detaljni prikaz prikazuju.",
+            body: "Sam broj ne govori mnogo, pa se svaka koncentracija poredi sa objavljenim granicama za taj alergen i dobija nivo Low, Normal, High ili Very high. Uz merenje se zatim dodaju alergen i stanica, i to se prikazuje na markeru na mapi i u detaljnom prikazu.",
           },
         ],
 
         features: [
           {
             title: "Izaberi svoje alergene",
-            body: "Objavljeno ih je oko trideset, a profil je multiselect nad svima. Sve nizvodno - mapa, nivoi, notifikacije - prati tu listu.",
+            body: "Objavljeno ih je tridesetak, a na profilu se biraju iz liste sa višestrukim izborom. Sve ostalo - mapa, nivoi, notifikacije - prati taj izbor.",
           },
           {
             title: "Tvoj radijus, tvoj interval",
-            body: "Radijus pretrage u kilometrima i na koliko sati se proverava, oba se postavljaju na profilu. Interval postoji da provera može da bude česta koliko neko želi, a da baterija ne odlučuje umesto njega.",
+            body: "Radijus pretrage u kilometrima i na koliko sati se proverava, oba se podešavaju na profilu. Kraći interval znači svežija upozorenja, a duži štedi bateriju.",
           },
           {
-            title: "Mapa koja se čita na prvi pogled",
-            body: "Markeri na mernim stanicama u tvojoj blizini, obojeni po nivou. Klikneš na jedan i izlista ti koji su tvoji alergeni tu izmereni i koliko je svaki bio visok.",
+            title: "Pregledna mapa",
+            body: "Markeri na mernim stanicama u blizini, obojeni po nivou. Klik na marker prikazuje koji su tvoji alergeni tu izmereni i koliki je nivo svakog.",
           },
           {
             title: "Četiri nivoa, sa brojevima",
-            body: "Low, Normal, High i Very high, svaki sa brojem alergena u blizini na tom nivou. Klik na nivo daje listu, klik na unos daje stanicu, opis i izmerenu vrednost.",
+            body: "Low, Normal, High i Very high, svaki sa brojem alergena u blizini na tom nivou. Klik na nivo otvara listu, a klik na stavku prikazuje stanicu, opis i izmerenu vrednost.",
           },
           {
             title: "Notifikacija kada poraste",
-            body: "Push notifikacija i poruka u aplikaciji kada nešto sa izabrane liste dostigne visoku koncentraciju u blizini, pa je aplikacija korisna i kada se ne otvori.",
+            body: "Push notifikacija i poruka u aplikaciji kada neki od izabranih alergena dostigne visoku koncentraciju u blizini, pa aplikacija radi svoj posao i kada nije otvorena.",
           },
           {
-            title: "Nalozi, bez komplikacija",
-            body: "Registracija i prijava preko mejla, sa profilom koji drži alergene, radijus i interval, pa isti izbor prati nalog a ne telefon.",
+            title: "Jednostavni nalozi",
+            body: "Registracija i prijava mejlom, a profil čuva alergene, radijus i interval, pa podešavanja idu uz nalog, a ne uz telefon.",
           },
         ],
 
@@ -536,8 +538,8 @@ const sr: Dict = {
         },
 
         takeaway: [
-          "Lekcija koja je ostala je da otvoreni podaci nisu isto što i upotrebljivi podaci. Pet endpointa koji se pozivaju jedan na drugi preko id-jeva, razmera na nivou države i nikakav način da se postavi geografsko pitanje znače da je vrednost u potpunosti u preslikavanju i spajanju. Odluka šta kopirati, koliko često, i kako kopiranje dva puta učiniti bezopasnim je mesto gde je inženjerski posao zaista bio.",
-          "Druga polovina je to da odgovor mora da dođe a da se ne traži. Čovek sa alergijom ne otvara aplikaciju da proveri - želi da mu se kaže, u radijusu i intervalu koje postavi jednom. Push notifikacije nad backendom koji radi po rasporedu su ono što javni skup podataka pretvara u nešto što stigne do čoveka onog dana kada mu treba.",
+          "Glavna lekcija je da otvoreni podaci nisu isto što i upotrebljivi podaci. Pet endpointa koji se povezuju preko id-jeva, podaci za celu zemlju i nikakva mogućnost geografskog upita znače da je sva vrednost u kopiranju i spajanju podataka. Najviše inženjerskog posla je bilo u odlukama šta kopirati, koliko često i kako da dvostruko kopiranje ništa ne pokvari.",
+          "Druga lekcija je da odgovor mora da stigne sam. Čovek sa alergijom ne otvara aplikaciju da proveri - želi da bude obavešten, u radijusu i intervalu koje jednom podesi. Push notifikacije i backend koji radi po rasporedu pretvaraju javne podatke u upozorenje koje stigne baš onog dana kada je potrebno.",
         ],
       },
     },
@@ -563,10 +565,10 @@ const sr: Dict = {
     index: {
       metaTitle: "Igre - Vuk Cvetković",
       metaDescription:
-        "Igre u pretraživaču Vuka Cvetkovića: 2048, Minolovac, Memorija u dvanaest nivoa, Potapanje brodova protiv četiri protivnika, i igra spajanja svetova u veće. Svaka dobija svoju stranicu.",
+        "Igre u pretraživaču koje je napravio Vuk Cvetković: 2048, Minolovac, Memorija u dvanaest nivoa, Potapanje brodova protiv četiri protivnika i igra u kojoj se planete spajaju u veće. Svaka ima svoju stranicu.",
       heading: "Igre",
       intro:
-        "Igre koje vrede više od jednog pokušaja. Svaka ima svoju stranicu, a ispod nje i tekst o tome kako je napravljena, za onoga koga i to zanima.",
+        "Igre koje vredi igrati više puta. Svaka ima svoju stranicu, a ispod igre i tekst o tome kako je napravljena, za one koje to zanima.",
     },
 
     items: {
@@ -575,11 +577,11 @@ const sr: Dict = {
 
         /** One line, for the card on the index. */
         tagline:
-          "Gurni tablu i svaka pločica klizi dokle može. Dva ista broja se spajaju u jedan dvostruki, sve do 2048.",
+          "Pomeri tablu i sve pločice klize do kraja. Dve pločice sa istim brojem spajaju se u jednu duplo veću, sve do 2048.",
 
         metaDescription:
-          "Igra sa pločicama. Gurni tablu, spoji iste brojeve, i stigni do jedne pločice od 2048.",
-        lead: "Gurni tablu u bilo kom smeru i svaka pločica klizi dokle može. Dve iste se spajaju u jednu dvostruku, a cilj je jedna pločica od 2048.",
+          "Igra sa pločicama: pomeraj tablu, spajaj iste brojeve i stigni do pločice 2048.",
+        lead: "Pomeri tablu u bilo kom smeru i sve pločice klize do kraja. Dve pločice sa istim brojem spajaju se u jednu duplo veću, a cilj je da napraviš pločicu 2048.",
 
         score: "Rezultat",
         best: "Najbolje",
@@ -590,13 +592,13 @@ const sr: Dict = {
 
         won: {
           title: "2048",
-          body: "Pločica je na tabli. Ne mora tu da se stane - igra traje dok ima šta da se pomeri.",
+          body: "Pločica 2048 je na tabli. Ne moraš tu da staneš - igra traje dok god ima poteza.",
           keepGoing: "Nastavi",
         },
 
         over: {
           title: "Nema više poteza",
-          body: "Tabla je puna i ništa se ni sa čim ne poklapa. Jedan korak unazad i dalje stoji ako je poslednji potez bio taj koji je odlučio.",
+          body: "Tabla je puna i nijedne dve susedne pločice nisu iste. Ako je presudio poslednji potez, i dalje možeš da ga poništiš.",
           restart: "Igraj ponovo",
         },
 
@@ -604,24 +606,24 @@ const sr: Dict = {
           label: "Kako se igra",
           items: [
             {
-              title: "Guraš celu tablu",
+              title: "Pomeraš celu tablu",
               description:
-                "Strelice ili WASD na tastaturi, prevlačenje u bilo kom smeru na telefonu. Svaka pločica u jednom potezu putuje dokle god može, a ne jedno polje.",
+                "Strelice ili WASD na tastaturi, prevlačenje u bilo kom smeru na telefonu. Svaka pločica u jednom potezu ide do kraja, a ne samo jedno polje.",
             },
             {
               title: "Isti brojevi se spajaju",
               description:
-                "Dve pločice sa istim brojem postaju jedna dvostruka. Pločica koja se upravo spojila je gotova za taj potez, pa red od četiri dvojke daje dve četvorke a ne jednu osmicu.",
+                "Dve pločice sa istim brojem postaju jedna duplo veća. Pločica koja se upravo spojila ne može ponovo u istom potezu, pa red od četiri dvojke daje dve četvorke, a ne jednu osmicu.",
             },
             {
               title: "Nova pločica posle svakog poteza",
               description:
-                "Pojavi se na slobodnom polju i u devet od deset slučajeva je dvojka. Guranje koje ništa ne promeni nije potez, pa se ništa novo ne pojavljuje i ništa se ne gubi ako probaš.",
+                "Pojavljuje se na slobodnom polju i u devet od deset slučajeva je dvojka. Pomeranje koje ništa ne promeni ne računa se kao potez, pa se tada ne pojavljuje nova pločica i ništa ne gubiš ako probaš.",
             },
             {
               title: "Izaberi ugao i ostani u njemu",
               description:
-                "Drži najveću pločicu u jednom uglu i nikad ne guraj od njega. Veći deo igre je odbijanje poteza koji je odatle diže.",
+                "Drži najveću pločicu u jednom uglu i nikad ne pomeraj tablu od njega. Najveći deo igre je izbegavanje poteza koji je izvlači iz ugla.",
             },
           ],
         },
@@ -629,10 +631,10 @@ const sr: Dict = {
         close: {
           label: "Kako je napravljeno",
           paragraphs: [
-            "Nema canvasa ni biblioteke za igre. Pločica je element sa dve custom property vrednosti, njena pozicija je translate izračunat u odnosu na njenu sopstvenu veličinu, a klizanje kompozituje pretraživač. Odatle dolazi glatkoća: potez menja transform i ništa drugo, pa nijedan njegov deo ne prolazi kroz layout.",
-            "Druga polovina je to da svaka pločica zadržava svoj element dok postoji. Tabla se nikad ne iscrtava iz stanja - potez ažurira brojeve na čvorovima koji su već tu, i zato pločica vidljivo putuje odakle je bila umesto da nestane i pojavi se na drugom mestu.",
-            "Brojevi su tekst, pa su oštri kao i ostatak stranice i skaliraju se sa veličinom koju je čitalac podesio. Boje su tokeni u istom stilu kao i sve drugo, i zato tabla odgovara na prekidač teme u zaglavlju.",
-            "Unos ide kroz jednu funkciju sa tri mesta, pa taster, prevlačenje i dodir ne mogu da počnu da znače malo različite stvari. Strelice pripadaju tabli samo dok je tabla na ekranu, a potez gurnut pre nego što je prethodni sleteo se zadržava umesto da se odbaci - i zato brzo igranje nikad ne košta potez.",
+            "Bez canvasa i bez biblioteke za igre. Pločica je element sa dva CSS custom property-ja, pozicija joj je translate izračunat u odnosu na njenu veličinu, a klizanje pretraživač radi kroz compositing. Zato je animacija glatka: potez menja samo transform, pa ništa ne prolazi kroz layout.",
+            "Drugi deo je da svaka pločica zadržava isti element dok postoji. Tabla se nikad ne iscrtava ispočetka iz stanja - potez samo menja brojeve na elementima koji već postoje, pa se vidi kako pločica putuje, umesto da nestane i pojavi se na drugom mestu.",
+            "Brojevi su običan tekst, pa su oštri kao i ostatak stranice i prate veličinu fonta koju je čitalac podesio. Boje su tokeni iz istog stylesheet-a kao i sve ostalo, pa tabla prati prekidač teme u zaglavlju.",
+            "Tastatura, prevlačenje i dodir idu kroz istu funkciju, pa uvek rade isto. Strelice pomeraju tablu samo dok je tabla na ekranu, a potez napravljen pre nego što se prethodni završio čeka svoj red umesto da se izgubi, pa brzo igranje nikad ne košta potez.",
           ],
         },
       },
@@ -641,11 +643,11 @@ const sr: Dict = {
         name: "Minolovac",
 
         tagline:
-          "Otvori svako polje koje nije mina. Svaki broj broji mine koje ga dodiruju, a ostalo se izvodi odatle.",
+          "Otvori sva polja koja nisu mine. Svaki broj pokazuje koliko mina ga okružuje, a ostalo se zaključuje iz toga.",
 
         metaDescription:
-          "Minolovac u pretraživaču, na početničkoj, srednjoj i ekspertskoj tabli, sa prvim klikom koji ne može da izgubi.",
-        lead: "Otvori svako polje koje nije mina. Broj kaže koliko od osam polja oko njega ima minu, a sve ostalo se izvodi odatle. Tri table, u veličinama u kojima je original izašao, i prvi klik koji ne može da izgubi.",
+          "Minolovac u pretraživaču, na početničkoj, srednjoj i ekspertskoj tabli, sa prvim klikom koji je uvek siguran.",
+        lead: "Otvori sva polja koja nisu mine. Broj pokazuje koliko od osam susednih polja krije minu, a sve ostalo se zaključuje iz toga. Tri table, u veličinama iz originalne igre, i prvi klik koji je uvek siguran.",
 
         boards: "Tabla",
         levels: {
@@ -659,7 +661,7 @@ const sr: Dict = {
         best: "Najbolje",
         newGame: "Nova igra",
         flagMode: "Zastavice",
-        hint: "Pritisak otvara, desni klik ili F postavlja zastavicu, na telefonu dug pritisak. Gotov broj otvara ostatak svog kruga na pritisak ili na srednji klik.",
+        hint: "Klik otvara polje, desni klik ili F postavlja zastavicu, a na telefonu dug pritisak. Klik ili srednji klik na završen broj otvara sva preostala polja oko njega.",
 
         gridLabel: "Minsko polje",
         cells: {
@@ -672,14 +674,14 @@ const sr: Dict = {
 
         won: {
           title: "Očišćeno",
-          body: "Svako polje koje nije bilo mina je otvoreno.",
+          body: "Sva polja bez mina su otvorena.",
           record: "Novi najbolji rezultat za ovu tablu.",
           again: "Igraj ponovo",
         },
 
         lost: {
           title: "Mina",
-          body: "Polje je prikazano onakvo kakvo je bilo. Zastavica na praznom polju je označena, i tu obično zapne rasuđivanje.",
+          body: "Tabla je prikazana onakva kakva je bila. Pogrešne zastavice su označene, i tu je obično bila greška u zaključivanju.",
           again: "Probaj ponovo",
         },
 
@@ -689,22 +691,22 @@ const sr: Dict = {
             {
               title: "Prvi klik je siguran",
               description:
-                "Mine se postavljaju posle njega, oko mesta koje si pritisnuo, pa prvi potez ne može da izgubi i uvek otvori slobodan prostor. Počni bilo gde.",
+                "Mine se postavljaju tek posle prvog klika, dalje od mesta koje si pritisnuo, pa prvi potez ne može da izgubi i uvek otvori slobodan prostor. Počni bilo gde.",
             },
             {
-              title: "Broj broji svoje susede",
+              title: "Broj pokazuje susedne mine",
               description:
-                "To je koliko od osam polja koja ga dodiruju ima minu. Polje bez ijedne mine oko sebe otvara ceo predeo u jednom pritisku.",
+                "To je broj mina u osam polja oko njega. Polje bez ijedne mine u okolini otvara celu oblast odjednom.",
             },
             {
-              title: "Označi ono što si izveo",
+              title: "Označi ono što si zaključio",
               description:
-                "Desni klik na računaru, F na tastaturi, dug pritisak na telefonu. Dug pritisak samo postavlja, pa spor prst ne može da skloni ono što je upravo spustio - sklanja se u režimu zastavica, koji ti ionako treba kad ih ide više zaredom. Brojač pokazuje mine manje zastavice.",
+                "Desni klik na računaru, F na tastaturi, dug pritisak na telefonu. Dug pritisak samo postavlja zastavicu, pa je ne možeš slučajno skloniti odmah posle - za to služi režim zastavica, koji ti ionako treba kad ih postavljaš više zaredom. Brojač pokazuje broj mina umanjen za broj zastavica.",
             },
             {
-              title: "Pritisni broj koji si završio",
+              title: "Klikni na završen broj",
               description:
-                "Kad broj ima oko sebe onoliko zastavica koliko kaže, pritisak na njega otvara ostatak njegovog kruga odjednom, a isto radi i srednji klik. Drži taster i polja koja bi se otvorila utonu zajedno sa njim, pa vidiš tih osam pre nego što se odlučiš. Odatle dolazi brzina u ovoj igri, a većina igrača za to nikad ne sazna.",
+                "Kad broj ima oko sebe onoliko zastavica koliko pokazuje, klik na njega otvara sva preostala polja oko njega, a isto radi i srednji klik. Ako držiš taster, polja koja bi se otvorila se utisnu, pa ih vidiš pre nego što se odlučiš. Odatle dolazi brzina u ovoj igri, a većina igrača to nikad ne otkrije.",
             },
           ],
         },
@@ -712,10 +714,10 @@ const sr: Dict = {
         close: {
           label: "Kako je napravljeno",
           paragraphs: [
-            "Nema canvasa ni biblioteke za igre, a za razliku od druge igre ovde nema ni kretanja. Nema petlje i nema ničega u letu: polje je dugme, ono menja stanje ili ne menja, a cela tabla je četiristo osamdeset takvih na ekspertskoj veličini. Ono što košta da radi je klasa na elementu.",
-            "Mine se postavljaju na prvi pritisak a ne na početku, oko polja koje je pritisnuto i osam koja ga dodiruju. Polje podeljeno unapred mora ili da dozvoli da prvi potez izgubi, što je bacanje novčića a ne igra, ili da deli ponovo dok ne prođe, čime se tiho krive šanse svuda drugde. Kasno postavljanje daje pošteno polje i prvi potez koji uvek otvori predeo.",
-            "Otvaranje predela je red a ne rekurzija, koju bi telefon na četiristo nivoa dubine s pravom odbio, a taj red usput besplatno daje animaciji njen tajming: krug u kome je polje pronađeno jeste koliko je daleko od pritiska, pa svako čeka toliko koraka pre nego što se otvori. Otvaranje stiže kao nešto što se širi spolja umesto kao tabla koja se promeni odjednom, a košta jednu custom property vrednost i kašnjenje.",
-            "Tabla je prava mreža: redovi, polja, broj redova i kolona, i jedno polje u redosledu tabulatora da bi je strelice obilazile umesto tastera Tab. Zbog toga je ova igra ovde. Druga mora da bude sakrivena od čitača ekrana i opisana kroz live region, jer šesnaest pločica koje se prepisuju na svaki pritisak ne mogu da se pročitaju. Minsko polje je tabela koja miruje i čeka, a mreža postoji tačno zbog toga.",
+            "Bez canvasa i bez biblioteke za igre, a za razliku od igre 2048 ovde nema ni kretanja. Nema petlje i ništa se ne animira: polje je dugme koje menja stanje ili ne, a ekspertska tabla ima četiristo osamdeset takvih. Sve što igra troši je promena klase na elementu.",
+            "Mine se postavljaju na prvi klik, a ne na početku, tako da zaobiđu pritisnuto polje i osam oko njega. Tabla podeljena unapred mora ili da dozvoli da prvi potez izgubi, što je bacanje novčića a ne igra, ili da se deli ponovo dok to ne prestane, čime se neprimetno menjaju šanse na ostatku table. Kasno postavljanje daje poštenu tablu i prvi potez koji uvek otvori oblast.",
+            "Otvaranje oblasti koristi red, a ne rekurziju, koju bi telefon na četiristo nivoa dubine s pravom odbio. Taj red usput daje i tajming animacije: krug u kom je polje pronađeno govori koliko je daleko od klika, pa svako polje čeka toliko koraka pre otvaranja. Oblast se tako otvara talasom od mesta klika, umesto da se cela tabla promeni odjednom, a to košta jedan custom property i jedno kašnjenje.",
+            "Tabla je prava mreža: redovi, polja, broj redova i kolona, i samo jedno polje u redosledu tabulatora, pa se po njoj kreće strelicama umesto tasterom Tab. Igra 2048 mora da bude sakrivena od čitača ekrana i opisana kroz live region, jer šesnaest pločica koje se menjaju na svaki taster ne mogu da se pročitaju. Minsko polje je tabela koja miruje i čeka, a upravo za to mreža i postoji.",
           ],
         },
       },
@@ -728,7 +730,7 @@ const sr: Dict = {
 
         metaDescription:
           "Memorija u pretraživaču: dvanaest nivoa od četiri kartice do šezdeset, do tri zvezdice po tabli, i slobodna igra sa svim tablama otvorenim od početka.",
-        lead: "Okreći po dve kartice i pronađi svaki par. Dvanaest nivoa, svaka tabla veća od prethodne, od četiri kartice do šezdeset i trideset sličica. Pređi nivo da otvoriš sledeći, ili u slobodnoj igri idi pravo na bilo koju veličinu.",
+        lead: "Okreći po dve kartice i pronađi svaki par. Dvanaest nivoa, svaka tabla veća od prethodne, od četiri kartice do šezdeset, sa trideset različitih sličica. Pređi nivo da otvoriš sledeći, ili u slobodnoj igri idi pravo na bilo koju veličinu.",
 
         modes: "Režim",
         modeNames: {
@@ -750,7 +752,7 @@ const sr: Dict = {
         best: "Najmanje poteza",
         goal: "Zvezdice",
         newGame: "Nova igra",
-        hint: "Pritisni karticu da je okreneš, pa još jednu. Par ostaje okrenut, a sve ostalo se vraća. Strelice šetaju po stolu, a Enter okreće karticu.",
+        hint: "Pritisni karticu da je okreneš, pa još jednu. Par ostaje okrenut, a sve ostalo se vraća. Strelicama se krećeš po stolu, a Enter okreće karticu.",
 
         gridLabel: "Kartice",
         cells: {
@@ -799,7 +801,7 @@ const sr: Dict = {
         won: {
           title: "Svi parovi pronađeni",
           record: "Manje poteza nego ikad na ovom nivou.",
-          final: "To je bio poslednji nivo. Ostale su još samo tri zvezdice na svih dvanaest.",
+          final: "To je bio poslednji nivo. Ostalo je još samo da osvojiš tri zvezdice na svih dvanaest.",
           next: "Sledeći nivo",
           bigger: "Sledeća tabla",
           again: "Igraj ponovo",
@@ -811,22 +813,22 @@ const sr: Dict = {
             {
               title: "Dve kartice po potezu",
               description:
-                "Pritisni karticu da je okreneš, pa drugu. Ako se sličice poklope, obe ostaju okrenute. Ako ne, ostaju gore taman toliko da ih zapamtiš i onda se vraćaju, a pritisak na sledeću karticu ih vraća odmah.",
+                "Pritisni karticu da je okreneš, pa drugu. Ako se sličice poklope, obe ostaju okrenute. Ako ne, ostaju otvorene taman toliko da ih zapamtiš i onda se zatvaraju, a klik na sledeću karticu ih zatvara odmah.",
             },
             {
               title: "Svaki potez se broji",
               description:
-                "Dve kartice su jedan potez, bio par ili ne. Tri zvezdice su tabla pređena otprilike onoliko brzo koliko bi je prešlo savršeno pamćenje, dve su do pola toliko poteza više, a jedna je za to što si stigao do kraja. Zvezdice iznad stola se gase kako prelaziš svaku granicu.",
+                "Dve kartice su jedan potez, bio par ili ne. Tri zvezdice dobijaš ako tablu pređeš otprilike brzo kao igrač sa savršenim pamćenjem, dve ako ti treba do pola više poteza, a jednu za to što si stigao do kraja. Zvezdice iznad stola se gase kako prelaziš svaku granicu.",
             },
             {
               title: "Dvanaest nivoa, svaki veći",
               description:
-                "Od dva sa dva do deset sa šest. Pređen nivo otvara sledeći, a najmanji broj poteza se pamti za svaki. Prvih pet deli iz jednog dela špila, voće ili prirodu ili stvari, a od šestog su u igri svih trideset sličica.",
+                "Od dva puta dva do deset puta šest. Pređen nivo otvara sledeći, a za svaki se pamti najmanji broj poteza. Prvih pet nivoa koristi samo jedan deo špila, voće, prirodu ili predmete, a od šestog su u igri svih trideset sličica.",
             },
             {
               title: "Ili preskoči napred",
               description:
-                "Slobodna igra otvara sve table odjednom, bez zvezdica i bez zaključavanja. Isti špil i ista pravila, za kad ti je baš veliki sto onaj koji hoćeš.",
+                "Slobodna igra otvara sve table odjednom, bez zvezdica i bez zaključavanja. Isti špil i ista pravila, za kad odmah hoćeš najveći sto.",
             },
           ],
         },
@@ -834,11 +836,11 @@ const sr: Dict = {
         close: {
           label: "Kako je napravljena",
           paragraphs: [
-            "Nema canvasa ni biblioteke za igre, kao ni kod ostalih. Kartica je dugme sa dve strane, a okretanje je jedna tranzicija na jednom svojstvu: sloj koji drži obe strane rotira se za pola kruga oko uspravne ose, svaka strana krije svoje naličje, i pretraživač pokazuje onu koja je okrenuta ka tebi. Okret prebaci za nekoliko stepeni i vrati se, i zato izgleda kao kartica koja ima neku težinu a ne kao kvadrat koji se vrti. Svaka kartica nosi svoju perspektivu, srazmernu njenoj veličini, pa se kartica na najmanjoj tabli i ona na najvećoj okreću kroz istu dubinu.",
-            "Trideset sličica je nacrtano a ne preuzeto: jedan sprite list u stranici, jedan simbol po sličici, i svako lice kartice je referenca na jedan od njih. Svaka je ravna boja u tri tona, sama boja, svetlina prema izvoru svetla i senka od njega, na sopstvenoj podlozi. Sličice zadržavaju boje u obe teme, a samo podloge prate stranicu, pa je jabuka zapamćena na svetlom ista jabuka i na tamnom. Zvukovi su napravljeni na isti način, u pretraživaču, od nekoliko oscilatora i kratkog šuma kroz filter, pa na stranici nema ni audio fajla.",
-            "Kartica ne zna šta je dok se ne okrene. Tabla sa zatvorenim karticama u stranici ne sadrži nijedan odgovor: lice svake kartice ne pokazuje ni na šta, a sličica se upisuje u trenutku kad kartica pređe na drugu stranu. Špil se meša jednom po tabli i živi unutar igre, gde stranica ne može da ga pročita.",
-            "Granice za zvezdice su izmerene a ne izabrane. Igrač sa savršenim pamćenjem, onaj koji nikad ne okreće karticu koju je već video osim kad ona zatvara par, odigrao je dvesta hiljada partija na svakoj tabli, a tri zvezdice su broj poteza koji mu je trebao u devet partija od deset. Njegov prosek je ispao 1,61 potez po paru, što je poznat odgovor za ovu igru i način na koji je simulacija proverena.",
-            "Tabla je veličine koja staje na ekran, jer tabla memorije koju moraš da skroluješ je tabla koju ne vidiš. Na telefonu koji držiš uspravno okreće se za četvrtinu, deset u redu postaje šest u redu, a nijedna kartica se ne pomera da bi se to desilo: mreža se puni po kolonama umesto po redovima, strelice menjaju ose da bi pratile, a čitač ekrana i dalje obilazi istu tabelu.",
+            "Bez canvasa i bez biblioteke za igre, kao i ostale. Kartica je dugme sa dve strane, a okretanje je jedna tranzicija na jednom svojstvu: sloj sa obe strane rotira se za pola kruga oko vertikalne ose, svaka strana sakriva svoju poleđinu, i pretraživač prikazuje onu koja je okrenuta ka tebi. Okret ode nekoliko stepeni preko i vrati se, pa kartica deluje kao da ima težinu, a ne kao kvadrat koji se vrti. Svaka kartica ima svoju perspektivu, srazmernu veličini, pa se kartice na najmanjoj i na najvećoj tabli okreću kroz istu dubinu.",
+            "Trideset sličica je nacrtano, a ne preuzeto: jedan sprite u stranici, jedan simbol po sličici, a svako lice kartice je referenca na jedan od njih. Svaka je u tri tona iste boje, osnovnom, svetlijem na strani svetla i tamnijem na strani senke, na sopstvenoj podlozi. Sličice zadržavaju boje u obe teme, a samo podloge prate stranicu, pa jabuka zapamćena u svetloj temi izgleda isto i u tamnoj. Zvukovi se prave na isti način, u pretraživaču, od nekoliko oscilatora i kratkog šuma kroz filter, pa na stranici nema nijednog audio fajla.",
+            "Kartica ne zna šta je dok se ne okrene. Zatvorene kartice u stranici ne sadrže nijedan odgovor: lice svake kartice je prazno, a sličica se upisuje tek u trenutku okretanja. Špil se meša jednom po tabli i čuva se unutar igre, gde ga stranica ne može pročitati.",
+            "Granice za zvezdice su izmerene, a ne izmišljene. Simulirani igrač sa savršenim pamćenjem, koji nikad ne okreće već viđenu karticu osim kad njome zatvara par, odigrao je dvesta hiljada partija na svakoj tabli, a tri zvezdice su broj poteza koji mu je bio dovoljan u devet partija od deset. Prosek mu je bio 1,61 potez po paru, što je poznat rezultat za ovu igru, i time je simulacija i proverena.",
+            "Tabla uvek staje na ekran, jer tablu koju moraš da skroluješ ne vidiš celu. Na telefonu koji držiš uspravno tabla se okreće za četvrtinu, deset kartica u redu postaje šest, a nijedna kartica ne menja mesto: mreža se puni po kolonama umesto po redovima, strelice zamene ose, a čitač ekrana i dalje prolazi kroz istu tabelu.",
           ],
         },
       },
@@ -851,13 +853,13 @@ const sr: Dict = {
 
         metaDescription:
           "Igra spajanja u pretraživaču: puštaj nebeska tela, a dva ista postaju sledeće po redu, od Meseca do Sunca.",
-        lead: "Pusti nebesko telo da padne. Dva ista se spajaju u sledeće po redu, od Meseca preko planeta do Sunca, a prostor se puni bez obzira na to jesi li spreman.",
+        lead: "Pusti nebesko telo da padne. Dva ista se spajaju u sledeće po redu, od Meseca preko planeta do Sunca, a prostor se puni, bio ti spreman ili ne.",
 
         score: "Rezultat",
         best: "Najbolje",
         next: "Sledeće",
         newGame: "Nova igra",
-        hint: "Pomeraj da nanišaniš i pritisni da pustiš. Strelice nišane, razmak pušta.",
+        hint: "Pomeraj da nanišaniš i klikni da pustiš. Strelice za nišanjenje, razmak za puštanje.",
         sequence: "Niz, od najmanjeg do najvećeg",
 
         planets: [
@@ -875,7 +877,7 @@ const sr: Dict = {
 
         over: {
           title: "Nema više mesta",
-          body: "Nešto predugo stoji iznad linije. Ovde nema tavanice nego linija, a telo koje se zaustavi iznad nje nema gde dalje.",
+          body: "Neko telo je predugo iznad linije. Ovde nema plafona, samo linija, a telo koje se zaustavi iznad nje nema kuda dalje.",
           restart: "Igraj ponovo",
         },
 
@@ -885,22 +887,22 @@ const sr: Dict = {
             {
               title: "Nanišani pa pusti",
               description:
-                "Pomeraj se preko vrha da poravnaš telo i pritisni da ga pustiš. Stižu samo pet najmanjih, pa sve preko Zemlje mora da se izgradi.",
+                "Pomeraj telo po vrhu da ga poravnaš i klikni da ga pustiš. Dobijaš samo pet najmanjih, pa sve veće od Zemlje moraš da napraviš spajanjem.",
             },
             {
               title: "Dva ista se dodirnu i spoje",
               description:
-                "Ne moraju da se stisnu ni da se drže: čim se dva jednaka tela smire jedno uz drugo, postaju sledeće po redu, a spajanje koje padne pored drugog pokreće lanac.",
+                "Ne moraju da se pritiskaju ni da se drže: čim se dva ista tela smire jedno uz drugo, postaju sledeće po redu, a ako novo telo završi pored istog takvog, spajanje se nastavlja lančano.",
             },
             {
               title: "Gradi u širinu a ne u visinu",
               description:
-                "Telo pušteno na visoku gomilu se otkotrlja, i gde sleti nije gde je nanišanjeno. Držati veća uz dno je veći deo igre, jer su baš ona ta koja nemaju gde dalje.",
+                "Telo pušteno na visoku gomilu se otkotrlja i ne završi tamo gde si nišanio. Najveći deo igre je držati veća tela pri dnu, jer ona nemaju kuda dalje.",
             },
             {
               title: "Linija je odlaganje a ne zid",
               description:
-                "Ništa ne brani telu da ode iznad nje. Gotovo je tek kada neko tamo sleti i pola sekunde kasnije još stoji gore, pa se pljusak preživi a Jupiter koji se tu smirio ne.",
+                "Ništa ne sprečava telo da pređe iznad nje. Kraj je tek kada neko telo tamo sleti i posle pola sekunde još uvek stoji gore, pa kratak skok preživiš, a Jupiter koji se tu smirio ne.",
             },
           ],
         },
@@ -908,10 +910,10 @@ const sr: Dict = {
         close: {
           label: "Kako je napravljeno",
           paragraphs: [
-            "Nema canvasa, nema biblioteke za fiziku i nema nijedne zavisnosti. Telo je div sa zaobljenjem, njegova boja je gradijent u istom stilu kao i ostatak stranice, a kadar upisuje po jedan transform na svako. Zato se planete skaliraju sa stranicom, ostaju oštre na svakom zumu i ne koštaju nijedan zahtev. Opšti fizički engine bi sam težio pet puta više od cele ove igre.",
-            "Rešavač pravi mnogo malih koraka umesto nekoliko velikih, osam po kadru. U svakom se svaki kontakt rešava kao kruta opruga sa jakim prigušenjem, tela se pomere, a onda se svaki kontakt reši još jednom, bez opruge, što oduzme svu brzinu koju je guranje dalo. Zato se preklop ispravi a da nikad ne postane odskok, a gomila koja miruje stoji potpuno mirno. Kontakt se pronađe dok još postoji razmak, pa se planeta koja pada zaustavi tačno na površini na koju sleće, umesto da utone i bude izgurana nazad.",
-            "Ostalo je ono zbog čega deluje teško a ne gumeno. Trenje deluje između dve površine, zajedno sa okretanjem, pa telo koje klizi počne da se kotrlja. Jak pad upije okretanje sa kojim je telo stiglo, pa planeta koja okrzne drugu po ramenu stane pored nje umesto da se otkotrlja preko celog prostora. Udarac se potroši tamo gde se desio i nikad se ne prenosi u sledeći korak, i zato veliko telo ne odskače od malog. A planeta koja se zadrži na samom vrhu druge odmah se sa nje skotrlja: ravnoteža može da bude stvarna, ali planeta koja stoji na drugoj kao sneško belić izgleda kao da se zaglavila.",
-            "Simulacija radi u sopstvenom prostoru od 1200 sa 1650 jedinica i nikad ne sazna koliko se veliko prikazuje. Jedan transform na jednom elementu prenosi ceo prostor na širinu koju mu je stranica dala, pa promena veličine menja taj jedan broj i ništa više, ni poluprečnik, ni poziciju, ni korak. Kadar crta svako telo između poslednja dva koraka, pa ekran od 120 Hz dobija novu poziciju pri svakom osvežavanju. Nebo iza je nacrtano jednom, kada se sajt gradi: trista zvezda kao tačke na nekoliko putanja, magline od fraktalnog šuma i četiri sloja koja klize različitom brzinom dok nišaniš.",
+            "Bez canvasa, bez biblioteke za fiziku i bez ijedne zavisnosti. Telo je div sa border-radius-om, boja mu je gradijent iz istog stylesheet-a kao ostatak stranice, a svaki frejm upisuje po jedan transform na svako telo. Zato se planete skaliraju sa stranicom, ostaju oštre na svakom zumu i ne traže nijedan dodatni zahtev. Univerzalni fizički engine bi sam bio pet puta teži od cele ove igre.",
+            "Solver pravi mnogo malih koraka umesto nekoliko velikih, osam po frejmu. U svakom koraku se svaki kontakt rešava kao kruta opruga sa jakim prigušenjem, tela se pomere, pa se svaki kontakt reši još jednom, kruto, čime se poništi brzina koju je opruga dala. Zato se preklapanje ispravi a da nikad ne pređe u odskok, a gomila koja miruje stoji potpuno mirno. Kontakt se otkriva još dok postoji razmak, pa se planeta koja pada zaustavi tačno na površini na koju pada, umesto da utone i bude izbačena nazad.",
+            "Ostatak je zaslužan za to što tela deluju teško, a ne gumeno. Trenje deluje između površina, uključujući i rotaciju, pa telo koje klizi počne da se kotrlja. Jak udar poništi rotaciju sa kojom je telo stiglo, pa planeta koja okrzne drugu stane pored nje umesto da se otkotrlja preko celog polja. Udar se potroši tamo gde se desio i ne prenosi se u sledeći korak, pa veliko telo ne odskače od malog. A planeta koja ostane na samom vrhu druge odmah se skotrlja: takva ravnoteža može biti fizički moguća, ali planeta koja stoji na drugoj kao sneško belić izgleda kao da se zaglavila.",
+            "Simulacija radi u sopstvenom prostoru od 1200 puta 1650 jedinica i ne zna u kojoj se veličini prikazuje. Jedan transform na jednom elementu skalira ceo prostor na širinu koju mu stranica da, pa promena veličine prozora menja samo taj broj, a ne poluprečnike, pozicije ni korak simulacije. Svaki frejm crta tela između poslednja dva koraka, pa ekran od 120 Hz dobija novu poziciju pri svakom osvežavanju. Nebo u pozadini se crta samo jednom, pri buildu sajta: trista zvezda kao tačke na nekoliko putanja, magline od fraktalnog šuma i četiri sloja koja se pomeraju različitom brzinom dok nišaniš.",
           ],
         },
       },
@@ -920,11 +922,11 @@ const sr: Dict = {
         name: "Potapanje brodova",
 
         tagline:
-          "Sakrij pet brodova, pa nađi njihove prvi. Četiri protivnika, od onog koji puca nasumično do onog koji izbroji svaki položaj na kom tvoja flota još može da bude.",
+          "Sakrij pet brodova i pronađi protivničke pre nego što on pronađe tvoje. Četiri protivnika, od onog koji puca nasumično do onog koji računa svaki mogući položaj tvoje flote.",
 
         metaDescription:
           "Potapanje brodova u pretraživaču, protiv četiri protivnika: klasična flota na tabli deset sa deset, i protivnik koji broji svaki raspored koji dosadašnji hici još dozvoljavaju.",
-        lead: "Sakrij pet brodova, pa nađi njihove pre nego što oni nađu tvoje. Puca se naizmenično, jedan hitac po potezu, a protivnik koga izabereš je cela težina igre: najslabiji puca gde još nije, a najjači izbroji svaki položaj na kom tvoja flota još može da bude i gađa polje koje se javlja u najviše njih.",
+        lead: "Sakrij pet brodova i pronađi protivničke pre nego što on pronađe tvoje. Puca se naizmenično, jedan hitac po potezu, a težina igre zavisi samo od protivnika koga izabereš: najslabiji puca tamo gde još nije gađao, a najjači prebroji sve moguće položaje tvoje flote i gađa polje koje se pojavljuje u najviše njih.",
 
         /** Činovi, a ne pridevi: "lako" i "teško" govore kako će proći tebi, a
          *  čin govori ko je s druge strane, a to je ono što se bira. */
@@ -932,15 +934,15 @@ const sr: Dict = {
         levels: {
           sailor: {
             name: "Mornar",
-            note: "Puca nasumično. Oko 95 hitaca da očisti tablu, pa treba se potruditi da izgubiš od njega.",
+            note: "Puca nasumično. Treba mu oko 95 hitaca da potopi flotu, pa moraš baš da se potrudiš da izgubiš.",
           },
           gunner: {
             name: "Nišandžija",
-            note: "Dovršava pogodak. Oko 55 hitaca, i kazniće te za spor početak.",
+            note: "Posle pogotka gađa okolna polja. Oko 55 hitaca, i kazniće spor početak.",
           },
           captain: {
             name: "Kapetan",
-            note: "Pretražuje tablu kako treba. Oko 50 hitaca, i poštena borba.",
+            note: "Pretražuje tablu sistematski. Oko 50 hitaca, fer borba.",
           },
           admiral: {
             name: "Admiral",
@@ -960,7 +962,7 @@ const sr: Dict = {
 
         /** Naslov iznad svake table, i ime same mreže. */
         sides: {
-          enemy: "Njihove vode",
+          enemy: "Protivničke vode",
           own: "Tvoja flota",
         },
 
@@ -992,19 +994,19 @@ const sr: Dict = {
         },
 
         setupHint:
-          "Flota ti je već na vodi. Pritisni brod da ga uzmeš, pritisni vodu da ga spustiš, a pre toga ga okreni kako treba.",
-        hint: "Pritisni polje u njihovim vodama da pucaš. Strelice šetaju po tabli, Enter puca, a R okreće brod dok ga postavljaš.",
+          "Flota je već raspoređena. Klikni na brod da ga uzmeš, okreni ga ako treba, pa klikni na vodu da ga spustiš.",
+        hint: "Klikni na polje u protivničkim vodama da pucaš. Strelicama se krećeš po tabli, Enter puca, a R okreće brod dok ga postavljaš.",
 
         won: {
-          title: "Njihova flota je potopljena",
-          body: "Svih pet na dnu, i tvoja je stigla prva.",
+          title: "Protivnička flota je potopljena",
+          body: "Svih pet brodova je na dnu, a ti si bio brži.",
           record: "U manje hitaca nego ikad protiv ovog protivnika.",
           again: "Igraj ponovo",
         },
 
         lost: {
           title: "Tvoja flota je potopljena",
-          body: "Njihovi brodovi su prikazani tamo gde su stajali, da vidiš šta si tražio.",
+          body: "Protivnički brodovi su prikazani tamo gde su bili, da vidiš šta si tražio.",
           again: "Pokušaj ponovo",
         },
 
@@ -1012,24 +1014,24 @@ const sr: Dict = {
           label: "Kako se igra",
           items: [
             {
-              title: "Spusti pet brodova u vodu",
+              title: "Rasporedi pet brodova",
               description:
-                "Flota ti je već raspoređena čim se stranica otvori, pa možeš odmah da kreneš. Pritisni brod da ga uzmeš, okreni ga, i pritisni polje da ga spustiš. Brodovi smeju da se dodiruju, što je standardno pravilo i ono koje manje odaje.",
+                "Flota se rasporedi sama čim se stranica otvori, pa možeš odmah da igraš. Klikni na brod da ga uzmeš, okreni ga i klikni na polje da ga spustiš. Brodovi smeju da se dodiruju, što je standardno pravilo i protivniku manje otkriva.",
             },
             {
               title: "Po jedan hitac, naizmenično",
               description:
-                "Pogodak ne donosi drugi hitac, ni tebi ni njemu. Ti pucaš prvi, protivnik odgovara, i gotovo je čim jedna flota ostane bez svih sedamnaest polja.",
+                "Pogodak ne donosi drugi hitac, ni tebi ni njemu. Ti pucaš prvi, protivnik odgovara, i igra je gotova čim su pogođena svih sedamnaest polja jedne flote.",
             },
             {
-              title: "Pogodak je konac koji se vuče",
+              title: "Pogodak je trag",
               description:
-                "Nešto je tu i pruža se na jednu od četiri strane. Dva pogotka u liniji rešavaju smer, i krajevi te linije su jedina polja koja još nešto vrede dok brod ne potone.",
+                "Brod je tu i pruža se u jednom od četiri smera. Dva pogotka u liniji otkrivaju smer, a dok brod ne potone, vredi gađati samo krajeve te linije.",
             },
             {
               title: "Biraš protiv koga igraš",
               description:
-                "Mornaru treba oko devedeset pet hitaca da očisti tablu, nišandžiji pedeset pet, kapetanu pedeset, a admiralu četrdeset pet. Sedamnaest je donja granica. Rekord se čuva posebno za svakog, jer pobeda nad jednim nije pobeda nad drugim.",
+                "Mornaru treba oko devedeset pet hitaca da potopi flotu, nišandžiji pedeset pet, kapetanu pedeset, a admiralu četrdeset pet. Manje od sedamnaest nije moguće. Rekord se čuva posebno za svakog protivnika, jer pobeda nad jednim nije isto što i pobeda nad drugim.",
             },
           ],
         },
@@ -1037,11 +1039,11 @@ const sr: Dict = {
         close: {
           label: "Kako je napravljena",
           paragraphs: [
-            "Nema canvasa ni biblioteke za igre, kao ni kod ostalih. More je mreža dugmadi, a flota je sloj iznad nje: po jedan element za svaki brod, preko svih njegovih polja, sa crtežom unutra. Nosač ima poletnu palubu, ostrvo i oznake, podmornica leži nisko i na palubi nema ničega, a ništa od toga ne preživi sečenje na kvadratiće - zato je trup jedan oblik celom dužinom, a ne zaobljen kraj zalepljen na svako polje. Svaki brod je nacrtan dva puta: ceo, sa kupolama, dimnjacima i poletnom palubom, i sama silueta. Siluetu koriste kopije naslagane ispod trupa da mu daju bok, pa se detalj računa jednom po brodu umesto osam puta. Brod okrenut na drugu stranu je isti crtež zarotiran za četvrtinu.",
-            "Tabla je nagnuta i brodovi stoje iznad nje, i jedno i drugo stvarno a ne nacrtano. Tabla je zarotirana u tri dimenzije, a flota podignuta po osi koju ta rotacija ostavlja, pa je trup iznad sopstvene senke i okreće svoj bok zajedno sa sobom. Perspektive nema nigde, i to namerno: nedogled bi udaljenu ivicu napravio užom od bliže, a mreža na kojoj imenuješ polja ne sme da dozvoli da joj kolone prestanu da budu paralelne. I hitac je nacrtan, kako leti sa nekog tvog trupa do polja u koje pada, jer je potez ovde jedna flota koja gađa drugu a ne oznaka koja se pojavi.",
-            "Protivnik ne vidi flotu na koju puca, i to je strukturno a ne obećanje dato u komentaru. Funkcija koja bira polje dobija dve stvari: zapis sopstvenih hitaca i dužine brodova koje je već potopio. Raspored nije ni dostupan tamo gde se odluka donosi, pa nema linije na koju treba paziti. Koji brod je potonuo jeste javno, isto kao kad igrač to kaže naglas, i upravo to sužava zaključivanje.",
-            "Najjači od četvorice ne pogađa. Za svaki brod koji je još na vodi prođe svaki položaj koji taj brod može da zauzme, izbaci one koje promašaj ili olupina isključuju, i doda glas svakom nepoznatom polju koje preživeli pokrivaju. Polje sa najviše glasova je hitac. Traženje i dovršavanje pogotka su ista računica a ne dva režima: kad nema ničeg nerazjašnjenog dobija se poznato zvono nad sredinom table, a kad pogodak stoji, položaji koji ga ne objašnjavaju otpadaju i sva težina se skupi oko njega.",
-            "Dovršavanje pogotka se obično piše kao red polja koja treba probati, i taj red je mesto gde ovakav program ume da pođe naopako: mora da se čisti svaki put kad brod potone, svaki put kad neki drugi hitac reši jedan njegov unos, i svaki put kad dva broda legnu jedan uz drugi. Ovde se polja za dovršavanje izvode iz table svakog poteza, pa nema šta da se čuva ni šta da zastari. Četiri protivnika, četrdeset hiljada odigranih partija protiv nezavisno napisanog branioca, i nijedan nedozvoljen hitac među njima.",
+            "Bez canvasa i bez biblioteke za igre, kao i ostale. More je mreža dugmadi, a flota je sloj iznad nje: po jedan element za svaki brod, preko svih njegovih polja, sa crtežom unutra. Nosač ima poletnu palubu, komandno ostrvo i oznake, podmornica leži nisko i nema ništa na palubi, a ništa od toga ne bi preživelo sečenje na kvadrate - zato je trup jedan oblik celom dužinom, a ne zaobljeni krajevi zalepljeni na svako polje. Svaki brod je nacrtan dvaput: ceo, sa kupolama, dimnjacima i poletnom palubom, i kao sama silueta. Siluetu koriste kopije naslagane ispod trupa da bi mu dale bok, pa se detalji crtaju jednom po brodu umesto osam puta. Brod okrenut u drugom smeru je isti crtež zarotiran za četvrtinu kruga.",
+            "Tabla je nagnuta, a brodovi stoje iznad nje, i to stvarno, a ne samo nacrtano. Tabla je zarotirana u 3D, a flota podignuta duž ose koju ta rotacija ostavlja, pa je trup iznad sopstvene senke i pri okretanju pokazuje bok. Perspektive nema nigde, i to namerno: sa nedoglednom tačkom dalja ivica bi bila uža od bliže, a na mreži sa imenovanim poljima kolone moraju da ostanu paralelne. Nacrtan je i sam hitac, kako leti od jednog tvog broda do polja u koje pada, jer je potez ovde jedna flota koja gađa drugu, a ne oznaka koja se pojavi.",
+            "Protivnik ne vidi flotu na koju puca, i to je obezbeđeno strukturom koda, a ne obećanjem u komentaru. Funkcija koja bira polje dobija samo dve stvari: listu sopstvenih hitaca i dužine brodova koje je već potopio. Raspored tvoje flote joj uopšte nije dostupan, pa nema ni prilike da ga slučajno iskoristi. Koji je brod potonuo zna se javno, kao kad igrač to kaže naglas, i upravo to protivniku sužava izbor.",
+            "Najjači od četvorice ne nagađa. Za svaki brod koji je još na vodi prođe kroz sve položaje koje taj brod može da zauzme, izbaci one koje isključuju promašaji ili potopljeni brodovi, i svakom neotkrivenom polju koje preostali položaji pokrivaju doda po glas. Polje sa najviše glasova je sledeći hitac. Traženje i dovršavanje pogotka su ista računica, a ne dva režima: kad nema otvorenih pogodaka, dobija se poznata raspodela sa vrhom u sredini table, a kad postoji pogodak, otpadaju položaji koji ga ne objašnjavaju i sva težina se skupi oko njega.",
+            "Dovršavanje pogotka se obično piše kao red polja koja treba probati, i baš tu ovakvi programi najčešće greše: red mora da se čisti svaki put kad brod potone, kad neki drugi hitac razreši polje iz njega i kad dva broda stoje jedan uz drugi. Ovde se polja za dovršavanje izračunavaju iz table u svakom potezu, pa nema šta da se čuva ni šta da zastari. Četiri protivnika, četrdeset hiljada simuliranih partija protiv nezavisno napisanog protivnika, i nijedan nedozvoljen hitac.",
           ],
         },
       },
@@ -1049,27 +1051,27 @@ const sr: Dict = {
   },
 
   services: {
-    label: "Sa čim mogu da pomognem",
+    label: "U čemu mogu da pomognem",
     items: [
       {
         title: "Razvoj backenda i API-ja",
         description:
-          "Servisi i API-ji u Node.js-u (NestJS, Express) ili .NET-u: modelovanje podataka, autentikacija, integracije sa trećim stranama, i testovi koji ih drže u redu.",
+          "REST API-ji i servisi u Node.js-u (NestJS, Express) ili .NET-u: modelovanje podataka, autentikacija, kontrola pristupa po rolama i integracije sa eksternim sistemima.",
       },
       {
-        title: "Full-stack rad na proizvodu",
+        title: "Full-stack razvoj",
         description:
-          "Funkcionalnost od šeme do ekrana: API, React front end i tipizirani ugovor između njih.",
+          "Cela funkcionalnost od jedne osobe: šema baze, API i React ekrani koji ga koriste.",
       },
       {
-        title: "AWS arhitektura i deploy",
+        title: "AWS arhitektura i deployment",
         description:
-          "Postavljanje cloud infrastrukture ili doterivanje onoga što već radi: okruženja, CI/CD pipeline-ovi i pregled troška i pouzdanosti.",
+          "Postavljanje nove AWS infrastrukture ili poboljšanje postojeće: okruženja, CI/CD pipeline-ovi i analiza troškova i pouzdanosti.",
       },
       {
         title: "Tehnički pregled i konsalting",
         description:
-          "Drugi par očiju na postojećem kodu ili arhitekturi: code review, plan refaktorisanja i iskren odgovor na to da li se prepisivanje isplati.",
+          "Pregled postojećeg koda ili arhitekture: šta prvo popraviti, plan refaktorisanja i procena da li se prepisivanje isplati.",
       },
     ],
   },
@@ -1077,7 +1079,7 @@ const sr: Dict = {
   contact: {
     label: "Kontakt",
     intro:
-      "Mejl je najbrži način da me dobijete. Ako imate projekat na umu, dovoljan je grub opis problema za početak.",
+      "Najbrže ćete me dobiti mejlom. Ako imate projekat na umu, za početak je dovoljan kratak opis problema.",
     emailLabel: "Email",
     linkedinLabel: "LinkedIn",
     githubLabel: "GitHub",
@@ -1091,7 +1093,7 @@ const sr: Dict = {
     metaTitle: "Stranica nije pronađena - Vuk Cvetković",
     status: "404",
     heading: "Stranica nije pronađena",
-    body: "Adresa je možda pogrešna ili je stranica premeštena. Link ispod vodi na početak, a sve na sajtu je jedan korak odatle.",
+    body: "Adresa je možda pogrešna ili je stranica premeštena. Link ispod vodi na početnu stranu, a odatle je sve na sajtu udaljeno jedan klik.",
     cta: "Nazad na početnu",
   },
 };

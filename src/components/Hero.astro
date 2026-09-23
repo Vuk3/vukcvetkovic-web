@@ -45,13 +45,6 @@ const [firstName, ...restOfName] = site.name.split(' ');
 const lastName = restOfName.join(' ');
 
 /*
- * The role, taken from the current role in Experience rather than written out
- * again here. It is the same fact, and the hero is not the place for a second
- * copy of it that can drift.
- */
-const role = dict.experience.roles.ncoded.role;
-
-/*
  * The stack, as the first thing under the fold-line rather than only in Skills.
  *
  * It is the same list Skills sets out grouped further down, flattened here, so
@@ -74,7 +67,7 @@ const profiles = [
   <div class="shell shell-hero">
     <div class="hero-grid">
       <div>
-        <p class="hero-role enter">{role}</p>
+        <p class="hero-role enter">{dict.hero.role}</p>
 
         <h1 class="display-name">
           <span class="enter-name">{firstName}</span>

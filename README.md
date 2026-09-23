@@ -11,10 +11,10 @@ The source of my personal site: **[vukcvetkovic.com](https://vukcvetkovic.com)**
   </picture>
 </a>
 
-I am Vuk Cvetković, a backend developer at Ncoded Solutions in Niš, Serbia. I build
-services in Node.js (NestJS, Express) and the event-driven infrastructure they run on in
-AWS, and carry the same work through to the React interfaces on top when a project needs
-it. The site itself has the longer version, in English, Serbian, French and German.
+I am Vuk Cvetković, a software engineer in Niš, Serbia. I work across the whole product:
+the backend in Node.js (NestJS, Express), deployment and event-driven communication on
+AWS, and the front end in React. The site itself has the longer version, in English,
+Serbian, French and German.
 
 [LinkedIn](https://www.linkedin.com/in/vuk3/) · [GitHub](https://github.com/Vuk3)
 

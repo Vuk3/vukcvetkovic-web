@@ -10,7 +10,7 @@ without reading anything else.
 
 ## What this is
 
-A personal site for Vuk Cvetković, backend developer in Niš: a single-page CV at the root
+A personal site for Vuk Cvetković, software engineer in Niš: a single-page CV at the root
 plus a project write-up section, in **four languages** (English, Serbian, French, German).
 
 - **Astro 7**, `output: 'static'`. Every route is prerendered - `dist/server` builds empty

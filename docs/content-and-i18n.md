@@ -69,6 +69,12 @@ colour is used a second time. Astro renders `false` as `data-current="false"`, w
 `[data-current]` would still match, so [Experience.astro](../src/components/Experience.astro)
 passes an empty string or `undefined`, never the boolean.
 
+⚠️ **`hero.role` is not the current role's title, and must not be derived from it.** The
+pill over the name is how he describes the work as a whole (software engineer), while
+`experience.roles.ncoded.role` is the title he holds at that employer (backend developer).
+The Person JSON-LD reads the second, because `jobTitle` sits next to `worksFor` and the
+two are read as a pair.
+
 ---
 
 ## 2. The dictionary contract, and its one hole
@@ -389,6 +395,14 @@ anybody as protection - see
 
 ## Changelog
 
+- 2026-09-23 - the headline is software engineer in the page title, the meta and OG copy,
+  the hero and the project index, and the hero lead, the meta description and About were
+  rewritten around it in all four languages. `hero.role` is a new key, so the Ncoded role
+  keeps its own title, and `public/og.png` was re-rendered with the new label.
+- 2026-09-23 - a copy pass over every string in all four dictionaries: filler and obvious
+  sentences in the services and project write-ups rewritten, the Serbian, German and French
+  reworked where they read as translated English, and Minesweeper's "the other game"
+  renamed to 2048 now that there are five.
 - 2026-09-23 - Accretion's copy lost `won`, since reaching the Sun no longer opens a panel
   or pauses the game, and its build notes and the rule about the line were rewritten in all
   four languages for the new solver: half a second above the line rather than a second.
