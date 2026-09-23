@@ -382,6 +382,39 @@
      means "you did that well". */
   --mem-gold: #f5b300;
   --mem-miss: #d8343d;
+
+  /*
+   * The cube.
+   *
+   * ⚠️ **The sixth place the palette opens up, and on Memory's grounds rather
+   * than the ramp's.** The six colours are not signals chosen to be told
+   * apart, they are the puzzle: a white face is white on every cube in the
+   * world, and a cube solved in one theme has to be the same cube in the other.
+   * So the stickers and the plastic are the same in both themes, and only the
+   * stage they stand on follows the page.
+   *
+   * The order is the faces' in game.ts: up, right, front, down, left and back,
+   * which on a cube held the standard way is white, red, green, yellow, orange
+   * and blue. The pyramid borrows four of them in the order its scrambles are
+   * drawn in. They are the bright, clean colours of a modern stickerless
+   * cube rather than the printed ones of the original, which read as muddy on
+   * a screen, and the face turned away from the light is drawn at 0.84 of its
+   * brightness, so even the dimmest of the three in view stays vivid.
+   */
+  --cube-c0: #ffffff;
+  --cube-c1: #ff3645;
+  --cube-c2: #22d566;
+  --cube-c3: #ffe42b;
+  --cube-c4: #ff9222;
+  --cube-c5: #2f80ff;
+
+  --cube-plastic: #16181c;
+  --cube-core: #0b0c0f;
+
+  --cube-stage: #dedbd3;
+  --cube-stage-light: #f8f7f4;
+  --cube-stage-inset: inset 0 2px 9px color-mix(in oklab, #14161a 10%, transparent);
+  --cube-shadow: color-mix(in oklab, #14161a 34%, transparent);
 }
 
 .dark {
@@ -569,6 +602,15 @@
 
   --mem-gold: #ffc21f;
   --mem-miss: #ff6b74;
+
+  /* The stage only: the stickers are the puzzle and do not change. A black
+     cube on a near-black ground disappears, so the pool of light it stands in
+     is brighter here than in the light theme, where the ground does that
+     work. */
+  --cube-stage: #10141b;
+  --cube-stage-light: #2a313d;
+  --cube-stage-inset: inset 0 2px 9px color-mix(in oklab, #000 40%, transparent);
+  --cube-shadow: color-mix(in oklab, #000 62%, transparent);
 }
 
 /*
@@ -4237,6 +4279,41 @@
   }
 
   /*
+   * The cube still: three real puzzles, each a scene of its own, placed by
+   * the centre of the sphere it turns in and sized by that sphere's diameter,
+   * in hundredths of the card's width - so the three keep their places and
+   * their sizes however wide the card is.
+   *
+   * ⚠️ **`--u` and the perspective are given again here**, because the stage
+   * that sizes them on the game's page is a size container and this card is
+   * only an inline-size one: a `cqh` out here would be measured against the
+   * screen.
+   */
+  .game-art-cube {
+    position: relative;
+    background:
+      radial-gradient(60% 90% at 50% 45%, var(--cube-stage-light), transparent 80%),
+      var(--cube-stage);
+  }
+
+  .cube-art-scene {
+    --u: calc(var(--d) * 1cqi / var(--cube-span));
+
+    position: absolute;
+    top: calc(var(--y) * 1cqi);
+    left: calc(var(--x) * 1cqi);
+  }
+
+  .game-art-cube .cube-camera {
+    perspective: calc(var(--d) * 3.4cqi);
+  }
+
+  /* A still does not float. */
+  .game-art-cube .cube-view {
+    animation: none;
+  }
+
+  /*
    * A packed field rather than a row.
    *
    * Every body is placed by its own centre, in `cqi` against the thumbnail, so
@@ -6759,6 +6836,664 @@
     color: var(--site-muted);
   }
 
+  /* ---- Cube ---------------------------------------------------------------
+   *
+   * A solid in a scene rather than a board on a page, and four layers deep,
+   * each for one job:
+   *
+   *   .cube-stage    the size container every length comes from, the pool of
+   *                  light, and the surface a press lands on.
+   *   .cube-camera   the perspective, and the scale and fade a new puzzle
+   *                  arrives with.
+   *   .cube-view     the `preserve-3d` root: the reader's view of the puzzle,
+   *                  one rotation written by the module, and the float.
+   *   .cube-tile     a sticker: its plastic, its colour, and its brightness.
+   *
+   * ⚠️ **Nothing between the view and a sticker may carry an `opacity`, a
+   * `filter`, an `overflow` or a `clip`.** Each of them flattens a `preserve-3d`
+   * context into a plane, and the whole puzzle would fold onto the screen. The
+   * arrival fades the *camera*, which is outside the context, and a sticker's
+   * brightness is a filter on the sticker itself, which is a leaf.
+   *
+   * See src/games/cube/game.ts and src/components/Cube.astro.
+   */
+
+  .cube-sprites {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+
+  .cube {
+    --cube-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /*
+   * The five puzzles, as a strip of tiles: the memory strip's shape, five
+   * across at every width. Five fit a 390 phone at about 66px a tile, and a
+   * strip that wrapped to two rows would put the pyramid on a row by itself.
+   */
+  .cube-puzzles {
+    margin: 0 0 clamp(0.75rem, 2vw, 1.1rem);
+    border: 0;
+    padding: 0;
+  }
+
+  .cube-puzzles-row {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: clamp(0.35rem, 1.2vw, 0.6rem);
+  }
+
+  .cube-puzzle {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-card);
+    background-color: var(--site-card);
+    padding: clamp(0.55rem, 1.6vw, 0.9rem) 0.25rem clamp(0.5rem, 1.4vw, 0.75rem);
+    cursor: pointer;
+    transition:
+      border-color 160ms var(--site-ease),
+      background-color 160ms var(--site-ease),
+      translate 200ms var(--site-ease);
+  }
+
+  .cube-puzzle:hover {
+    border-color: color-mix(in oklab, var(--site-accent) 45%, var(--site-hairline));
+    translate: 0 -2px;
+  }
+
+  .cube-puzzle:has(:checked) {
+    border-color: var(--site-accent);
+    background-color: color-mix(in oklab, var(--site-accent) 9%, var(--site-card));
+    box-shadow: inset 0 0 0 1px var(--site-accent);
+  }
+
+  .cube-puzzle:has(:focus-visible) {
+    outline: 2px solid var(--site-accent);
+    outline-offset: 2px;
+  }
+
+  /*
+   * The icon: a face of the puzzle, in its own plastic and its own colours.
+   * The cells are a fraction of the icon however many there are, so a five by
+   * five is a finer grid in the same square rather than a bigger square.
+   *
+   * ⚠️ **The padding and the gap are fractions of `--s`, not percentages.** A
+   * percentage of padding is taken from the *parent's* width, which here is
+   * the whole tile, and it left the colours a quarter of the icon wide.
+   */
+  .cube-icon {
+    --s: clamp(2.5rem, 9vw, 4rem);
+
+    display: grid;
+    grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr));
+    grid-template-rows: repeat(var(--n, 3), minmax(0, 1fr));
+    gap: calc(var(--s) * 0.26 / var(--n, 3));
+    width: var(--s);
+    height: var(--s);
+    border-radius: 20%;
+    background-color: var(--cube-plastic);
+    padding: calc(var(--s) * 0.09);
+    box-shadow: 0 3px 10px color-mix(in oklab, #14161a 22%, transparent);
+    transition:
+      rotate 420ms var(--cube-spring),
+      scale 420ms var(--cube-spring);
+  }
+
+  .cube-icon > span {
+    border-radius: 22%;
+    background-color: var(--c);
+  }
+
+  .cube-icon.is-tri {
+    display: block;
+    border-radius: 0;
+    background: none;
+    padding: 0;
+    box-shadow: none;
+    filter: drop-shadow(0 3px 5px color-mix(in oklab, #14161a 24%, transparent));
+  }
+
+  .cube-icon.is-tri svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .cube-icon-body {
+    fill: var(--cube-plastic);
+    stroke: var(--cube-plastic);
+    stroke-width: 10;
+    stroke-linejoin: round;
+  }
+
+  .cube-icon polygon {
+    fill: var(--c);
+    stroke: var(--c);
+    stroke-width: 5;
+    stroke-linejoin: round;
+  }
+
+  @media (hover: hover) {
+    .cube-puzzle:hover .cube-icon {
+      rotate: -7deg;
+      scale: 1.07;
+    }
+  }
+
+  /* Picked: the icon gives a turn and a bounce, the way a cube does when it
+     is picked up off a table. `:has(:checked)` starting to match is what
+     starts it, so it plays once per choice. */
+  .cube-puzzle:has(:checked) .cube-icon {
+    animation: cube-pick 620ms var(--cube-spring);
+  }
+
+  .cube-puzzle-name {
+    font-stretch: 110%;
+    font-weight: 660;
+    font-size: clamp(0.75rem, 2.5vw, 1rem);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    white-space: nowrap;
+  }
+
+  .cube-puzzle-best {
+    font-size: 0.6875rem;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+    white-space: nowrap;
+    color: var(--site-muted);
+  }
+
+  .cube-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: clamp(0.75rem, 2vw, 1.1rem);
+  }
+
+  .cube-meter {
+    min-width: 5.5rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius);
+    background-color: var(--site-card);
+    padding: 0.45rem 0.7rem 0.5rem;
+    text-align: center;
+  }
+
+  .cube-meter-label {
+    display: block;
+    font-size: 0.6875rem;
+    line-height: 1.3;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--site-muted);
+  }
+
+  /* Tabular, so a running clock ticks in place instead of shuffling its
+     digits sideways a hundred times a second. */
+  .cube-meter-value {
+    display: block;
+    font-stretch: 112%;
+    font-weight: 660;
+    font-size: 1.25rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .cube[data-state='solving'] [data-time] {
+    color: var(--site-accent);
+  }
+
+  .cube-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  .cube-actions :is(.cta, .cta-ghost) {
+    padding: 0.55rem 0.95rem;
+    font-size: 0.875rem;
+  }
+
+  .cube-actions .cta-ghost:disabled {
+    opacity: 0.45;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  /* Three meters a row on a phone and the buttons under them. Three fit: the
+     longest label is "Najbolje", eight letters. */
+  @media (max-width: 34rem) {
+    .cube-bar {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .cube-actions {
+      grid-column: 1 / -1;
+      margin-left: 0;
+    }
+
+    .cube-actions :is(.cta, .cta-ghost) {
+      flex: 1;
+      justify-content: center;
+    }
+
+    .cube-meter {
+      min-width: 0;
+    }
+  }
+
+  /* The container the stage's height is measured against. See below. */
+  .cube-frame {
+    position: relative;
+    container-type: inline-size;
+  }
+
+  /*
+   * The stage.
+   *
+   * ⚠️ **A size container, and `--u` is declared here but resolved on every
+   * sticker.** An unregistered custom property is carried as its tokens, so
+   * the `cqw` in it is measured against the nearest container of the element
+   * that *uses* it - which for a sticker is still this one. One unit is the
+   * stage's smaller side, times the share of it the puzzle fills, over the
+   * puzzle's span, and that is the whole of how the scene is sized: a resize
+   * is the stage changing size, and not one line of script runs.
+   *
+   * The share is 0.74 of the smaller side for the sphere the puzzle turns in.
+   * With the perspective below, the nearest corner at any angle lands at 0.43
+   * of the side from the middle, so nothing is ever cut by the stage's edge
+   * however it is dragged round. `--cube-span` is written from the module per puzzle, and the page sets
+   * the three by three's so the first frame is already the right size.
+   *
+   * Wide on a desktop and square on a phone, and never taller than the screen
+   * less the bar above it - a puzzle whose bottom face is below the fold is
+   * one you cannot turn.
+   *
+   * ⚠️ **The shape is a height off the frame's width, not an `aspect-ratio`.**
+   * A `max-height` on an element with a ratio is carried across the ratio to
+   * its width, so on a short screen the stage narrowed to keep 16:10 and sat
+   * in the left two thirds of the shell with nothing beside it.
+   */
+  .cube-stage {
+    --u: calc(min(100cqw, 100cqh) * 0.74 / var(--cube-span, 5.2));
+
+    position: relative;
+    container-type: size;
+    height: clamp(21rem, 62.5cqi, 100svh - 12rem);
+    overflow: clip;
+    border-radius: var(--site-radius-card);
+    background:
+      radial-gradient(52% 58% at 50% 44%, var(--cube-stage-light), transparent 78%),
+      var(--cube-stage);
+    box-shadow: var(--cube-stage-inset);
+    cursor: grab;
+    /* The stage is the puzzle's to drag. A page that scrolled under a finger
+       turning a layer would make the layer impossible to turn. */
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  @media (max-width: 40rem) {
+    .cube-stage {
+      height: clamp(19rem, 108cqi, 100svh - 17rem);
+    }
+  }
+
+  .cube-stage.is-held {
+    cursor: grabbing;
+  }
+
+  /* The shadow the puzzle throws on the floor. It is under the camera and
+     outside the scene, so it is a gradient and costs no depth sorting, and it
+     breathes against the float: smaller and fainter as the puzzle rises. */
+  .cube-shadow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: calc(var(--u) * var(--cube-span, 5.2) * 0.92);
+    height: calc(var(--u) * var(--cube-span, 5.2) * 0.2);
+    border-radius: 50%;
+    background: radial-gradient(closest-side, var(--cube-shadow), transparent);
+    translate: -50% calc(var(--u) * var(--cube-span, 5.2) * 0.4);
+    pointer-events: none;
+    animation: cube-shadow 6s ease-in-out infinite;
+  }
+
+  .cube-camera {
+    position: absolute;
+    inset: 0;
+    /* About two and a half times the stage across: enough depth that the near
+       corner reads as near, not so much that the far face shrinks away. */
+    perspective: calc(min(100cqw, 100cqh) * 2.6);
+  }
+
+  .cube-camera.is-arriving {
+    animation: cube-arrive 700ms var(--cube-spring);
+  }
+
+  .cube-view {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-style: preserve-3d;
+    /* `translate`, which applies after the module's `transform`, so the float
+       moves the whole puzzle up the screen rather than along whichever axis
+       it happens to be turned to. */
+    animation: cube-float 6s ease-in-out infinite;
+  }
+
+  /* Held still while a hand is on it, and while it scrambles: a layer that
+     drifts under the finger turning it feels loose. */
+  .cube-stage.is-held :is(.cube-view, .cube-shadow),
+  .cube[data-state='scrambling'] :is(.cube-view, .cube-shadow) {
+    animation-play-state: paused;
+  }
+
+  /*
+   * A sticker: one unit of black plastic with the colour set into it.
+   *
+   * The shadow's spread is the plastic running a hair past the edge, so two
+   * neighbours overlap and no seam of the stage shows between them however
+   * the edge falls on the pixel grid.
+   *
+   * ⚠️ **The brightness is a `filter` on the sticker and nothing else.** On a
+   * composited leaf a filter changes without a repaint, which is what lets a
+   * hundred and fifty of them be relit on every frame of a drag. On any
+   * element above a sticker it would flatten the scene - see the top of this
+   * section.
+   */
+  .cube-tile {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--u);
+    height: var(--u);
+    margin: calc(var(--u) / -2) 0 0 calc(var(--u) / -2);
+    background-color: var(--cube-plastic);
+    box-shadow: 0 0 0 0.75px var(--cube-plastic);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    filter: brightness(var(--lit, 1));
+  }
+
+  /* Rounded, set in from the edge, and lit from its middle outwards, which is
+     the one highlight that looks the same after a sticker lands turned a
+     quarter in its own plane - see `commit` in game.ts. */
+  .cube-tile::before {
+    content: '';
+    position: absolute;
+    inset: 6.5%;
+    border-radius: 17%;
+    background: radial-gradient(
+      circle at 50% 50%,
+      color-mix(in oklab, var(--c) 84%, #ffffff) 0%,
+      var(--c) 68%
+    );
+  }
+
+  @media (hover: hover) {
+    .cube-stage:not(.is-held) .cube-tile:hover {
+      filter: brightness(calc(var(--lit, 1) * 1.12));
+    }
+  }
+
+  .cube-tile[data-face='0'] {
+    --c: var(--cube-c0);
+  }
+
+  .cube-tile[data-face='1'] {
+    --c: var(--cube-c1);
+  }
+
+  .cube-tile[data-face='2'] {
+    --c: var(--cube-c2);
+  }
+
+  .cube-tile[data-face='3'] {
+    --c: var(--cube-c3);
+  }
+
+  .cube-tile[data-face='4'] {
+    --c: var(--cube-c4);
+  }
+
+  .cube-tile[data-face='5'] {
+    --c: var(--cube-c5);
+  }
+
+  /* The pyramid's four: green at the front, red, blue and yellow. */
+  .cube-view[data-kind='pyramid'] .cube-tile[data-face='0'] {
+    --c: var(--cube-c2);
+  }
+
+  .cube-view[data-kind='pyramid'] .cube-tile[data-face='1'] {
+    --c: var(--cube-c1);
+  }
+
+  .cube-view[data-kind='pyramid'] .cube-tile[data-face='2'] {
+    --c: var(--cube-c5);
+  }
+
+  .cube-view[data-kind='pyramid'] .cube-tile[data-face='3'] {
+    --c: var(--cube-c3);
+  }
+
+  /*
+   * A triangle: one unit wide, as tall as an equilateral triangle is, and
+   * turned about its centroid two thirds of the way down, which is where the
+   * module's frames put the triangle's centre.
+   *
+   * ⚠️ **The box is a rectangle and the sticker is not**, so the box takes no
+   * pointer and the drawing does. Otherwise the empty corners beside a
+   * triangle would catch presses meant for its neighbours.
+   */
+  .cube-tile.is-tri {
+    height: calc(var(--u) * 0.8660254);
+    margin-top: calc(var(--u) * -0.5773503);
+    transform-origin: 50% 66.6667%;
+    background: none;
+    box-shadow: none;
+    pointer-events: none;
+  }
+
+  .cube-tile.is-tri::before {
+    content: none;
+  }
+
+  .cube-tile.is-tri svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: visiblePainted;
+  }
+
+  .cube-tri-body {
+    fill: var(--cube-plastic);
+    stroke: var(--cube-plastic);
+    stroke-width: 2;
+    stroke-linejoin: round;
+  }
+
+  .cube-tri-sticker {
+    fill: var(--c);
+    stroke: var(--c);
+    stroke-width: 10;
+    stroke-linejoin: round;
+  }
+
+  /*
+   * The inside of a cut, shown only while a turn has one open. One unit square,
+   * scaled up to the whole cross section by the module's matrix, in the
+   * darker plastic the core of a real cube is moulded in. Taking no pointer,
+   * because a plate is never the thing a reader means to press.
+   */
+  .cube-plate {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+    width: var(--u);
+    height: var(--u);
+    margin: calc(var(--u) / -2) 0 0 calc(var(--u) / -2);
+    background-color: var(--cube-core);
+    pointer-events: none;
+  }
+
+  .cube-plate.is-on {
+    display: block;
+  }
+
+  .cube-plate.is-tri {
+    height: calc(var(--u) * 0.8660254);
+    margin-top: calc(var(--u) * -0.5773503);
+    transform-origin: 50% 66.6667%;
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  }
+
+  /* One line along the foot of the stage, for the two states that are waiting
+     on the reader. The markup carries both and the state picks one. */
+  .cube-cue {
+    position: absolute;
+    bottom: clamp(0.75rem, 3.5cqh, 1.4rem);
+    left: 50%;
+    display: none;
+    max-width: calc(100% - 2rem);
+    border-radius: var(--site-radius-pill);
+    background-color: color-mix(in oklab, var(--site-card) 88%, transparent);
+    box-shadow: var(--site-lift-hover);
+    padding: 0.45rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 560;
+    line-height: 1.3;
+    text-align: center;
+    color: var(--site-fg);
+    translate: -50% 0;
+    pointer-events: none;
+  }
+
+  .cube[data-state='idle'] .cube-cue,
+  .cube[data-state='ready'] .cube-cue {
+    display: block;
+    animation: cube-cue 520ms var(--cube-spring) backwards;
+  }
+
+  /* Waiting on a first turn, with a clock about to start: it breathes, so it
+     reads as live rather than as a caption. */
+  .cube[data-state='ready'] .cube-cue {
+    animation:
+      cube-cue 520ms var(--cube-spring) backwards,
+      cube-breathe 1800ms ease-in-out 520ms infinite;
+  }
+
+  .cube-for-idle,
+  .cube-for-ready,
+  .cube[data-kind='pyramid'] .cube-for-cube,
+  .cube[data-kind='cube'] .cube-for-pyramid {
+    display: none;
+  }
+
+  .cube[data-state='idle'] .cube-for-idle,
+  .cube[data-state='ready'] .cube-for-ready {
+    display: inline;
+  }
+
+  /*
+   * The solved panel. It waits out the lap of honour before it arrives, so the
+   * first thing a solve gets is the puzzle spinning round once in its own
+   * colours under the burst, and the figures a beat after. `backwards` holds it
+   * invisible through the delay.
+   */
+  .cube-panel {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    border-radius: var(--site-radius-card);
+    padding: var(--site-pad);
+    text-align: center;
+    background-color: color-mix(in oklab, var(--cube-stage) 84%, transparent);
+    backdrop-filter: blur(5px);
+  }
+
+  .cube[data-state='solved'] .cube-panel {
+    display: flex;
+    animation: cube-panel 420ms var(--site-ease) 1350ms backwards;
+  }
+
+  .cube-panel-puzzle {
+    font-size: 0.75rem;
+    font-weight: 620;
+    letter-spacing: 0.14em;
+    line-height: 1.3;
+    text-transform: uppercase;
+    color: var(--site-muted);
+  }
+
+  .cube-panel-title {
+    font-stretch: 116%;
+    font-weight: 680;
+    font-size: clamp(2rem, 8vw, 3.25rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+  }
+
+  .cube-panel-meters {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .cube-panel-body {
+    max-width: 28rem;
+    font-size: clamp(0.9375rem, 3vw, 1.0625rem);
+    line-height: 1.5;
+    color: var(--site-muted);
+  }
+
+  .cube-panel-body:empty {
+    display: none;
+  }
+
+  .cube-panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 0.4rem;
+  }
+
+  /* Nothing comes after the last puzzle. */
+  .cube[data-last] [data-action='next'] {
+    display: none;
+  }
+
+  .cube-hint {
+    margin-top: clamp(0.75rem, 2vw, 1.1rem);
+    font-size: 0.875rem;
+    text-align: center;
+    color: var(--site-muted);
+  }
+
   /* ---- Shared by the game pages -------------------------------------------
    *
    * The three things every game has now: the sound switch, the burst over a
@@ -6787,7 +7522,7 @@
    * removed - so a screen reader still hears what the button is.
    */
   @media (max-width: 34rem) {
-    :is(.g2048-actions, .ms-actions, .mem-actions, .acc-actions, .bs-actions) .game-sound {
+    :is(.g2048-actions, .ms-actions, .mem-actions, .acc-actions, .bs-actions, .cube-actions) .game-sound {
       flex: 0 0 auto;
       padding-inline: 0.8rem;
     }
@@ -7277,6 +8012,99 @@
 
   to {
     opacity: 1;
+  }
+}
+
+/*
+ * Cube motion.
+ *
+ * None of the turning is here. A layer, the view and the lap of honour are
+ * all moved by the module writing a transform, because each of them has to
+ * answer a finger, a spring or a queue of turns that a keyframe cannot know
+ * about. What is here is everything around them: the float, the arrival of a
+ * new puzzle, the pick on the strip and the panel.
+ */
+@keyframes cube-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  50% {
+    translate: 0 calc(var(--u) * -0.16);
+  }
+}
+
+@keyframes cube-shadow {
+  0%,
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+
+  50% {
+    opacity: 0.72;
+    scale: 0.9;
+  }
+}
+
+@keyframes cube-arrive {
+  from {
+    opacity: 0;
+    scale: 0.7;
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes cube-pick {
+  0%,
+  100% {
+    rotate: 0deg;
+    scale: 1;
+  }
+
+  35% {
+    rotate: -14deg;
+    scale: 1.16;
+  }
+}
+
+@keyframes cube-cue {
+  from {
+    opacity: 0;
+    translate: -50% 0.6rem;
+  }
+
+  to {
+    opacity: 1;
+    translate: -50% 0;
+  }
+}
+
+@keyframes cube-breathe {
+  0%,
+  100% {
+    scale: 1;
+  }
+
+  50% {
+    scale: 1.045;
+  }
+}
+
+@keyframes cube-panel {
+  from {
+    opacity: 0;
+    scale: 0.96;
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
   }
 }
 

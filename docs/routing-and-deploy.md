@@ -1,6 +1,6 @@
 # Routing and deploy
 
-Fifty-two prerendered pages, four locales, four projects, five games, on Cloudflare.
+Fifty-six prerendered pages, four locales, four projects, six games, on Cloudflare.
 Every route exists twice - once unprefixed for English and once under `[lang]` for the other three - and
 the whole build is static: `dist/server` comes out **empty** and nothing runs at request
 time.
@@ -33,7 +33,7 @@ and only one of them is obvious.
 ## 1. Every route exists twice
 
 `prefixDefaultLocale: false`, so English is unprefixed and the other three locales are
-generated from a `[lang]` route. That gives twenty route files for ten logical pages:
+generated from a `[lang]` route. That gives twenty-two route files for eleven logical pages:
 
 | Page | English | Prefixed | Body |
 |---|---|---|---|
@@ -47,6 +47,7 @@ generated from a `[lang]` route. That gives twenty route files for ten logical p
 | Memory | [games/memory/index.astro](../src/pages/games/memory/index.astro) | [\[lang\]/games/memory/index.astro](<../src/pages/[lang]/games/memory/index.astro>) | [Memory.astro](../src/components/Memory.astro) |
 | Accretion | [games/accretion/index.astro](../src/pages/games/accretion/index.astro) | [\[lang\]/games/accretion/index.astro](<../src/pages/[lang]/games/accretion/index.astro>) | [Accretion.astro](../src/components/Accretion.astro) |
 | Battleship | [games/battleship/index.astro](../src/pages/games/battleship/index.astro) | [\[lang\]/games/battleship/index.astro](<../src/pages/[lang]/games/battleship/index.astro>) | [Battleship.astro](../src/components/Battleship.astro) |
+| Cube | [games/cube/index.astro](../src/pages/games/cube/index.astro) | [\[lang\]/games/cube/index.astro](<../src/pages/[lang]/games/cube/index.astro>) | [Cube.astro](../src/components/Cube.astro) |
 
 ⚠️ **A game gets a route pair of its own, and that is the one place this table breaks its
 own pattern.** It is about the *files*, not the URLs - `/projects/encryptix/` and
@@ -56,7 +57,7 @@ where that slug comes from:
 | | On disk | Pages built |
 |---|---|---|
 | projects | one file, `projects/[slug]/index.astro` | four, from `getStaticPaths` |
-| games | one directory per game, `games/2048/`, `games/minesweeper/`, `games/memory/`, `games/accretion/`, `games/battleship/` | one each, no parameter |
+| games | one directory per game, `games/2048/`, `games/minesweeper/`, `games/memory/`, `games/accretion/`, `games/battleship/`, `games/cube/` | one each, no parameter |
 
 Every project page is the same page with different data, so one parameterised file covers
 all four and always will. A game is its own program - its own markup, its own script, its
@@ -89,7 +90,7 @@ there as a page, so a note left in that directory builds as a public HTML page a
 [src/CLAUDE.md](../src/CLAUDE.md) rather than in `src/pages/`. Prefix anything else with `_`
 to keep it out of the route table, and **check the page count**: the build prints it, and it
 should be four locales times four fixed shapes, plus a 404, one detail page per project per
-locale, and one page per game per locale - 52 with four projects and five games today.
+locale, and one page per game per locale - 56 with four projects and six games today.
 
 ---
 
@@ -216,7 +217,7 @@ wrangler is invoked directly. The adapter also injects `_headers` (immutable
 
 ### What lands in `dist/client/_astro/`
 
-Three woff2 faces, five webp variants and **six JavaScript files**, which are the games.
+Three woff2 faces, five webp variants and **seven JavaScript files**, which are the games.
 
 `build.inlineStylesheets: 'always'` puts the whole stylesheet inside every document, so
 nothing render-blocking stands between the first response and the first paint, and the
@@ -229,11 +230,11 @@ dismissal and the active-section indicator - are all small enough that Astro inl
 into each page rather than emitting a bundle. 1.7 KB of JS per page, in a 26 KB gz home
 page, with no extra request. Keep it that way: see [src/components/CLAUDE.md](../src/components/CLAUDE.md).
 
-The six files in `_astro` are the five game engines and the piece they share. 2048 is
-2.9 KB gz, Minesweeper 3.6 KB, Memory 4.5 KB, Accretion 5.3 KB, Battleship 6.0 KB, and the
-shared chunk 1.7 KB: [games/record.ts](../src/games/record.ts),
+The seven files in `_astro` are the six game engines and the piece they share. 2048 is
+2.9 KB gz, Minesweeper 3.6 KB, Memory 4.5 KB, Accretion 5.3 KB, Battleship 6.0 KB, Cube
+8.0 KB, and the shared chunk 1.7 KB: [games/record.ts](../src/games/record.ts),
 [games/sound.ts](../src/games/sound.ts) and [games/burst.ts](../src/games/burst.ts) in one
-file, because all five games import all three and Rollup puts modules with the same
+file, because all six games import all three and Rollup puts modules with the same
 importers into the same chunk. Each engine is requested by its own route
 and that route's three locale twins, and by nothing else, which is the point: a game pays
 for itself and the rest of the site is unchanged.
@@ -280,7 +281,7 @@ where `files` would not, and `astro check` passes without it.
 
 ## 6. The sitemap carries a trailing slash by hand
 
-Forty-eight URLs: the home page, the project index, one page per project, the game index
+Fifty-two URLs: the home page, the project index, one page per project, the game index
 and one page per game, across four locales, with the 404 pages excluded. Every entry
 ends in a slash, and that agrees with the `<link rel="canonical">` on the page itself - but
 only because the `serialize` hook in [astro.config.ts](../astro.config.ts) puts it there.
@@ -343,6 +344,9 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-09-24 - a sixth game and its route pair, `/games/cube/`, taking the build to 56 pages
+  and the sitemap to 52 URLs. `_astro` now holds seven JavaScript files, the cube's engine
+  8.0 KB gz (§1, §5).
 - 2026-09-23 - Accretion's engine is 5.3 KB gz, from 3.5 KB, for a rewritten solver, the
   drawing between steps, the merge animation and the sky's parallax. The sky itself is
   markup on the Accretion page only (§5).

@@ -1,0 +1,528 @@
+---
+/**
+ * The Cube page, shared by the four locales.
+ *
+ * The scene is empty here and built by the module, because a sticker is
+ * nothing but a placement and a colour and both come from the puzzle's
+ * geometry - a hundred and fifty elements of markup in every document, in four
+ * languages, would be a copy of what the module computes in a loop.
+ *
+ * What *is* in the markup is everything around the scene: the five puzzles as
+ * real radios, the figures, both halves of every line that depends on the
+ * state or the puzzle, and the panel at the end. CSS shows one of each off
+ * `data-state` and `data-kind` on the frame, so the script never writes a
+ * string a reader sees that is not a number or a name.
+ */
+import { ArrowLeft, Shuffle, Undo2 } from "@lucide/astro";
+import type { Lang } from "../i18n/types";
+import { getDict, localizePath } from "../i18n/utils";
+import { PUZZLES, TRI_BODY, TRI_STICKER, build } from "../games/cube/game";
+import { site } from "../site";
+import GameStamp from "./GameStamp.astro";
+import Section from "./Section.astro";
+import SoundToggle from "./SoundToggle.astro";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = getDict(lang);
+
+const copy = dict.games.items.cube;
+const index = localizePath("/games/", lang);
+
+/* The badge beside the title, from the registry, as on Accretion's page. */
+const { status, date } = site.games.cube;
+
+/*
+ * A name for each puzzle. A cube's is its size, which is a number and reads
+ * the same in every language, so it is composed here rather than kept in four
+ * dictionaries. The pyramid's is a word.
+ */
+const named = PUZZLES.map((puzzle) => ({
+  ...puzzle,
+  label: puzzle.kind === "cube" ? `${puzzle.size} × ${puzzle.size}` : copy.pyramid,
+  spoken: puzzle.kind === "cube" ? `${copy.cube} ${puzzle.size} × ${puzzle.size}` : copy.pyramid,
+}));
+
+/** The puzzle the page opens on, before the script has read what the reader
+ *  last chose: the three by three, which is the one everybody means. */
+const first = "three";
+const span = build(PUZZLES.find((puzzle) => puzzle.id === first) ?? PUZZLES[0]).span;
+
+/*
+ * The icon on each tile: a face mid-solve, drawn in the game's own colours.
+ *
+ * Seeded, so every build draws the same faces, and with no two neighbours the
+ * same colour, which is what a scrambled face looks like at a glance and a
+ * patterned one does not.
+ */
+function seeded(seed: number) {
+  let a = seed;
+  return () => {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function face(n: number): number[] {
+  const random = seeded(n * 7 + 3);
+  const cells: number[] = [];
+
+  for (let i = 0; i < n * n; i++) {
+    const left = i % n ? cells[i - 1] : -1;
+    const above = i >= n ? cells[i - n] : -1;
+    let colour: number;
+    do colour = Math.floor(random() * 6);
+    while (colour === left || colour === above);
+    cells.push(colour);
+  }
+
+  return cells;
+}
+
+/* The pyramid's icon: one face of nine triangles, each shrunk towards its own
+   centroid so the plastic shows between them, on a 100 unit side. */
+const H = 86.603;
+const lattice = (i: number, j: number): [number, number] => [50 - (i / 3) * 50 + (j / 3) * 50, (i / 3) * H + (j / 3) * H];
+
+const triangles: string[] = [];
+for (let i = 0; i < 3; i++) {
+  for (let j = 0; i + j < 3; j++) {
+    const shapes = [[lattice(i, j), lattice(i + 1, j), lattice(i, j + 1)]];
+    if (i + j < 2) shapes.push([lattice(i + 1, j + 1), lattice(i, j + 1), lattice(i + 1, j)]);
+
+    for (const points of shapes) {
+      const cx = (points[0][0] + points[1][0] + points[2][0]) / 3;
+      const cy = (points[0][1] + points[1][1] + points[2][1]) / 3;
+      triangles.push(
+        points.map(([x, y]) => `${(cx + (x - cx) * 0.7).toFixed(2)},${(cy + (y - cy) * 0.7).toFixed(2)}`).join(" "),
+      );
+    }
+  }
+}
+
+/* Pyramid colours by the cube's index: green, red, blue and yellow. */
+const PYRAMID_ICON = [2, 1, 5, 2, 3, 2, 1, 5, 3];
+---
+
+<div class="page-head">
+  <div class="shell shell-wide">
+    <div class="crumb-row">
+      <a href={index} class="crumb enter">
+        <ArrowLeft class="size-4" aria-hidden="true" />
+        {dict.games.label}
+      </a>
+
+      <GameStamp lang={lang} date={date} />
+    </div>
+
+    <h1 class="page-title enter" style="--enter-delay:80ms">
+      {copy.name}
+      {status !== "live" && <span class="page-status">{dict.games.status[status]}</span>}
+    </h1>
+
+    <p class="page-lead enter" style="--enter-delay:160ms">{copy.lead}</p>
+  </div>
+</div>
+
+<div class="sec-lite">
+  <div class="shell shell-wide">
+    <div
+      class="cube enter"
+      style="--enter-delay:240ms"
+      data-game
+      data-state="idle"
+      data-kind="cube"
+      data-msg-scrambled={copy.messages.scrambled}
+    >
+      {/*
+        The five puzzles, as real radios for the reasons the minefield's boards
+        are: one tab stop for the set, the arrow keys already work, and the
+        label is the control. Nothing is locked - a puzzle is not a level.
+      */}
+      <fieldset class="cube-puzzles">
+        <legend class="sr-only">{copy.puzzles}</legend>
+
+        <div class="cube-puzzles-row">
+          {
+            named.map((puzzle) => (
+              <label class="cube-puzzle">
+                <input
+                  type="radio"
+                  name="cube-puzzle"
+                  value={puzzle.id}
+                  checked={puzzle.id === first}
+                  class="sr-only"
+                  data-puzzle-option
+                  data-label={puzzle.label}
+                />
+
+                {puzzle.kind === "cube" ? (
+                  <span class="cube-icon" style={`--n:${puzzle.size}`} aria-hidden="true">
+                    {face(puzzle.size).map((colour) => (
+                      <span style={`--c:var(--cube-c${colour})`} />
+                    ))}
+                  </span>
+                ) : (
+                  <span class="cube-icon is-tri" aria-hidden="true">
+                    <svg viewBox="-6 -8 112 100" focusable="false">
+                      <path class="cube-icon-body" d="M50 0 100 86.603 0 86.603Z" />
+                      {triangles.map((points, i) => (
+                        <polygon points={points} style={`--c:var(--cube-c${PYRAMID_ICON[i]})`} />
+                      ))}
+                    </svg>
+                  </span>
+                )}
+
+                <span class="cube-puzzle-name" aria-hidden="true">
+                  {puzzle.label}
+                </span>
+                <span class="sr-only">{puzzle.spoken}</span>
+
+                {/* The best time for each, which is what makes the strip a
+                    record of how far along a reader is. */}
+                <span class="cube-puzzle-best" data-best-of={puzzle.id}>
+                  -
+                </span>
+              </label>
+            ))
+          }
+        </div>
+      </fieldset>
+
+      <div class="cube-bar">
+        <div class="cube-meter">
+          <span class="cube-meter-label">{copy.time}</span>
+          <span class="cube-meter-value" data-time>0.00</span>
+        </div>
+
+        <div class="cube-meter">
+          <span class="cube-meter-label">{copy.moves}</span>
+          <span class="cube-meter-value" data-moves>0</span>
+        </div>
+
+        <div class="cube-meter">
+          <span class="cube-meter-label">{copy.best}</span>
+          <span class="cube-meter-value" data-best>-</span>
+        </div>
+
+        <div class="cube-actions">
+          <SoundToggle lang={lang} />
+
+          <button type="button" class="cta-ghost" data-action="undo" disabled>
+            <Undo2 class="size-4 shrink-0" aria-hidden="true" />
+            {copy.undo}
+          </button>
+
+          <button type="button" class="cta cube-scramble" data-action="scramble">
+            <Shuffle class="size-4 shrink-0" aria-hidden="true" />
+            {copy.scramble}
+          </button>
+        </div>
+      </div>
+
+      <div class="cube-frame">
+        {/*
+          The stage is the size container every length in the scene is taken
+          from, and the element pointer events land on. The scene itself is
+          hidden from a screen reader: a hundred and fifty coloured squares in
+          three dimensions do not read, so the live region below says what
+          happened instead.
+        */}
+        <div class="cube-stage" style={`--cube-span:${span}`} data-stage>
+          <div class="cube-shadow" aria-hidden="true"></div>
+
+          <div class="cube-camera" aria-hidden="true" data-camera>
+            <div class="cube-view" data-kind="cube" data-view></div>
+          </div>
+
+          <p class="cube-cue" aria-hidden="true">
+            <span class="cube-for-idle">{copy.cue.idle}</span>
+            <span class="cube-for-ready">{copy.cue.ready}</span>
+          </p>
+        </div>
+
+        <div class="game-burst" aria-hidden="true" data-burst></div>
+
+        <div class="cube-panel" data-panel="solved">
+          <p class="cube-panel-puzzle" data-panel-puzzle></p>
+          <p class="cube-panel-title">{copy.won.title}</p>
+
+          <div class="cube-panel-meters">
+            <div class="cube-meter">
+              <span class="cube-meter-label">{copy.time}</span>
+              <span class="cube-meter-value" data-panel-time>0.00</span>
+            </div>
+
+            <div class="cube-meter">
+              <span class="cube-meter-label">{copy.moves}</span>
+              <span class="cube-meter-value" data-panel-moves>0</span>
+            </div>
+          </div>
+
+          <p class="cube-panel-body" data-panel-body data-record={copy.won.record}></p>
+
+          <div class="cube-panel-actions">
+            <button type="button" class="cta" data-action="scramble">{copy.won.again}</button>
+            <button type="button" class="cta-ghost" data-action="next">{copy.won.next}</button>
+          </div>
+        </div>
+      </div>
+
+      <p class="cube-hint">
+        <span class="cube-for-cube">{copy.hint.cube}</span>
+        <span class="cube-for-pyramid">{copy.hint.pyramid}</span>
+      </p>
+
+      <p
+        class="sr-only"
+        aria-live="polite"
+        data-live
+        data-label-time={copy.time}
+        data-label-moves={copy.moves}
+      >
+      </p>
+    </div>
+  </div>
+</div>
+
+{/*
+  The pyramid's triangle, drawn once and used by every sticker on it. The
+  paths are the module's, so the page and the thumbnail on the index cannot
+  draw two different triangles. Colour reaches it through `--c` on the
+  sticker, the only thing that crosses into a `<use>`.
+*/}
+<svg class="cube-sprites" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="cube-tri" viewBox="0 0 100 86.603">
+      <path class="cube-tri-body" d={TRI_BODY} />
+      <path class="cube-tri-sticker" d={TRI_STICKER} />
+    </symbol>
+  </defs>
+</svg>
+
+<Section id="how" label={copy.how.label} width="wide" tone="band">
+  <ul class="svc-grid">
+    {
+      copy.how.items.map((item) => (
+        <li class="card reveal-item">
+          <h3 class="svc-title">{item.title}</h3>
+          <p class="mt-2.5 text-muted">{item.description}</p>
+        </li>
+      ))
+    }
+  </ul>
+</Section>
+
+<Section id="build" label={copy.close.label} width="wide" tone="panel">
+  <div class="prose-columns text-muted">
+    {copy.close.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+  </div>
+</Section>
+
+<script>
+  import { PUZZLES, mount, type Puzzle } from "../games/cube/game";
+  import { voices } from "../games/cube/sounds";
+  import { scatter } from "../games/burst";
+  import { scoreRecord } from "../games/record";
+  import { createSound } from "../games/sound";
+
+  /*
+   * The page's side of the game: the strip, the figures, the record for each
+   * puzzle and the panel at the end.
+   *
+   * Everything about the puzzle itself is in the module. What lives here is
+   * what a solve means once it is over - whether it was a record, and what the
+   * panel says - because the module plays one puzzle and does not know there
+   * are five.
+   */
+  const root = document.querySelector<HTMLElement>("[data-game]");
+  const stage = root?.querySelector<HTMLElement>("[data-stage]");
+  const camera = root?.querySelector<HTMLElement>("[data-camera]");
+  const view = root?.querySelector<HTMLElement>("[data-view]");
+
+  if (root && stage && camera && view) {
+    const timeOut = root.querySelector<HTMLElement>("[data-time]");
+    const movesOut = root.querySelector<HTMLElement>("[data-moves]");
+    const bestOut = root.querySelector<HTMLElement>("[data-best]");
+    const undoButton = root.querySelector<HTMLButtonElement>('[data-action="undo"]');
+    const burst = root.querySelector<HTMLElement>("[data-burst]");
+    const live = root.querySelector<HTMLElement>("[data-live]");
+    const options = root.querySelectorAll<HTMLInputElement>("[data-puzzle-option]");
+
+    const panelPuzzle = root.querySelector<HTMLElement>("[data-panel-puzzle]");
+    const panelTime = root.querySelector<HTMLElement>("[data-panel-time]");
+    const panelMoves = root.querySelector<HTMLElement>("[data-panel-moves]");
+    const panelBody = root.querySelector<HTMLElement>("[data-panel-body]");
+    const panelTitle = root.querySelector<HTMLElement>(".cube-panel-title");
+
+    const lang = document.documentElement.lang || "en";
+    const count = new Intl.NumberFormat(lang);
+    const decimals = new Intl.NumberFormat(lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const padded = new Intl.NumberFormat(lang, {
+      minimumIntegerDigits: 2,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    /** Hundredths as a cube timer shows them: 12.34 under a minute and
+     *  1:02.34 over one, with the reader's own decimal mark. */
+    const clock = (hundredths: number) => {
+      const seconds = hundredths / 100;
+      if (seconds < 60) return decimals.format(seconds);
+      const minutes = Math.floor(seconds / 60);
+      return `${minutes}:${padded.format(seconds - minutes * 60)}`;
+    };
+
+    /*
+     * One record per puzzle, and it is the fastest time, in hundredths.
+     *
+     * The predicate is only that a solve took some time at all. There is no
+     * floor a time can be checked against the way Memory checks a move count
+     * against the pairs on the board - a lucky two by two can come back in a
+     * handful of turns - and inventing one would be a guess dressed as a check.
+     */
+    const records = Object.fromEntries(
+      PUZZLES.map((puzzle) => [puzzle.id, scoreRecord(`game-cube-best-${puzzle.id}`, (time) => time > 0)]),
+    );
+
+    const KEY = "game-cube-puzzle";
+
+    const read = (): string | null => {
+      try {
+        return localStorage.getItem(KEY);
+      } catch {
+        return null;
+      }
+    };
+
+    const write = (value: string): void => {
+      try {
+        localStorage.setItem(KEY, value);
+      } catch {
+        /* Nothing to do; the choice simply will not outlive the page. */
+      }
+    };
+
+    let current: Puzzle = PUZZLES.find((puzzle) => puzzle.id === read()) ?? PUZZLES[1];
+
+    const labelOf = (puzzle: Puzzle) =>
+      [...options].find((option) => option.value === puzzle.id)?.dataset.label ?? "";
+
+    const sound = createSound(voices);
+    sound.bind(root);
+
+    /* The burst is the six sticker colours. */
+    const COLOURS = [0, 1, 2, 3, 4, 5].map((i) => `var(--cube-c${i})`);
+
+    const paintBests = () => {
+      for (const puzzle of PUZZLES) {
+        const best = records[puzzle.id].read();
+        const out = root.querySelector<HTMLElement>(`[data-best-of="${puzzle.id}"]`);
+        if (out) out.textContent = best === null ? "-" : clock(best);
+      }
+
+      const best = records[current.id].read();
+      if (bestOut) bestOut.textContent = best === null ? "-" : clock(best);
+    };
+
+    const controller = mount({
+      stage,
+      camera,
+      view,
+
+      onState(state) {
+        root.dataset.state = state;
+        if (state === "ready" && live) live.textContent = root.dataset.msgScrambled ?? "";
+      },
+
+      onMoves(moves) {
+        if (movesOut) movesOut.textContent = count.format(moves);
+      },
+
+      onTime(hundredths) {
+        if (timeOut) timeOut.textContent = clock(hundredths);
+      },
+
+      onUndo(available) {
+        if (undoButton) undoButton.disabled = !available;
+      },
+
+      onCue(cue, level) {
+        sound.play(cue, level);
+      },
+
+      /**
+       * A solve: keep the record, fill the panel, throw the burst.
+       *
+       * The record line only appears when there was a record to beat. On the
+       * first solve of a puzzle every time is a best, and saying so would be a
+       * sentence with nothing in it.
+       */
+      onSolved(hundredths, moves) {
+        const record = records[current.id];
+        const best = record.read();
+        const beaten = best !== null && hundredths < best;
+
+        if (best === null || hundredths < best) record.write(hundredths);
+
+        if (panelPuzzle) panelPuzzle.textContent = labelOf(current);
+        if (panelTime) panelTime.textContent = clock(hundredths);
+        if (panelMoves) panelMoves.textContent = count.format(moves);
+        if (panelBody) panelBody.textContent = beaten ? (panelBody.dataset.record ?? "") : "";
+
+        paintBests();
+        if (burst) scatter(burst, COLOURS);
+
+        if (live) {
+          const words = `${panelTitle?.textContent ?? ""}. ${live.dataset.labelTime}: ${clock(hundredths)}. ${live.dataset.labelMoves}: ${count.format(moves)}.`;
+          live.textContent = beaten ? `${words} ${panelBody?.dataset.record ?? ""}` : words;
+        }
+
+        // The panel covers the stage, so a keyboard standing on the bar would
+        // be left behind it. Only when the focus was in the game at all.
+        if (root.contains(document.activeElement)) {
+          root.querySelector<HTMLElement>('.cube-panel [data-action="scramble"]')?.focus({ preventScroll: true });
+        }
+      },
+    });
+
+    const open = (puzzle: Puzzle) => {
+      current = puzzle;
+      write(puzzle.id);
+
+      for (const option of options) option.checked = option.value === puzzle.id;
+      root.dataset.kind = puzzle.kind;
+      root.toggleAttribute("data-last", puzzle === PUZZLES[PUZZLES.length - 1]);
+
+      paintBests();
+      controller.load(puzzle);
+    };
+
+    open(current);
+
+    root.addEventListener("change", (event) => {
+      const input = event.target as HTMLInputElement | null;
+      if (!input?.matches("[data-puzzle-option]")) return;
+
+      const picked = PUZZLES.find((puzzle) => puzzle.id === input.value);
+      if (picked && picked !== current) open(picked);
+    });
+
+    root.addEventListener("click", (event) => {
+      const action = (event.target as Element | null)?.closest<HTMLElement>("[data-action]")?.dataset.action;
+
+      if (action === "scramble") controller.scramble();
+      if (action === "undo") controller.undo();
+
+      if (action === "next") {
+        const next = PUZZLES[PUZZLES.indexOf(current) + 1];
+        if (next) open(next);
+      }
+    });
+  }
+</script>

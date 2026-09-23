@@ -47,7 +47,7 @@ const de: Dict = {
     paragraphs: [
       'Ich arbeite an Kundenprojekten vom ersten Datenmodell bis zum Deployment auf AWS. Dabei fange ich immer bei der Domäne an: welche Daten es gibt, wer darauf zugreifen darf und mit welchen Systemen sie sprechen müssen. Daraus ergeben sich die API, die Services und die React-Oberfläche.',
       'Ich habe einen Master in Software Engineering. In meiner Masterarbeit habe ich zwei Machine-Learning-Ökosysteme anhand derselben Aufgabe verglichen: ein YOLOv8m-Modell in Python und ein ML.NET-Modell in .NET, beide hinter einem gemeinsamen NestJS-Gateway und einem React-Frontend. Für meine Bachelorarbeit habe ich die Verschlüsselungsverfahren RC6 und XXTEA nach ihren Spezifikationen implementiert.',
-      'Das beste Beispiel für meine Frontend-Arbeit ist diese Website selbst: vier Sprachen und fünf Spiele, geschrieben ohne Canvas und ohne Spielbibliothek. Zu jedem Spiel gibt es einen Text darüber, wie es gebaut ist.',
+      'Das beste Beispiel für meine Frontend-Arbeit ist diese Website selbst: vier Sprachen und sechs Spiele, geschrieben ohne Canvas und ohne Spielbibliothek. Zu jedem Spiel gibt es einen Text darüber, wie es gebaut ist.',
     ],
   },
 
@@ -568,7 +568,7 @@ const de: Dict = {
     index: {
       metaTitle: 'Spiele - Vuk Cvetković',
       metaDescription:
-        'Browserspiele von Vuk Cvetković: 2048, Minesweeper, Memory in zwölf Leveln, Schiffe versenken gegen vier Gegner und ein Spiel, in dem Welten zu größeren verschmelzen. Jedes hat eine eigene Seite.',
+        'Browserspiele von Vuk Cvetković: 2048, Minesweeper, Memory in zwölf Leveln, Schiffe versenken gegen vier Gegner, ein Spiel, in dem Welten zu größeren verschmelzen, und ein Zauberwürfel in 3D von 2×2 bis 5×5. Jedes hat eine eigene Seite.',
       heading: 'Spiele',
       intro:
         'Spiele, die mehr als eine Runde wert sind. Jedes hat eine eigene Seite, und darunter steht für alle, die es interessiert, wie es gebaut ist.',
@@ -1040,6 +1040,86 @@ const de: Dict = {
             'Der Gegner sieht die Flotte nicht, auf die er schießt, und das garantiert der Aufbau des Codes, nicht bloß ein Kommentar. Die Funktion, die ein Feld wählt, bekommt zwei Dinge: die Liste ihrer eigenen Schüsse und die Längen der Schiffe, die sie schon versenkt hat. Die Aufstellung ist dort, wo entschieden wird, gar nicht erreichbar, es gibt also keine Zeile, bei der man aufpassen müsste. Welches Schiff gesunken ist, ist öffentlich, so wie ein Spieler es laut ansagt, und genau damit lässt sich die Suche eingrenzen.',
             'Der stärkste der vier rät nicht. Für jedes Schiff, das noch schwimmt, geht er jede Position durch, die es einnehmen könnte, verwirft die, die ein Fehlschuss oder ein Wrack ausschließt, und gibt jedem unbekannten Feld, das eine der verbleibenden Positionen abdeckt, eine Stimme. Geschossen wird auf das Feld mit den meisten Stimmen. Suchen und das Verfolgen eines Treffers sind dieselbe Rechnung und keine zwei Modi: Ist nichts ungeklärt, entsteht die bekannte Glockenform über der Mitte des Feldes. Liegt ein Treffer vor, fallen die Positionen weg, die ihn nicht erklären, und das Gewicht sammelt sich um ihn herum.',
             'Das Verfolgen eines Treffers wird meist als Warteschlange von Feldern geschrieben, die noch auszuprobieren sind, und genau hier entstehen in solchen Programmen die Fehler: Die Warteschlange muss bereinigt werden, wenn ein Schiff sinkt, wenn ein anderer Schuss einen ihrer Einträge erledigt und wenn zwei Schiffe nebeneinander liegen. Hier werden die Folgefelder in jedem Zug neu aus dem Spielfeld abgeleitet, es gibt also nichts zu speichern und nichts, was veralten kann. Vier Gegner, vierzigtausend simulierte Partien gegen einen unabhängig geschriebenen Verteidiger und kein einziger unzulässiger Schuss.',
+          ],
+        },
+      },
+
+      cube: {
+        /** Not the trade name. See the note in en.ts. */
+        name: 'Zauberwürfel',
+
+        tagline:
+          'Misch ihn und bring ihn wieder in Ordnung, gegen die Uhr. Vier Würfel von 2×2 bis 5×5 und eine Pyramide, in echtem 3D, und jede Schicht drehst du, indem du an ihr ziehst.',
+
+        metaDescription:
+          'Ein Zauberwürfel in 3D im Browser: 2×2, 3×3, 4×4, 5×5 und die Pyramide, gedreht durch Ziehen an einer Schicht, mit Uhr und Bestzeit für jedes Puzzle.',
+        lead: 'Misch ihn und bau ihn wieder zusammen. Zieh an einer Schicht, um sie zu drehen, und zieh irgendwo neben dem Puzzle, um das Ganze umzudrehen. Die Uhr läuft ab deinem ersten Zug und bleibt stehen, wenn jede Seite wieder einfarbig ist.',
+
+        puzzles: 'Wähle ein Puzzle',
+        cube: 'Würfel',
+        pyramid: 'Pyramide',
+
+        time: 'Zeit',
+        moves: 'Züge',
+        best: 'Bestzeit',
+        scramble: 'Mischen',
+        undo: 'Rückgängig',
+
+        cue: {
+          idle: 'Misch ihn, um zu starten',
+          ready: 'Die Uhr läuft ab deinem ersten Zug',
+        },
+
+        hint: {
+          cube: 'Zieh an einem Feld, um seine Schicht zu drehen, und zieh irgendwo neben dem Würfel, um ihn ganz zu drehen. Auf der Tastatur drehen U, D, L, R, F und B eine Seite, mit Umschalt in die andere Richtung, eine Zahl davor erreicht eine tiefere Schicht, und die Pfeiltasten drehen den ganzen Würfel.',
+          pyramid: 'Zieh an einem Feld, um seine Ecke zu drehen, und zieh irgendwo neben der Pyramide, um sie ganz zu drehen. Auf der Tastatur drehen U, L, R und B eine Ecke, mit Umschalt in die andere Richtung, eine 1 davor dreht nur die Spitze, und die Pfeiltasten drehen die ganze Pyramide.',
+        },
+
+        messages: {
+          scrambled: 'Gemischt. Die Uhr läuft ab deinem ersten Zug.',
+        },
+
+        won: {
+          title: 'Gelöst',
+          record: 'Deine Bestzeit für dieses Puzzle.',
+          again: 'Neu mischen',
+          next: 'Nächstes Puzzle',
+        },
+
+        how: {
+          label: 'So wird gespielt',
+          items: [
+            {
+              title: 'Zieh an einer Schicht',
+              description:
+                'Drück auf ein Feld und zieh es in die Richtung, in die seine Reihe oder Spalte gehen soll. Die Schicht folgt deinem Finger und rastet ein, wenn du loslässt, und ein schneller Wisch dreht sie für dich zu Ende.',
+            },
+            {
+              title: 'Zieh daneben, um ihn umzudrehen',
+              description:
+                'Zieh irgendwo neben dem Puzzle, um das Ganze zu drehen und eine andere Seite anzusehen. Lass los, und es richtet sich wieder gerade vor dir aus, sodass immer drei Seiten gut zu sehen sind. Am Computer macht die rechte Maustaste dasselbe direkt auf dem Puzzle.',
+            },
+            {
+              title: 'Mischen, dann gegen die Uhr',
+              description:
+                'Mischen verdreht es mit ein paar Dutzend zufälligen Zügen. Die Uhr läuft ab deinem ersten Zug und bleibt stehen, sobald jede Seite einfarbig ist, und deine Bestzeit wird für jedes Puzzle einzeln gespeichert. Rückgängig nimmt den letzten Zug zurück.',
+            },
+            {
+              title: 'Fünf Puzzles',
+              description:
+                'Mit dem 2×2 fängst du am besten an, der 3×3 ist der Klassiker. 4×4 und 5×5 haben zusätzliche Schichten in der Mitte, und die Pyramide dreht sich in Dritteln um ihre Ecken, mit Spitzen, die sich einzeln drehen.',
+            },
+          ],
+        },
+
+        close: {
+          label: 'Wie er gebaut ist',
+          paragraphs: [
+            'Kein Canvas, kein WebGL und keine 3D-Bibliothek. Das Puzzle ist eine Szene aus gewöhnlichen Elementen, eines pro Feld, mit CSS-Transformationen im Raum platziert, und der Browser zeichnet die Perspektive und rechnet aus, was vor was liegt. Ein 5×5 hat hundertfünfzig davon. Ein Zug schreibt eine Drehung auf die Felder der Schicht, die sich dreht, und auf sonst nichts, und in den Schnitt schieben sich zwei dunkle Platten, damit das Innere des Puzzles nie leer ist.',
+            'Kein Zug ist irgendwo aufgeschrieben. Ein Puzzle ist eine Liste von Plätzen, an denen ein Feld sein kann, jeder mit einem Mittelpunkt und einer Richtung, in die er zeigt, und ein Zug ist eine Achse, eine Scheibe Tiefe entlang dieser Achse und ein Winkel. Ein Zug nimmt die Felder in dieser Scheibe mit, und wo jedes landet, wird gefunden, indem man es dreht und nachsieht, welcher Platz dort liegt. Würfel und Pyramide haben mechanisch nichts gemeinsam und laufen auf demselben Code, und der 3×3 besteht die klassische Probe: R U, 105 Mal wiederholt, bringt ihn zurück in den gelösten Zustand.',
+            'Ein Ziehen wird durch dieselbe Projektion gemessen, mit der der Browser zeichnet. Jede Achse, um die sich das Feld unter deinem Finger drehen könnte, wird ausprobiert, und die, deren Bewegung auf dem Bildschirm am besten zu deinem Finger passt, gewinnt. So dreht sich aus jedem Winkel die richtige Schicht, und zwar so schnell, dass das Feld unter deinem Finger bleibt. Lässt du los, zieht eine Feder die Schicht zum nächsten Schritt. Sie ist etwas unter der kritischen Dämpfung eingestellt, sodass die Schicht ein, zwei Grad überschwingt und zurückfedert, und genau das wirkt wie Plastik, das einrastet.',
+            'Nach einem Zug übernimmt ein Feld die Lage des Platzes, an dem es gelandet ist, statt die Drehung zu behalten, die es dorthin gebracht hat. Die beiden können sich um eine Vierteldrehung in der Ebene des Feldes unterscheiden, was man nicht sieht, weil jedes Feld um seine Mitte symmetrisch ist, und so sammelt sich kein Rundungsfehler an, egal wie lange du spielst.',
+            'Jedes Feld wird aus einer einzigen Richtung beleuchtet, die an dich gebunden ist und nicht an das Puzzle, sodass die obere Seite die hellste und die rechte die dunkelste ist, wie auch immer es gedreht ist. Die Helligkeit wird neu berechnet, während sich die Ansicht dreht, und nur geschrieben, wenn sie sich sichtbar ändert. Auch die Klänge entstehen im Browser: Jeder Zug sind zwei Klicks im Abstand von ein paar Millisekunden über einem kurzen, tiefen Klopfen.',
           ],
         },
       },

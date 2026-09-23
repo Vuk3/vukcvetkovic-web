@@ -51,7 +51,7 @@ const en = {
     paragraphs: [
       "I work on client projects from the first data model to the deployment on AWS. I always start from the domain: what the data is, who can access it, and which systems it has to talk to, and the API, the services and the React interface follow from that.",
       "I have a master’s in software engineering. My thesis compared two machine learning ecosystems on the same task: a YOLOv8m model in Python and an ML.NET model in .NET, behind one NestJS gateway and one React front end. For my bachelor’s thesis I implemented the RC6 and XXTEA ciphers from their specifications.",
-      "The best example of my front end work is this site itself: four languages, and five games written without a canvas or a game library. Each game has a write-up on how it was built.",
+      "The best example of my front end work is this site itself: four languages, and six games written without a canvas or a game library. Each game has a write-up on how it was built.",
     ],
   },
 
@@ -624,7 +624,7 @@ const en = {
 
     /**
      * The sound switch in every game's bar. A toggle, so it names the thing
-     * rather than the action, and one word for all five games because it is
+     * rather than the action, and one word for all six games because it is
      * one switch - see SoundToggle.astro.
      */
     sound: "Sound",
@@ -649,7 +649,7 @@ const en = {
     index: {
       metaTitle: "Games - Vuk Cvetković",
       metaDescription:
-        "Browser games by Vuk Cvetković: 2048, Minesweeper, Memory in twelve levels, Battleship against four opponents, and a game about merging worlds into bigger ones. Each gets a page of its own.",
+        "Browser games by Vuk Cvetković: 2048, Minesweeper, Memory in twelve levels, Battleship against four opponents, a game about merging worlds into bigger ones, and a 3D cube from 2×2 to 5×5. Each gets a page of its own.",
       heading: "Games",
       intro:
         "Games worth more than one go. Each has a page of its own, and underneath it a write-up on how it was built, for anyone who wants that too.",
@@ -1169,6 +1169,102 @@ const en = {
             "The opponent cannot see the fleet it is shooting at, and that is structural rather than a promise made in a comment. The function that picks a square takes two things: the record of its own shots, and the lengths of the ships it has already sunk. The layout is not in scope where the decision happens, so there is no line to be careful about. Which ship sank is public, the same way a player says it out loud, and it is what lets the reasoning narrow.",
             "The strongest of the four does not guess. For every ship still afloat it walks every position that ship could occupy, drops the ones a miss or a wreck has ruled out, and adds a vote to each unknown square the survivors cover. The heaviest square is the shot. Hunting and following up a hit are the same calculation rather than two modes: with nothing unexplained it produces the familiar bell over the middle of the board, and with a hit on the table the positions that fail to account for it are dropped and the weight collapses around it.",
             "Following up a hit is usually written as a queue of squares to try, and that queue is where this kind of program goes wrong: it has to be weeded every time a ship sinks, every time another shot resolves one of its entries, and every time two ships lie alongside each other. Here the follow-up squares are worked out from the board every turn, so there is nothing to keep and nothing to go stale. Four opponents, forty thousand simulated games against an independently written defender, and not one illegal shot between them.",
+          ],
+        },
+      },
+
+      cube: {
+        /**
+         * Not the puzzle's trade name, in any of the four. The names every
+         * language uses for it in speech are someone's registered mark, so the
+         * title is the plain word - and in German the plain word is
+         * Zauberwürfel, which is what everyone there calls it anyway.
+         */
+        name: "Cube",
+
+        tagline:
+          "Scramble it and put it back, against the clock. Four cubes from 2×2 to 5×5 and a pyramid, in real 3D, and every layer turned by dragging it.",
+
+        metaDescription:
+          "A 3D cube in the browser: the 2×2, 3×3, 4×4 and 5×5 and the pyramid, turned by dragging a layer, with a clock and a best time for each.",
+        lead: "Scramble it and put it back together. Drag a layer to turn it, and drag anywhere around the puzzle to turn the whole thing over. The clock starts with your first turn and stops when every face is one colour again.",
+
+        /** The legend over the five tiles. A cube's name on a tile is its size,
+         *  which is a number and is written by the page. `cube` is the word a
+         *  screen reader hears in front of it, and `pyramid` is the fifth
+         *  tile's whole name. */
+        puzzles: "Choose a puzzle",
+        cube: "Cube",
+        pyramid: "Pyramid",
+
+        time: "Time",
+        moves: "Moves",
+        /** A time, where lower wins, and the label says so: "Best" alone over
+         *  a number reads as a score. */
+        best: "Best time",
+        scramble: "Scramble",
+        undo: "Undo",
+
+        /** The line along the foot of the stage, for the two states that are
+         *  waiting on the reader. */
+        cue: {
+          idle: "Scramble it to start",
+          ready: "The clock starts with your first turn",
+        },
+
+        /** One per kind of puzzle, since the cube and the pyramid are turned
+         *  with different letters. The page shows the one that applies. */
+        hint: {
+          cube: "Drag a sticker to turn its layer, and drag anywhere around the cube to turn all of it. On a keyboard, U, D, L, R, F and B turn a face, Shift turns it the other way, a number first reaches a deeper layer, and the arrow keys turn the whole cube.",
+          pyramid: "Drag a sticker to turn its corner, and drag anywhere around the pyramid to turn all of it. On a keyboard, U, L, R and B turn a corner, Shift turns it the other way, 1 first turns the tip alone, and the arrow keys turn the whole pyramid.",
+        },
+
+        /** Read out, since the scene itself cannot be. */
+        messages: {
+          scrambled: "Scrambled. The clock starts with your first turn.",
+        },
+
+        won: {
+          title: "Solved",
+          record: "Your best time on this puzzle.",
+          again: "Scramble again",
+          next: "Next puzzle",
+        },
+
+        how: {
+          label: "How to play",
+          items: [
+            {
+              title: "Drag a layer",
+              description:
+                "Press a sticker and drag it the way you want its row or column to go. The layer follows your finger and clicks into place when you let go, and a quick flick carries it the rest of the way.",
+            },
+            {
+              title: "Drag around it to turn it over",
+              description:
+                "Drag anywhere off the puzzle to turn the whole thing and look at another side. Let go and it settles square to you again, so three faces are always in clear view. On a desktop the right mouse button does the same on the puzzle itself.",
+            },
+            {
+              title: "Scramble, then beat the clock",
+              description:
+                "Scramble mixes it with a few dozen random turns. The clock starts with your first turn and stops the moment every face is one colour, and your best time is kept for each puzzle. Undo takes back the last turn.",
+            },
+            {
+              title: "Five puzzles",
+              description:
+                "The 2×2 is the place to start and the 3×3 is the classic. The 4×4 and 5×5 add layers in the middle, and the pyramid turns in thirds around its corners, with tips that twist on their own.",
+            },
+          ],
+        },
+
+        close: {
+          label: "How it is built",
+          paragraphs: [
+            "No canvas, no WebGL and no 3D library. The puzzle is a scene of ordinary elements, one per sticker, placed in three dimensions with CSS transforms, and the browser draws the perspective and works out what is in front of what. A 5×5 is a hundred and fifty of them. A turn writes a rotation onto the stickers in the turning layer and onto nothing else, and two dark plates slide into the cut so the inside of the puzzle is never empty.",
+            "No turn is written down anywhere. A puzzle is a list of places a sticker can be, each with a centre and a direction it faces, and a turn is an axis, a slice of depth along it and an angle. The stickers a turn takes are the ones in the slice, and where each one lands is found by rotating it and looking up the place that is there. The cube and the pyramid have nothing mechanical in common and run on the same code, and the 3×3 passes the classic check: R U, repeated 105 times, brings it back to solved.",
+            "A drag is measured through the same projection the browser draws with. Every axis the sticker under your finger could turn about is tried, and the one whose motion on screen best matches your finger wins, so the right layer turns from any angle, at a speed that keeps the sticker under your finger. When you let go, a spring pulls the layer to the nearest step. It is set a little under critical damping, so the layer overshoots by a degree or two and settles back, which is what makes it read as plastic clicking into place.",
+            "After a turn, a sticker takes the position of the place it landed in rather than keeping the rotation that got it there. The two can differ by a quarter turn in the sticker's own plane, which cannot be seen because every sticker is symmetric about its centre, and it means no rounding error builds up however long you play.",
+            "Each sticker is lit from one direction, fixed to you rather than to the puzzle, so the face on top is the bright one and the face on the right the dim one however the puzzle is turned. The brightness is recalculated as the view turns and only written when it changes by a visible amount. The sounds are made in the browser as well: every turn is two clicks a few milliseconds apart over a short, low knock.",
           ],
         },
       },

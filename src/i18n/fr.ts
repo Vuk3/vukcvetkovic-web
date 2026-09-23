@@ -45,7 +45,7 @@ const fr: Dict = {
     paragraphs: [
       "Je travaille sur des projets clients, du premier modèle de données jusqu’au déploiement sur AWS. Je pars toujours du domaine : quelles sont les données, qui peut y accéder et avec quels systèmes elles doivent communiquer. L’API, les services et l’interface React en découlent.",
       "Je suis titulaire d’un master en génie logiciel. Mon mémoire comparait deux écosystèmes d’apprentissage automatique sur une même tâche : un modèle YOLOv8m en Python et un modèle ML.NET en .NET, derrière une seule passerelle NestJS et un seul frontend React. Pour mon mémoire de licence, j’ai implémenté les algorithmes de chiffrement RC6 et XXTEA à partir de leur spécification.",
-      "Le meilleur exemple de mon travail frontend, c’est ce site : quatre langues et cinq jeux écrits sans canvas ni bibliothèque de jeu. Chaque jeu est accompagné d’un texte qui explique comment il a été construit.",
+      "Le meilleur exemple de mon travail frontend, c’est ce site : quatre langues et six jeux écrits sans canvas ni bibliothèque de jeu. Chaque jeu est accompagné d’un texte qui explique comment il a été construit.",
     ],
   },
 
@@ -567,7 +567,7 @@ const fr: Dict = {
     index: {
       metaTitle: "Jeux - Vuk Cvetković",
       metaDescription:
-        "Les jeux de navigateur de Vuk Cvetković : 2048, le démineur, un Memory en douze niveaux, la bataille navale contre quatre adversaires, et un jeu où l’on fusionne des mondes pour en former de plus grands. Chacun a sa propre page.",
+        "Les jeux de navigateur de Vuk Cvetković : 2048, le démineur, un Memory en douze niveaux, la bataille navale contre quatre adversaires, un jeu où l’on fusionne des mondes pour en former de plus grands, et un cube en 3D du 2×2 au 5×5. Chacun a sa propre page.",
       heading: "Jeux",
       intro:
         "Des jeux qui méritent plus d’une partie. Chacun a sa page, avec en dessous un texte sur la façon dont il est construit, pour ceux que cela intéresse.",
@@ -1039,6 +1039,86 @@ const fr: Dict = {
             "L’adversaire ne voit pas la flotte sur laquelle il tire, et c’est garanti par la structure du code, pas par une promesse dans un commentaire. La fonction qui choisit une case reçoit deux choses : le relevé de ses propres tirs, et les longueurs des navires qu’il a déjà coulés. La disposition n’est pas accessible là où la décision se prend, il n’y a donc aucune ligne à surveiller. Le nom du navire coulé est public, comme quand un joueur l’annonce à voix haute, et cette information permet d’affiner le raisonnement.",
             "Le plus fort des quatre ne devine pas. Pour chaque navire encore à flot, il parcourt chaque position que ce navire pourrait occuper, écarte celles qu’un tir manqué ou une épave exclut, et ajoute une voix à chaque case inconnue couverte par les positions restantes. Il tire sur la case qui a le plus de voix. Chercher un navire et achever un coup au but relèvent du même calcul : sans rien d’inexpliqué, il produit la courbe en cloche habituelle au centre de la grille, et dès qu’un coup au but est sur la table, les positions qui ne l’expliquent pas sont écartées et tout le poids se concentre autour de lui.",
             "Achever un coup au but s’écrit d’ordinaire sous forme de file de cases à essayer, et c’est dans cette file que ce genre de programme se trompe : il faut la purger à chaque navire coulé, chaque fois qu’un autre tir règle l’une de ses entrées, et chaque fois que deux navires sont côte à côte. Ici, les cases à viser après un coup au but sont recalculées à partir de la grille à chaque tour : il n’y a rien à conserver et rien qui puisse devenir obsolète. Quatre adversaires, quarante mille parties simulées contre un défenseur écrit séparément, et pas un seul tir illégal.",
+          ],
+        },
+      },
+
+      cube: {
+        /** Not the trade name. See the note in en.ts. */
+        name: "Cube",
+
+        tagline:
+          "Mélangez-le et remettez-le en ordre, contre la montre. Quatre cubes du 2×2 au 5×5 et une pyramide, en vraie 3D, et chaque couronne se tourne en la faisant glisser.",
+
+        metaDescription:
+          "Un cube en 3D dans le navigateur : le 2×2, le 3×3, le 4×4, le 5×5 et la pyramide, que l’on tourne en faisant glisser une couronne, avec un chrono et un meilleur temps pour chacun.",
+        lead: "Mélangez-le et remettez-le en ordre. Faites glisser une couronne pour la tourner, et faites glisser n’importe où autour du casse-tête pour le retourner en entier. Le chrono démarre à votre premier mouvement et s’arrête quand chaque face est de nouveau d’une seule couleur.",
+
+        puzzles: "Choisissez un casse-tête",
+        cube: "Cube",
+        pyramid: "Pyramide",
+
+        time: "Temps",
+        moves: "Coups",
+        best: "Record",
+        scramble: "Mélanger",
+        undo: "Annuler",
+
+        cue: {
+          idle: "Mélangez-le pour commencer",
+          ready: "Le chrono démarre à votre premier mouvement",
+        },
+
+        hint: {
+          cube: "Faites glisser une case pour tourner sa couronne, et faites glisser n’importe où autour du cube pour le tourner en entier. Au clavier, U, D, L, R, F et B tournent une face, Maj la tourne dans l’autre sens, un chiffre avant la lettre atteint une couronne plus profonde, et les flèches tournent le cube entier.",
+          pyramid: "Faites glisser une case pour tourner son coin, et faites glisser n’importe où autour de la pyramide pour la tourner en entier. Au clavier, U, L, R et B tournent un coin, Maj le tourne dans l’autre sens, 1 avant la lettre tourne la pointe seule, et les flèches tournent la pyramide entière.",
+        },
+
+        messages: {
+          scrambled: "Mélangé. Le chrono démarre à votre premier mouvement.",
+        },
+
+        won: {
+          title: "Résolu",
+          record: "Votre meilleur temps sur ce casse-tête.",
+          again: "Mélanger à nouveau",
+          next: "Casse-tête suivant",
+        },
+
+        how: {
+          label: "Comment jouer",
+          items: [
+            {
+              title: "Faites glisser une couronne",
+              description:
+                "Appuyez sur une case et faites-la glisser dans le sens où vous voulez que sa rangée ou sa colonne aille. La couronne suit votre doigt et s’enclenche quand vous relâchez, et un geste rapide la mène jusqu’au bout.",
+            },
+            {
+              title: "Faites glisser autour pour le retourner",
+              description:
+                "Faites glisser n’importe où hors du casse-tête pour le tourner en entier et voir un autre côté. Relâchez et il se replace face à vous, avec toujours trois faces bien visibles. Sur ordinateur, le bouton droit de la souris fait la même chose sur le casse-tête lui-même.",
+            },
+            {
+              title: "Mélangez, puis battez le chrono",
+              description:
+                "Mélanger le brasse avec quelques dizaines de mouvements au hasard. Le chrono démarre à votre premier mouvement et s’arrête dès que chaque face est d’une seule couleur, et votre meilleur temps est gardé pour chaque casse-tête. Annuler reprend le dernier mouvement.",
+            },
+            {
+              title: "Cinq casse-têtes",
+              description:
+                "Le 2×2 est idéal pour commencer et le 3×3 est le grand classique. Le 4×4 et le 5×5 ajoutent des couronnes au milieu, et la pyramide tourne par tiers de tour autour de ses coins, avec des pointes qui tournent toutes seules.",
+            },
+          ],
+        },
+
+        close: {
+          label: "Comment il est construit",
+          paragraphs: [
+            "Pas de canvas, pas de WebGL et pas de bibliothèque 3D. Le casse-tête est une scène d’éléments ordinaires, un par case, placés en trois dimensions avec des transformations CSS, et le navigateur dessine la perspective et calcule ce qui passe devant quoi. Un 5×5 en compte cent cinquante. Un mouvement écrit une rotation sur les cases de la couronne qui tourne et sur rien d’autre, et deux plaques sombres se glissent dans la coupe pour que l’intérieur du casse-tête ne soit jamais vide.",
+            "Aucun mouvement n’est écrit nulle part. Un casse-tête est une liste de places où une case peut se trouver, chacune avec un centre et une direction, et un mouvement est un axe, une tranche de profondeur le long de cet axe et un angle. Les cases que prend un mouvement sont celles de la tranche, et l’endroit où chacune arrive se trouve en la faisant tourner puis en cherchant la place qui s’y trouve. Le cube et la pyramide n’ont rien de mécanique en commun et tournent sur le même code, et le 3×3 passe la vérification classique : R U, répété 105 fois, le ramène à l’état résolu.",
+            "Un glissement est mesuré à travers la projection même que le navigateur utilise pour dessiner. Chaque axe autour duquel la case sous votre doigt pourrait tourner est essayé, et celui dont le mouvement à l’écran suit le mieux votre doigt l’emporte : la bonne couronne tourne sous n’importe quel angle, à une vitesse qui garde la case sous votre doigt. Quand vous relâchez, un ressort tire la couronne jusqu’au cran le plus proche. Il est réglé un peu en dessous de l’amortissement critique, si bien que la couronne dépasse d’un degré ou deux et revient, et c’est ce qui donne l’impression d’un plastique qui s’enclenche.",
+            "Après un mouvement, une case prend la position de la place où elle est arrivée au lieu de garder la rotation qui l’y a menée. Les deux peuvent différer d’un quart de tour dans le plan de la case, ce qui ne se voit pas puisque chaque case est symétrique autour de son centre, et aucune erreur d’arrondi ne s’accumule, quelle que soit la durée de la partie.",
+            "Chaque case est éclairée depuis une seule direction, fixée à vous plutôt qu’au casse-tête, si bien que la face du dessus est la plus claire et celle de droite la plus sombre, quelle que soit la façon dont il est tourné. La luminosité est recalculée pendant que la vue tourne et n’est écrite que lorsqu’elle change de façon visible. Les sons sont eux aussi produits dans le navigateur : chaque mouvement, c’est deux clics à quelques millisecondes d’écart sur un coup bref et grave.",
           ],
         },
       },

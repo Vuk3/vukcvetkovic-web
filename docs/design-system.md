@@ -37,6 +37,7 @@ and all of its motion in CSS.
 | **the 2048 board or its colour ramp** | [game.ts](../src/games/2048/game.ts), [Game2048.astro](../src/components/Game2048.astro), the `--g2048-*` tokens - §9 |
 | **a game's sounds, the switch, or the burst on a win** | `src/games/<slug>/sounds.ts` for what a game sounds like, [games/sound.ts](../src/games/sound.ts) and [games/burst.ts](../src/games/burst.ts) for the rest - §9 |
 | **a memory card, its turn, or a picture on it** | [game.ts](../src/games/memory/game.ts), [Memory.astro](../src/components/Memory.astro), [MemorySprites.astro](../src/components/games/MemorySprites.astro), the `--mem-*` tokens - §9 |
+| **the cube: a puzzle, how a drag turns it, its colours or its light** | [game.ts](../src/games/cube/game.ts), [Cube.astro](../src/components/Cube.astro), [ArtCube.astro](../src/components/games/ArtCube.astro), the `--cube-*` tokens - §9 |
 
 **Read §5 before touching any animation.** The `animation` shorthand silently breaks the
 scroll timelines, and one custom property has to stay registered.
@@ -692,18 +693,18 @@ open item 1.
 
 ## 9. The game boards, and the one place the palette opens up
 
-Five pages carry a game, and all five are built the way the rest of the site is: markup,
+Six pages carry a game, and all six are built the way the rest of the site is: markup,
 tokens, and no canvas or game library anywhere. They are deliberately different from each
 other, which is most of what this section is about.
 
-| | [2048](../src/games/2048/game.ts) | [Minesweeper](../src/games/minesweeper/game.ts) | [Memory](../src/games/memory/game.ts) | [Accretion](../src/games/accretion/game.ts) | [Battleship](../src/games/battleship/game.ts) |
-|---|---|---|---|---|---|
-| what it is made of | 16 divs that move | up to 480 buttons that change state | up to 60 buttons that turn over | up to 46 circles that fall | 200 buttons, and 10 drawn ships over them |
-| the hard part | motion, at sixty frames | the rules, and the keyboard | the turn, and keeping three animations off each other | the solver, and making it settle | the opponent, and what it is not allowed to see |
-| the board in the markup | yes, 16 cells, fixed | no, the module builds it | no, the module deals it, and a face-down card holds no picture | no, play creates every body | no, and the fleet is a layer of its own |
-| to a screen reader | hidden, narrated by a live region | a real `role="grid"` | a real `role="grid"`, and a live region for each turn | a live region, and the sequence below it | two `role="grid"`s and a live region for the turn |
-| what a turn costs | two custom properties | a class | one attribute, and a transition on `rotate` | a frame of simulation | a class, and a count over 200 placements |
-| runs when idle | no | no | no | **yes** | no |
+| | [2048](../src/games/2048/game.ts) | [Minesweeper](../src/games/minesweeper/game.ts) | [Memory](../src/games/memory/game.ts) | [Accretion](../src/games/accretion/game.ts) | [Battleship](../src/games/battleship/game.ts) | [Cube](../src/games/cube/game.ts) |
+|---|---|---|---|---|---|---|
+| what it is made of | 16 divs that move | up to 480 buttons that change state | up to 60 buttons that turn over | up to 46 circles that fall | 200 buttons, and 10 drawn ships over them | up to 150 stickers in a 3D scene |
+| the hard part | motion, at sixty frames | the rules, and the keyboard | the turn, and keeping three animations off each other | the solver, and making it settle | the opponent, and what it is not allowed to see | the drag: which layer a finger means, and keeping the sticker under it |
+| the board in the markup | yes, 16 cells, fixed | no, the module builds it | no, the module deals it, and a face-down card holds no picture | no, play creates every body | no, and the fleet is a layer of its own | no, the module builds the scene from the geometry |
+| to a screen reader | hidden, narrated by a live region | a real `role="grid"` | a real `role="grid"`, and a live region for each turn | a live region, and the sequence below it | two `role="grid"`s and a live region for the turn | hidden, and a live region for the scramble and the solve |
+| what a turn costs | two custom properties | a class | one attribute, and a transition on `rotate` | a frame of simulation | a class, and a count over 200 placements | a transform on each sticker in the layer, every frame the layer moves |
+| runs when idle | no | no | no | **yes** | no | no |
 
 ### A tile keeps its element for its whole life
 
@@ -1318,7 +1319,121 @@ result for this game and how the simulation was checked. **The record is also th
 level is open when the one before it has a record, so no second key can disagree about how
 far a reader has got.
 
-### Sound, the burst and the jolt, shared by all five
+### The cube is a scene, and a sticker is placed by its slot
+
+The cube page is the one board here that is a solid rather than a surface: a `preserve-3d`
+scene of one element per sticker - 24 on the 2×2, 150 on the 5×5, 36 on the pyramid -
+turned as a whole by one `matrix3d` and projected by the browser, which also sorts the
+depth. Four layers, each for one job:
+
+| Layer | Carries | For |
+|---|---|---|
+| `.cube-stage` | `container-type: size`, and `--u` | every length in the scene, and the surface a press lands on |
+| `.cube-camera` | `perspective` | the projection, and the scale and fade a new puzzle arrives with |
+| `.cube-view` | `transform-style: preserve-3d`, one `matrix3d` from the module | the reader's view of the puzzle, and the float |
+| `.cube-tile` | a `transform`, and `--lit` | one sticker: its plastic, its colour and its brightness |
+
+⚠️ **Nothing between the view and a sticker may carry an `opacity`, a `filter`, an
+`overflow` or a `clip`**, for Battleship's reason: each flattens the context and the
+puzzle folds onto the screen. The arrival fades the camera, which is outside the context,
+and a sticker's brightness is a filter on the sticker, which is a leaf.
+
+**`--u` is declared on the stage and resolved on every sticker.** An unregistered custom
+property is carried as its tokens, so the `cqw` in it is measured against the nearest
+container of the element that *uses* it, which for a sticker is still the stage. One unit
+is 0.74 of the stage's smaller side over the puzzle's span - the diameter of the sphere it
+turns in, which the module writes as `--cube-span` - so a resize is the stage changing size
+and no script runs. The thumbnail gives `--u` and the perspective again, because a card is
+only an inline-size container and a `cqh` there would be the screen's.
+
+**A sticker's element is placed by the slot it is in, never by the rotations it has been
+through.** While a layer turns, each of its stickers carries the turn's rotation in front
+of its slot's placement. When the turn lands the rotation is dropped and the element takes
+the placement of the slot it arrived in, which can differ from the rotated one by a quarter
+turn in the sticker's own plane - invisible, because every sticker is symmetric about its
+centre, and the reason nothing drifts however long a solve runs. ⚠️ **So nothing drawn on
+a sticker may have a direction.** A highlight in one corner would jump a quarter turn on
+every landing, which is why the sheen is a radial gradient from the middle and the
+pyramid's sticker is a triangle centred on its own centroid.
+
+**No turn is written down.** A puzzle is a list of slots and a turn is an axis, a slab of
+depth along it and an angle: `permutation` rotates each slot in the slab and looks up the
+slot that is then in the same place, and caches the answer. The cube and the pyramid share
+all of it. The module was checked headlessly - every slab of every puzzle is a bijection,
+every turn repeated a whole cycle is the identity, a scramble undone in reverse is solved,
+and on the 3×3 R U has order 105, R U R' U' order 6 and R U' order 63, which is the known
+answer and what catches a face whose turn runs the wrong way.
+
+**Two plates slide into every cut a turn opens**, one on each side, in the darker plastic
+of a real core. Without them a turning layer shows the inside of the puzzle, which is
+nothing, and the far stickers show through the gap. For the cube a plate is the whole
+cross section. For the pyramid it is the triangle the cut makes, which grows the further
+down it is.
+
+**The light is fixed to the reader, not the puzzle**, above and to the left, so the face on
+top is always the bright one. It is `AMBIENT` 0.84 and `DIFFUSE` 0.3, which keeps the face
+turned away at 0.84 of the one on top: at 0.6 and 0.52 the side faces were a dull red and a
+dark green, and Vuk read the whole puzzle as too dark. The module writes `--lit` only when
+it changes by 0.02. Measured in Chrome at 120Hz, relighting all 150 stickers of a 5×5 on
+every frame of a drag holds 8.3ms a frame, the same with the filter as without it.
+
+⚠️ **The six colours are the same in both themes**, for Memory's reason: they are the
+puzzle, and a white face is white on every cube in the world. They are the bright colours
+of a stickerless cube rather than the printed ones of the original, and only the stage
+follows the theme. This is the sixth place the palette opens up.
+
+### One drag, one step
+
+**A drag turns a layer by one step at most** - a quarter on a cube, a third on the pyramid -
+and past it the layer gives `GIVE`, about eight degrees, easing out, before it stops. A
+flick carries `CARRY` of its speed past the release and the goal is clamped to one step
+either way. ⚠️ A drag once carried as far as the finger went, and a long one turned a
+layer twice or three times, which read as the layer running away from the hand.
+
+⚠️ **The rate of a drag is worked out on every move, from where the sticker is now.** It
+was measured once, at the start, and the sticker trailed the finger by a quarter of the
+way by the end of a turn - 200 pixels of finger for 173 of sticker - because a sticker goes
+round a circle and on screen its motion slows and bends as it turns towards a side face.
+`follow` takes the sticker's screen velocity at the current angle through the same
+projection the browser draws with, so the sticker stays under the finger for the whole
+turn. `FLOOR` bounds that velocity from below, since a sticker whose path runs straight at
+the reader barely moves on screen and a hair of finger would otherwise spin the layer.
+
+**Which layer a drag means is chosen once**, after `SLOP`: every axis the sticker could turn
+about is tried, and the one whose motion on screen best matches the finger wins, so the
+right layer turns from any angle the puzzle has been left at. On the pyramid a drag on the
+middle row takes the tip with it, since a tip left behind is a quirk of the mechanism
+rather than a move anyone means.
+
+**Let go and a spring takes the layer to its step**, at a damping ratio of 0.78: one degree
+of overshoot and no wobble. The click is played as the layer first reaches the step, not
+when the spring stops ringing. A layer still landing is landed at once only when a new
+drag actually grips, not on the press, so a tap during a landing costs nothing.
+
+⚠️ **The whole puzzle turns freely and stays where it is left.** A drag off the puzzle, or
+with the right button on it, turns it like a trackball, and a flick coasts, its speed
+falling to a third every `COAST` seconds until it drops under 0.3 radians a second. It used
+to settle back square to the nearest of the orientations the solid maps onto, and that
+read as the puzzle refusing to be turned. The keys still reorient by quarters, and the
+letters always mean the faces as they are seen now: U is whatever is on top.
+
+### The stage is a height, not a ratio
+
+⚠️ **`.cube-stage` takes its height off `.cube-frame`'s width in `cqi`, and must not go
+back to an `aspect-ratio`.** A `max-height` on an element with a ratio is carried across the
+ratio to its width, so on a short screen the stage narrowed to keep 16:10 and sat in the
+left two thirds of the shell with nothing beside it. The frame is an inline-size container
+for exactly this.
+
+⚠️ **The puzzle icons size their padding and gaps off `--s`, not in percentages.** A
+percentage of padding is taken from the *parent's* width, which here is the whole tile, and
+it left the colours a quarter of the icon wide.
+
+⚠️ **The cube's rules add about 1.7 KB gz to every page**, since the stylesheet is inlined
+into every document. That is the Accretion trade again at twice the size, accepted for the
+same reason: the tile rules are needed on the games index as well as on the game.
+
+### Sound, the burst and the jolt, shared by all six
 
 Every game has sound now, and every win throws a burst. Both are shared the way
 [games/record.ts](../src/games/record.ts) is: the one thing that differs between games is
@@ -1336,7 +1451,7 @@ the first arrow press has to be able to wake the sound it is about to make - and
 arrives before any gesture is dropped. A context made on load starts suspended and logs a
 warning for it, which is exactly what this avoids.
 
-⚠️ **One switch for five games**, stored once as `game-sound`. Turning the sound off in one
+⚠️ **One switch for six games**, stored once as `game-sound`. Turning the sound off in one
 game and finding it on in the next is the thing a reader notices.
 
 **The modules emit cues and never play anything.** Each game's module gains an `onCue`
@@ -1354,6 +1469,7 @@ one sound many times in a frame.
 | Minesweeper | a tick for one cell, a sweep for a flood whose length follows the count, a high note for a flag and a lower one taking it off, a boom for a mine. Worked out in one place, `heard`, from the counts before and after a press, since a chord calls `reveal` eight times |
 | Memory | paper for a turn and for the deal, two notes a fifth apart for a pair, one falling note for a miss |
 | Accretion | a rush of air for a drop, a merge note falling down the pentatonic as bodies grow, a shimmer over a boom when two Suns go off. Two merges on one frame are one sound, the bigger |
+| Cube | two clicks a few milliseconds apart over a short low knock when a layer lands on its step, and a third click for a half turn. A faint tick at each step a drag passes, a softer click for a layer let go short of a step and falling back, a rattle for each turn of a scramble over a rush of air, and the fanfare 0.12s after the last click |
 | Battleship | a thump when a round leaves, then a splash, a blast or a sinking where it lands - theirs the same at 62%, which is all "further away" has to mean - and a lift, a clunk and a tick while placing. Both endings are `delayed` 0.45s so they do not land on top of the last sinking |
 
 **The polish that came with it.** The burst on every win, in 2048's ramp, the minefield's
@@ -1393,6 +1509,14 @@ card opened a gap between Score and Best.
 
 ## Changelog
 
+- 2026-09-24 - a sixth game, [Cube](../src/games/cube/game.ts): the 2×2, 3×3, 4×4 and 5×5
+  and the pyramid, as a `preserve-3d` scene of one element per sticker, on one engine that
+  finds every turn from the geometry rather than a table. A drag turns one step at most and
+  the sticker stays under the finger for the whole of it, the whole puzzle turns freely and
+  coasts, and the stickers are lit from a light fixed to the reader. §9 records the four
+  layers and what may not sit between them, why a sticker is placed by its slot, why the
+  stage is a height rather than a ratio, and `--cube-*`, the sixth place the palette opens
+  up.
 - 2026-09-23 - Accretion's solver rewritten as a soft step, and what it looks like with it.
   No body balances on another, a heavy one no longer bounces off a light one, a pile at rest
   is still, and the line ends a game within half a second. Merges are drawn near full size

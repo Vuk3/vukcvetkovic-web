@@ -1,0 +1,96 @@
+---
+/**
+ * The thumbnail for Cube on the games index.
+ *
+ * Three real puzzles, not a picture of three: the same slots, the same
+ * `.cube-tile` elements and the same light the game uses, placed at build time
+ * from the module, so the card cannot drift away from the page. A two by two
+ * resting, a three by three with its top layer caught a third of the way round
+ * - the moment this game is about, and the one a still of any other game could
+ * not show - and the pyramid.
+ *
+ * ⚠️ **The bottom-right corner is spoken for**, by the status ribbon every card
+ * carries, so the pyramid sits up and in from it rather than filling it.
+ *
+ * The sprite comes with it, for Memory's reason: a `<use>` only resolves
+ * against a symbol in the same document, and the index is a different one.
+ */
+import { PUZZLES, TRI_BODY, TRI_STICKER, build, plate, resting, turned, type PuzzleId } from '../../games/cube/game';
+
+interface Scene {
+  id: PuzzleId;
+  /** Centre across and down the card, and the diameter of the sphere the
+   *  puzzle is sized to, all in hundredths of the card's width. */
+  x: number;
+  y: number;
+  d: number;
+  /** A turn caught part of the way, for the one that shows one. */
+  twist?: { axis: number; lo: number; hi: number; angle: number };
+}
+
+const scenes: Scene[] = [
+  { id: 'two', x: 17, y: 21, d: 26 },
+  { id: 'three', x: 48, y: 20, d: 38, twist: { axis: 1, lo: -2.5, hi: -0.5, angle: -0.62 } },
+  { id: 'pyramid', x: 78, y: 18, d: 36 },
+];
+
+const drawn = scenes.map((scene) => {
+  const puzzle = PUZZLES.find((p) => p.id === scene.id) ?? PUZZLES[0];
+  const shape = build(puzzle);
+  const { view, lit } = resting(shape);
+  const turn = scene.twist ? { ...scene.twist, turns: 0 } : null;
+
+  const tiles = shape.slots.map((slot) => {
+    const { css, normal } = turn ? turned(shape, slot, turn, scene.twist!.angle) : { css: slot.css, normal: slot.normal };
+    return { css, face: slot.face, lit: lit(normal) };
+  });
+
+  // The cut the twist opens, and a plate for each side of it, the same two
+  // the game slides in while a layer is turning.
+  const plates = scene.twist
+    ? (() => {
+        const css = plate(shape, scene.twist.axis, scene.twist.hi);
+        const [x, y, z] = shape.axes[scene.twist.axis];
+        return [css, `rotate3d(${x},${y},${z},${scene.twist.angle}rad) ${css}`];
+      })()
+    : [];
+
+  return { ...scene, kind: puzzle.kind, span: shape.span, view, tiles, plates };
+});
+---
+
+<div class="game-art game-art-cube" aria-hidden="true">
+  <svg class="cube-sprites" focusable="false">
+    <defs>
+      <symbol id="cube-tri" viewBox="0 0 100 86.603">
+        <path class="cube-tri-body" d={TRI_BODY} />
+        <path class="cube-tri-sticker" d={TRI_STICKER} />
+      </symbol>
+    </defs>
+  </svg>
+
+  {
+    drawn.map((scene) => (
+      <div class="cube-art-scene" style={`--x:${scene.x};--y:${scene.y};--d:${scene.d};--cube-span:${scene.span}`}>
+        <div class="cube-camera">
+          <div class="cube-view" data-kind={scene.kind} style={`transform:${scene.view}`}>
+            {scene.plates.map((css) => (
+              <span class={scene.kind === 'pyramid' ? 'cube-plate is-tri is-on' : 'cube-plate is-on'} style={`transform:${css}`} />
+            ))}
+            {scene.tiles.map((tile) =>
+              scene.kind === 'pyramid' ? (
+                <span class="cube-tile is-tri" data-face={tile.face} style={`transform:${tile.css};--lit:${tile.lit}`}>
+                  <svg viewBox="0 0 100 86.603" focusable="false">
+                    <use href="#cube-tri" />
+                  </svg>
+                </span>
+              ) : (
+                <span class="cube-tile" data-face={tile.face} style={`transform:${tile.css};--lit:${tile.lit}`} />
+              ),
+            )}
+          </div>
+        </div>
+      </div>
+    ))
+  }
+</div>

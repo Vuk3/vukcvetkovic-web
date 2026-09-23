@@ -47,7 +47,7 @@ const sr: Dict = {
     paragraphs: [
       "Radim na klijentskim projektima od prvog modela podataka do deploymenta na AWS-u. Uvek krećem od domena: koji su podaci, ko sme da im pristupa i sa kojim sistemima treba da komuniciraju, a iz toga proizlaze API, servisi i React interfejs.",
       "Završio sam master studije softverskog inženjerstva. U master radu sam poredio dva ekosistema mašinskog učenja na istom zadatku: YOLOv8m model u Python-u i ML.NET model u .NET-u, iza jednog NestJS gateway-a i jednog React frontenda. Za diplomski rad sam implementirao algoritme šifrovanja RC6 i XXTEA po njihovim specifikacijama.",
-      "Najbolji primer mog frontend rada je sam ovaj sajt: četiri jezika i pet igara napisanih bez canvasa i bez biblioteke za igre. Uz svaku igru postoji tekst o tome kako je napravljena.",
+      "Najbolji primer mog frontend rada je sam ovaj sajt: četiri jezika i šest igara napisanih bez canvasa i bez biblioteke za igre. Uz svaku igru postoji tekst o tome kako je napravljena.",
     ],
   },
 
@@ -565,7 +565,7 @@ const sr: Dict = {
     index: {
       metaTitle: "Igre - Vuk Cvetković",
       metaDescription:
-        "Igre u pretraživaču koje je napravio Vuk Cvetković: 2048, Minolovac, Memorija u dvanaest nivoa, Potapanje brodova protiv četiri protivnika i igra u kojoj se planete spajaju u veće. Svaka ima svoju stranicu.",
+        "Igre u pretraživaču koje je napravio Vuk Cvetković: 2048, Minolovac, Memorija u dvanaest nivoa, Potapanje brodova protiv četiri protivnika, igra u kojoj se planete spajaju u veće i kocka u 3D od 2×2 do 5×5. Svaka ima svoju stranicu.",
       heading: "Igre",
       intro:
         "Igre koje vredi igrati više puta. Svaka ima svoju stranicu, a ispod igre i tekst o tome kako je napravljena, za one koje to zanima.",
@@ -1044,6 +1044,86 @@ const sr: Dict = {
             "Protivnik ne vidi flotu na koju puca, i to je obezbeđeno strukturom koda, a ne obećanjem u komentaru. Funkcija koja bira polje dobija samo dve stvari: listu sopstvenih hitaca i dužine brodova koje je već potopio. Raspored tvoje flote joj uopšte nije dostupan, pa nema ni prilike da ga slučajno iskoristi. Koji je brod potonuo zna se javno, kao kad igrač to kaže naglas, i upravo to protivniku sužava izbor.",
             "Najjači od četvorice ne nagađa. Za svaki brod koji je još na vodi prođe kroz sve položaje koje taj brod može da zauzme, izbaci one koje isključuju promašaji ili potopljeni brodovi, i svakom neotkrivenom polju koje preostali položaji pokrivaju doda po glas. Polje sa najviše glasova je sledeći hitac. Traženje i dovršavanje pogotka su ista računica, a ne dva režima: kad nema otvorenih pogodaka, dobija se poznata raspodela sa vrhom u sredini table, a kad postoji pogodak, otpadaju položaji koji ga ne objašnjavaju i sva težina se skupi oko njega.",
             "Dovršavanje pogotka se obično piše kao red polja koja treba probati, i baš tu ovakvi programi najčešće greše: red mora da se čisti svaki put kad brod potone, kad neki drugi hitac razreši polje iz njega i kad dva broda stoje jedan uz drugi. Ovde se polja za dovršavanje izračunavaju iz table u svakom potezu, pa nema šta da se čuva ni šta da zastari. Četiri protivnika, četrdeset hiljada simuliranih partija protiv nezavisno napisanog protivnika, i nijedan nedozvoljen hitac.",
+          ],
+        },
+      },
+
+      cube: {
+        /** Not the trade name. See the note in en.ts. */
+        name: "Kocka",
+
+        tagline:
+          "Promešaj je i složi je ponovo, protiv sata. Četiri kocke od 2×2 do 5×5 i piramida, u pravom 3D, a svaki sloj okrećeš prevlačenjem.",
+
+        metaDescription:
+          "Kocka u 3D u pretraživaču: 2×2, 3×3, 4×4, 5×5 i piramida, slojevi se okreću prevlačenjem, uz sat i najbolje vreme za svaku.",
+        lead: "Promešaj je i složi je ponovo. Prevuci sloj da ga okreneš, a prevuci bilo gde oko slagalice da okreneš celu. Sat kreće sa prvim okretom i staje kad je svaka strana ponovo jedne boje.",
+
+        puzzles: "Izaberi slagalicu",
+        cube: "Kocka",
+        pyramid: "Piramida",
+
+        time: "Vreme",
+        moves: "Potezi",
+        best: "Najbolje",
+        scramble: "Promešaj",
+        undo: "Poništi",
+
+        cue: {
+          idle: "Promešaj je da počneš",
+          ready: "Sat kreće sa prvim okretom",
+        },
+
+        hint: {
+          cube: "Prevuci nalepnicu da okreneš njen sloj, a prevuci bilo gde oko kocke da okreneš celu. Na tastaturi U, D, L, R, F i B okreću stranu, sa Shiftom u suprotnom smeru, broj pre slova okreće dublji sloj, a strelice okreću celu kocku.",
+          pyramid: "Prevuci nalepnicu da okreneš njen ugao, a prevuci bilo gde oko piramide da okreneš celu. Na tastaturi U, L, R i B okreću ugao, sa Shiftom u suprotnom smeru, 1 pre slova okreće samo vrh, a strelice okreću celu piramidu.",
+        },
+
+        messages: {
+          scrambled: "Promešano. Sat kreće sa prvim okretom.",
+        },
+
+        won: {
+          title: "Složeno",
+          record: "Tvoje najbolje vreme na ovoj slagalici.",
+          again: "Promešaj ponovo",
+          next: "Sledeća slagalica",
+        },
+
+        how: {
+          label: "Kako se igra",
+          items: [
+            {
+              title: "Prevuci sloj",
+              description:
+                "Pritisni nalepnicu i povuci je u pravcu u kom hoćeš da ide njen red ili kolona. Sloj prati prst i uskoči na mesto kad pustiš, a brz potez ga sam dovrši do kraja.",
+            },
+            {
+              title: "Prevuci pored nje da je okreneš",
+              description:
+                "Prevuci bilo gde van slagalice da okreneš celu i pogledaš drugu stranu. Kad pustiš, ona se ponovo namesti ispred tebe, tako da su tri strane uvek lepo vidljive. Na računaru isto radi i desni taster miša na samoj slagalici.",
+            },
+            {
+              title: "Promešaj, pa pobedi sat",
+              description:
+                "Dugme Promešaj je izmeša sa nekoliko desetina nasumičnih okreta. Sat kreće sa prvim okretom i staje čim je svaka strana jedne boje, a najbolje vreme se čuva za svaku slagalicu posebno. Poništi vraća poslednji okret.",
+            },
+            {
+              title: "Pet slagalica",
+              description:
+                "Sa 2×2 je najlakše početi, a 3×3 je klasika. Kocke 4×4 i 5×5 imaju dodatne slojeve u sredini, a piramida se okreće po trećinu kruga oko svojih uglova i ima vrhove koji se okreću sami za sebe.",
+            },
+          ],
+        },
+
+        close: {
+          label: "Kako je napravljena",
+          paragraphs: [
+            "Bez canvasa, bez WebGL-a i bez 3D biblioteke. Slagalica je scena od običnih elemenata, po jedan za svaku nalepnicu, postavljenih u tri dimenzije CSS transformacijama, a pretraživač sam crta perspektivu i računa šta je ispred čega. Kocka 5×5 ima sto pedeset takvih elemenata. Okret upisuje rotaciju samo na nalepnice u sloju koji se okreće, a u rez se ubace dve tamne ploče, tako da unutrašnjost slagalice nikad nije prazna.",
+            "Nijedan okret nije nigde zapisan. Slagalica je spisak mesta na kojima nalepnica može da bude, svako sa svojim centrom i smerom u kom gleda, a okret je osa, deo dubine duž nje i ugao. Okret pomera nalepnice koje su u tom delu, a gde koja završi nalazi se tako što se zarotira i potraži mesto koje je tamo. Kocka i piramida mehanički nemaju ništa zajedničko i rade na istom kodu, a 3×3 prolazi klasičnu proveru: R U ponovljeno 105 puta vraća je u složeno stanje.",
+            "Prevlačenje se meri kroz istu projekciju kojom pretraživač crta. Proba se svaka osa oko koje nalepnica ispod prsta može da se okrene, i pobeđuje ona čije kretanje na ekranu najbolje prati prst, tako da se pravi sloj okreće iz bilo kog ugla, i to brzinom koja drži nalepnicu ispod prsta. Kad pustiš, opruga povuče sloj do najbližeg koraka. Podešena je malo ispod kritičnog prigušenja, pa sloj prebaci za stepen ili dva i vrati se, i zato izgleda kao plastika koja uskače na mesto.",
+            "Posle okreta nalepnica uzima položaj mesta na koje je stigla, umesto da zadrži rotaciju kojom je tamo došla. Ta dva položaja mogu da se razlikuju za četvrtinu kruga u ravni same nalepnice, što se ne vidi jer je svaka nalepnica simetrična oko svog centra, i zato se greška zaokruživanja ne skuplja koliko god dugo da igraš.",
+            "Svaka nalepnica je osvetljena iz jednog pravca koji je vezan za tebe, a ne za slagalicu, pa je gornja strana uvek najsvetlija, a desna najtamnija, kako god da je okreneš. Osvetljenje se preračunava dok se pogled okreće i upisuje se samo kad se promeni toliko da se vidi. I zvuci se prave u pretraživaču: svaki okret su dva klika u razmaku od nekoliko milisekundi preko kratkog, dubokog udarca.",
           ],
         },
       },

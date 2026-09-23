@@ -9,11 +9,11 @@ Three woff2 faces and five webp variants, and no CSS file either: the stylesheet
 into every document. The four `<script>` blocks that exist are small enough that Astro
 inlines them into each page too - 1.7 KB total, no extra request.
 
-⚠️ **The exceptions are the five games**, [Game2048.astro](./Game2048.astro),
+⚠️ **The exceptions are the six games**, [Game2048.astro](./Game2048.astro),
 [Minesweeper.astro](./Minesweeper.astro), [Memory.astro](./Memory.astro),
-[Accretion.astro](./Accretion.astro) and [Battleship.astro](./Battleship.astro), whose
-scripts import a module and are therefore emitted as real files: 2.9 KB, 3.6 KB, 4.5 KB,
-5.3 KB and 6.0 KB gz, plus a shared 1.7 KB chunk for [games/record.ts](../games/record.ts),
+[Accretion.astro](./Accretion.astro), [Battleship.astro](./Battleship.astro) and
+[Cube.astro](./Cube.astro), whose scripts import a module and are therefore emitted as real
+files: 2.9 KB, 3.6 KB, 4.5 KB, 5.3 KB, 6.0 KB and 8.0 KB gz, plus a shared 1.7 KB chunk for [games/record.ts](../games/record.ts),
 [games/sound.ts](../games/sound.ts) and [games/burst.ts](../games/burst.ts), each requested
 only by its own route and that route's three locale twins. The sound switch in every bar is
 [SoundToggle.astro](./SoundToggle.astro), one component for the reason
@@ -83,13 +83,13 @@ changing it.
   [ProjectDetail.astro](./ProjectDetail.astro), [GameIndex.astro](./GameIndex.astro),
   [Game2048.astro](./Game2048.astro), [Minesweeper.astro](./Minesweeper.astro),
   [Memory.astro](./Memory.astro), [Accretion.astro](./Accretion.astro),
-  [Battleship.astro](./Battleship.astro). See
+  [Battleship.astro](./Battleship.astro), [Cube.astro](./Cube.astro). See
   [src/CLAUDE.md](../CLAUDE.md).
 - **No raw hex.** Colour comes from the `--site-*` tokens or the Tailwind utilities mapped
   to them (`text-muted`, `bg-band`, `border-hairline`). The exceptions are all declared away
   from the components that use them: brand colours for technology marks in
-  [src/tech.ts](../tech.ts), and the five game boards as `--g2048-*`, `--ms-*`, `--mem-*`,
-  `--acc-*` and `--bs-*` tokens in [global.css](../styles/global.css).
+  [src/tech.ts](../tech.ts), and the six game boards as `--g2048-*`, `--ms-*`, `--mem-*`,
+  `--acc-*`, `--bs-*` and `--cube-*` tokens in [global.css](../styles/global.css).
 - **Tailwind utilities for one-off layout, a named class in
   [global.css](../styles/global.css) for anything that repeats or carries reasoning.** A
   clamp with a comment explaining how the number was arrived at belongs in the stylesheet.

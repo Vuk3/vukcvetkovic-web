@@ -395,6 +395,13 @@ anybody as protection - see
 
 ## Changelog
 
+- 2026-09-24 - a sixth game, `cube`, last on the index. Its copy names the puzzles only
+  where a name is a word: a cube's tile is its size, which the page composes from the
+  module's `size`, and only `pyramid` is prose. `cube` is the word a screen reader hears
+  in front of a size, and `hint` has one line per kind of puzzle, since the two are turned
+  with different letters. ⚠️ The title is not the puzzle's trade name in any language -
+  Cube, Kocka, Cube and Zauberwürfel, the last being the plain German word. About now says
+  six games, and the games index description lists the cube, in all four languages.
 - 2026-09-23 - the headline is software engineer in the page title, the meta and OG copy,
   the hero and the project index, and the hero lead, the meta description and About were
   rewritten around it in all four languages. `hero.role` is a new key, so the Ncoded role
