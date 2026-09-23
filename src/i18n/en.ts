@@ -987,12 +987,6 @@ const en = {
           "Sun",
         ],
 
-        won: {
-          title: "A star",
-          body: "The sequence has nowhere left to go. Two Suns cannot become anything, so they go off instead, and the room they leave behind is the only way a full field ever empties.",
-          keepGoing: "Keep going",
-        },
-
         over: {
           title: "Out of room",
           body: "Something has been resting above the line for too long. There is no ceiling here, only a line, and a body that stops above it has nowhere to go.",
@@ -1020,7 +1014,7 @@ const en = {
             {
               title: "The line is a delay, not a wall",
               description:
-                "Nothing stops a body going above it. It is only over when one is still resting up there a second later, so a splash is survivable and a settled Jupiter is not.",
+                "Nothing stops a body going above it. It is only over when one has landed up there and is still there half a second later, so a splash is survivable and a settled Jupiter is not.",
             },
           ],
         },
@@ -1028,10 +1022,10 @@ const en = {
         close: {
           label: "How it is built",
           paragraphs: [
-            "No canvas, no physics library and no dependency of any kind. A body is a div with a border radius, its colour is a gradient in the same stylesheet as the rest of the page, and the frame writes one transform onto each. So the planets scale with the page, stay sharp at any zoom, and cost nothing to serve. A physics engine would have been six times the weight of this whole page.",
-            "The solver is position based: a body stores where it is and where it was, and the gap between the two is its velocity. Nothing computes an impulse. A contact pushes two bodies apart, and because the previous position stays put, the push removes exactly the speed that drove them together - which is what an inelastic collision is. Forty of those passes run per frame, each against positions that have already moved, and a full field of forty-six bodies costs under a tenth of a millisecond against a budget of nearly seventeen.",
-            "Getting it to settle was the work. Three separate things quietly added energy instead of removing it: a wall that clamped a body's position without moving its previous one, which turned the depth of a landing into the speed of a bounce; tangential friction computed from a velocity the same pass was changing, which had a crowded pile still throwing bodies around after eight seconds; and a merge rule that asked for so much overlap that nothing ever merged at all. Each was found by measuring rather than by reading, and the numbers that came out of it are written next to the constants they justify.",
-            "The simulation runs in its own thousand unit space and never learns how big it is being shown. One transform on one element scales the whole field onto whatever width the page has given it, so a resize changes that single number and nothing else - not a radius, not a position, not a step. It is why the same game plays identically on a phone and on a desktop instead of having twice the gravity on one of them.",
+            "No canvas, no physics library and no dependency of any kind. A body is a div with a border radius, its colour is a gradient in the same stylesheet as the rest of the page, and the frame writes one transform onto each. So the planets scale with the page, stay sharp at any zoom, and cost nothing to serve. A general physics engine would on its own weigh five times what this whole game does.",
+            "The solver takes many small steps rather than a few large ones, eight to every frame. In each of them every contact is solved as a stiff, heavily damped spring, the bodies move, and then every contact is solved again, rigidly, which takes back whatever speed the push gave them. So an overlap is corrected without ever becoming a bounce, and a pile at rest is perfectly still. A contact is found while there is still a gap, so a falling planet stops exactly at the surface it lands on rather than sinking in and being pushed back out.",
+            "The rest is what makes it read as heavy rather than springy. Friction acts between the two surfaces, spin included, so a body that skids starts to roll. A hard landing soaks up the spin it arrived with, so a planet that clips another on the shoulder comes to rest beside it instead of rolling across the field. An impact is spent where it happens and never carried into the next step, which is what keeps a large body from bouncing off a small one. And a planet balanced on the crown of another is tipped off it at once: the balance may be real, but a planet standing on another like a snowman reads as stuck.",
+            "The simulation runs in its own space of 1200 by 1650 units and never learns how big it is being shown. One transform on one element scales the whole field onto whatever width the page has given it, so a resize changes that single number and nothing else - not a radius, not a position, not a step. The frame draws each body between the last two steps, so a 120Hz screen gets a new position every time it refreshes. The sky behind it is drawn once, when the site is built: three hundred stars as dots along a few paths, nebulae made of fractal noise, and four layers that slide at different speeds as you aim.",
           ],
         },
       },

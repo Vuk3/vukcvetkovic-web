@@ -389,6 +389,9 @@ anybody as protection - see
 
 ## Changelog
 
+- 2026-09-23 - Accretion's copy lost `won`, since reaching the Sun no longer opens a panel
+  or pauses the game, and its build notes and the rule about the line were rewritten in all
+  four languages for the new solver: half a second above the line rather than a second.
 - 2026-09-23 - `sound` moved from `games.items.memory` up to `games`, beside `built`, now
   that every game carries the switch. It is one word for five games because it is one
   switch: turning it off in one turns it off in all of them.

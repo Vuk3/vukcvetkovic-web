@@ -182,6 +182,13 @@
   --acc-well-edge: #262d3a;
   --acc-line: #e0574f;
 
+  /* The sky: two star tints beside white, and the three nebulae. */
+  --acc-star-cool: #cfd8ff;
+  --acc-star-warm: #ffe3b8;
+  --acc-nebula-a: #7d5ad8;
+  --acc-nebula-b: #2f8fb8;
+  --acc-nebula-c: #b04e92;
+
   --acc-p0: #b9b6ae;
   --acc-p1: #8e8579;
   --acc-p2: #c2603a;
@@ -2597,7 +2604,7 @@
    */
 
   .acc {
-    max-width: 30rem;
+    max-width: 32.5rem;
     margin-inline: auto;
   }
 
@@ -2732,36 +2739,11 @@
     border: 1px solid var(--acc-well-edge);
     border-radius: var(--site-radius-card);
     /*
-     * A sky rather than a dark rectangle.
-     *
-     * Two nebulae and a band of faint stars across them, all of it gradients
-     * on the one element - so it costs no image, no request and no second
-     * node, and it is as sharp on a phone as on a desktop. The stars are in
-     * pixels on purpose: they are points of light and must not grow with the
-     * board the way everything inside it does.
+     * The ground the sky is laid on: the band's glow and three soft pools of
+     * colour under the nebulae. The stars and the clouds themselves are the
+     * `.acc-sky` layers, which move.
      */
     background:
-      radial-gradient(1.5px 1.5px at 12% 18%, #fff 50%, transparent),
-      radial-gradient(1px 1px at 27% 9%, #cfd8ff 50%, transparent),
-      radial-gradient(1.5px 1.5px at 41% 25%, #fff 50%, transparent),
-      radial-gradient(1px 1px at 58% 12%, #ffe9c4 50%, transparent),
-      radial-gradient(2px 2px at 71% 30%, #fff 50%, transparent),
-      radial-gradient(1px 1px at 86% 16%, #cfd8ff 50%, transparent),
-      radial-gradient(1.5px 1.5px at 94% 38%, #fff 50%, transparent),
-      radial-gradient(1px 1px at 8% 44%, #fff 50%, transparent),
-      radial-gradient(1.5px 1.5px at 21% 61%, #ffe9c4 50%, transparent),
-      radial-gradient(1px 1px at 35% 52%, #cfd8ff 50%, transparent),
-      radial-gradient(1px 1px at 49% 70%, #fff 50%, transparent),
-      radial-gradient(1.5px 1.5px at 64% 57%, #fff 50%, transparent),
-      radial-gradient(1px 1px at 78% 74%, #cfd8ff 50%, transparent),
-      radial-gradient(2px 2px at 90% 63%, #fff 50%, transparent),
-      radial-gradient(1px 1px at 15% 82%, #fff 50%, transparent),
-      radial-gradient(1.5px 1.5px at 33% 91%, #ffe9c4 50%, transparent),
-      radial-gradient(1px 1px at 55% 86%, #cfd8ff 50%, transparent),
-      radial-gradient(1px 1px at 73% 95%, #fff 50%, transparent),
-      radial-gradient(1.5px 1.5px at 88% 88%, #fff 50%, transparent),
-      /* The band, drawn across the corner rather than through the middle, so
-         the busiest part of the sky is where the fewest bodies end up. */
       linear-gradient(
         163deg,
         transparent 0 22%,
@@ -2784,7 +2766,7 @@
   /*
    * ⚠️ **One transform carries the whole simulation onto the box.**
    *
-   * The solver runs in its own thousand-unit space and never learns how wide
+   * The solver runs in its own 1200 by 1650 space and never learns how wide
    * it is being shown, so a resize is this one number changing and nothing
    * else: not a radius, not a position, not a step. `transform-origin` has to
    * be the top left corner or the scale would also move the world.
@@ -2793,10 +2775,169 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 1000px;
-    height: 1450px;
+    width: 1200px;
+    height: 1650px;
     transform: scale(var(--acc-scale, 0.4));
     transform-origin: 0 0;
+  }
+
+  /*
+   * The sky: four layers, each a little larger than the well so it can slide.
+   *
+   * The module moves each layer by its `data-depth` as the aim crosses the
+   * well, the nearest the most, which is the whole of the depth - nothing in
+   * here is 3D but the difference in how far things move. Promoted, so that
+   * moving one is a composite and the nebulae's noise is computed once rather
+   * than on every frame.
+   */
+  .acc-sky {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .acc-sky-layer {
+    position: absolute;
+    top: -5%;
+    left: -5%;
+    width: 110%;
+    height: 110%;
+    will-change: transform;
+  }
+
+  /* A star is a zero-length stroke with round caps, and the stroke keeps its
+     width in pixels whatever the scale, because a star is a point of light and
+     must not grow with the board. */
+  .acc-dust {
+    fill: none;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .acc-dust-white {
+    stroke: white;
+  }
+
+  .acc-dust-cool {
+    stroke: var(--acc-star-cool);
+  }
+
+  .acc-dust-warm {
+    stroke: var(--acc-star-warm);
+  }
+
+  .acc-nebulae {
+    opacity: 0.62;
+  }
+
+  .acc-nebula-a {
+    flood-color: var(--acc-nebula-a);
+  }
+
+  .acc-nebula-b {
+    flood-color: var(--acc-nebula-b);
+  }
+
+  .acc-nebula-c {
+    flood-color: var(--acc-nebula-c);
+  }
+
+  /* A near star: a white core in a tinted glow, placed by its centre. */
+  .acc-star {
+    --acc-star-tint: white;
+    position: absolute;
+    width: var(--acc-star-size);
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle closest-side,
+      white 0 12%,
+      color-mix(in oklab, var(--acc-star-tint) 75%, transparent) 22%,
+      color-mix(in oklab, var(--acc-star-tint) 16%, transparent) 52%,
+      transparent 100%
+    );
+    animation: acc-twinkle var(--acc-twinkle) ease-in-out var(--acc-delay) infinite;
+  }
+
+  .acc-star[data-tone='cool'] {
+    --acc-star-tint: var(--acc-star-cool);
+  }
+
+  .acc-star[data-tone='warm'] {
+    --acc-star-tint: var(--acc-star-warm);
+  }
+
+  /* The brightest throw the four spikes a telescope's vanes put on a star,
+     which is what makes a point of light read as a star rather than a dot. */
+  .acc-star[data-spikes]::before,
+  .acc-star[data-spikes]::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 280%;
+    height: 1px;
+    translate: -50% -50%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklab, var(--acc-star-tint) 70%, transparent) 50%,
+      transparent
+    );
+  }
+
+  .acc-star[data-spikes]::after {
+    rotate: 90deg;
+  }
+
+  /* A galaxy far enough away to be a smudge: a warm core in a tilted disc of
+     bluer light, with a fainter, wider halo for the arms. */
+  .acc-galaxy {
+    position: absolute;
+    top: 61%;
+    left: 74%;
+    width: 4.6rem;
+    height: 1.5rem;
+    translate: -50% -50%;
+    rotate: -24deg;
+    border-radius: 50%;
+    background: radial-gradient(
+      closest-side,
+      color-mix(in oklab, var(--acc-star-warm) 95%, transparent) 0 7%,
+      color-mix(in oklab, var(--acc-star-cool) 38%, transparent) 26%,
+      color-mix(in oklab, var(--acc-nebula-a) 18%, transparent) 62%,
+      transparent 100%
+    );
+    opacity: 0.7;
+  }
+
+  .acc-galaxy::before {
+    content: '';
+    position: absolute;
+    inset: -40% -18%;
+    border-radius: 50%;
+    rotate: 12deg;
+    background: radial-gradient(
+      closest-side,
+      transparent 40%,
+      color-mix(in oklab, var(--acc-star-cool) 14%, transparent) 62%,
+      transparent 100%
+    );
+  }
+
+  /* A shooting star, now and then: a streak with its head in front, across a
+     few percent of a long cycle and invisible for the rest. */
+  .acc-meteor {
+    position: absolute;
+    width: 8rem;
+    height: 1.5px;
+    border-radius: 1px;
+    background: linear-gradient(90deg, transparent, color-mix(in oklab, white 90%, transparent));
+    transform-origin: right center;
+    rotate: 146deg;
+    opacity: 0;
+    animation: acc-meteor var(--acc-every) linear var(--acc-delay) infinite;
   }
 
   /*
@@ -3597,15 +3738,39 @@
    * plainly round it is worse than a missing detail.
    */
 
-  /* Arriving, and leaving. A merge removes two and adds one, so the two that
-     go have to be seen going or the board reads as a body vanishing. */
-  .acc-body.is-born {
-    animation: acc-born 260ms var(--site-ease);
+  /*
+   * The body being aimed. It is handed to the simulation on the drop, and the
+   * copy up here goes with it: left showing for the pause before the next one,
+   * it reads as a second body left behind at the top of the well.
+   */
+  .acc:not([data-ready]) .acc-held {
+    opacity: 0;
   }
 
-  .acc-body.is-gone {
-    animation: acc-gone 220ms var(--site-ease) forwards;
+  /*
+   * The ring a merge sends out from the rim of the body it made, in that
+   * body's colour.
+   *
+   * ⚠️ **Placed with `translate`, never `transform`**, and the same goes for
+   * `.acc-nova`. Their keyframes animate `scale`, and the individual transform
+   * properties apply before `transform` does - so on an element placed by
+   * `transform`, a `scale` keyframe scales its position too and slides it
+   * towards the corner of the well. Placed by `translate`, it grows about its
+   * own centre. `closest-side` makes 100% the rim.
+   */
+  .acc-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle closest-side,
+      transparent 74%,
+      color-mix(in oklab, var(--acc-tint) 70%, white) 88%,
+      transparent 100%
+    );
     pointer-events: none;
+    animation: acc-ring 460ms var(--site-ease) forwards;
   }
 
   /* Two Suns meeting. The only thing on the board that is not a body. */
@@ -3664,7 +3829,6 @@
     animation: acc-panel 260ms var(--site-ease);
   }
 
-  .acc[data-state='won'] .acc-panel[data-panel='won'],
   .acc[data-state='over'] .acc-panel[data-panel='over'] {
     display: flex;
   }
@@ -3743,6 +3907,93 @@
 
   .acc-link[data-reached] .acc-chain-name {
     color: var(--site-fg);
+  }
+
+  /*
+   * Wide screens: the well in the middle at the full height of the screen, and
+   * everything else beside it.
+   *
+   * ⚠️ **Height is what limits the well, not width.** Stacked, the bar and the
+   * well together were already the height of a laptop screen at 30rem, so the
+   * only way to a bigger well was to take the bar out from above it. The bar
+   * becomes the left-hand column and the sequence the right-hand one - the
+   * shape the genre's own game has - and the well is sized to the screen: the
+   * height the page has below the header, turned into a width through the
+   * well's own ratio, between the old 30rem and a cap.
+   *
+   * ⚠️ **Each side is one grid item, never several.** Placed one readout per
+   * row, the two columns shared their row heights, and the tall Next card on
+   * the right opened a gap between Score and Best on the left.
+   */
+  @media (min-width: 64rem) {
+    .acc {
+      display: grid;
+      grid-template-columns: minmax(8.5rem, 11rem) auto minmax(8.5rem, 11rem);
+      grid-template-rows: auto 1fr;
+      grid-template-areas:
+        'bar field chain'
+        'bar field hint';
+      justify-content: center;
+      align-items: start;
+      gap: 0.75rem clamp(1rem, 2vw, 1.75rem);
+      max-width: none;
+    }
+
+    .acc-bar {
+      grid-area: bar;
+      flex-direction: column;
+      align-items: stretch;
+      margin-bottom: 0;
+    }
+
+    .acc-bar > .acc-meter,
+    .acc-bar > .acc-next {
+      flex: none;
+    }
+
+    .acc-bar > .acc-next {
+      grid-template-columns: auto;
+      justify-items: center;
+      gap: 0.35rem;
+      padding: 0.6rem 0.8rem 0.7rem;
+    }
+
+    .acc-bar > .acc-next .acc-next-body {
+      width: 2.6rem;
+      height: 2.6rem;
+    }
+
+    .acc-field {
+      grid-area: field;
+      width: clamp(30rem, calc((100svh - 6rem) * (var(--acc-ratio))), 32.5rem);
+    }
+
+    /* Down the side rather than under the well, largest last, so the column
+       fills in from the top as the game climbs. */
+    .acc-chain {
+      grid-area: chain;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      align-items: flex-start;
+      gap: 0.5rem;
+      margin-top: 0.35rem;
+    }
+
+    .acc-chain-body {
+      width: 1.35rem;
+      height: 1.35rem;
+    }
+
+    .acc-chain-name {
+      font-size: 0.8125rem;
+    }
+
+    .acc-hint {
+      grid-area: hint;
+      margin-top: 0.5rem;
+      text-align: start;
+      text-wrap: pretty;
+    }
   }
 
   /* ---- The games index ----------------------------------------------- */
@@ -7033,32 +7284,50 @@
  * Accretion motion.
  *
  * Almost nothing here is animated, because almost everything that moves is
- * moved by the solver writing a transform. What is left is the three moments
- * the simulation cannot express: a body arriving, two leaving, and the flash
- * where a pair of Suns used to be.
+ * moved by the module writing a transform - including a merge, whose two
+ * halves slide into the body they made and whose new body swells into its
+ * size. What is left is the two flashes that are not bodies at all: the ring a
+ * merge sends out, and the one a pair of Suns leaves behind.
  */
-@keyframes acc-born {
-  from {
-    scale: 0.4;
-  }
-
-  to {
-    scale: 1;
-  }
-}
-
-/* Into the one it merged with, rather than away. A body that shrinks in place
-   reads as deleted, and a body that shrinks towards its partner reads as
-   becoming it. */
-@keyframes acc-gone {
-  from {
+@keyframes acc-twinkle {
+  0%,
+  100% {
     opacity: 1;
     scale: 1;
   }
 
+  50% {
+    opacity: 0.5;
+    scale: 0.8;
+  }
+}
+
+@keyframes acc-meteor {
+  0%,
+  94% {
+    opacity: 0;
+    translate: 0 0;
+  }
+
+  95% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    translate: -15rem 10rem;
+  }
+}
+
+@keyframes acc-ring {
+  from {
+    opacity: 0.85;
+    scale: 0.94;
+  }
+
   to {
     opacity: 0;
-    scale: 0.55;
+    scale: 1.5;
   }
 }
 

@@ -3,10 +3,11 @@
  * The Accretion page, shared by the four locales.
  *
  * The well is empty in the markup and filled by the module, because every body
- * in it is created by play. What the markup does own is the frame, the two
- * panels, the readouts and the sequence under the board - and the sequence is
- * worth having: a merge game is unreadable until you know what turns into what,
- * and the answer here is ten objects everyone already knows the order of.
+ * in it is created by play. What the markup does own is the frame, the sky, the
+ * panel at the end, the readouts and the sequence beside the board - and the
+ * sequence is worth having: a merge game is unreadable until you know what
+ * turns into what, and the answer here is ten objects everyone already knows
+ * the order of.
  *
  * ⚠️ The scaled layer and the panels are siblings, not nested. `.acc-world`
  * carries a `scale()` that maps the simulation onto whatever width the page
@@ -56,6 +57,91 @@ const sequence = Array.from({ length: TIERS }, (_, tier) => tier);
 /* The box the well is drawn into, so the markup and the simulation cannot
    disagree about its shape or about where the line sits. */
 const shape = `--acc-ratio:${WORLD_W} / ${WORLD_H}; --acc-line-at:${Math.round((LOSS_Y / WORLD_H) * 1000) / 10}%`;
+
+/*
+ * The sky behind the well, drawn here at build time rather than by the page.
+ *
+ * Four layers at four depths: a dust of faint stars, thickest along a band
+ * the way the Milky Way is; nebulae made of noise; a scatter of brighter stars;
+ * and a handful near enough to glow, twinkle and throw diffraction spikes. The
+ * module slides each layer by an amount that goes with its depth as the aim
+ * moves across the well, which is what makes it read as depth rather than as
+ * a painted backdrop.
+ *
+ * Seeded, so the sky is the same on every build, in every language and for
+ * every reader. A star is one `M x y h0` in a path with round caps - a dot the
+ * width of the stroke - and every star of one size and tone shares a path, so
+ * three hundred of them are a few kilobytes of markup and no request. It is in
+ * this component rather than the stylesheet because the stylesheet is inlined
+ * into every page on the site, and only this one has a sky.
+ */
+function seeded(seed: number) {
+  let a = seed;
+  return () => {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const TONES = ["white", "cool", "cool", "white", "warm"] as const;
+
+/** `sizes` is a list of [stroke width in pixels, opacity], and `banded` the
+ *  share of the stars that fall along the band rather than anywhere. */
+function dust(seed: number, count: number, sizes: [number, number][], banded: number) {
+  const random = seeded(seed);
+  const groups = new Map<string, { d: string[]; size: number; alpha: number; tone: string }>();
+
+  for (let i = 0; i < count; i++) {
+    let x = random() * WORLD_W;
+    let y = random() * WORLD_H;
+
+    // The band runs corner to corner, up from the bottom left, and a star on
+    // it is spread across it by a rough bell curve: three uniforms summed.
+    if (random() < banded) {
+      const along = random();
+      const across = (random() + random() + random() - 1.5) * 170;
+      x = -100 + along * 1400 + across * 0.64;
+      y = 1400 - along * 1150 + across * 0.77;
+    }
+
+    const [size, alpha] = sizes[Math.floor(random() * sizes.length)];
+    const tone = TONES[Math.floor(random() * TONES.length)];
+    const key = `${size} ${tone}`;
+    const group = groups.get(key) ?? { d: [], size, alpha, tone };
+    group.d.push(`M${Math.round(x)} ${Math.round(y)}h0`);
+    groups.set(key, group);
+  }
+
+  return [...groups.values()].map((group) => ({ ...group, d: group.d.join("") }));
+}
+
+const far = dust(7, 260, [[0.9, 0.35], [1.1, 0.5], [1.4, 0.62]], 0.45);
+const mid = dust(19, 70, [[1.6, 0.72], [2, 0.84], [2.5, 0.95]], 0.2);
+
+/** The three nebulae: the region each one's noise is computed over, in world
+ *  units, and a seed and a grain each so no two look alike. */
+const clouds = [
+  { id: "a", x: 420, y: -60, w: 840, h: 820, seed: 4, frequency: "0.0026 0.0038" },
+  { id: "b", x: -80, y: 260, w: 860, h: 900, seed: 9, frequency: "0.0031 0.0024" },
+  { id: "c", x: 360, y: 900, w: 820, h: 760, seed: 13, frequency: "0.0034 0.003" },
+];
+
+/** The near stars: where, how big their glow is, how fast they twinkle, and
+ *  whether they are bright enough to throw spikes. */
+const near = (() => {
+  const random = seeded(31);
+  return Array.from({ length: 11 }, (_, i) => ({
+    x: Math.round(random() * 960 + 20) / 10,
+    y: Math.round(random() * 960 + 20) / 10,
+    size: Math.round(10 + random() * 12),
+    tone: ["white", "cool", "warm"][i % 3],
+    twinkle: Math.round((2.6 + random() * 3.4) * 10) / 10,
+    delay: -Math.round(random() * 60) / 10,
+    spikes: i % 3 === 0,
+  }));
+})();
 ---
 
 <div class="page-head">
@@ -110,6 +196,83 @@ const shape = `--acc-ratio:${WORLD_W} / ${WORLD_H}; --acc-line-at:${Math.round((
       </div>
 
       <div class="acc-field" style={shape} data-field>
+        {/*
+          The sky, back to front, each layer at its depth. See the note in the
+          frontmatter. The nebulae are fractal noise, each confined to its own
+          region by the filter and faded out towards the edge of it by a mask,
+          so the noise is only ever computed where it is seen.
+        */}
+        <div class="acc-sky" aria-hidden="true">
+          <svg class="acc-sky-layer" data-depth="0.15" viewBox={`0 0 ${WORLD_W} ${WORLD_H}`} preserveAspectRatio="xMidYMid slice">
+            {far.map((group) => <path class={`acc-dust acc-dust-${group.tone}`} d={group.d} stroke-width={group.size} opacity={group.alpha} />)}
+          </svg>
+
+          <svg class="acc-sky-layer acc-nebulae" data-depth="0.3" viewBox={`0 0 ${WORLD_W} ${WORLD_H}`} preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <radialGradient id="acc-fade">
+                <stop offset="0" stop-color="white" />
+                <stop offset="0.5" stop-color="white" stop-opacity="0.5" />
+                <stop offset="1" stop-color="white" stop-opacity="0" />
+              </radialGradient>
+              {
+                clouds.map((cloud) => (
+                  <>
+                    <filter
+                      id={`acc-cloud-${cloud.id}`}
+                      filterUnits="userSpaceOnUse"
+                      x={cloud.x}
+                      y={cloud.y}
+                      width={cloud.w}
+                      height={cloud.h}
+                      color-interpolation-filters="sRGB"
+                    >
+                      <feTurbulence type="fractalNoise" baseFrequency={cloud.frequency} numOctaves="4" seed={cloud.seed} result="noise" />
+                      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2.6 0 0 0 -0.95" result="wisps" />
+                      <feFlood class={`acc-nebula-${cloud.id}`} />
+                      <feComposite in2="wisps" operator="in" />
+                    </filter>
+                    <mask id={`acc-mask-${cloud.id}`} maskUnits="userSpaceOnUse" x={cloud.x} y={cloud.y} width={cloud.w} height={cloud.h}>
+                      <rect x={cloud.x} y={cloud.y} width={cloud.w} height={cloud.h} fill="url(#acc-fade)" />
+                    </mask>
+                  </>
+                ))
+              }
+            </defs>
+            {
+              clouds.map((cloud) => (
+                <rect
+                  x={cloud.x}
+                  y={cloud.y}
+                  width={cloud.w}
+                  height={cloud.h}
+                  filter={`url(#acc-cloud-${cloud.id})`}
+                  mask={`url(#acc-mask-${cloud.id})`}
+                />
+              ))
+            }
+          </svg>
+
+          <svg class="acc-sky-layer" data-depth="0.5" viewBox={`0 0 ${WORLD_W} ${WORLD_H}`} preserveAspectRatio="xMidYMid slice">
+            {mid.map((group) => <path class={`acc-dust acc-dust-${group.tone}`} d={group.d} stroke-width={group.size} opacity={group.alpha} />)}
+          </svg>
+
+          <div class="acc-sky-layer" data-depth="1">
+            <span class="acc-galaxy"></span>
+            {
+              near.map((star) => (
+                <span
+                  class="acc-star"
+                  data-tone={star.tone}
+                  data-spikes={star.spikes ? "" : undefined}
+                  style={`left:${star.x}%;top:${star.y}%;--acc-star-size:${star.size}px;--acc-twinkle:${star.twinkle}s;--acc-delay:${star.delay}s`}
+                />
+              ))
+            }
+            <span class="acc-meteor" style="left:92%;top:7%;--acc-every:17s;--acc-delay:-5s"></span>
+            <span class="acc-meteor" style="left:58%;top:34%;--acc-every:29s;--acc-delay:-19s"></span>
+          </div>
+        </div>
+
         {/* Everything in here is in world units and scaled as one. */}
         <div class="acc-world" data-world></div>
 
@@ -121,18 +284,12 @@ const shape = `--acc-ratio:${WORLD_W} / ${WORLD_H}; --acc-line-at:${Math.round((
         */}
         <div class="acc-line" aria-hidden="true"></div>
 
-        {/* The burst over the first Sun, above the panel that announces it. */}
+        {/*
+          The burst over the first Sun, and the only thing on screen that marks it. There
+          is no panel and no pause: the Sun is a body like the others, and the
+          game goes on around it.
+        */}
         <div class="game-burst" aria-hidden="true" data-burst></div>
-
-        <div class="acc-panel" data-panel="won">
-          <p class="acc-panel-title">{copy.won.title}</p>
-          <p class="acc-panel-body">{copy.won.body}</p>
-
-          <div class="acc-panel-actions">
-            <button type="button" class="cta" data-action="keep-going">{copy.won.keepGoing}</button>
-            <button type="button" class="cta-ghost" data-action="restart">{copy.newGame}</button>
-          </div>
-        </div>
 
         <div class="acc-panel" data-panel="over">
           <p class="acc-panel-title">{copy.over.title}</p>
@@ -272,11 +429,12 @@ const shape = `--acc-ratio:${WORLD_W} / ${WORLD_H}; --acc-line-at:${Math.round((
 
       onState(state) {
         root.dataset.state = state;
-        if (state === "won" && burst) scatter(burst, COLOURS);
       },
 
       onCue(cue, level) {
         sound.play(cue, level);
+
+        if (cue === "star" && burst) scatter(burst, COLOURS);
 
         // Two Suns going off shake the well. It restarts rather than relying
         // on the class being absent, because a long game has more than one.
@@ -306,7 +464,6 @@ const shape = `--acc-ratio:${WORLD_W} / ${WORLD_H}; --acc-line-at:${Math.round((
         .action;
 
       if (action === "restart") controller.restart();
-      if (action === "keep-going") controller.keepGoing();
     });
   }
 </script>

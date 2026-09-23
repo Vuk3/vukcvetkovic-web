@@ -873,12 +873,6 @@ const sr: Dict = {
           "Sunce",
         ],
 
-        won: {
-          title: "Zvezda",
-          body: "Niz nema više kuda. Dva Sunca ne mogu da postanu ništa, pa umesto toga nestanu, a mesto koje ostave jedini je način da se pun prostor isprazni.",
-          keepGoing: "Nastavi",
-        },
-
         over: {
           title: "Nema više mesta",
           body: "Nešto predugo stoji iznad linije. Ovde nema tavanice nego linija, a telo koje se zaustavi iznad nje nema gde dalje.",
@@ -906,7 +900,7 @@ const sr: Dict = {
             {
               title: "Linija je odlaganje a ne zid",
               description:
-                "Ništa ne brani telu da ode iznad nje. Gotovo je tek ako neko i sekundu kasnije još stoji gore, pa se pljusak preživi a Jupiter koji se tu smirio ne.",
+                "Ništa ne brani telu da ode iznad nje. Gotovo je tek kada neko tamo sleti i pola sekunde kasnije još stoji gore, pa se pljusak preživi a Jupiter koji se tu smirio ne.",
             },
           ],
         },
@@ -914,10 +908,10 @@ const sr: Dict = {
         close: {
           label: "Kako je napravljeno",
           paragraphs: [
-            "Nema canvasa, nema biblioteke za fiziku i nema nijedne zavisnosti. Telo je div sa zaobljenjem, njegova boja je gradijent u istom stilu kao i ostatak stranice, a kadar upisuje po jedan transform na svako. Zato se planete skaliraju sa stranicom, ostaju oštre na svakom zumu i ne koštaju nijedan zahtev. Fizički engine bi bio šest puta teži od cele ove stranice.",
-            "Rešavač radi nad pozicijama: telo pamti gde je i gde je bilo, a razlika između to dvoje je njegova brzina. Ništa ne računa impuls. Kontakt razdvoji dva tela, a pošto prethodna pozicija ostaje na mestu, to razdvajanje oduzme tačno onoliko brzine koliko ih je i sastavilo, što neelastičan sudar i jeste. Četrdeset takvih prolaza ide po kadru, svaki nad pozicijama koje su se već pomerile, a pun prostor od četrdeset šest tela košta manje od desetine milisekunde od skoro sedamnaest koliko ih ima.",
-            "Posao je bio naterati to da se smiri. Tri odvojene stvari su tiho dodavale energiju umesto da je oduzimaju: zid koji je ograničavao poziciju tela a nije dirao prethodnu, čime se dubina pada pretvarala u brzinu odskoka; tangencijalno trenje računato iz brzine koju isti prolaz menja, zbog čega je zbijena gomila i posle osam sekundi bacala tela okolo; i pravilo spajanja koje je tražilo toliki preklop da se ništa nikad nije ni spojilo. Svaka je nađena merenjem a ne čitanjem, a brojevi koji su iz toga izašli stoje pored konstanti koje opravdavaju.",
-            "Simulacija radi u sopstvenom prostoru od hiljadu jedinica i nikad ne sazna koliko se veliko prikazuje. Jedan transform na jednom elementu prenosi ceo prostor na širinu koju mu je stranica dala, pa promena veličine menja taj jedan broj i ništa više, ni poluprečnik, ni poziciju, ni korak. Zato ista igra radi isto na telefonu i na računaru umesto da na jednom ima dvostruku gravitaciju.",
+            "Nema canvasa, nema biblioteke za fiziku i nema nijedne zavisnosti. Telo je div sa zaobljenjem, njegova boja je gradijent u istom stilu kao i ostatak stranice, a kadar upisuje po jedan transform na svako. Zato se planete skaliraju sa stranicom, ostaju oštre na svakom zumu i ne koštaju nijedan zahtev. Opšti fizički engine bi sam težio pet puta više od cele ove igre.",
+            "Rešavač pravi mnogo malih koraka umesto nekoliko velikih, osam po kadru. U svakom se svaki kontakt rešava kao kruta opruga sa jakim prigušenjem, tela se pomere, a onda se svaki kontakt reši još jednom, bez opruge, što oduzme svu brzinu koju je guranje dalo. Zato se preklop ispravi a da nikad ne postane odskok, a gomila koja miruje stoji potpuno mirno. Kontakt se pronađe dok još postoji razmak, pa se planeta koja pada zaustavi tačno na površini na koju sleće, umesto da utone i bude izgurana nazad.",
+            "Ostalo je ono zbog čega deluje teško a ne gumeno. Trenje deluje između dve površine, zajedno sa okretanjem, pa telo koje klizi počne da se kotrlja. Jak pad upije okretanje sa kojim je telo stiglo, pa planeta koja okrzne drugu po ramenu stane pored nje umesto da se otkotrlja preko celog prostora. Udarac se potroši tamo gde se desio i nikad se ne prenosi u sledeći korak, i zato veliko telo ne odskače od malog. A planeta koja se zadrži na samom vrhu druge odmah se sa nje skotrlja: ravnoteža može da bude stvarna, ali planeta koja stoji na drugoj kao sneško belić izgleda kao da se zaglavila.",
+            "Simulacija radi u sopstvenom prostoru od 1200 sa 1650 jedinica i nikad ne sazna koliko se veliko prikazuje. Jedan transform na jednom elementu prenosi ceo prostor na širinu koju mu je stranica dala, pa promena veličine menja taj jedan broj i ništa više, ni poluprečnik, ni poziciju, ni korak. Kadar crta svako telo između poslednja dva koraka, pa ekran od 120 Hz dobija novu poziciju pri svakom osvežavanju. Nebo iza je nacrtano jednom, kada se sajt gradi: trista zvezda kao tačke na nekoliko putanja, magline od fraktalnog šuma i četiri sloja koja klize različitom brzinom dok nišaniš.",
           ],
         },
       },

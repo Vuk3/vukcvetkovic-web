@@ -230,7 +230,7 @@ into each page rather than emitting a bundle. 1.7 KB of JS per page, in a 26 KB 
 page, with no extra request. Keep it that way: see [src/components/CLAUDE.md](../src/components/CLAUDE.md).
 
 The six files in `_astro` are the five game engines and the piece they share. 2048 is
-2.9 KB gz, Minesweeper 3.6 KB, Memory 4.5 KB, Accretion 3.5 KB, Battleship 6.0 KB, and the
+2.9 KB gz, Minesweeper 3.6 KB, Memory 4.5 KB, Accretion 5.3 KB, Battleship 6.0 KB, and the
 shared chunk 1.7 KB: [games/record.ts](../src/games/record.ts),
 [games/sound.ts](../src/games/sound.ts) and [games/burst.ts](../src/games/burst.ts) in one
 file, because all five games import all three and Rollup puts modules with the same
@@ -239,9 +239,10 @@ and that route's three locale twins, and by nothing else, which is the point: a 
 for itself and the rest of the site is unchanged.
 
 ⚠️ **Accretion is the only page on the site that runs on every frame**, because it is a
-physics simulation rather than a board that changes when pressed. A full well of 46 bodies
-costs 0.04ms of solver a frame against a 16.7ms budget, measured, so the cost is the
-transform writes rather than the mathematics.
+physics simulation rather than a board that changes when pressed. A well of 46 bodies
+costs 0.11ms of solver a step against a 16.7ms budget, measured, so the cost is the
+transform writes rather than the mathematics. Its sky is markup drawn at build time, 3.4 KB
+gz on this page and nothing on any other.
 
 ⚠️ **The record is a third file rather than a copy inside each game**, because two entry
 points import it and Rollup splits what they share. That is one extra request on a game
@@ -342,6 +343,9 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-09-23 - Accretion's engine is 5.3 KB gz, from 3.5 KB, for a rewritten solver, the
+  drawing between steps, the merge animation and the sky's parallax. The sky itself is
+  markup on the Accretion page only (§5).
 - 2026-09-23 - every game has sound and a burst on a win, from two modules shared the way
   the record is. They land in the record's chunk rather than a file each, since all five
   games import all three, which takes that chunk from 0.4 KB to 1.7 KB and leaves `_astro`

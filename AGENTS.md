@@ -83,7 +83,7 @@ not need the map to change a dictionary, add a project, or touch the stylesheet.
 - **The exceptions are the five games**, which cannot be: 2.9 KB gz for
   [2048](./src/games/2048/game.ts), 3.6 KB for
   [minesweeper](./src/games/minesweeper/game.ts), 4.5 KB for
-  [memory](./src/games/memory/game.ts), 3.5 KB for
+  [memory](./src/games/memory/game.ts), 5.3 KB for
   [accretion](./src/games/accretion/game.ts) and 6.0 KB for
   [battleship](./src/games/battleship/game.ts), each on its own route, plus a shared 1.7 KB
   chunk for the stored record, the sound and the burst. That budget is the games', not a precedent - it does not

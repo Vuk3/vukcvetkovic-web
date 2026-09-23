@@ -874,12 +874,6 @@ const de: Dict = {
           'Sonne',
         ],
 
-        won: {
-          title: 'Ein Stern',
-          body: 'Die Reihe hat kein Weiter mehr. Zwei Sonnen können nichts werden, also gehen sie stattdessen hoch, und der Platz, den sie hinterlassen, ist die einzige Art, wie ein voller Raum je wieder leer wird.',
-          keepGoing: 'Weiterspielen',
-        },
-
         over: {
           title: 'Kein Platz mehr',
           body: 'Etwas liegt zu lange über der Linie. Hier gibt es keine Decke, nur eine Linie, und ein Körper, der darüber zur Ruhe kommt, hat kein Weiter.',
@@ -907,7 +901,7 @@ const de: Dict = {
             {
               title: 'Die Linie ist eine Frist, keine Wand',
               description:
-                'Nichts hindert einen Körper daran, darüber zu gehen. Vorbei ist es erst, wenn eine Sekunde später noch etwas dort oben liegt: ein Aufspritzen übersteht man, ein dort liegen gebliebener Jupiter nicht.',
+                'Nichts hindert einen Körper daran, darüber zu gehen. Vorbei ist es erst, wenn einer dort oben gelandet ist und eine halbe Sekunde später noch da liegt: ein Aufspritzen übersteht man, ein dort liegen gebliebener Jupiter nicht.',
             },
           ],
         },
@@ -915,10 +909,10 @@ const de: Dict = {
         close: {
           label: 'Wie es gebaut ist',
           paragraphs: [
-            'Kein Canvas, keine Physikbibliothek und überhaupt keine Abhängigkeit. Ein Körper ist ein div mit einem Eckenradius, seine Farbe ist ein Verlauf im selben Stylesheet wie der Rest der Seite, und das Bild schreibt eine Transformation auf jeden einzelnen. Deshalb skalieren die Planeten mit der Seite, bleiben in jedem Zoom scharf und kosten keine Anfrage. Eine Physik-Engine wäre sechsmal so schwer wie diese ganze Seite.',
-            'Der Solver arbeitet über Positionen: ein Körper merkt sich, wo er ist und wo er war, und der Abstand dazwischen ist seine Geschwindigkeit. Nichts berechnet einen Impuls. Ein Kontakt drückt zwei Körper auseinander, und weil die vorige Position stehen bleibt, nimmt dieses Auseinanderdrücken genau die Geschwindigkeit heraus, die sie zusammengebracht hat - und das ist ein unelastischer Stoß. Vierzig solcher Durchgänge laufen pro Bild, jeder gegen Positionen, die sich schon bewegt haben, und ein voller Raum mit sechsundvierzig Körpern kostet unter einem Zehntel einer Millisekunde bei einem Budget von fast siebzehn.',
-            'Die Arbeit war, es zur Ruhe zu bringen. Drei getrennte Dinge fügten still Energie hinzu, statt sie zu entziehen: eine Wand, die die Position eines Körpers begrenzte, ohne die vorige mitzunehmen, wodurch die Tiefe einer Landung zur Geschwindigkeit eines Abprallers wurde; tangentiale Reibung, berechnet aus einer Geschwindigkeit, die derselbe Durchgang gerade änderte, weshalb ein dichter Haufen nach acht Sekunden immer noch Körper herumwarf; und eine Verschmelzungsregel, die so viel Überlappung verlangte, dass überhaupt nie etwas verschmolz. Jedes davon wurde durch Messen gefunden und nicht durch Lesen, und die Zahlen, die dabei herauskamen, stehen neben den Konstanten, die sie begründen.',
-            'Die Simulation läuft in ihrem eigenen Raum aus tausend Einheiten und erfährt nie, wie groß sie gezeigt wird. Eine Transformation auf einem Element bringt den ganzen Raum auf die Breite, die die Seite ihm gegeben hat, eine Größenänderung ändert also diese eine Zahl und sonst nichts - keinen Radius, keine Position, keinen Schritt. Deshalb spielt sich dasselbe Spiel auf dem Telefon genau wie am Rechner, statt auf einem von beiden die doppelte Schwerkraft zu haben.',
+            'Kein Canvas, keine Physikbibliothek und überhaupt keine Abhängigkeit. Ein Körper ist ein div mit einem Eckenradius, seine Farbe ist ein Verlauf im selben Stylesheet wie der Rest der Seite, und das Bild schreibt eine Transformation auf jeden einzelnen. Deshalb skalieren die Planeten mit der Seite, bleiben in jedem Zoom scharf und kosten keine Anfrage. Eine allgemeine Physik-Engine wöge allein fünfmal so viel wie dieses ganze Spiel.',
+            'Der Solver macht viele kleine Schritte statt weniger großer, acht pro Bild. In jedem wird jeder Kontakt als steife, stark gedämpfte Feder gelöst, die Körper bewegen sich, und dann wird jeder Kontakt noch einmal gelöst, starr, was jede Geschwindigkeit zurücknimmt, die das Schieben ihnen gegeben hat. So wird eine Überlappung korrigiert, ohne je zum Abprall zu werden, und ein ruhender Haufen steht vollkommen still. Ein Kontakt wird gefunden, solange noch ein Spalt da ist, also hält ein fallender Planet genau an der Oberfläche an, auf der er landet, statt einzusinken und wieder herausgedrückt zu werden.',
+            'Der Rest ist das, was ihn schwer statt federnd wirken lässt. Die Reibung wirkt zwischen den beiden Oberflächen, samt Drehung, sodass ein Körper, der rutscht, zu rollen beginnt. Eine harte Landung schluckt die Drehung, mit der ein Körper ankommt, sodass ein Planet, der einen anderen an der Schulter streift, neben ihm liegen bleibt, statt quer durch den Raum zu rollen. Ein Stoß wird dort verbraucht, wo er passiert, und nie in den nächsten Schritt mitgenommen, und genau das hält einen großen Körper davon ab, von einem kleinen abzuprallen. Und ein Planet, der auf dem Scheitel eines anderen balanciert, wird sofort davon heruntergestoßen: das Gleichgewicht mag echt sein, aber ein Planet, der wie ein Schneemann auf einem anderen steht, wirkt festgeklemmt.',
+            'Die Simulation läuft in ihrem eigenen Raum aus 1200 mal 1650 Einheiten und erfährt nie, wie groß sie gezeigt wird. Eine Transformation auf einem Element bringt den ganzen Raum auf die Breite, die die Seite ihm gegeben hat, eine Größenänderung ändert also diese eine Zahl und sonst nichts - keinen Radius, keine Position, keinen Schritt. Das Bild zeichnet jeden Körper zwischen den letzten beiden Schritten, sodass ein Bildschirm mit 120 Hz bei jeder Aktualisierung eine neue Position bekommt. Der Himmel dahinter wird einmal gezeichnet, wenn die Seite gebaut wird: dreihundert Sterne als Punkte auf wenigen Pfaden, Nebel aus fraktalem Rauschen und vier Ebenen, die beim Zielen unterschiedlich schnell gleiten.',
           ],
         },
       },

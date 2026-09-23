@@ -875,12 +875,6 @@ const fr: Dict = {
           "Soleil",
         ],
 
-        won: {
-          title: "Une étoile",
-          body: "La séquence n'a plus nulle part où aller. Deux Soleils ne peuvent rien devenir, alors ils disparaissent, et la place qu'ils laissent est la seule façon de vider un espace plein.",
-          keepGoing: "Continuer",
-        },
-
         over: {
           title: "Plus de place",
           body: "Quelque chose repose au-dessus de la ligne depuis trop longtemps. Il n'y a pas de plafond ici, seulement une ligne, et un corps qui s'arrête au-dessus n'a plus nulle part où aller.",
@@ -908,7 +902,7 @@ const fr: Dict = {
             {
               title: "La ligne est un délai, pas un mur",
               description:
-                "Rien n'empêche un corps de la dépasser. Ce n'est fini que si l'un d'eux est encore là-haut une seconde plus tard : une éclaboussure se survit, un Jupiter posé là non.",
+                "Rien n'empêche un corps de la dépasser. Ce n'est fini que si l'un d'eux s'y est posé et y est encore une demi-seconde plus tard : une éclaboussure se survit, un Jupiter posé là non.",
             },
           ],
         },
@@ -916,10 +910,10 @@ const fr: Dict = {
         close: {
           label: "Comment c'est construit",
           paragraphs: [
-            "Pas de canvas, pas de bibliothèque de physique et aucune dépendance. Un corps est un div avec un rayon de bordure, sa couleur est un dégradé dans la même feuille de style que le reste de la page, et l'image écrit une transformation sur chacun. Les planètes suivent donc l'échelle de la page, restent nettes à tout zoom et ne coûtent aucune requête. Un moteur physique aurait pesé six fois cette page entière.",
-            "Le solveur travaille sur les positions : un corps retient où il est et où il était, et l'écart entre les deux est sa vitesse. Rien ne calcule d'impulsion. Un contact écarte deux corps, et comme la position précédente ne bouge pas, cet écartement retire exactement la vitesse qui les avait rapprochés, ce qui est la définition d'une collision inélastique. Quarante de ces passes tournent par image, chacune sur des positions déjà déplacées, et un champ plein de quarante-six corps coûte moins d'un dixième de milliseconde sur un budget de près de dix-sept.",
-            "Le travail a été de le faire se stabiliser. Trois choses distinctes ajoutaient discrètement de l'énergie au lieu d'en retirer : un mur qui bornait la position d'un corps sans déplacer la précédente, transformant la profondeur d'un atterrissage en vitesse de rebond ; un frottement tangentiel calculé à partir d'une vitesse que la même passe était en train de changer, qui laissait une pile serrée projeter des corps après huit secondes ; et une règle de fusion exigeant tant de recouvrement que rien ne fusionnait jamais. Chacune a été trouvée en mesurant et non en relisant, et les nombres qui en sont sortis figurent à côté des constantes qu'ils justifient.",
-            "La simulation tourne dans son propre espace de mille unités et n'apprend jamais à quelle taille elle est montrée. Une seule transformation sur un seul élément projette tout le champ sur la largeur que la page lui a donnée : un redimensionnement change ce nombre et rien d'autre, ni un rayon, ni une position, ni un pas. C'est pourquoi la même partie se joue à l'identique sur téléphone et sur ordinateur, au lieu d'avoir deux fois la gravité sur l'un des deux.",
+            "Pas de canvas, pas de bibliothèque de physique et aucune dépendance. Un corps est un div avec un rayon de bordure, sa couleur est un dégradé dans la même feuille de style que le reste de la page, et l'image écrit une transformation sur chacun. Les planètes suivent donc l'échelle de la page, restent nettes à tout zoom et ne coûtent aucune requête. Un moteur physique généraliste pèserait à lui seul cinq fois ce jeu tout entier.",
+            "Le solveur avance par petits pas plutôt que par grands, huit par image. À chacun, chaque contact est résolu comme un ressort raide et très amorti, les corps se déplacent, puis chaque contact est résolu une seconde fois, de façon rigide, ce qui reprend toute la vitesse que la poussée leur avait donnée. Un recouvrement est ainsi corrigé sans jamais devenir un rebond, et une pile au repos reste parfaitement immobile. Un contact est détecté tant qu'il reste un écart, si bien qu'une planète qui tombe s'arrête exactement sur la surface où elle se pose au lieu de s'y enfoncer puis d'en être repoussée.",
+            "Le reste est ce qui la rend lourde plutôt qu'élastique. Le frottement agit entre les deux surfaces, rotation comprise, donc un corps qui glisse se met à rouler. Un atterrissage brutal absorbe la rotation avec laquelle le corps arrive, si bien qu'une planète qui en accroche une autre par l'épaule s'arrête à côté d'elle au lieu de traverser le champ en roulant. Un choc est dépensé là où il se produit et jamais reporté au pas suivant, ce qui empêche un gros corps de rebondir sur un petit. Et une planète en équilibre au sommet d'une autre en est aussitôt poussée : l'équilibre a beau être réel, une planète dressée sur une autre comme un bonhomme de neige a l'air coincée.",
+            "La simulation tourne dans son propre espace de 1200 sur 1650 unités et n'apprend jamais à quelle taille elle est montrée. Une seule transformation sur un seul élément projette tout le champ sur la largeur que la page lui a donnée : un redimensionnement change ce nombre et rien d'autre, ni un rayon, ni une position, ni un pas. L'image dessine chaque corps entre les deux derniers pas, si bien qu'un écran à 120 Hz reçoit une nouvelle position à chaque rafraîchissement. Le ciel derrière est dessiné une seule fois, à la construction du site : trois cents étoiles en points sur quelques tracés, des nébuleuses faites de bruit fractal et quatre couches qui glissent à des vitesses différentes pendant que vous visez.",
           ],
         },
       },
