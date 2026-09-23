@@ -561,7 +561,7 @@ const sr: Dict = {
     index: {
       metaTitle: "Igre - Vuk Cvetković",
       metaDescription:
-        "Igre u pretraživaču Vuka Cvetkovića: 2048, Minolovac, Potapanje brodova protiv četiri protivnika, i igra spajanja svetova u veće. Svaka dobija svoju stranicu.",
+        "Igre u pretraživaču Vuka Cvetkovića: 2048, Minolovac, Memorija u dvanaest nivoa, Potapanje brodova protiv četiri protivnika, i igra spajanja svetova u veće. Svaka dobija svoju stranicu.",
       heading: "Igre",
       intro:
         "Igre koje vrede više od jednog pokušaja. Svaka ima svoju stranicu, a ispod nje i tekst o tome kako je napravljena, za onoga koga i to zanima.",
@@ -717,6 +717,130 @@ const sr: Dict = {
           ],
         },
       },
+
+      memory: {
+        name: "Memorija",
+
+        tagline:
+          "Okreni dve kartice i zapamti šta je bilo ispod njih. Dvanaest nivoa, od četiri kartice do šezdeset, i veća tabla svaki put kad pređeš nivo.",
+
+        metaDescription:
+          "Memorija u pretraživaču: dvanaest nivoa od četiri kartice do šezdeset, do tri zvezdice po tabli, i slobodna igra sa svim tablama otvorenim od početka.",
+        lead: "Okreći po dve kartice i pronađi svaki par. Dvanaest nivoa, svaka tabla veća od prethodne, od četiri kartice do šezdeset i trideset sličica. Pređi nivo da otvoriš sledeći, ili u slobodnoj igri idi pravo na bilo koju veličinu.",
+
+        modes: "Režim",
+        modeNames: {
+          campaign: "Nivoi",
+          free: "Slobodna igra",
+        },
+
+        boards: "Izaberi nivo",
+        level: "Nivo",
+
+        /** Three phrases rather than a number and a noun, because "dve
+         *  zvezdice" and "pet zvezdica" are different plurals. See en.ts. */
+        locked: "Zaključano",
+        open: "Još nije pređen",
+        stars: ["Jedna zvezdica", "Dve zvezdice", "Tri zvezdice"],
+
+        moves: "Potezi",
+        time: "Vreme",
+        best: "Najmanje poteza",
+        goal: "Zvezdice",
+        newGame: "Nova igra",
+        hint: "Pritisni karticu da je okreneš, pa još jednu. Par ostaje okrenut, a sve ostalo se vraća. Strelice šetaju po stolu, a Enter okreće karticu.",
+
+        gridLabel: "Kartice",
+        cells: {
+          hidden: "Zatvorena",
+          matched: "{name}, par pronađen",
+        },
+
+        messages: {
+          pair: "{name}. Par.",
+          miss: "{name}. Nije par.",
+        },
+
+        pictures: {
+          apple: "Jabuka",
+          cherries: "Trešnje",
+          lemon: "Limun",
+          strawberry: "Jagoda",
+          watermelon: "Lubenica",
+          pear: "Kruška",
+          grapes: "Grožđe",
+          orange: "Pomorandža",
+          banana: "Banana",
+          pineapple: "Ananas",
+          sun: "Sunce",
+          moon: "Mesec",
+          cloud: "Olujni oblak",
+          rainbow: "Duga",
+          snowflake: "Pahulja",
+          leaf: "Javorov list",
+          tulip: "Lala",
+          mushroom: "Pečurka",
+          cactus: "Kaktus",
+          tree: "Bor",
+          rocket: "Raketa",
+          balloon: "Balon",
+          anchor: "Sidro",
+          key: "Ključ",
+          crown: "Kruna",
+          heart: "Srce",
+          star: "Zvezda",
+          gem: "Dijamant",
+          bell: "Zvono",
+          umbrella: "Kišobran",
+        },
+
+        won: {
+          title: "Svi parovi pronađeni",
+          record: "Manje poteza nego ikad na ovom nivou.",
+          final: "To je bio poslednji nivo. Ostale su još samo tri zvezdice na svih dvanaest.",
+          next: "Sledeći nivo",
+          bigger: "Sledeća tabla",
+          again: "Igraj ponovo",
+        },
+
+        how: {
+          label: "Kako se igra",
+          items: [
+            {
+              title: "Dve kartice po potezu",
+              description:
+                "Pritisni karticu da je okreneš, pa drugu. Ako se sličice poklope, obe ostaju okrenute. Ako ne, ostaju gore taman toliko da ih zapamtiš i onda se vraćaju, a pritisak na sledeću karticu ih vraća odmah.",
+            },
+            {
+              title: "Svaki potez se broji",
+              description:
+                "Dve kartice su jedan potez, bio par ili ne. Tri zvezdice su tabla pređena otprilike onoliko brzo koliko bi je prešlo savršeno pamćenje, dve su do pola toliko poteza više, a jedna je za to što si stigao do kraja. Zvezdice iznad stola se gase kako prelaziš svaku granicu.",
+            },
+            {
+              title: "Dvanaest nivoa, svaki veći",
+              description:
+                "Od dva sa dva do deset sa šest. Pređen nivo otvara sledeći, a najmanji broj poteza se pamti za svaki. Prvih pet deli iz jednog dela špila, voće ili prirodu ili stvari, a od šestog su u igri svih trideset sličica.",
+            },
+            {
+              title: "Ili preskoči napred",
+              description:
+                "Slobodna igra otvara sve table odjednom, bez zvezdica i bez zaključavanja. Isti špil i ista pravila, za kad ti je baš veliki sto onaj koji hoćeš.",
+            },
+          ],
+        },
+
+        close: {
+          label: "Kako je napravljena",
+          paragraphs: [
+            "Nema canvasa ni biblioteke za igre, kao ni kod ostalih. Kartica je dugme sa dve strane, a okretanje je jedna tranzicija na jednom svojstvu: sloj koji drži obe strane rotira se za pola kruga oko uspravne ose, svaka strana krije svoje naličje, i pretraživač pokazuje onu koja je okrenuta ka tebi. Okret prebaci za nekoliko stepeni i vrati se, i zato izgleda kao kartica koja ima neku težinu a ne kao kvadrat koji se vrti. Svaka kartica nosi svoju perspektivu, srazmernu njenoj veličini, pa se kartica na najmanjoj tabli i ona na najvećoj okreću kroz istu dubinu.",
+            "Trideset sličica je nacrtano a ne preuzeto: jedan sprite list u stranici, jedan simbol po sličici, i svako lice kartice je referenca na jedan od njih. Svaka je ravna boja u tri tona, sama boja, svetlina prema izvoru svetla i senka od njega, na sopstvenoj podlozi. Sličice zadržavaju boje u obe teme, a samo podloge prate stranicu, pa je jabuka zapamćena na svetlom ista jabuka i na tamnom.",
+            "Kartica ne zna šta je dok se ne okrene. Tabla sa zatvorenim karticama u stranici ne sadrži nijedan odgovor: lice svake kartice ne pokazuje ni na šta, a sličica se upisuje u trenutku kad kartica pređe na drugu stranu. Špil se meša jednom po tabli i živi unutar igre, gde stranica ne može da ga pročita.",
+            "Granice za zvezdice su izmerene a ne izabrane. Igrač sa savršenim pamćenjem, onaj koji nikad ne okreće karticu koju je već video osim kad ona zatvara par, odigrao je dvesta hiljada partija na svakoj tabli, a tri zvezdice su broj poteza koji mu je trebao u devet partija od deset. Njegov prosek je ispao 1,61 potez po paru, što je poznat odgovor za ovu igru i način na koji je simulacija proverena.",
+            "Tabla je veličine koja staje na ekran, jer tabla memorije koju moraš da skroluješ je tabla koju ne vidiš. Na telefonu koji držiš uspravno okreće se za četvrtinu, deset u redu postaje šest u redu, a nijedna kartica se ne pomera da bi se to desilo: mreža se puni po kolonama umesto po redovima, strelice menjaju ose da bi pratile, a čitač ekrana i dalje obilazi istu tabelu.",
+          ],
+        },
+      },
+
       accretion: {
         name: "Akrecija",
 

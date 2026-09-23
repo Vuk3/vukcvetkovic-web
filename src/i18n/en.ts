@@ -636,7 +636,7 @@ const en = {
     index: {
       metaTitle: "Games - Vuk Cvetković",
       metaDescription:
-        "Browser games by Vuk Cvetković: 2048, Minesweeper, Battleship against four opponents, and a game about merging worlds into bigger ones. Each gets a page of its own.",
+        "Browser games by Vuk Cvetković: 2048, Minesweeper, Memory in twelve levels, Battleship against four opponents, and a game about merging worlds into bigger ones. Each gets a page of its own.",
       heading: "Games",
       intro:
         "Games worth more than one go. Each has a page of its own, and underneath it a write-up on how it was built, for anyone who wants that too.",
@@ -802,6 +802,152 @@ const en = {
           ],
         },
       },
+
+      memory: {
+        name: "Memory",
+
+        tagline:
+          "Turn two cards and remember what was under them. Twelve levels, from four cards to sixty, and a bigger board every time you clear one.",
+
+        metaDescription:
+          "Memory in the browser: twelve levels from four cards to sixty, up to three stars a board, and free play with every board open from the start.",
+        lead: "Turn two cards at a time and find every pair. Twelve levels, each board bigger than the last, from four cards to sixty and thirty pictures. Clear a level to open the next, or go straight to any size in free play.",
+
+        /** The two ways to play, and the legend over them. */
+        modes: "Mode",
+        modeNames: {
+          campaign: "Levels",
+          free: "Free play",
+        },
+
+        /** The legend over the twelve tiles, and the word in front of a
+         *  level's number. "Level 5" is a word and a figure in all four
+         *  languages, so the page composes it rather than carrying a template. */
+        boards: "Choose a level",
+        level: "Level",
+
+        /**
+         * What a tile tells a screen reader about itself.
+         *
+         * ⚠️ The stars are three phrases rather than a number and a noun, for
+         * the reason ship counts are not a sentence in Battleship: "2 stars"
+         * and "5 stars" take different plurals in Serbian, and none of the
+         * dictionaries has machinery for that. Three is all there ever is, and
+         * the page indexes this list by the count.
+         */
+        locked: "Locked",
+        open: "Not cleared yet",
+        stars: ["One star", "Two stars", "Three stars"],
+
+        moves: "Moves",
+        time: "Time",
+        /** ⚠️ Not "Best", for Battleship's reason: this is a count where
+         *  fewer wins, and a bare number under "Best" reads as a score. */
+        best: "Fewest moves",
+        goal: "Stars",
+        newGame: "New game",
+        hint: "Press a card to turn it, then another. A pair stays face up and anything else turns back over. The arrow keys walk the table and Enter turns a card.",
+
+        /** The table, and what a card says when there is no picture to read.
+         *  `{name}` is a picture from the list below. */
+        gridLabel: "Cards",
+        cells: {
+          hidden: "Face down",
+          matched: "{name}, pair found",
+        },
+
+        /** Read out after the second card of a turn, since a label that
+         *  changes on the focused card is not reliably announced again. */
+        messages: {
+          pair: "{name}. A pair.",
+          miss: "{name}. Not a pair.",
+        },
+
+        /**
+         * The thirty pictures, keyed by the ids in the game module. The
+         * drawings are in MemorySprites.astro and the id joins all three, so a
+         * picture in the deck with no name here is a type error in the page.
+         */
+        pictures: {
+          apple: "Apple",
+          cherries: "Cherries",
+          lemon: "Lemon",
+          strawberry: "Strawberry",
+          watermelon: "Watermelon",
+          pear: "Pear",
+          grapes: "Grapes",
+          orange: "Orange",
+          banana: "Banana",
+          pineapple: "Pineapple",
+          sun: "Sun",
+          moon: "Moon",
+          cloud: "Storm cloud",
+          rainbow: "Rainbow",
+          snowflake: "Snowflake",
+          leaf: "Maple leaf",
+          tulip: "Tulip",
+          mushroom: "Mushroom",
+          cactus: "Cactus",
+          tree: "Pine tree",
+          rocket: "Rocket",
+          balloon: "Hot air balloon",
+          anchor: "Anchor",
+          key: "Key",
+          crown: "Crown",
+          heart: "Heart",
+          star: "Star",
+          gem: "Gem",
+          bell: "Bell",
+          umbrella: "Umbrella",
+        },
+
+        won: {
+          title: "All pairs found",
+          record: "Fewer moves than ever on this level.",
+          final: "That was the last level. Three stars on all twelve is what is left.",
+          next: "Next level",
+          bigger: "Next board",
+          again: "Play again",
+        },
+
+        how: {
+          label: "How to play",
+          items: [
+            {
+              title: "Two cards a turn",
+              description:
+                "Press a card to turn it over, then a second one. If the pictures match, both stay face up. If they do not, they stay up long enough to be remembered and then turn back, and pressing the next card turns them back at once.",
+            },
+            {
+              title: "Every turn is a move",
+              description:
+                "Two cards are one move, pair or not. Three stars is a board cleared about as fast as a perfect memory would clear it, two is within half as many moves again, and one is for getting there. The stars over the table go out as you pass each mark.",
+            },
+            {
+              title: "Twelve levels, each one bigger",
+              description:
+                "From two by two to ten by six. Clearing a level opens the next and your fewest moves are kept for each. The first five each deal from one part of the deck, fruit or nature or things, and from the sixth on all thirty pictures are in play.",
+            },
+            {
+              title: "Or skip ahead",
+              description:
+                "Free play opens every board at once, with no stars to earn and nothing locked. The same deck and the same rules, for when the big table is the one you want.",
+            },
+          ],
+        },
+
+        close: {
+          label: "How it is built",
+          paragraphs: [
+            "No canvas and no game library, like the rest of them. A card is a button with two faces, and turning it is one transition on one property: the layer holding both faces rotates half a turn about its vertical axis, each face hides its own back, and the browser shows whichever one is towards you. The turn overshoots by a few degrees and settles, which is what makes it read as a card with some weight in it rather than a square spinning. Every card carries its own perspective, scaled to its size, so a card on the smallest board and one on the largest turn through the same depth.",
+            "The thirty pictures are drawn rather than downloaded: one sprite sheet in the page, one symbol per picture, and every card face is a reference to one of them. Each is flat colour in three tones, the colour itself, a highlight towards the light and a shade away from it, on a ground of its own. The pictures keep their colours in both themes and only the grounds follow the page, so an apple remembered in the light is the same apple in the dark.",
+            "A card does not know what it is until it is turned. The face-down table in the page holds no answers: the front of every card points at nothing, and the picture is written onto it at the moment it goes over. The deck is shuffled once per board and lives inside the game, where the page cannot read it.",
+            "The star marks were measured rather than chosen. A player with perfect memory, one that never turns a card it has already seen unless that card completes a pair, played two hundred thousand games on every board, and three stars is the number of moves it needed in nine games out of ten. Its average came out at 1.61 moves a pair, which is the known answer for this game and how the simulation was checked.",
+            "The board is sized to fit the screen, because a memory board you have to scroll is one you cannot see. On a phone held upright it turns a quarter, ten across becoming six across, and not one card moves to do it: the grid fills by column instead of by row, the arrow keys swap axes to match, and a screen reader still walks the same table.",
+          ],
+        },
+      },
+
       accretion: {
         name: "Accretion",
 

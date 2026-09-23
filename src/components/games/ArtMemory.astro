@@ -1,0 +1,82 @@
+---
+/**
+ * The thumbnail for Memory on the games index.
+ *
+ * Ten real cards, not a picture of ten: the same `.mem-card` and its three
+ * layers, the same back and the same drawings the game deals, so the card on
+ * the index cannot drift away from the table on the page. The arrangement
+ * shown is a game under way - two pairs found, one card on its own, and one
+ * caught halfway over, which is the moment this game is about and the only
+ * one a still can show that no other game's card could.
+ *
+ * ⚠️ **The sprite sheet comes with it**, for Battleship's reason: a `<use>`
+ * only resolves against a symbol in the same document. `only` keeps it to the
+ * four pictures on show instead of all thirty.
+ */
+import type { PictureId } from '../../games/memory/game';
+import MemorySprites from './MemorySprites.astro';
+
+interface Card {
+  picture?: PictureId;
+  face?: 'up' | 'matched';
+  /** Caught mid-turn, in degrees. Past ninety the front is the side showing. */
+  turning?: number;
+}
+
+/**
+ * Row-major, 5 across and 2 down, against the 5:2 box every game card uses.
+ *
+ * ⚠️ **The bottom-right card is face down on purpose.** The status ribbon is
+ * cut across that corner, and a back is the one card that loses nothing by
+ * being partly covered.
+ */
+const cards: Card[] = [
+  { picture: 'apple', face: 'matched' },
+  {},
+  { picture: 'rocket', turning: 128 },
+  {},
+  { picture: 'tulip', face: 'matched' },
+  {},
+  { picture: 'tulip', face: 'matched' },
+  { picture: 'star', face: 'up' },
+  { picture: 'apple', face: 'matched' },
+  {},
+];
+
+const shown = [...new Set(cards.flatMap((card) => (card.picture ? [card.picture] : [])))];
+---
+
+<MemorySprites only={shown} />
+
+{/*
+  Two elements, not one. The outer is the query container and the inner is the
+  board, because a container cannot size itself in its own `cqi` - see the
+  warning on `.game-art` in global.css.
+*/}
+<div class="game-art game-art-mem" aria-hidden="true">
+  <div class="game-art-board">
+    {
+      cards.map((card) => (
+        <span class="mem-card" data-face={card.face}>
+          <span class="mem-card-body">
+            <span
+              class="mem-card-inner"
+              style={card.turning === undefined ? undefined : `rotate: y ${card.turning}deg`}
+            >
+              <span class="mem-face mem-back">
+                <svg viewBox="0 0 100 100" focusable="false">
+                  <use href="#mem-back" />
+                </svg>
+              </span>
+              <span class="mem-face mem-front">
+                <svg viewBox="0 0 100 100" focusable="false">
+                  {card.picture && <use href={`#mem-${card.picture}`} />}
+                </svg>
+              </span>
+            </span>
+          </span>
+        </span>
+      ))
+    }
+  </div>
+</div>

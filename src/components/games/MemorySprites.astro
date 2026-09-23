@@ -1,0 +1,696 @@
+---
+/**
+ * The deck: thirty pictures, the back of a card, and the star the ratings are
+ * drawn in.
+ *
+ * ⚠️ **A file of its own for the reason BattleshipSprites.astro is one**: the
+ * game and its thumbnail on the index both draw from it, and a second copy of
+ * a drawing is how a card ends up advertising a game that no longer looks like
+ * that. For the same reason the ids are global and it must appear once per
+ * document.
+ *
+ * `only` narrows it to the pictures a page actually shows. The thumbnail turns
+ * five cards face up and has no business shipping the other twenty-five, while
+ * the game has to carry all thirty because it does not know which it will deal.
+ * The back and the rating star are always drawn - every page that has a card
+ * has a face-down one.
+ */
+import type { PictureId } from '../../games/memory/game';
+
+interface Props {
+  only?: readonly PictureId[];
+}
+
+const { only } = Astro.props;
+
+const want = (id: PictureId) => !only || only.includes(id);
+---
+
+{/*
+  Every picture is a full card face on a 100 unit square, not an icon floating
+  on a card, and three rules hold across all thirty.
+
+  ⚠️ **The ground is part of the drawing.** Each symbol opens with its own
+  pastel square and a softer disc under the subject, so a pair shares its
+  colour as well as its shape - which is half of what the eye matches on -
+  and the thumbnail cannot draw a card any differently from the game. The
+  grounds are `--mem-bg-*` tokens with a dark value each, so the card answers
+  the theme while the picture on it stays exactly the same object.
+
+  ⚠️ **Flat fills, never a gradient or a clip path.** Both are referenced by
+  `url(#…)`, and a reference declared inside a symbol is not reliably resolved
+  from inside a `<use>` shadow tree. Depth is three tones instead - the
+  colour, a highlight towards the top left, and a shade band down the right -
+  which reads as round at sixty pixels and costs nothing.
+
+  ⚠️ **Colour goes in through `style`, never a `fill` attribute**, for the
+  reason the fleet gives: inherited custom properties are the only thing a
+  document stylesheet can get into a `<use>`.
+
+  Ten are fruit, ten are nature and ten are things, and within each ten the
+  grounds are spread so that no two pictures sharing a colour of card also
+  share a colour of subject.
+*/}
+<svg class="mem-sprites" aria-hidden="true" focusable="false">
+  <defs>
+    {/*
+      Fruit. Every one of them is lit from the top left: a highlight on that
+      side, a shade band down the right, and a stem and leaf where a stem and
+      leaf go.
+    */}
+    {want('apple') && (
+      <symbol id="mem-apple" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-mint)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <path d="M50 35 C41 27 21 29 20 49 C19 67 33 85 44 85 C47 85 48 83 50 83 C52 83 53 85 56 85 C67 85 81 67 80 49 C79 29 59 27 50 35Z" style="fill:var(--mem-red)"></path>
+        <path d="M63 30 C74 33 80.5 41 80 50 C79 67 67 85 56 85 C53 85 52 83 50 83 C60 78 70 64 70 49 C70 40 67 34 63 30Z" style="fill:var(--mem-red-lo)"></path>
+        <ellipse cx="32" cy="48" rx="4.5" ry="8.5" transform="rotate(-18 32 48)" style="fill:var(--mem-red-hi)"></ellipse>
+        <path d="M50 37 C49 30 51 23 55 18" style="fill:none;stroke:var(--mem-brown);stroke-width:4;stroke-linecap:round"></path>
+        <path d="M54 27 C57 17 69 13 75 17 C72 26 62 31 54 27Z" style="fill:var(--mem-green)"></path>
+        <path d="M56.5 25.5 C62 22 67 19.5 72 18" style="fill:none;stroke:var(--mem-green-hi);stroke-width:1.6;stroke-linecap:round"></path>
+      </symbol>
+    )}
+
+    {want('cherries') && (
+      <symbol id="mem-cherries" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-sand)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <g style="fill:none;stroke:var(--mem-green-lo);stroke-width:3.5;stroke-linecap:round">
+          <path d="M58 20 C50 31 41 42 37 53"></path>
+          <path d="M58 20 C61 33 64 44 65 56"></path>
+        </g>
+        <path d="M58 20 C63 11 75 9 81 13 C76 21 66 23 58 20Z" style="fill:var(--mem-green)"></path>
+        <path d="M60.5 19 C66 16 72 14 78 13.5" style="fill:none;stroke:var(--mem-green-hi);stroke-width:1.5;stroke-linecap:round"></path>
+        <circle cx="36" cy="67" r="15" style="fill:var(--mem-red-lo)"></circle>
+        <circle cx="34.5" cy="65.5" r="13.5" style="fill:var(--mem-red)"></circle>
+        <ellipse cx="29" cy="60" rx="3" ry="4.6" transform="rotate(35 29 60)" style="fill:var(--mem-red-hi)"></ellipse>
+        <circle cx="65" cy="70" r="15" style="fill:var(--mem-red-lo)"></circle>
+        <circle cx="63.5" cy="68.5" r="13.5" style="fill:var(--mem-red)"></circle>
+        <ellipse cx="58" cy="63" rx="3" ry="4.6" transform="rotate(35 58 63)" style="fill:var(--mem-red-hi)"></ellipse>
+      </symbol>
+    )}
+
+    {want('lemon') && (
+      <symbol id="mem-lemon" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-lilac)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <g transform="rotate(-28 50 55)">
+          <ellipse cx="21.5" cy="55" rx="5.5" ry="4.8" style="fill:var(--mem-yellow-lo)"></ellipse>
+          <ellipse cx="78.5" cy="55" rx="5.5" ry="4.8" style="fill:var(--mem-yellow-lo)"></ellipse>
+          <ellipse cx="50" cy="55" rx="28" ry="21" style="fill:var(--mem-yellow-lo)"></ellipse>
+          <ellipse cx="48.5" cy="53" rx="26.5" ry="18.5" style="fill:var(--mem-yellow)"></ellipse>
+          <ellipse cx="40" cy="45.5" rx="11" ry="3.8" style="fill:var(--mem-yellow-hi)"></ellipse>
+          <g style="fill:var(--mem-yellow-lo)">
+            <circle cx="58" cy="51" r="1.1"></circle>
+            <circle cx="64" cy="58" r="1.1"></circle>
+            <circle cx="52" cy="60" r="1.1"></circle>
+            <circle cx="42" cy="56" r="1.1"></circle>
+            <circle cx="68" cy="49" r="1.1"></circle>
+            <circle cx="34" cy="60" r="1.1"></circle>
+          </g>
+        </g>
+        <path d="M75 38 C76 28 84 22 91 23 C90 31 83 38 75 38Z" style="fill:var(--mem-green)"></path>
+        <path d="M77 36 C80 31 84 27 88.5 25" style="fill:none;stroke:var(--mem-green-hi);stroke-width:1.5;stroke-linecap:round"></path>
+      </symbol>
+    )}
+
+    {want('strawberry') && (
+      <symbol id="mem-strawberry" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-sea)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <path d="M50 86 C35 80 21 64 21 49 C21 38 31 32 41 34 C45 35 47 36 50 36 C53 36 55 35 59 34 C69 32 79 38 79 49 C79 64 65 80 50 86Z" style="fill:var(--mem-red)"></path>
+        <path d="M66 34 C74 36 79 41 79 49 C79 64 65 80 50 86 C60 76 70 62 70 49 C70 42 68 37 66 34Z" style="fill:var(--mem-red-lo)"></path>
+        <ellipse cx="31" cy="51" rx="4" ry="7.5" transform="rotate(-16 31 51)" style="fill:var(--mem-red-hi)"></ellipse>
+        <g style="fill:var(--mem-yellow-hi)">
+          <ellipse cx="40" cy="47" rx="1.4" ry="2.2"></ellipse>
+          <ellipse cx="51" cy="46" rx="1.4" ry="2.2"></ellipse>
+          <ellipse cx="62" cy="47" rx="1.4" ry="2.2"></ellipse>
+          <ellipse cx="33" cy="59" rx="1.4" ry="2.2"></ellipse>
+          <ellipse cx="45" cy="57" rx="1.4" ry="2.2"></ellipse>
+          <ellipse cx="57" cy="57" rx="1.4" ry="2.2"></ellipse>
+          <ellipse cx="69" cy="59" rx="1.4" ry="2.2"></ellipse>
+          <ellipse cx="39" cy="68" rx="1.4" ry="2.2"></ellipse>
+          <ellipse cx="51" cy="67" rx="1.4" ry="2.2"></ellipse>
+          <ellipse cx="62" cy="68" rx="1.4" ry="2.2"></ellipse>
+          <ellipse cx="45" cy="77" rx="1.4" ry="2.2"></ellipse>
+          <ellipse cx="56" cy="77" rx="1.4" ry="2.2"></ellipse>
+        </g>
+        <path d="M50 33 C50 29 51 26 53 23" style="fill:none;stroke:var(--mem-green-lo);stroke-width:3.5;stroke-linecap:round"></path>
+        <path d="M28 39 C32 31 40 30 45 35 L50 27 L55 35 C60 30 68 31 72 39 C65 42 59 41 55 39 C53 43 47 43 45 39 C41 41 35 42 28 39Z" style="fill:var(--mem-green)"></path>
+      </symbol>
+    )}
+
+    {/*
+      A wedge seen from the cut side, tilted, because a whole melon is a green
+      ball and says nothing at a card this size.
+    */}
+    {want('watermelon') && (
+      <symbol id="mem-watermelon" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-blush)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <g transform="rotate(-12 50 52)">
+          <path d="M12 36 A38 38 0 0 0 88 36 Z" style="fill:var(--mem-green-lo)"></path>
+          <path d="M14 36 A36 36 0 0 0 86 36 Z" style="fill:var(--mem-green)"></path>
+          <path d="M18 36 A32 32 0 0 0 82 36 Z" style="fill:var(--mem-lime-hi)"></path>
+          <path d="M21 36 A29 29 0 0 0 79 36 Z" style="fill:var(--mem-red)"></path>
+          <path d="M21 36 L79 36 L78.6 40 L21.4 40 Z" style="fill:var(--mem-red-hi)"></path>
+          <g style="fill:var(--mem-ink)">
+            <ellipse cx="36" cy="47" rx="1.8" ry="3" transform="rotate(25 36 47)"></ellipse>
+            <ellipse cx="50" cy="50" rx="1.8" ry="3"></ellipse>
+            <ellipse cx="64" cy="47" rx="1.8" ry="3" transform="rotate(-25 64 47)"></ellipse>
+            <ellipse cx="43" cy="58" rx="1.8" ry="3" transform="rotate(15 43 58)"></ellipse>
+            <ellipse cx="57" cy="58" rx="1.8" ry="3" transform="rotate(-15 57 58)"></ellipse>
+          </g>
+        </g>
+      </symbol>
+    )}
+
+    {want('pear') && (
+      <symbol id="mem-pear" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-peach)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <path d="M50 26 C43 26 41 32 41 39 C41 47 29 53 29 67 C29 80 39 87 50 87 C61 87 71 80 71 67 C71 53 59 47 59 39 C59 32 57 26 50 26Z" style="fill:var(--mem-lime)"></path>
+        <path d="M56 28 C58 31 59 35 59 39 C59 47 71 53 71 67 C71 80 61 87 50 87 C58 82 63 75 63 65 C63 53 54 46 54 37 C54 33 55 30 56 28Z" style="fill:var(--mem-lime-lo)"></path>
+        <ellipse cx="38" cy="65" rx="4" ry="8.5" transform="rotate(-12 38 65)" style="fill:var(--mem-lime-hi)"></ellipse>
+        <path d="M50 28 C50 23 51 19 54 15" style="fill:none;stroke:var(--mem-brown);stroke-width:3.5;stroke-linecap:round"></path>
+        <path d="M53 21 C56 13 66 10 72 13 C69 20 60 24 53 21Z" style="fill:var(--mem-green)"></path>
+      </symbol>
+    )}
+
+    {want('grapes') && (
+      <symbol id="mem-grapes" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-mint)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <path d="M50 29 C50 24 52 19 55 15" style="fill:none;stroke:var(--mem-brown);stroke-width:3.5;stroke-linecap:round"></path>
+        <path d="M54 22 C59 13 71 11 77 15 C73 23 62 26 54 22Z" style="fill:var(--mem-green)"></path>
+        <g>
+          <g><circle cx="26" cy="38" r="8.5" style="fill:var(--mem-violet-lo)"></circle><circle cx="25" cy="37" r="7.3" style="fill:var(--mem-violet)"></circle><circle cx="22.6" cy="34.6" r="2" style="fill:var(--mem-violet-hi)"></circle></g>
+          <g><circle cx="42" cy="38" r="8.5" style="fill:var(--mem-violet-lo)"></circle><circle cx="41" cy="37" r="7.3" style="fill:var(--mem-violet)"></circle><circle cx="38.6" cy="34.6" r="2" style="fill:var(--mem-violet-hi)"></circle></g>
+          <g><circle cx="58" cy="38" r="8.5" style="fill:var(--mem-violet-lo)"></circle><circle cx="57" cy="37" r="7.3" style="fill:var(--mem-violet)"></circle><circle cx="54.6" cy="34.6" r="2" style="fill:var(--mem-violet-hi)"></circle></g>
+          <g><circle cx="74" cy="38" r="8.5" style="fill:var(--mem-violet-lo)"></circle><circle cx="73" cy="37" r="7.3" style="fill:var(--mem-violet)"></circle><circle cx="70.6" cy="34.6" r="2" style="fill:var(--mem-violet-hi)"></circle></g>
+          <g><circle cx="34" cy="52" r="8.5" style="fill:var(--mem-violet-lo)"></circle><circle cx="33" cy="51" r="7.3" style="fill:var(--mem-violet)"></circle><circle cx="30.6" cy="48.6" r="2" style="fill:var(--mem-violet-hi)"></circle></g>
+          <g><circle cx="50" cy="52" r="8.5" style="fill:var(--mem-violet-lo)"></circle><circle cx="49" cy="51" r="7.3" style="fill:var(--mem-violet)"></circle><circle cx="46.6" cy="48.6" r="2" style="fill:var(--mem-violet-hi)"></circle></g>
+          <g><circle cx="66" cy="52" r="8.5" style="fill:var(--mem-violet-lo)"></circle><circle cx="65" cy="51" r="7.3" style="fill:var(--mem-violet)"></circle><circle cx="62.6" cy="48.6" r="2" style="fill:var(--mem-violet-hi)"></circle></g>
+          <g><circle cx="42" cy="66" r="8.5" style="fill:var(--mem-violet-lo)"></circle><circle cx="41" cy="65" r="7.3" style="fill:var(--mem-violet)"></circle><circle cx="38.6" cy="62.6" r="2" style="fill:var(--mem-violet-hi)"></circle></g>
+          <g><circle cx="58" cy="66" r="8.5" style="fill:var(--mem-violet-lo)"></circle><circle cx="57" cy="65" r="7.3" style="fill:var(--mem-violet)"></circle><circle cx="54.6" cy="62.6" r="2" style="fill:var(--mem-violet-hi)"></circle></g>
+          <g><circle cx="50" cy="80" r="8.5" style="fill:var(--mem-violet-lo)"></circle><circle cx="49" cy="79" r="7.3" style="fill:var(--mem-violet)"></circle><circle cx="46.6" cy="76.6" r="2" style="fill:var(--mem-violet-hi)"></circle></g>
+        </g>
+      </symbol>
+    )}
+
+    {/*
+      A slice rather than a whole one, so it cannot be mistaken for the apple
+      or the sun at a glance.
+    */}
+    {want('orange') && (
+      <symbol id="mem-orange" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-sea)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <circle cx="50" cy="51" r="33" style="fill:var(--mem-orange-lo)"></circle>
+        <circle cx="49" cy="50" r="31.5" style="fill:var(--mem-orange)"></circle>
+        <circle cx="49" cy="50" r="27.5" style="fill:var(--mem-cream)"></circle>
+        <circle cx="49" cy="50" r="25" style="fill:var(--mem-orange-hi)"></circle>
+        <g style="fill:none;stroke:var(--mem-cream);stroke-width:2.4;stroke-linecap:round">
+          <path d="M24 50 L74 50"></path>
+          <path d="M49 25 L49 75"></path>
+          <path d="M31.3 32.3 L66.7 67.7"></path>
+          <path d="M31.3 67.7 L66.7 32.3"></path>
+        </g>
+        <circle cx="49" cy="50" r="3.4" style="fill:var(--mem-cream)"></circle>
+        <path d="M31 38 C34 32 40 28 46 27" style="fill:none;stroke:var(--mem-white);stroke-width:2.6;stroke-linecap:round;opacity:0.55"></path>
+      </symbol>
+    )}
+
+    {want('banana') && (
+      <symbol id="mem-banana" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-blush)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <path d="M29 24 C17 48 25 72 47 82 C61 88 76 84 84 75 C85 73 84 71 82 71 C68 73 54 68 46 59 C39 51 38 38 39 24 C39 20 30 20 29 24Z" style="fill:var(--mem-yellow)"></path>
+        <path d="M22 42 C21 60 30 74 47 82 C61 88 76 84 84 75 C70 81 56 79 45 72 C33 64 25 54 22 42Z" style="fill:var(--mem-yellow-lo)"></path>
+        <path d="M34.5 30 C34 42 37 51 43 58" style="fill:none;stroke:var(--mem-yellow-hi);stroke-width:3.2;stroke-linecap:round"></path>
+        <path d="M30 25 L30.5 15.5 C30.6 13.4 37.4 13.4 37.5 15.5 L38 25 Z" style="fill:var(--mem-brown)"></path>
+        <path d="M82.5 71 C86.5 70.5 88.5 73.5 86.5 76 C85 77.5 82.8 77.6 81.6 76.6 Z" style="fill:var(--mem-brown-lo)"></path>
+      </symbol>
+    )}
+
+    {/*
+      The crown is five leaves and the body a lattice, and the lattice is
+      drawn as lines laid inside the ellipse rather than clipped to it. A
+      `clipPath` inside a symbol has the same trouble resolving from a `<use>`
+      that a gradient does.
+    */}
+    {want('pineapple') && (
+      <symbol id="mem-pineapple" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-sand)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <path d="M48 45 C40 44 31 40 26 32 C34 33 42 37 48 45Z" style="fill:var(--mem-green-lo)"></path>
+        <path d="M52 45 C60 44 69 40 74 32 C66 33 58 37 52 45Z" style="fill:var(--mem-green-lo)"></path>
+        <path d="M48 45 C40 39 34 31 32 20 C40 26 46 34 48 45Z" style="fill:var(--mem-green)"></path>
+        <path d="M52 45 C60 39 66 31 68 20 C60 26 54 34 52 45Z" style="fill:var(--mem-green)"></path>
+        <path d="M50 46 C45 35 45 23 50 12 C55 23 55 35 50 46Z" style="fill:var(--mem-green-hi)"></path>
+        <ellipse cx="50" cy="65" rx="19.5" ry="23" style="fill:var(--mem-orange)"></ellipse>
+        <ellipse cx="48.5" cy="64" rx="17.5" ry="21.5" style="fill:var(--mem-yellow-lo)"></ellipse>
+        <g style="fill:none;stroke:var(--mem-orange-lo);stroke-width:1.6;stroke-linecap:round;opacity:0.7">
+          <path d="M34 52 L58 84"></path>
+          <path d="M37 45 L65 81"></path>
+          <path d="M45 43 L68 72"></path>
+          <path d="M31 63 L47 86"></path>
+          <path d="M66 52 L42 84"></path>
+          <path d="M63 45 L35 81"></path>
+          <path d="M55 43 L32 72"></path>
+          <path d="M69 63 L53 86"></path>
+        </g>
+        <ellipse cx="40" cy="58" rx="3.5" ry="8" transform="rotate(-10 40 58)" style="fill:var(--mem-yellow);opacity:0.8"></ellipse>
+      </symbol>
+    )}
+
+    {/*
+      Nature. The sun has two sets of rays, long and short, because twelve of
+      one length read as a gear.
+    */}
+    {want('sun') && (
+      <symbol id="mem-sun" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-sky)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <g style="fill:none;stroke:var(--mem-orange-hi);stroke-width:6;stroke-linecap:round">
+          <path d="M50 13 L50 23"></path>
+          <path d="M50 13 L50 23" transform="rotate(60 50 50)"></path>
+          <path d="M50 13 L50 23" transform="rotate(120 50 50)"></path>
+          <path d="M50 13 L50 23" transform="rotate(180 50 50)"></path>
+          <path d="M50 13 L50 23" transform="rotate(240 50 50)"></path>
+          <path d="M50 13 L50 23" transform="rotate(300 50 50)"></path>
+        </g>
+        <g style="fill:none;stroke:var(--mem-yellow);stroke-width:5;stroke-linecap:round">
+          <path d="M50 17 L50 24" transform="rotate(30 50 50)"></path>
+          <path d="M50 17 L50 24" transform="rotate(90 50 50)"></path>
+          <path d="M50 17 L50 24" transform="rotate(150 50 50)"></path>
+          <path d="M50 17 L50 24" transform="rotate(210 50 50)"></path>
+          <path d="M50 17 L50 24" transform="rotate(270 50 50)"></path>
+          <path d="M50 17 L50 24" transform="rotate(330 50 50)"></path>
+        </g>
+        <circle cx="50" cy="50" r="20" style="fill:var(--mem-orange)"></circle>
+        <circle cx="49" cy="49" r="18.5" style="fill:var(--mem-yellow)"></circle>
+        <path d="M38 44 C39 39 43 35 48 34" style="fill:none;stroke:var(--mem-yellow-hi);stroke-width:3.5;stroke-linecap:round"></path>
+      </symbol>
+    )}
+
+    {/*
+      The crescent is one path of two arcs, worked out from where the two
+      circles meet, rather than a disc with a second disc painted over it in
+      the sky colour - which would show as a patch the moment the ground under
+      it changed.
+    */}
+    {want('moon') && (
+      <symbol id="mem-moon" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-night)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot-night)"></circle>
+        <path d="M44.05 24.06 A28 28 0 1 0 71.8 62.9 A24 24 0 0 1 44.05 24.06 Z" style="fill:var(--mem-yellow-hi)"></path>
+        <path d="M26 64 C30 74 40 80 50 80 C60 80 66 76 71.8 62.9 C64 72 56 75 48 74 C38 73 30 69 26 64Z" style="fill:var(--mem-yellow)"></path>
+        <g style="fill:var(--mem-yellow)">
+          <circle cx="31" cy="50" r="3.6"></circle>
+          <circle cx="40" cy="64" r="2.6"></circle>
+          <circle cx="33" cy="37" r="2"></circle>
+        </g>
+        <g style="fill:var(--mem-white)">
+          <path d="M74 20 Q74 28 82 28 Q74 28 74 36 Q74 28 66 28 Q74 28 74 20Z"></path>
+          <path d="M84 45 Q84 49 88 49 Q84 49 84 53 Q84 49 80 49 Q84 49 84 45Z"></path>
+          <path d="M66 74 Q66 79 71 79 Q66 79 66 84 Q66 79 61 79 Q66 79 66 74Z"></path>
+        </g>
+      </symbol>
+    )}
+
+    {want('cloud') && (
+      <symbol id="mem-cloud" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-lilac)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <path d="M53 52 L40 72 L49 72 L44 88 L62 66 L53 66 L58 52 Z" style="fill:var(--mem-yellow)"></path>
+        <path d="M58 52 L53 66 L62 66 L44 88 L55 70 L50 70 Z" style="fill:var(--mem-yellow-lo)"></path>
+        <path d="M30 58 C20 58 15 51 16 44 C17 37 23 33 30 34 C32 24 41 18 51 19 C60 20 65 26 67 32 C74 29 83 33 85 42 C87 51 80 58 71 58 Z" style="fill:var(--mem-white)"></path>
+        <path d="M16 46 C17 53 22 58 30 58 L71 58 C80 58 86 52 85 44 C82 50 76 52 70 51 C62 53 50 53 40 51 C30 53 20 51 16 46Z" style="fill:var(--mem-grey-hi)"></path>
+      </symbol>
+    )}
+
+    {want('rainbow') && (
+      <symbol id="mem-rainbow" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-lilac)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <g style="fill:none;stroke-width:6.2">
+          <path d="M14 68 A36 36 0 0 1 86 68" style="stroke:var(--mem-red)"></path>
+          <path d="M20 68 A30 30 0 0 1 80 68" style="stroke:var(--mem-orange)"></path>
+          <path d="M26 68 A24 24 0 0 1 74 68" style="stroke:var(--mem-yellow)"></path>
+          <path d="M32 68 A18 18 0 0 1 68 68" style="stroke:var(--mem-lime)"></path>
+          <path d="M38 68 A12 12 0 0 1 62 68" style="stroke:var(--mem-sky)"></path>
+        </g>
+        <g style="fill:var(--mem-white)">
+          <circle cx="16" cy="70" r="7"></circle>
+          <circle cx="25" cy="66" r="8.5"></circle>
+          <circle cx="33" cy="71" r="6"></circle>
+          <rect x="10" y="70" width="28" height="8" rx="4"></rect>
+          <circle cx="84" cy="70" r="7"></circle>
+          <circle cx="75" cy="66" r="8.5"></circle>
+          <circle cx="67" cy="71" r="6"></circle>
+          <rect x="62" y="70" width="28" height="8" rx="4"></rect>
+        </g>
+        <g style="fill:var(--mem-grey-hi)">
+          <rect x="12" y="74" width="24" height="4" rx="2"></rect>
+          <rect x="64" y="74" width="24" height="4" rx="2"></rect>
+        </g>
+      </symbol>
+    )}
+
+    {want('snowflake') && (
+      <symbol id="mem-snowflake" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-peach)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <g style="fill:none;stroke:var(--mem-sky-lo);stroke-width:6;stroke-linecap:round;stroke-linejoin:round">
+          <g><path d="M50 50 L50 16"></path><path d="M41 22 L50 31 L59 22"></path><path d="M45 36 L50 41 L55 36"></path></g>
+          <g transform="rotate(60 50 50)"><path d="M50 50 L50 16"></path><path d="M41 22 L50 31 L59 22"></path><path d="M45 36 L50 41 L55 36"></path></g>
+          <g transform="rotate(120 50 50)"><path d="M50 50 L50 16"></path><path d="M41 22 L50 31 L59 22"></path><path d="M45 36 L50 41 L55 36"></path></g>
+          <g transform="rotate(180 50 50)"><path d="M50 50 L50 16"></path><path d="M41 22 L50 31 L59 22"></path><path d="M45 36 L50 41 L55 36"></path></g>
+          <g transform="rotate(240 50 50)"><path d="M50 50 L50 16"></path><path d="M41 22 L50 31 L59 22"></path><path d="M45 36 L50 41 L55 36"></path></g>
+          <g transform="rotate(300 50 50)"><path d="M50 50 L50 16"></path><path d="M41 22 L50 31 L59 22"></path><path d="M45 36 L50 41 L55 36"></path></g>
+        </g>
+        <g style="fill:none;stroke:var(--mem-sky-hi);stroke-width:2;stroke-linecap:round">
+          <path d="M50 44 L50 19"></path>
+          <path d="M50 44 L50 19" transform="rotate(60 50 50)"></path>
+          <path d="M50 44 L50 19" transform="rotate(120 50 50)"></path>
+          <path d="M50 44 L50 19" transform="rotate(180 50 50)"></path>
+          <path d="M50 44 L50 19" transform="rotate(240 50 50)"></path>
+          <path d="M50 44 L50 19" transform="rotate(300 50 50)"></path>
+        </g>
+        <circle cx="50" cy="50" r="7" style="fill:var(--mem-sky-lo)"></circle>
+        <circle cx="50" cy="50" r="3.6" style="fill:var(--mem-sky-hi)"></circle>
+      </symbol>
+    )}
+
+    {want('leaf') && (
+      <symbol id="mem-leaf" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-sky)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <path d="M50 64 C50 74 48 82 44 88" style="fill:none;stroke:var(--mem-brown);stroke-width:3.5;stroke-linecap:round"></path>
+        <path d="M50 12 L56 26 L64 22 L62 38 L76 30 L72 42 L86 44 L76 54 L80 58 L62 62 L64 70 L52 66 L48 66 L36 70 L38 62 L20 58 L24 54 L14 44 L28 42 L24 30 L38 38 L36 22 L44 26 Z" style="fill:var(--mem-orange);stroke:var(--mem-orange);stroke-width:4;stroke-linejoin:round"></path>
+        <path d="M50 12 L56 26 L64 22 L62 38 L76 30 L72 42 L86 44 L76 54 L80 58 L62 62 L64 70 L52 66 L50 66 Z" style="fill:var(--mem-orange-lo);stroke:var(--mem-orange-lo);stroke-width:4;stroke-linejoin:round"></path>
+        <g style="fill:none;stroke:var(--mem-orange-hi);stroke-width:1.8;stroke-linecap:round">
+          <path d="M50 64 L50 22"></path>
+          <path d="M50 54 L72 36"></path>
+          <path d="M50 54 L28 36"></path>
+          <path d="M50 60 L72 57"></path>
+          <path d="M50 60 L28 57"></path>
+        </g>
+      </symbol>
+    )}
+
+    {want('tulip') && (
+      <symbol id="mem-tulip" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-mint)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <path d="M50 54 C50 66 50 76 50 87" style="fill:none;stroke:var(--mem-green);stroke-width:4;stroke-linecap:round"></path>
+        <path d="M50 84 C40 82 30 72 30 58 C38 62 46 70 50 84Z" style="fill:var(--mem-green)"></path>
+        <path d="M50 78 C58 74 68 66 70 54 C62 56 54 64 50 78Z" style="fill:var(--mem-green-lo)"></path>
+        <path d="M33 22 C33 40 38 54 50 54 C62 54 67 40 67 22 C62 26 56 30 50 22 C44 30 38 26 33 22Z" style="fill:var(--mem-pink)"></path>
+        <path d="M50 18 C44 26 42 38 44 52 C46 54 48 54 50 54 C52 54 54 54 56 52 C58 38 56 26 50 18Z" style="fill:var(--mem-pink-hi)"></path>
+        <path d="M58 26 C62 26 65 24 67 22 C67 40 62 54 50 54 C58 48 60 38 58 26Z" style="fill:var(--mem-pink-lo)"></path>
+      </symbol>
+    )}
+
+    {want('mushroom') && (
+      <symbol id="mem-mushroom" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-butter)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <path d="M39 56 C39 68 36 78 36 82 C36 86 43 89 50 89 C57 89 64 86 64 82 C64 78 61 68 61 56Z" style="fill:var(--mem-cream-lo)"></path>
+        <path d="M39 56 L53 56 C53 68 52 78 52 89 C45 89 36 86 36 82 C36 78 39 68 39 56Z" style="fill:var(--mem-cream)"></path>
+        <path d="M39 60 L61 60 L61 64 C54 66 46 66 39 64Z" style="fill:var(--mem-cream-lo)"></path>
+        <path d="M14 54 C14 32 30 18 50 18 C70 18 86 32 86 54 C86 58 82 60 78 60 L22 60 C18 60 14 58 14 54Z" style="fill:var(--mem-red)"></path>
+        <path d="M14 52 C14 56 17 60 22 60 L78 60 C83 60 86 56 86 52 C80 56 70 56 50 56 C30 56 20 56 14 52Z" style="fill:var(--mem-red-lo)"></path>
+        <path d="M25 38 C28 30 35 24 43 23" style="fill:none;stroke:var(--mem-red-hi);stroke-width:4;stroke-linecap:round"></path>
+        <g style="fill:var(--mem-white)">
+          <circle cx="37" cy="36" r="5.5"></circle>
+          <circle cx="59" cy="29" r="4.5"></circle>
+          <circle cx="71" cy="43" r="5"></circle>
+          <circle cx="48" cy="47" r="3.6"></circle>
+          <circle cx="24" cy="49" r="3"></circle>
+        </g>
+      </symbol>
+    )}
+
+    {want('cactus') && (
+      <symbol id="mem-cactus" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-rose)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <g style="fill:none;stroke:var(--mem-green);stroke-width:9;stroke-linecap:round;stroke-linejoin:round">
+          <path d="M44 54 L33 54 C31 54 30 53 30 51 L30 39"></path>
+          <path d="M56 60 L67 60 C69 60 70 59 70 57 L70 45"></path>
+        </g>
+        <path d="M42 70 L42 30 C42 21 58 21 58 30 L58 70 Z" style="fill:var(--mem-green)"></path>
+        <path d="M53 23.5 C56 25 58 27 58 30 L58 70 L53 70Z" style="fill:var(--mem-green-lo)"></path>
+        <path d="M46.5 30 L46.5 66" style="fill:none;stroke:var(--mem-green-hi);stroke-width:2.2;stroke-linecap:round"></path>
+        <path d="M28 38 L28 47" style="fill:none;stroke:var(--mem-green-hi);stroke-width:2;stroke-linecap:round"></path>
+        <path d="M32 72 L68 72 L64 89 C64 90 63 91 62 91 L38 91 C37 91 36 90 36 89 Z" style="fill:var(--mem-orange-lo)"></path>
+        <rect x="29" y="66" width="42" height="8" rx="2.5" style="fill:var(--mem-orange)"></rect>
+        <circle cx="50" cy="22" r="5.2" style="fill:var(--mem-pink)"></circle>
+        <circle cx="50" cy="22" r="2" style="fill:var(--mem-yellow)"></circle>
+      </symbol>
+    )}
+
+    {want('tree') && (
+      <symbol id="mem-tree" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-sand)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <rect x="45" y="74" width="10" height="15" rx="2" style="fill:var(--mem-brown)"></rect>
+        <g style="stroke-width:5;stroke-linejoin:round">
+          <path d="M50 44 L78 77 L22 77 Z" style="fill:var(--mem-green);stroke:var(--mem-green)"></path>
+          <path d="M50 44 L78 77 L50 77 Z" style="fill:var(--mem-green-lo);stroke:var(--mem-green-lo)"></path>
+          <path d="M50 29 L72 59 L28 59 Z" style="fill:var(--mem-green);stroke:var(--mem-green)"></path>
+          <path d="M50 29 L72 59 L50 59 Z" style="fill:var(--mem-green-lo);stroke:var(--mem-green-lo)"></path>
+          <path d="M50 14 L66 41 L34 41 Z" style="fill:var(--mem-green);stroke:var(--mem-green)"></path>
+          <path d="M50 14 L66 41 L50 41 Z" style="fill:var(--mem-green-lo);stroke:var(--mem-green-lo)"></path>
+        </g>
+      </symbol>
+    )}
+
+    {/*
+      Things. The three night cards - the moon, the rocket and the star -
+      share one ground and nothing else, so what tells them apart is the
+      silhouette, which is the point of a memory card.
+    */}
+    {want('rocket') && (
+      <symbol id="mem-rocket" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-night)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot-night)"></circle>
+        <g style="fill:var(--mem-white)">
+          <path d="M20 20 Q20 25 25 25 Q20 25 20 30 Q20 25 15 25 Q20 25 20 20Z"></path>
+          <path d="M82 70 Q82 74 86 74 Q82 74 82 78 Q82 74 78 74 Q82 74 82 70Z"></path>
+          <circle cx="80" cy="22" r="1.6"></circle>
+          <circle cx="18" cy="64" r="1.4"></circle>
+        </g>
+        <g transform="rotate(35 50 52)">
+          <path d="M44 66 C44 76 47 82 50 90 C53 82 56 76 56 66Z" style="fill:var(--mem-orange)"></path>
+          <path d="M47 66 C47 72 48 77 50 83 C52 77 53 72 53 66Z" style="fill:var(--mem-yellow)"></path>
+          <path d="M37 50 L26 63 C25 65 26 67 28 67 L38 63Z" style="fill:var(--mem-red)"></path>
+          <path d="M63 50 L74 63 C75 65 74 67 72 67 L62 63Z" style="fill:var(--mem-red-lo)"></path>
+          <path d="M42 62 L58 62 L56 67 L44 67Z" style="fill:var(--mem-grey-lo)"></path>
+          <path d="M50 13 C61 23 65 40 63 63 L37 63 C35 40 39 23 50 13Z" style="fill:var(--mem-white)"></path>
+          <path d="M55 18 C61 27 64 42 63 63 L56 63 C58 45 58 30 55 18Z" style="fill:var(--mem-grey-hi)"></path>
+          <path d="M50 13 C55 17 58.5 22 60.5 28 L39.5 28 C41.5 22 45 17 50 13Z" style="fill:var(--mem-red)"></path>
+          <circle cx="50" cy="41" r="7.5" style="fill:var(--mem-blue-lo)"></circle>
+          <circle cx="50" cy="41" r="5.2" style="fill:var(--mem-sky)"></circle>
+          <circle cx="48" cy="39" r="1.8" style="fill:var(--mem-sky-hi)"></circle>
+        </g>
+      </symbol>
+    )}
+
+    {want('balloon') && (
+      <symbol id="mem-balloon" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-sky)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <g style="fill:none;stroke:var(--mem-brown-lo);stroke-width:1.6;stroke-linecap:round">
+          <path d="M42.5 76 L44.5 84"></path>
+          <path d="M57.5 76 L55.5 84"></path>
+        </g>
+        <rect x="42" y="83" width="16" height="9" rx="2" style="fill:var(--mem-brown)"></rect>
+        <rect x="42" y="83" width="16" height="2.6" rx="1.3" style="fill:var(--mem-brown-lo)"></rect>
+        <path d="M50 12 C69 12 82 26 82 43 C82 57 67 67 60 73 L40 73 C33 67 18 57 18 43 C18 26 31 12 50 12Z" style="fill:var(--mem-red)"></path>
+        <path d="M66 16 C76 22 82 32 82 43 C82 57 67 67 60 73 L56.5 73 C63 64 70 52 70 40 C70 30 68 22 66 16Z" style="fill:var(--mem-red-lo)"></path>
+        <path d="M50 12 C59 24 61 48 57 73 L43 73 C39 48 41 24 50 12Z" style="fill:var(--mem-yellow)"></path>
+        <path d="M50 12 C59 24 61 48 57 73 L51.5 73 C54 50 54 28 50 12Z" style="fill:var(--mem-yellow-lo)"></path>
+        <path d="M40 73 L60 73 L58 78 L42 78Z" style="fill:var(--mem-red-lo)"></path>
+        <path d="M26 34 C29 25 35 19 42 16.5" style="fill:none;stroke:var(--mem-red-hi);stroke-width:3.2;stroke-linecap:round"></path>
+      </symbol>
+    )}
+
+    {/*
+      Drawn twice, the second copy two units down and right in the darker
+      blue, which is the cheapest way to give a line drawing some weight.
+    */}
+    {want('anchor') && (
+      <symbol id="mem-anchor" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-peach)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <g transform="translate(2 2)" style="fill:none;stroke:var(--mem-blue-lo);stroke-linecap:round">
+          <circle cx="50" cy="21" r="7" style="stroke-width:5.5"></circle>
+          <path d="M50 28 L50 82" style="stroke-width:7"></path>
+          <path d="M36 38 L64 38" style="stroke-width:6"></path>
+          <path d="M22 58 C23 74 36 84 50 84 C64 84 77 74 78 58" style="stroke-width:7"></path>
+        </g>
+        <g transform="translate(2 2)" style="fill:var(--mem-blue-lo)">
+          <path d="M22 48 L13 63 L29 62 Z"></path>
+          <path d="M78 48 L87 63 L71 62 Z"></path>
+        </g>
+        <g style="fill:none;stroke:var(--mem-blue);stroke-linecap:round">
+          <circle cx="50" cy="21" r="7" style="stroke-width:5.5"></circle>
+          <path d="M50 28 L50 82" style="stroke-width:7"></path>
+          <path d="M36 38 L64 38" style="stroke-width:6"></path>
+          <path d="M22 58 C23 74 36 84 50 84 C64 84 77 74 78 58" style="stroke-width:7"></path>
+        </g>
+        <g style="fill:var(--mem-blue)">
+          <path d="M22 48 L13 63 L29 62 Z"></path>
+          <path d="M78 48 L87 63 L71 62 Z"></path>
+        </g>
+        <path d="M48.3 31 L48.3 78" style="fill:none;stroke:var(--mem-blue-hi);stroke-width:1.8;stroke-linecap:round"></path>
+      </symbol>
+    )}
+
+    {/*
+      The same double drawing as the anchor, in gold.
+    */}
+    {want('key') && (
+      <symbol id="mem-key" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-rose)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <g transform="rotate(-40 50 52)">
+          <g transform="translate(1.8 1.8)" style="fill:none;stroke:var(--mem-orange-lo);stroke-linecap:round">
+            <circle cx="50" cy="27" r="12" style="stroke-width:8"></circle>
+            <path d="M50 39 L50 85" style="stroke-width:8"></path>
+            <path d="M50 70 L60 70" style="stroke-width:7"></path>
+            <path d="M50 80 L58 80" style="stroke-width:7"></path>
+          </g>
+          <g style="fill:none;stroke:var(--mem-yellow);stroke-linecap:round">
+            <circle cx="50" cy="27" r="12" style="stroke-width:8"></circle>
+            <path d="M50 39 L50 85" style="stroke-width:8"></path>
+            <path d="M50 70 L60 70" style="stroke-width:7"></path>
+            <path d="M50 80 L58 80" style="stroke-width:7"></path>
+          </g>
+          <path d="M40.5 22 C42 18 45 16 48 15.5" style="fill:none;stroke:var(--mem-yellow-hi);stroke-width:2.2;stroke-linecap:round"></path>
+          <path d="M48 42 L48 82" style="fill:none;stroke:var(--mem-yellow-hi);stroke-width:2;stroke-linecap:round"></path>
+        </g>
+      </symbol>
+    )}
+
+    {want('crown') && (
+      <symbol id="mem-crown" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-blush)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <path d="M21 70 L16 34 L34 50 L50 25 L66 50 L84 34 L79 70 Z" style="fill:var(--mem-yellow);stroke:var(--mem-yellow);stroke-width:3;stroke-linejoin:round"></path>
+        <path d="M66 50 L84 34 L79 70 L66 70 Z" style="fill:var(--mem-yellow-lo);stroke:var(--mem-yellow-lo);stroke-width:3;stroke-linejoin:round"></path>
+        <path d="M50 44 L56 52 L50 60 L44 52Z" style="fill:var(--mem-red)"></path>
+        <rect x="18" y="68" width="64" height="14" rx="3" style="fill:var(--mem-yellow-lo)"></rect>
+        <rect x="18" y="68" width="64" height="3" rx="1.5" style="fill:var(--mem-orange)"></rect>
+        <circle cx="50" cy="76" r="4" style="fill:var(--mem-red)"></circle>
+        <circle cx="33" cy="76" r="3" style="fill:var(--mem-sky)"></circle>
+        <circle cx="67" cy="76" r="3" style="fill:var(--mem-sky)"></circle>
+        <g style="fill:var(--mem-yellow-hi)">
+          <circle cx="16" cy="32" r="4.6"></circle>
+          <circle cx="50" cy="22" r="4.6"></circle>
+          <circle cx="84" cy="32" r="4.6"></circle>
+        </g>
+      </symbol>
+    )}
+
+    {want('heart') && (
+      <symbol id="mem-heart" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-butter)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <path d="M50 84 C24 66 13 52 13 37 C13 24 23 16 34 16 C42 16 47 20 50 26 C53 20 58 16 66 16 C77 16 87 24 87 37 C87 52 76 66 50 84Z" style="fill:var(--mem-pink)"></path>
+        <path d="M66 16 C77 16 87 24 87 37 C87 52 76 66 50 84 C66 70 78 56 78 40 C78 28 73 20 66 16Z" style="fill:var(--mem-pink-lo)"></path>
+        <ellipse cx="28" cy="31" rx="7" ry="4.5" transform="rotate(-38 28 31)" style="fill:var(--mem-pink-hi)"></ellipse>
+        <circle cx="38" cy="25" r="2" style="fill:var(--mem-pink-hi)"></circle>
+      </symbol>
+    )}
+
+    {/*
+      Five facets darkened from the centre out, so it reads as a cut star
+      rather than a flat shape.
+    */}
+    {want('star') && (
+      <symbol id="mem-star" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-night)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot-night)"></circle>
+        <path d="M50 19 L58.82 40.86 L82.34 42.49 L64.27 57.64 L69.98 80.51 L50 68 L30.02 80.51 L35.73 57.64 L17.66 42.49 L41.18 40.86 Z" style="fill:var(--mem-yellow);stroke:var(--mem-yellow);stroke-width:6;stroke-linejoin:round"></path>
+        <g style="fill:var(--mem-yellow-lo)">
+          <path d="M50 53 L50 19 L58.82 40.86 Z"></path>
+          <path d="M50 53 L82.34 42.49 L64.27 57.64 Z"></path>
+          <path d="M50 53 L69.98 80.51 L50 68 Z"></path>
+          <path d="M50 53 L30.02 80.51 L35.73 57.64 Z"></path>
+          <path d="M50 53 L17.66 42.49 L41.18 40.86 Z"></path>
+        </g>
+        <g style="fill:var(--mem-white)">
+          <path d="M80 14 Q80 20 86 20 Q80 20 80 26 Q80 20 74 20 Q80 20 80 14Z"></path>
+          <path d="M18 76 Q18 80 22 80 Q18 80 18 84 Q18 80 14 80 Q18 80 18 76Z"></path>
+        </g>
+      </symbol>
+    )}
+
+    {want('gem') && (
+      <symbol id="mem-gem" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-rose)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <path d="M30 26 L70 26 L86 43 L50 86 L14 43 Z" style="fill:var(--mem-teal)"></path>
+        <path d="M30 26 L70 26 L62 43 L38 43 Z" style="fill:var(--mem-teal-hi)"></path>
+        <path d="M70 26 L86 43 L62 43 Z" style="fill:var(--mem-teal-lo)"></path>
+        <path d="M38 43 L62 43 L50 86 Z" style="fill:var(--mem-teal-hi)"></path>
+        <path d="M62 43 L86 43 L50 86 Z" style="fill:var(--mem-teal-lo)"></path>
+        <path d="M40 30 Q40 36 46 36 Q40 36 40 42 Q40 36 34 36 Q40 36 40 30Z" style="fill:var(--mem-white)"></path>
+      </symbol>
+    )}
+
+    {want('bell') && (
+      <symbol id="mem-bell" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-sea)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <circle cx="50" cy="15.5" r="4.5" style="fill:none;stroke:var(--mem-yellow-lo);stroke-width:3"></circle>
+        <circle cx="50" cy="81" r="6.5" style="fill:var(--mem-orange-lo)"></circle>
+        <path d="M50 19 C37 19 31 30 31 43 L31 56 C31 63 26 67 20 71 C18 72 18 74 20 75 L80 75 C82 74 82 72 80 71 C74 67 69 63 69 56 L69 43 C69 30 63 19 50 19Z" style="fill:var(--mem-yellow)"></path>
+        <path d="M58 21 C65 25 69 33 69 43 L69 56 C69 63 74 67 80 71 C82 72 82 74 80 75 L65 75 C62 70 61 64 61 56 L61 43 C61 33 60 26 58 21Z" style="fill:var(--mem-yellow-lo)"></path>
+        <rect x="17" y="72" width="66" height="6" rx="3" style="fill:var(--mem-orange)"></rect>
+        <path d="M38.5 38 C38.5 31 41.5 26 46 24" style="fill:none;stroke:var(--mem-yellow-hi);stroke-width:3.5;stroke-linecap:round"></path>
+      </symbol>
+    )}
+
+    {want('umbrella') && (
+      <symbol id="mem-umbrella" viewBox="0 0 100 100">
+        <rect width="100" height="100" style="fill:var(--mem-bg-butter)"></rect>
+        <circle cx="50" cy="52" r="40" style="fill:var(--mem-spot)"></circle>
+        <path d="M50 49 L50 80" style="fill:none;stroke:var(--mem-grey-lo);stroke-width:3.5;stroke-linecap:round"></path>
+        <path d="M50 79 C50 88 40 88 40 81" style="fill:none;stroke:var(--mem-brown);stroke-width:4.5;stroke-linecap:round"></path>
+        <path d="M14 50 C14 30 30 16 50 16 C70 16 86 30 86 50 C80 46 74 46 68 50 C62 46 56 46 50 50 C44 46 38 46 32 50 C26 46 20 46 14 50Z" style="fill:var(--mem-violet)"></path>
+        <path d="M50 16 C70 16 86 30 86 50 C80 46 74 46 68 50 C64 36 58 24 50 16Z" style="fill:var(--mem-violet-lo)"></path>
+        <path d="M50 16 C42 24 36 36 32 50 C38 46 44 46 50 50 C56 46 62 46 68 50 C64 36 58 24 50 16Z" style="fill:var(--mem-violet-hi)"></path>
+        <circle cx="50" cy="14.5" r="2.6" style="fill:var(--mem-grey-lo)"></circle>
+      </symbol>
+    )}
+
+    {/*
+      The back of every card: a diamond and a spark, and four points around it
+      like the pips on a playing card. It is drawn in one colour and carries no
+      ground of its own - the cobalt and the lattice under it are the
+      stylesheet's, on `.mem-back`, so that the back can follow the theme while
+      the fronts keep their own grounds.
+    */}
+    <symbol id="mem-back" viewBox="0 0 100 100">
+      <rect x="32" y="32" width="36" height="36" rx="7" transform="rotate(45 50 50)" style="fill:none;stroke:var(--mem-back-ink);stroke-width:3.2"></rect>
+      <path d="M50 38 Q50 50 62 50 Q50 50 50 62 Q50 50 38 50 Q50 50 50 38Z" style="fill:var(--mem-back-ink)"></path>
+      <g style="fill:var(--mem-back-ink)">
+        <circle cx="50" cy="17" r="2.4"></circle>
+        <circle cx="50" cy="83" r="2.4"></circle>
+        <circle cx="17" cy="50" r="2.4"></circle>
+        <circle cx="83" cy="50" r="2.4"></circle>
+      </g>
+    </symbol>
+
+    {/* The rating. `currentColor`, so a lit star and a spent one are the same
+        drawing in two colours set by the stylesheet. */}
+    <symbol id="mem-rating" viewBox="0 0 100 100">
+      <path d="M50 12 L61.2 36.6 L88 39.4 L68 57.4 L73.5 84 L50 70.4 L26.5 84 L32 57.4 L12 39.4 L38.8 36.6 Z" style="fill:currentColor;stroke:currentColor;stroke-width:8;stroke-linejoin:round"></path>
+    </symbol>
+  </defs>
+</svg>

@@ -273,6 +273,108 @@
      in flight and the ring its arrival throws out. Nothing at rest uses it, so
      it cannot be confused with a state. */
   --bs-trace: #ffc44d;
+
+  /*
+   * Memory, and the one board whose colour is the content rather than a
+   * signal about it.
+   *
+   * The other games open the palette so that states can be told apart. Here a
+   * card face *is* a picture, and thirty pictures drawn in near-monochrome
+   * would be thirty grey shapes, which is not a memory deck anybody wants to
+   * play. So the deck gets a full illustrator's palette - thirteen hues, each
+   * a colour, a highlight and a shade - and it is the same in both themes on
+   * purpose: an apple does not turn a different red when the lights go down,
+   * and a card you remembered in one theme has to be the same card in the
+   * other. What follows the theme is the ground each picture sits on, below.
+   */
+  --mem-ink: #2a2630;
+  --mem-white: #ffffff;
+  --mem-cream: #fff4dc;
+  --mem-cream-lo: #e3c996;
+
+  --mem-red: #e8453c;
+  --mem-red-hi: #ff8270;
+  --mem-red-lo: #b72b2b;
+  --mem-orange: #f78b2d;
+  --mem-orange-hi: #ffb562;
+  --mem-orange-lo: #cf621b;
+  --mem-yellow: #ffcd3c;
+  --mem-yellow-hi: #ffe78f;
+  --mem-yellow-lo: #e5a414;
+  --mem-lime: #8cc63f;
+  --mem-lime-hi: #c2e68a;
+  --mem-lime-lo: #5f9a24;
+  --mem-green: #2e9e5e;
+  --mem-green-hi: #5cc98a;
+  --mem-green-lo: #1d7444;
+  --mem-teal: #1fb2a6;
+  --mem-teal-hi: #6ddcd2;
+  --mem-teal-lo: #11837b;
+  --mem-sky: #4aaef0;
+  --mem-sky-hi: #9ad6ff;
+  --mem-sky-lo: #2583c9;
+  --mem-blue: #3a5bd9;
+  --mem-blue-hi: #8aa0ff;
+  --mem-blue-lo: #243f9e;
+  --mem-violet: #8656dc;
+  --mem-violet-hi: #b08cf6;
+  --mem-violet-lo: #5f36ad;
+  --mem-pink: #f0609e;
+  --mem-pink-hi: #ff9cc4;
+  --mem-pink-lo: #c83b79;
+  --mem-brown: #9a5e38;
+  --mem-brown-lo: #6d3f24;
+  --mem-grey-hi: #d6dce3;
+  --mem-grey-lo: #737d8a;
+
+  /*
+   * The grounds. Ten pastels, each carrying three pictures whose subjects are
+   * different colours from each other, and one night sky for the three that
+   * belong on one. The spot is the softer disc every picture sits on, and it
+   * is white laid over the ground rather than a colour of its own, so one
+   * value serves all ten.
+   */
+  --mem-bg-rose: #ffe0db;
+  --mem-bg-peach: #ffe6cf;
+  --mem-bg-butter: #fff2bf;
+  --mem-bg-mint: #dcf4e0;
+  --mem-bg-sea: #d3f1ec;
+  --mem-bg-sky: #d9edff;
+  --mem-bg-lilac: #e9e1ff;
+  --mem-bg-blush: #ffdfed;
+  --mem-bg-sand: #f3e7d3;
+  --mem-bg-night: #27306a;
+  --mem-spot: color-mix(in oklab, #ffffff 42%, transparent);
+  --mem-spot-night: color-mix(in oklab, #ffffff 7%, transparent);
+
+  /*
+   * The table and the backs.
+   *
+   * ⚠️ **The back is the site's own cobalt**, and it is the one surface on the
+   * board you look at longest - every card starts face down and most of them
+   * spend most of the game that way. A back in any colour of its own would
+   * put a sixty card slab of somebody else's brand in the middle of the page.
+   */
+  --mem-table: #d9d5cb;
+  --mem-table-inset: inset 0 2px 8px color-mix(in oklab, #14161a 10%, transparent);
+  --mem-back: #2733c4;
+  --mem-back-ink: #dfe4ff;
+
+  /* A card is a thing lying on the table, and it lifts off it when it is
+     about to be picked up - the same two-layer shadow as a 2048 tile, one
+     step heavier on hover. */
+  --mem-card-lift:
+    0 1px 2px color-mix(in oklab, #14161a 14%, transparent),
+    0 4px 12px color-mix(in oklab, #14161a 9%, transparent);
+  --mem-card-lift-hover:
+    0 2px 4px color-mix(in oklab, #14161a 14%, transparent),
+    0 12px 26px color-mix(in oklab, #14161a 16%, transparent);
+
+  /* A star you have, a ring round a pair, and the flash on one that did not
+     match. The gold is the one warm accent the board is allowed: it only ever
+     means "you did that well". */
+  --mem-gold: #f5b300;
+  --mem-miss: #d8343d;
 }
 
 .dark {
@@ -425,6 +527,41 @@
   --bs-sunk: #05070b;
   --bs-ghost: #35e276;
   --bs-trace: #ffd97a;
+
+  /*
+   * The deck on a dark page. The pictures do not move - see the note on
+   * `:root` - so only the grounds do: each pastel becomes a deep tone of the
+   * same hue, and the picture on it stays the brightest thing on the card, as
+   * a sticker on dark card stock does.
+   */
+  --mem-bg-rose: #4a2b2e;
+  --mem-bg-peach: #4a3325;
+  --mem-bg-butter: #46401f;
+  --mem-bg-mint: #1f3f2b;
+  --mem-bg-sea: #153f3b;
+  --mem-bg-sky: #1c3651;
+  --mem-bg-lilac: #332a52;
+  --mem-bg-blush: #4a2641;
+  --mem-bg-sand: #3f3527;
+  --mem-bg-night: #1a1f4a;
+  --mem-spot: color-mix(in oklab, #ffffff 6%, transparent);
+  --mem-spot-night: color-mix(in oklab, #ffffff 5%, transparent);
+
+  /* Deeper than the light theme's, because a table of sixty face-down cards
+     at the light value is the brightest block on a dark page by a distance. */
+  --mem-table: #131820;
+  --mem-table-inset: inset 0 2px 9px color-mix(in oklab, #000 38%, transparent);
+  --mem-back: #2430a6;
+
+  --mem-card-lift:
+    0 1px 2px color-mix(in oklab, #000 45%, transparent),
+    0 6px 16px color-mix(in oklab, #000 30%, transparent);
+  --mem-card-lift-hover:
+    0 2px 4px color-mix(in oklab, #000 50%, transparent),
+    0 14px 30px color-mix(in oklab, #000 42%, transparent);
+
+  --mem-gold: #ffc21f;
+  --mem-miss: #ff6b74;
 }
 
 /*
@@ -3767,6 +3904,43 @@
   }
 
   /*
+   * The memory still: ten real cards on the table, the same three layers and
+   * the same two faces as the game's, so the card on the index is the card on
+   * the page. Only the size is given here, because out on the index the card
+   * is not inside a board to be measured against: a fifth of the width less
+   * the gaps, on the same 2cqi rhythm the 2048 still uses.
+   */
+  .game-art-mem {
+    background:
+      radial-gradient(90% 90% at 50% 30%, color-mix(in oklab, var(--mem-table) 88%, #ffffff), transparent 75%),
+      var(--mem-table);
+  }
+
+  .game-art-mem .game-art-board {
+    --mem-card: 17cqi;
+    --mem-radius: 2.2cqi;
+  }
+
+  /* Nothing on a still is dealt, lifted, popped or ringed. The shine goes
+     altogether rather than merely stopping: without its animation it would
+     sit in the middle of the card as a white stripe. */
+  .game-art-mem .mem-card,
+  .game-art-mem .mem-card::after,
+  .game-art-mem .mem-card-inner {
+    animation: none;
+  }
+
+  .game-art-mem .mem-front::after {
+    content: none;
+  }
+
+  .game-art-mem .mem-card {
+    aspect-ratio: auto;
+    height: 100%;
+    cursor: inherit;
+  }
+
+  /*
    * A packed field rather than a row.
    *
    * Every body is placed by its own centre, in `cqi` against the thumbnail, so
@@ -5430,6 +5604,807 @@
     text-align: center;
     color: var(--site-muted);
   }
+
+  /* ---- Memory -------------------------------------------------------------
+   *
+   * A table of cards, and a card is three nested layers rather than one,
+   * because three different things move it and each needs a layer to itself:
+   *
+   *   .mem-card        the button. Dealt from the middle of the table, lifts
+   *                    on hover, carries the focus ring and the rings round it.
+   *   .mem-card-body   jumps when the board is cleared and shakes on a miss.
+   *                    It holds the perspective the turn is seen through.
+   *   .mem-card-inner  turns. One transition on `rotate`, and nothing else.
+   *
+   * ⚠️ **They are separate because an animation cannot be shared.** The deal
+   * was on the same element as the shake once, and adding the shake's class
+   * replaced the deal's name - and taking it away again put the deal's name
+   * back, which the browser treats as a new animation. Every card that missed
+   * flew back into the middle of the table and was dealt a second time.
+   *
+   * See src/games/memory/game.ts and src/components/Memory.astro.
+   */
+
+  .mem-sprites {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+
+  .mem {
+    /* Written from the module at mount, so the turn and the timer that waits
+       for a card to land are one number. What is here is only what applies
+       for the frame before the script runs. */
+    --mem-flip: 460ms;
+    --mem-wave: 42ms;
+
+    /*
+     * Two curves. A card turning over is a flat thing with some weight in it
+     * settling onto the table, so the turn overshoots by a few degrees and
+     * comes back - which is what makes it read as a card rather than as a
+     * rotating div. Scale has nothing to settle onto, so the pop and the
+     * arrival of a star overshoot properly.
+     */
+    --mem-turn: cubic-bezier(0.3, 1.32, 0.52, 1);
+    --mem-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Which half of the page is showing is one attribute on the frame, and the
+     markup carries both halves - the free-play label on the button, the stars
+     that only the campaign keeps - rather than the script writing strings. */
+  .mem[data-mode='free'] .mem-for-campaign,
+  .mem[data-mode='campaign'] .mem-for-free {
+    display: none;
+  }
+
+  /* The two modes, as real radios - the same control and the same reasons as
+     the minefield's three boards. */
+  .mem-modes {
+    display: flex;
+    gap: 4px;
+    width: fit-content;
+    margin: 0 auto clamp(0.75rem, 2vw, 1.1rem);
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-pill);
+    background-color: var(--site-inset);
+    padding: 4px;
+  }
+
+  .mem-mode {
+    border-radius: var(--site-radius-pill);
+    padding: 0.45rem 1.1rem;
+    font-size: 0.9375rem;
+    font-weight: 560;
+    line-height: 1.2;
+    color: var(--site-muted);
+    cursor: pointer;
+    transition:
+      background-color 160ms var(--site-ease),
+      color 160ms var(--site-ease);
+  }
+
+  .mem-mode:hover {
+    color: var(--site-fg);
+  }
+
+  .mem-mode:has(:checked) {
+    background-color: var(--site-card);
+    box-shadow: var(--site-lift);
+    color: var(--site-fg);
+  }
+
+  .mem-mode:has(:focus-visible) {
+    outline: 2px solid var(--site-accent);
+    outline-offset: 2px;
+  }
+
+  /*
+   * The twelve levels, as a strip of tiles.
+   *
+   * Radios again, twelve of them, and `disabled` is what a lock is: a locked
+   * level cannot be picked, the arrow keys step over it, and a screen reader
+   * says so without being told. Six across below 60rem and all twelve in one
+   * row above it, which is exactly the shell's width at about 88px a tile.
+   */
+  .mem-levels {
+    margin: 0 0 clamp(0.75rem, 2vw, 1.1rem);
+    border: 0;
+    padding: 0;
+  }
+
+  .mem-levels-row {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+
+  @media (min-width: 60rem) {
+    .mem-levels-row {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+  }
+
+  .mem-level {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius);
+    background-color: var(--site-card);
+    padding: 0.5rem 0.25rem 0.5rem;
+    cursor: pointer;
+    transition:
+      border-color 160ms var(--site-ease),
+      background-color 160ms var(--site-ease),
+      transform 160ms var(--site-ease);
+  }
+
+  .mem-level:hover {
+    border-color: color-mix(in oklab, var(--site-accent) 45%, var(--site-hairline));
+    transform: translateY(-1px);
+  }
+
+  .mem-level:has(:checked) {
+    border-color: var(--site-accent);
+    background-color: color-mix(in oklab, var(--site-accent) 9%, var(--site-card));
+    box-shadow: inset 0 0 0 1px var(--site-accent);
+  }
+
+  .mem-level:has(:focus-visible) {
+    outline: 2px solid var(--site-accent);
+    outline-offset: 2px;
+  }
+
+  /* Locked. Faded rather than hidden, because seeing the size of what is
+     still to come is most of what makes a level strip worth having. */
+  .mem-level:has(:disabled) {
+    background-color: var(--site-inset);
+    cursor: not-allowed;
+  }
+
+  .mem-level:has(:disabled):hover {
+    border-color: var(--site-hairline);
+    transform: none;
+  }
+
+  .mem-level:has(:disabled) > :not(.mem-level-lock) {
+    opacity: 0.45;
+  }
+
+  .mem-level-n {
+    font-stretch: 112%;
+    font-weight: 660;
+    font-size: 1.125rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .mem-level-size {
+    font-size: 0.6875rem;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+    white-space: nowrap;
+    color: var(--site-muted);
+  }
+
+  /* The size a phone held upright will actually show, which is the board
+     turned a quarter - see `.mem-board`. Two spans and the same query,
+     rather than a label that is right on one screen in two. */
+  .mem-level-size.is-tall {
+    display: none;
+  }
+
+  @media (orientation: portrait) {
+    .mem-level-size.is-wide {
+      display: none;
+    }
+
+    .mem-level-size.is-tall {
+      display: inline;
+    }
+  }
+
+  .mem-level-stars {
+    display: flex;
+    gap: 1px;
+    color: color-mix(in oklab, var(--site-muted) 32%, transparent);
+  }
+
+  .mem-level-stars svg {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  .mem-level-stars .is-on {
+    color: var(--mem-gold);
+  }
+
+  /* A locked tile shows the lock where its stars would be. It was pinned in
+     the corner once, and on a phone's six-across strip the corner is where a
+     two-digit number already is. Stars mean nothing on a level not yet open,
+     so the lock takes their line instead. */
+  .mem-level-lock {
+    display: none;
+    width: 0.75rem;
+    height: 0.75rem;
+    color: var(--site-muted);
+  }
+
+  .mem[data-mode='campaign'] .mem-level:has(:disabled) .mem-level-lock {
+    display: block;
+  }
+
+  .mem[data-mode='campaign'] .mem-level:has(:disabled) .mem-level-stars {
+    display: none;
+  }
+
+  /* Free play has nothing to earn and nothing locked, so the tile is a size. */
+  .mem[data-mode='free'] .mem-level-stars {
+    display: none;
+  }
+
+  .mem-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: clamp(0.75rem, 2vw, 1.1rem);
+  }
+
+  .mem-meter {
+    min-width: 4.75rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius);
+    background-color: var(--site-card);
+    padding: 0.45rem 0.7rem 0.5rem;
+    text-align: center;
+  }
+
+  .mem-meter-label {
+    display: block;
+    font-size: 0.6875rem;
+    line-height: 1.3;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--site-muted);
+  }
+
+  .mem-meter-value {
+    display: block;
+    font-stretch: 112%;
+    font-weight: 660;
+    font-size: 1.25rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+  }
+
+  /*
+   * The stars still in reach, going out one at a time as the move count passes
+   * each threshold. It is the only thing on the board that says the count
+   * matters, so it is a picture rather than a number: three gold stars and
+   * the reader already knows what losing one means.
+   */
+  .mem-goal {
+    display: flex;
+    justify-content: center;
+    gap: 2px;
+    height: 1.5rem;
+    align-items: center;
+  }
+
+  .mem-goal svg {
+    width: 1.15rem;
+    height: 1.15rem;
+    color: var(--mem-gold);
+    transition:
+      color 360ms var(--site-ease),
+      scale 360ms var(--mem-spring);
+  }
+
+  .mem-goal svg.is-off {
+    color: color-mix(in oklab, var(--site-muted) 30%, transparent);
+    scale: 0.78;
+  }
+
+  .mem-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  .mem-actions .cta-ghost {
+    padding: 0.55rem 0.9rem;
+    font-size: 0.875rem;
+  }
+
+  /*
+   * Two meters a row on a phone, not four.
+   *
+   * ⚠️ Four in a row on a 390 screen is under 80px each, and "Fewest moves"
+   * alone runs to about 100 at label size - "Najmanje poteza" and "Minimum de
+   * coups" to more. Squeezing them clips the label, and letting it wrap puts
+   * one meter's value a line below its neighbours'. A two by two grid gives
+   * every label the width it needs in all four languages.
+   */
+  @media (max-width: 34rem) {
+    .mem-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .mem-actions {
+      grid-column: 1 / -1;
+      margin-left: 0;
+    }
+
+    .mem-actions .cta-ghost {
+      flex: 1;
+      justify-content: center;
+    }
+
+    .mem-meter {
+      min-width: 0;
+    }
+  }
+
+  .mem-frame {
+    position: relative;
+  }
+
+  /*
+   * The table.
+   *
+   * ⚠️ **Full width at every level, and the board grows inside it.** Level one
+   * is four cards in the middle of a wide table, and that is the point of the
+   * shape rather than a gap in it: the table stays where it is while the deal
+   * gets bigger, which is what makes a bigger board read as progress. A table
+   * that shrank to fit would make every level the same size on screen.
+   *
+   * The minimum height is the win panel's, which covers the table and has to
+   * fit on the smallest board there is.
+   */
+  .mem-table {
+    display: grid;
+    place-items: center;
+    min-height: 24rem;
+    border-radius: var(--site-radius-card);
+    background:
+      radial-gradient(90% 70% at 50% 35%, color-mix(in oklab, var(--mem-table) 88%, #ffffff), transparent 70%),
+      var(--mem-table);
+    box-shadow: var(--mem-table-inset);
+    padding: clamp(0.75rem, 2.2vw, 1.5rem);
+  }
+
+  /*
+   * The board's width, and so every card's size.
+   *
+   * The smallest of three: the table's width, a card no bigger than 8.5rem,
+   * and whatever lets the whole board fit the height of the screen - because
+   * a memory board you have to scroll is a board you cannot see, and seeing it
+   * is the whole game. The floor is a card of 2.6rem, which is where a picture
+   * stops being one on a short landscape phone.
+   *
+   * `--mem-reserve` is everything on screen with the board that is not the
+   * board: the header, the bar above the table and the table's own padding.
+   * 12rem on a desktop and 17.5rem on a phone, where the bar stacks into two
+   * rows - measured at 390 by 844, where the sixty card board then fills the
+   * screen to within a few pixels with the bar still in view.
+   *
+   * ⚠️ **This is the query container and `.mem-board` is what measures in
+   * `cqi`** - an element is not its own container, the trap `.game-art`
+   * describes.
+   */
+  .mem-fit {
+    --c: var(--mem-cols, 2);
+    --r: var(--mem-rows, 2);
+    --mem-reserve: 12rem;
+
+    container-type: inline-size;
+    width: min(
+      100%,
+      max(
+        calc(var(--c) * 2.6rem),
+        min(calc(var(--c) * 8.5rem), calc((100svh - var(--mem-reserve)) * var(--c) / var(--r)))
+      )
+    );
+  }
+
+  @media (max-width: 34rem) {
+    .mem-fit {
+      --mem-reserve: 17.5rem;
+    }
+  }
+
+  /*
+   * ⚠️ **A phone held upright gets the board turned a quarter, and no node
+   * moves to do it.** Ten across on a 390 screen is a 30px card, and six
+   * across is a 50px one, so the grid swaps its counts and fills by column:
+   * the markup's first row becomes the first column on screen. The grid a
+   * screen reader walks keeps its shape, only the arrow keys swap axes (see
+   * `onKeyDown`), and turning the phone mid-game turns the board rather than
+   * reshuffling where everything was.
+   */
+  @media (orientation: portrait) {
+    .mem-fit {
+      --c: var(--mem-rows, 2);
+      --r: var(--mem-cols, 2);
+    }
+  }
+
+  .mem-board {
+    /* Off the card, so four cards and sixty keep the same proportions between
+       a card, its corner and the gap beside it. */
+    --mem-gap: clamp(0.3rem, 100cqi / var(--c) * 0.075, 0.75rem);
+    --mem-card: calc((100cqi - (var(--c) - 1) * var(--mem-gap)) / var(--c));
+    --mem-radius: calc(var(--mem-card) * 0.13);
+
+    display: grid;
+    grid-template-columns: repeat(var(--c), minmax(0, 1fr));
+    gap: var(--mem-gap);
+  }
+
+  @media (orientation: portrait) {
+    .mem-board {
+      grid-auto-flow: column;
+      grid-template-rows: repeat(var(--r), auto);
+    }
+  }
+
+  .mem-row {
+    display: contents;
+  }
+
+  /*
+   * The deal, as the offset from the middle of the table to this card, in
+   * cards. `--gx` and `--gy` are the markup's; on a turned board the two are
+   * swapped here, so the module never has to know which way up it is.
+   */
+  .mem-card {
+    --dx: var(--gx, 0);
+    --dy: var(--gy, 0);
+
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    border: 0;
+    border-radius: var(--mem-radius);
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    /* Two quick presses are two cards, not a zoom. */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+    transition:
+      translate 220ms var(--site-ease),
+      scale 160ms var(--site-ease);
+    animation: mem-deal 560ms cubic-bezier(0.2, 0.8, 0.25, 1) calc(var(--i, 0) * var(--mem-deal-step, 30ms))
+      backwards;
+  }
+
+  @media (orientation: portrait) {
+    .mem-card {
+      --dx: var(--gy, 0);
+      --dy: var(--gx, 0);
+    }
+  }
+
+  .mem-card:focus-visible {
+    outline: 2px solid var(--site-accent);
+    outline-offset: 3px;
+    z-index: 1;
+  }
+
+  /* A face-down card is the thing you are about to pick up, so it lifts
+     towards you. The shadow is on the faces, and redefining it here is how
+     it reaches them. Only where there is a pointer that hovers: a phone keeps
+     `:hover` on the last card tapped, and a card that turned back over would
+     sit there raised until the next tap somewhere else. */
+  @media (hover: hover) {
+    .mem-card:is(:not([data-face]), [data-face='down']):hover {
+      --mem-card-lift: var(--mem-card-lift-hover);
+
+      translate: 0 -3px;
+    }
+  }
+
+  .mem-card:is(:not([data-face]), [data-face='down']):active {
+    translate: 0 0;
+    scale: 0.96;
+  }
+
+  .mem-card:is([data-face='up'], [data-face='matched']) {
+    cursor: default;
+  }
+
+  .mem-card-body {
+    position: absolute;
+    inset: 0;
+    display: block;
+    /* Proportional to the card, so a small card and a big one turn through
+       the same depth instead of a big one looking flatter. */
+    perspective: calc(var(--mem-card, 6rem) * 4.2);
+  }
+
+  .mem-card-inner {
+    position: absolute;
+    inset: 0;
+    display: block;
+    transform-style: preserve-3d;
+    transition: rotate var(--mem-flip) var(--mem-turn);
+  }
+
+  .mem-card:is([data-face='up'], [data-face='matched']) .mem-card-inner {
+    rotate: y 180deg;
+  }
+
+  /*
+   * The lift that rides on the turn: the card comes up off the table a little
+   * as it goes over and settles back as it lands.
+   *
+   * ⚠️ **Two keyframes with the same frames and different names**, one for
+   * each way. A card that went up and came back down would otherwise be asked
+   * to run the same animation it already ran, which the browser does not do.
+   * The name changing is what restarts it. A card that has never been turned
+   * has no `data-face` at all, so the first deal runs nothing here.
+   */
+  .mem-card[data-face='up'] .mem-card-inner {
+    animation: mem-lift-up var(--mem-flip) var(--site-ease);
+  }
+
+  .mem-card[data-face='down'] .mem-card-inner {
+    animation: mem-lift-down var(--mem-flip) var(--site-ease);
+  }
+
+  .mem-card[data-face='matched'] .mem-card-inner {
+    animation: mem-pop 480ms var(--mem-spring);
+  }
+
+  .mem-face {
+    position: absolute;
+    inset: 0;
+    display: block;
+    overflow: hidden;
+    border-radius: var(--mem-radius);
+    /* Both prefixes: Safari still wants its own, and a back that shows
+       through the front for one frame of every turn is the one bug this
+       arrangement exists to avoid. */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    box-shadow: var(--mem-card-lift);
+    transition: box-shadow 220ms var(--site-ease);
+  }
+
+  .mem-face svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .mem-front {
+    rotate: y 180deg;
+  }
+
+  /*
+   * The back: the site's cobalt, a lattice, a light falling from the top left,
+   * and a frame line inset from the edge the way a printed card has one.
+   *
+   * The lattice is in pixels, not a fraction of the card, on purpose. Scaled
+   * with the card it becomes a coarse check on sixty and a hairline mesh on
+   * four; at a fixed pitch it reads as the same card stock at every size.
+   */
+  .mem-back {
+    background:
+      radial-gradient(120% 90% at 25% 15%, color-mix(in oklab, #ffffff 20%, transparent), transparent 55%),
+      repeating-linear-gradient(45deg, transparent 0 5px, color-mix(in oklab, #ffffff 9%, transparent) 5px 6px),
+      repeating-linear-gradient(-45deg, transparent 0 5px, color-mix(in oklab, #ffffff 9%, transparent) 5px 6px),
+      var(--mem-back);
+  }
+
+  .mem-back::after {
+    content: '';
+    position: absolute;
+    inset: calc(var(--mem-card, 6rem) * 0.06);
+    border: 1px solid color-mix(in oklab, var(--mem-back-ink) 42%, transparent);
+    border-radius: calc(var(--mem-radius) * 0.6);
+  }
+
+  /* A light passing across a pair as it is sealed. `both` parks it off the
+     card on either side, so it needs no class to take it away again. */
+  .mem-card[data-face='matched'] .mem-front::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 32%,
+      color-mix(in oklab, #ffffff 60%, transparent) 50%,
+      transparent 68%
+    );
+    animation: mem-shine 900ms var(--site-ease) 90ms both;
+  }
+
+  /*
+   * The ring a card throws out: gold round a pair, red round a miss.
+   *
+   * It is on the button, which never turns, so it is a flat ring on the table
+   * rather than one drawn on a face and turned along with it. It ends at zero
+   * opacity and stays there, and it takes no pointer - the lesson of the
+   * battleship ring that ended its animation covering eight neighbours.
+   */
+  .mem-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--mem-radius);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .mem-card[data-face='matched']::after {
+    box-shadow: 0 0 0 3px var(--mem-gold);
+    animation: mem-ring 720ms var(--site-ease) both;
+  }
+
+  .mem-card.is-miss::after {
+    box-shadow: 0 0 0 3px var(--mem-miss);
+    animation: mem-ring 620ms var(--site-ease) both;
+  }
+
+  .mem-card.is-miss .mem-card-body {
+    animation: mem-shake 420ms var(--site-ease);
+  }
+
+  /* The wave through a cleared board, from the last card turned outward.
+     `--d` is the distance in cards and `--mem-wave` the step, both from the
+     module, and `backwards` holds each card still through its wait. */
+  .mem-card.is-cheer .mem-card-body {
+    animation: mem-cheer 560ms var(--mem-spring) calc(var(--d, 0) * var(--mem-wave)) backwards;
+  }
+
+  /* The burst, which is a container so its pieces can be thrown a fraction
+     of the table's size rather than a fixed distance that is a flick on a
+     desktop and off the edge on a phone. */
+  .mem-burst {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    container-type: size;
+    pointer-events: none;
+  }
+
+  .mem-bit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0.55rem;
+    height: 0.85rem;
+    margin: -0.425rem 0 0 -0.275rem;
+    border-radius: 2px;
+    background-color: var(--bc);
+    animation: mem-bit 1600ms linear var(--bd) both;
+  }
+
+  .mem-bit.is-round {
+    width: 0.6rem;
+    height: 0.6rem;
+    margin: -0.3rem 0 0 -0.3rem;
+    border-radius: 50%;
+  }
+
+  /*
+   * The cleared panel. It covers the table, like every panel on these pages,
+   * because it asks the one question that has to be answered before the next
+   * board: this again, or the next one.
+   */
+  .mem-panel {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    border-radius: var(--site-radius-card);
+    padding: var(--site-pad);
+    text-align: center;
+    /* Denser than the minefield's 84%: under it is a whole table of pictures,
+       and at 84% they showed through as a second, blurred board. */
+    background-color: color-mix(in oklab, var(--mem-table) 92%, transparent);
+    backdrop-filter: blur(6px);
+    animation: mem-panel 320ms var(--site-ease);
+  }
+
+  .mem[data-state='won'] .mem-panel {
+    display: flex;
+  }
+
+  .mem-panel-level {
+    font-size: 0.75rem;
+    font-weight: 620;
+    letter-spacing: 0.14em;
+    line-height: 1.3;
+    text-transform: uppercase;
+    color: var(--site-muted);
+  }
+
+  .mem-panel-title {
+    font-stretch: 116%;
+    font-weight: 680;
+    font-size: clamp(1.625rem, 6vw, 2.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+  }
+
+  .mem-panel-stars {
+    display: flex;
+    gap: 0.35rem;
+    margin-block: 0.15rem 0.3rem;
+    color: color-mix(in oklab, var(--site-muted) 28%, transparent);
+  }
+
+  .mem-panel-stars svg {
+    width: clamp(2.25rem, 7vw, 3.25rem);
+    height: clamp(2.25rem, 7vw, 3.25rem);
+  }
+
+  /* The middle one sits higher, which is how a row of three stars has always
+     been drawn and is what makes it a rating rather than a row of icons. */
+  .mem-panel-stars svg:nth-child(2) {
+    translate: 0 -0.45rem;
+  }
+
+  /* Earned stars land one after another, from the left. `--n` is written by
+     the page, and an unearned star is simply there, dim, from the start. */
+  .mem-panel-stars .is-on {
+    color: var(--mem-gold);
+    animation: mem-star-in 560ms var(--mem-spring) calc(260ms + var(--n, 0) * 170ms) backwards;
+  }
+
+  .mem-panel-meters {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .mem-panel-body {
+    max-width: 28rem;
+    font-size: clamp(0.9375rem, 3vw, 1.0625rem);
+    line-height: 1.5;
+    color: var(--site-muted);
+  }
+
+  .mem-panel-body:empty {
+    display: none;
+  }
+
+  .mem-panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 0.4rem;
+  }
+
+  /* Nothing comes after the last board. */
+  .mem[data-last] [data-action='next'] {
+    display: none;
+  }
+
+  .mem-hint {
+    margin-top: clamp(0.75rem, 2vw, 1.1rem);
+    font-size: 0.875rem;
+    text-align: center;
+    color: var(--site-muted);
+  }
 }
 
 /*
@@ -5585,6 +6560,192 @@
 }
 
 @keyframes ms-panel {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/*
+ * Memory motion.
+ *
+ * The turn itself is not here: it is a transition on `rotate`, because a turn
+ * that is called back halfway has to go back from wherever it got to, and a
+ * transition does that where an animation would jump. Everything here is a
+ * moment on top of it - the deal, the lift, a pair sealing, a miss, the cheer
+ * and the burst - and every one of them uses `translate`, `rotate` and `scale`
+ * rather than `transform`, so none of them can override another one's
+ * transform or the hover lift underneath.
+ */
+
+/* From the middle of the table to the card's place, in cards: the percentage
+   in `translate` is the card's own size, so it is one card plus one gap. */
+@keyframes mem-deal {
+  from {
+    opacity: 0;
+    translate: calc(var(--dx) * (100% + var(--mem-gap))) calc(var(--dy) * (100% + var(--mem-gap)));
+    rotate: var(--gr, 0deg);
+    scale: 0.85;
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+    rotate: 0deg;
+    scale: 1;
+  }
+}
+
+@keyframes mem-lift-up {
+  0%,
+  100% {
+    scale: 1;
+  }
+
+  45% {
+    scale: 1.08;
+  }
+}
+
+@keyframes mem-lift-down {
+  0%,
+  100% {
+    scale: 1;
+  }
+
+  45% {
+    scale: 1.06;
+  }
+}
+
+@keyframes mem-pop {
+  0%,
+  100% {
+    scale: 1;
+  }
+
+  40% {
+    scale: 1.13;
+  }
+}
+
+@keyframes mem-ring {
+  from {
+    opacity: 0.95;
+    scale: 1;
+  }
+
+  to {
+    opacity: 0;
+    scale: 1.18;
+  }
+}
+
+@keyframes mem-shine {
+  from {
+    translate: -110% 0;
+  }
+
+  to {
+    translate: 110% 0;
+  }
+}
+
+/* In fractions of the card, so a miss is the same size of shake on four
+   cards and on sixty. */
+@keyframes mem-shake {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  18% {
+    translate: -7% 0;
+  }
+
+  38% {
+    translate: 6% 0;
+  }
+
+  58% {
+    translate: -4% 0;
+  }
+
+  78% {
+    translate: 2% 0;
+  }
+}
+
+@keyframes mem-cheer {
+  0%,
+  100% {
+    translate: 0 0;
+    scale: 1;
+  }
+
+  38% {
+    translate: 0 -16%;
+    scale: 1.07;
+  }
+
+  70% {
+    translate: 0 3%;
+    scale: 0.98;
+  }
+}
+
+/*
+ * A piece of the burst: up and out fast, then falling. Two segments with a
+ * curve each is what makes it an arc - one straight segment is a piece of
+ * paper sliding along a line. `--bx` and `--by` are a direction and a reach
+ * from the module; the distances are fractions of the table.
+ */
+@keyframes mem-bit {
+  0% {
+    opacity: 1;
+    translate: 0 0;
+    rotate: 0deg;
+    scale: 0.3;
+    animation-timing-function: cubic-bezier(0.12, 0.75, 0.35, 1);
+  }
+
+  45% {
+    opacity: 1;
+    translate: calc(var(--bx) * 42cqw) calc(var(--by) * 46cqh);
+    scale: 1;
+    animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.6);
+  }
+
+  100% {
+    opacity: 0;
+    translate: calc(var(--bx) * 56cqw) calc(var(--by) * 46cqh + 42cqh);
+    rotate: var(--br);
+    scale: 0.9;
+  }
+}
+
+@keyframes mem-star-in {
+  from {
+    opacity: 0;
+    scale: 0.2;
+    rotate: -45deg;
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+    rotate: 0deg;
+  }
+}
+
+@keyframes mem-panel {
   from {
     opacity: 0;
   }

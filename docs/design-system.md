@@ -35,6 +35,7 @@ and all of its motion in CSS.
 | the active-section indicator | the second `<script>` in [Base.astro](../src/layouts/Base.astro) and `.nav-link[aria-current]` - §7 |
 | dark mode | the `.dark` block, **and** the two `theme-color` tags in [Base.astro](../src/layouts/Base.astro) - §8 and open item 1 |
 | **the 2048 board or its colour ramp** | [game.ts](../src/games/2048/game.ts), [Game2048.astro](../src/components/Game2048.astro), the `--g2048-*` tokens - §9 |
+| **a memory card, its turn, or a picture on it** | [game.ts](../src/games/memory/game.ts), [Memory.astro](../src/components/Memory.astro), [MemorySprites.astro](../src/components/games/MemorySprites.astro), the `--mem-*` tokens - §9 |
 
 **Read §5 before touching any animation.** The `animation` shorthand silently breaks the
 scroll timelines, and one custom property has to stay registered.
@@ -690,18 +691,18 @@ open item 1.
 
 ## 9. The game boards, and the one place the palette opens up
 
-Four pages carry a game, and all four are built the way the rest of the site is: markup,
+Five pages carry a game, and all five are built the way the rest of the site is: markup,
 tokens, and no canvas or game library anywhere. They are deliberately different from each
 other, which is most of what this section is about.
 
-| | [2048](../src/games/2048/game.ts) | [Minesweeper](../src/games/minesweeper/game.ts) | [Accretion](../src/games/accretion/game.ts) | [Battleship](../src/games/battleship/game.ts) |
-|---|---|---|---|---|
-| what it is made of | 16 divs that move | up to 480 buttons that change state | up to 46 circles that fall | 200 buttons, and 10 drawn ships over them |
-| the hard part | motion, at sixty frames | the rules, and the keyboard | the solver, and making it settle | the opponent, and what it is not allowed to see |
-| the board in the markup | yes, 16 cells, fixed | no, the module builds it | no, play creates every body | no, and the fleet is a layer of its own |
-| to a screen reader | hidden, narrated by a live region | a real `role="grid"` | a live region, and the sequence below it | two `role="grid"`s and a live region for the turn |
-| what a turn costs | two custom properties | a class | a frame of simulation | a class, and a count over 200 placements |
-| runs when idle | no | no | **yes** | no |
+| | [2048](../src/games/2048/game.ts) | [Minesweeper](../src/games/minesweeper/game.ts) | [Memory](../src/games/memory/game.ts) | [Accretion](../src/games/accretion/game.ts) | [Battleship](../src/games/battleship/game.ts) |
+|---|---|---|---|---|---|
+| what it is made of | 16 divs that move | up to 480 buttons that change state | up to 60 buttons that turn over | up to 46 circles that fall | 200 buttons, and 10 drawn ships over them |
+| the hard part | motion, at sixty frames | the rules, and the keyboard | the turn, and keeping three animations off each other | the solver, and making it settle | the opponent, and what it is not allowed to see |
+| the board in the markup | yes, 16 cells, fixed | no, the module builds it | no, the module deals it, and a face-down card holds no picture | no, play creates every body | no, and the fleet is a layer of its own |
+| to a screen reader | hidden, narrated by a live region | a real `role="grid"` | a real `role="grid"`, and a live region for each turn | a live region, and the sequence below it | two `role="grid"`s and a live region for the turn |
+| what a turn costs | two custom properties | a class | one attribute, and a transition on `rotate` | a frame of simulation | a class, and a count over 200 placements |
+| runs when idle | no | no | no | **yes** | no |
 
 ### A tile keeps its element for its whole life
 
@@ -1162,6 +1163,102 @@ cancelling the arrival of an old one.
 
 ---
 
+### A card is three layers, and the answer is not in the page
+
+The memory table is up to sixty buttons, and a card is three elements deep because three
+different things move it:
+
+| Layer | Moves by | For |
+|---|---|---|
+| `.mem-card`, the button | `translate`, `scale` | the deal from the middle of the table, the hover lift, the press |
+| `.mem-card-body` | `translate`, `scale` | the shake on a miss and the cheer through a cleared board. It holds the `perspective` |
+| `.mem-card-inner` | `rotate` | the turn, and nothing else |
+
+⚠️ **They are separate because two animations cannot share an element.** The deal and the
+shake were on one layer once: adding the shake's class replaced the deal's
+`animation-name`, and taking it away put the deal's name back - which a browser treats as a
+new animation, so every card that missed flew back into the middle of the table and was
+dealt a second time. Every keyframe in the family uses the individual transform properties
+rather than `transform` for the same reason, so none of them overrides another's transform
+or the hover underneath.
+
+**The turn is a transition, not an animation**, because a turn called back halfway has to
+go back from wherever it got to. It is `rotate: y 180deg` on the inner layer, both faces
+carry `backface-visibility: hidden` (with the `-webkit-` prefix, which Safari still needs),
+and the front is turned 180 degrees inside it, so the browser shows whichever face is
+towards you. `--mem-turn` overshoots by a few degrees and settles, which is what reads as a
+flat card with weight in it. The lift that rides on the turn is two keyframes with the same
+frames and different names, `mem-lift-up` and `mem-lift-down`, because a card that went up
+and came back would otherwise be asked to re-run an animation it already ran. **Each card
+carries its own `perspective`**, at 4.2 times its own size, so a card on the four card
+board and one on the sixty card board turn through the same depth.
+
+⚠️ **A face-down card has no picture.** The front's `<use>` has no `href` until the moment
+the card is turned, so the table in the page holds no answers and the deck lives in the
+module's closure. The `href` is written once and never cleared, which is also the
+battleship preview's lesson: rewriting a `<use>` rebuilds its shadow tree even when the
+value is the same.
+
+**`--mem-flip` is written from the module**, the way `--g2048-slide` is. The turn, the lift
+and the timer that waits for a card to land before sealing a pair are one number, and it is
+`0ms` under reduced motion, which the blanket rule cannot reach into a timer to do. The
+module also zeroes `--mem-deal-step` there, because that rule shortens a duration and leaves
+a delay alone. The hold on a pair that did not match, 820ms, is *not* zeroed: it is how long
+you get to look, which is a rule rather than an animation, and pressing the next card
+calls the pair back at once.
+
+The deal needs no measuring. Each card carries `--gx` and `--gy`, its distance from the
+middle of the table in cards, and `translate` resolves its percentage against the card's
+own size, so `calc(var(--gx) * (100% + var(--mem-gap)))` is exactly the way back to the
+middle at any board size.
+
+### The table fits the screen, and turns on a phone
+
+`.mem-fit` is the smallest of the table's width, a card of 8.5rem, and whatever makes the
+whole board fit the height of the screen: `(100svh - --mem-reserve) * cols / rows`. A
+memory board you have to scroll is one you cannot see. `--mem-reserve` is 12rem on a
+desktop and 17.5rem on a phone, where the bar above the table stacks into two rows of
+meters, measured at 390 by 844 so that the sixty card board fills the screen with the bar
+still in view.
+
+⚠️ **On a portrait screen the board is turned a quarter and not one node moves.** Ten
+across on a 390 phone is a 30px card and six across is a 51px one, so under
+`(orientation: portrait)` the grid swaps its counts and fills by column: the markup's rows
+become columns on screen. The grid a screen reader walks never changes shape, the arrow
+keys swap axes in the module to keep meaning the way they point, the deal swaps `--gx` and
+`--gy`, and each level tile carries both sizes and shows the one that screen will deal.
+
+The table itself stays full width at every level and the board grows inside it. That is the
+point of the shape: the table does not move while the deal gets bigger, which is what makes
+a bigger board read as progress.
+
+### The deck is drawn, and its colour is the content
+
+⚠️ **The memory deck is the fifth and widest place the palette opens up, and on different
+grounds from the other four.** Those needed colour so that states could be told apart. A
+memory card face *is* a picture, and thirty pictures in near-monochrome are thirty grey
+shapes. So `--mem-*` is an illustrator's palette of thirteen hues, each a colour, a
+highlight and a shade, and it is the same in both themes: a card remembered in one theme
+has to be the same card in the other. What follows the theme is the ground each picture is
+drawn on, ten pastels and a night sky with a deep value each.
+
+The thirty symbols live in
+[MemorySprites.astro](../src/components/games/MemorySprites.astro), each a full card face on
+a 100 unit square with its own ground and a softer disc under the subject, so a pair shares
+its colour as well as its shape. They are flat fills lit from the top left and nothing
+else - no gradient and no clip path, since both are `url(#…)` references and those do not
+resolve reliably from inside a `<use>`. The back is cobalt, the site's own accent, because
+it is the surface the eye spends longest on.
+
+**The star marks were measured**, not chosen: a simulated player with perfect memory played
+200,000 games on every board, `three` in `LEVELS` is what it needed nine games in ten, and
+`two` is half as much again. Its mean came out at 1.61 moves a pair, which is the known
+result for this game and how the simulation was checked. **The record is also the lock**: a
+level is open when the one before it has a record, so no second key can disagree about how
+far a reader has got.
+
+---
+
 ## 10. Open items
 
 | # | Item | Severity |
@@ -1174,6 +1271,13 @@ cancelling the arrival of an old one.
 
 ## Changelog
 
+- 2026-09-23 - a fifth game, [Memory](../src/games/memory/game.ts): twelve levels from two by
+  two to ten by six, a free play mode with every board open, and thirty pictures drawn as
+  symbols in [MemorySprites.astro](../src/components/games/MemorySprites.astro). §9 records
+  the three layers of a card and why the deal and the shake cannot share one, the turn as a
+  transition with an overshoot, the table sized to the screen and turned a quarter on a
+  portrait one without moving a node, and `--mem-*`, which opens the palette because the
+  colour is the content rather than a signal.
 - 2026-09-21 - the three opponents that search got harder and, more to the point, stopped
   searching the same way twice. The gunner and the captain no longer fire into a pocket too
   small to hold anything still afloat (60 shots to 55, and 51 to 50), and the captain's

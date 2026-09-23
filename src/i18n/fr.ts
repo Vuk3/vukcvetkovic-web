@@ -565,7 +565,7 @@ const fr: Dict = {
     index: {
       metaTitle: "Jeux - Vuk Cvetković",
       metaDescription:
-        "Les jeux de navigateur de Vuk Cvetković : 2048, le démineur, la bataille navale contre quatre adversaires, et un jeu où l'on fusionne des mondes en de plus grands. Chacun a sa propre page.",
+        "Les jeux de navigateur de Vuk Cvetković : 2048, le démineur, un Memory en douze niveaux, la bataille navale contre quatre adversaires, et un jeu où l'on fusionne des mondes en de plus grands. Chacun a sa propre page.",
       heading: "Jeux",
       intro:
         "Des jeux qui valent plus d'une partie. Chacun a sa page, et en dessous un texte sur la façon dont il est construit, pour qui veut aussi cela.",
@@ -721,6 +721,128 @@ const fr: Dict = {
           ],
         },
       },
+
+      memory: {
+        name: "Memory",
+
+        tagline:
+          "Retournez deux cartes et retenez ce qu'elles cachaient. Douze niveaux, de quatre cartes à soixante, et un plateau plus grand à chaque niveau réussi.",
+
+        metaDescription:
+          "Le Memory dans le navigateur : douze niveaux de quatre à soixante cartes, jusqu'à trois étoiles par plateau, et une partie libre où tous les plateaux sont ouverts dès le départ.",
+        lead: "Retournez deux cartes à la fois et trouvez toutes les paires. Douze niveaux, chaque plateau plus grand que le précédent, de quatre cartes à soixante et trente images. Réussissez un niveau pour ouvrir le suivant, ou passez directement à n'importe quelle taille en partie libre.",
+
+        modes: "Mode",
+        modeNames: {
+          campaign: "Niveaux",
+          free: "Partie libre",
+        },
+
+        boards: "Choisissez un niveau",
+        level: "Niveau",
+
+        locked: "Verrouillé",
+        open: "Pas encore réussi",
+        stars: ["Une étoile", "Deux étoiles", "Trois étoiles"],
+
+        moves: "Coups",
+        time: "Temps",
+        best: "Minimum de coups",
+        goal: "Étoiles",
+        newGame: "Nouvelle partie",
+        hint: "Appuyez sur une carte pour la retourner, puis sur une autre. Une paire reste visible et le reste se retourne. Les flèches parcourent la table et Entrée retourne une carte.",
+
+        gridLabel: "Cartes",
+        cells: {
+          hidden: "Face cachée",
+          matched: "{name}, paire trouvée",
+        },
+
+        messages: {
+          pair: "{name}. Une paire.",
+          miss: "{name}. Pas une paire.",
+        },
+
+        pictures: {
+          apple: "Pomme",
+          cherries: "Cerises",
+          lemon: "Citron",
+          strawberry: "Fraise",
+          watermelon: "Pastèque",
+          pear: "Poire",
+          grapes: "Raisin",
+          orange: "Orange",
+          banana: "Banane",
+          pineapple: "Ananas",
+          sun: "Soleil",
+          moon: "Lune",
+          cloud: "Nuage d'orage",
+          rainbow: "Arc-en-ciel",
+          snowflake: "Flocon de neige",
+          leaf: "Feuille d'érable",
+          tulip: "Tulipe",
+          mushroom: "Champignon",
+          cactus: "Cactus",
+          tree: "Sapin",
+          rocket: "Fusée",
+          balloon: "Montgolfière",
+          anchor: "Ancre",
+          key: "Clé",
+          crown: "Couronne",
+          heart: "Cœur",
+          star: "Étoile",
+          gem: "Diamant",
+          bell: "Cloche",
+          umbrella: "Parapluie",
+        },
+
+        won: {
+          title: "Toutes les paires trouvées",
+          record: "Moins de coups que jamais sur ce niveau.",
+          final: "C'était le dernier niveau. Il ne reste que les trois étoiles sur les douze.",
+          next: "Niveau suivant",
+          bigger: "Plateau suivant",
+          again: "Rejouer",
+        },
+
+        how: {
+          label: "Comment jouer",
+          items: [
+            {
+              title: "Deux cartes par tour",
+              description:
+                "Appuyez sur une carte pour la retourner, puis sur une deuxième. Si les images sont les mêmes, les deux restent visibles. Sinon, elles restent retournées le temps de les mémoriser puis reviennent face cachée, et appuyer sur la carte suivante les retourne aussitôt.",
+            },
+            {
+              title: "Chaque tour est un coup",
+              description:
+                "Deux cartes font un coup, paire ou non. Trois étoiles, c'est un plateau terminé à peu près aussi vite qu'une mémoire parfaite le ferait, deux, c'est jusqu'à moitié plus de coups, et une, c'est pour être arrivé au bout. Les étoiles au-dessus de la table s'éteignent à mesure que vous passez chaque seuil.",
+            },
+            {
+              title: "Douze niveaux, chacun plus grand",
+              description:
+                "De deux sur deux à dix sur six. Réussir un niveau ouvre le suivant, et votre minimum de coups est gardé pour chacun. Les cinq premiers tirent chacun dans une partie du jeu, les fruits, la nature ou les objets, et à partir du sixième les trente images sont en jeu.",
+            },
+            {
+              title: "Ou allez droit au but",
+              description:
+                "La partie libre ouvre tous les plateaux d'un coup, sans étoiles à gagner et sans rien de verrouillé. Le même jeu et les mêmes règles, pour quand c'est la grande table que vous voulez.",
+            },
+          ],
+        },
+
+        close: {
+          label: "Comment c'est construit",
+          paragraphs: [
+            "Pas de canvas ni de bibliothèque de jeu, comme pour les autres. Une carte est un bouton à deux faces, et la retourner tient en une transition sur une seule propriété : le calque qui porte les deux faces tourne d'un demi-tour autour de son axe vertical, chaque face cache son propre dos, et le navigateur montre celle qui est tournée vers vous. Le mouvement dépasse de quelques degrés puis se pose, et c'est ce qui en fait une carte qui a du poids plutôt qu'un carré qui pivote. Chaque carte porte sa propre perspective, proportionnelle à sa taille, si bien qu'une carte du plus petit plateau et une du plus grand tournent avec la même profondeur.",
+            "Les trente images sont dessinées, pas téléchargées : une seule planche de sprites dans la page, un symbole par image, et chaque face de carte y fait référence. Chacune est en aplats sur trois tons, la couleur elle-même, un reflet côté lumière et une ombre de l'autre côté, sur un fond qui lui est propre. Les images gardent leurs couleurs dans les deux thèmes et seuls les fonds suivent la page, si bien qu'une pomme retenue en clair est la même pomme en sombre.",
+            "Une carte ne sait pas ce qu'elle est avant d'être retournée. La table face cachée dans la page ne contient aucune réponse : le recto de chaque carte ne désigne rien, et l'image n'y est écrite qu'au moment où la carte se retourne. Le jeu est mélangé une fois par plateau et reste à l'intérieur du jeu, là où la page ne peut pas le lire.",
+            "Les seuils des étoiles ont été mesurés, pas choisis. Un joueur à la mémoire parfaite, qui ne retourne jamais une carte déjà vue sauf pour compléter une paire, a joué deux cent mille parties sur chaque plateau, et trois étoiles correspondent au nombre de coups dont il a eu besoin neuf parties sur dix. Sa moyenne est de 1,61 coup par paire, ce qui est la réponse connue pour ce jeu et la façon dont la simulation a été vérifiée.",
+            "Le plateau est dimensionné pour tenir à l'écran, parce qu'un plateau de Memory qu'il faut faire défiler est un plateau que l'on ne voit pas. Sur un téléphone tenu à la verticale, il tourne d'un quart, dix de front devenant six de front, sans qu'aucune carte ne bouge pour cela : la grille se remplit par colonne au lieu de par ligne, les flèches échangent leurs axes pour suivre, et un lecteur d'écran parcourt toujours le même tableau.",
+          ],
+        },
+      },
+
       accretion: {
         name: "Accrétion",
 

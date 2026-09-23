@@ -1,6 +1,6 @@
 # Routing and deploy
 
-Forty-four prerendered pages, four locales, four projects, three games, on Cloudflare.
+Fifty-two prerendered pages, four locales, four projects, five games, on Cloudflare.
 Every route exists twice - once unprefixed for English and once under `[lang]` for the other three - and
 the whole build is static: `dist/server` comes out **empty** and nothing runs at request
 time.
@@ -33,7 +33,7 @@ and only one of them is obvious.
 ## 1. Every route exists twice
 
 `prefixDefaultLocale: false`, so English is unprefixed and the other three locales are
-generated from a `[lang]` route. That gives sixteen route files for eight logical pages:
+generated from a `[lang]` route. That gives twenty route files for ten logical pages:
 
 | Page | English | Prefixed | Body |
 |---|---|---|---|
@@ -44,7 +44,9 @@ generated from a `[lang]` route. That gives sixteen route files for eight logica
 | game index | [games/index.astro](../src/pages/games/index.astro) | [\[lang\]/games/index.astro](<../src/pages/[lang]/games/index.astro>) | [GameIndex.astro](../src/components/GameIndex.astro) |
 | 2048 | [games/2048/index.astro](../src/pages/games/2048/index.astro) | [\[lang\]/games/2048/index.astro](<../src/pages/[lang]/games/2048/index.astro>) | [Game2048.astro](../src/components/Game2048.astro) |
 | Minesweeper | [games/minesweeper/index.astro](../src/pages/games/minesweeper/index.astro) | [\[lang\]/games/minesweeper/index.astro](<../src/pages/[lang]/games/minesweeper/index.astro>) | [Minesweeper.astro](../src/components/Minesweeper.astro) |
+| Memory | [games/memory/index.astro](../src/pages/games/memory/index.astro) | [\[lang\]/games/memory/index.astro](<../src/pages/[lang]/games/memory/index.astro>) | [Memory.astro](../src/components/Memory.astro) |
 | Accretion | [games/accretion/index.astro](../src/pages/games/accretion/index.astro) | [\[lang\]/games/accretion/index.astro](<../src/pages/[lang]/games/accretion/index.astro>) | [Accretion.astro](../src/components/Accretion.astro) |
+| Battleship | [games/battleship/index.astro](../src/pages/games/battleship/index.astro) | [\[lang\]/games/battleship/index.astro](<../src/pages/[lang]/games/battleship/index.astro>) | [Battleship.astro](../src/components/Battleship.astro) |
 
 ⚠️ **A game gets a route pair of its own, and that is the one place this table breaks its
 own pattern.** It is about the *files*, not the URLs - `/projects/encryptix/` and
@@ -54,7 +56,7 @@ where that slug comes from:
 | | On disk | Pages built |
 |---|---|---|
 | projects | one file, `projects/[slug]/index.astro` | four, from `getStaticPaths` |
-| games | one directory per game, `games/2048/`, `games/minesweeper/`, `games/accretion/` | one each, no parameter |
+| games | one directory per game, `games/2048/`, `games/minesweeper/`, `games/memory/`, `games/accretion/`, `games/battleship/` | one each, no parameter |
 
 Every project page is the same page with different data, so one parameterised file covers
 all four and always will. A game is its own program - its own markup, its own script, its
@@ -87,7 +89,7 @@ there as a page, so a note left in that directory builds as a public HTML page a
 [src/CLAUDE.md](../src/CLAUDE.md) rather than in `src/pages/`. Prefix anything else with `_`
 to keep it out of the route table, and **check the page count**: the build prints it, and it
 should be four locales times four fixed shapes, plus a 404, one detail page per project per
-locale, and one page per game per locale - 44 with four projects and three games today.
+locale, and one page per game per locale - 52 with four projects and five games today.
 
 ---
 
@@ -214,7 +216,7 @@ wrangler is invoked directly. The adapter also injects `_headers` (immutable
 
 ### What lands in `dist/client/_astro/`
 
-Three woff2 faces, five webp variants and **one JavaScript file**, which is the game.
+Three woff2 faces, five webp variants and **six JavaScript files**, which are the games.
 
 `build.inlineStylesheets: 'always'` puts the whole stylesheet inside every document, so
 nothing render-blocking stands between the first response and the first paint, and the
@@ -227,8 +229,8 @@ dismissal and the active-section indicator - are all small enough that Astro inl
 into each page rather than emitting a bundle. 1.7 KB of JS per page, in a 26 KB gz home
 page, with no extra request. Keep it that way: see [src/components/CLAUDE.md](../src/components/CLAUDE.md).
 
-The five files in `_astro` are the four game engines and the piece they share. 2048 is
-2.4 KB gz, Minesweeper 3.2 KB, Accretion 3.2 KB, Battleship 5.4 KB, and
+The six files in `_astro` are the five game engines and the piece they share. 2048 is
+2.4 KB gz, Minesweeper 3.2 KB, Memory 4.3 KB, Accretion 3.2 KB, Battleship 5.4 KB, and
 [games/record.ts](../src/games/record.ts) 0.4 KB. Each engine is requested by its own route
 and that route's three locale twins, and by nothing else, which is the point: a game pays
 for itself and the rest of the site is unchanged.
@@ -274,7 +276,7 @@ where `files` would not, and `astro check` passes without it.
 
 ## 6. The sitemap carries a trailing slash by hand
 
-Thirty-two URLs: the home page, the project index, one page per project, the game index
+Forty-eight URLs: the home page, the project index, one page per project, the game index
 and one page per game, across four locales, with the 404 pages excluded. Every entry
 ends in a slash, and that agrees with the `<link rel="canonical">` on the page itself - but
 only because the `serialize` hook in [astro.config.ts](../astro.config.ts) puts it there.
@@ -337,6 +339,9 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-09-23 - a fifth game and its route pair, `/games/memory/`, taking the build to 52
+  pages and the sitemap to 48 URLs. `_astro` now holds six files. The route table gained
+  Battleship's row as well, which it had been missing since that game was added (§1, §5).
 - 2026-09-11 - a third game and its route pair, `/games/accretion/`, taking the build to 44
   pages and the sitemap to 40 URLs. `_astro` now holds four files, and this is the first
   route on the site that runs on every frame (§5).

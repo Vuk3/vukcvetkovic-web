@@ -564,7 +564,7 @@ const de: Dict = {
     index: {
       metaTitle: 'Spiele - Vuk Cvetković',
       metaDescription:
-        'Browserspiele von Vuk Cvetković: 2048, Minesweeper, Schiffe versenken gegen vier Gegner und ein Spiel, in dem Welten zu größeren verschmelzen. Jedes bekommt eine eigene Seite.',
+        'Browserspiele von Vuk Cvetković: 2048, Minesweeper, Memory in zwölf Leveln, Schiffe versenken gegen vier Gegner und ein Spiel, in dem Welten zu größeren verschmelzen. Jedes bekommt eine eigene Seite.',
       heading: 'Spiele',
       intro:
         'Spiele, die mehr als eine Runde wert sind. Jedes hat eine eigene Seite, und darunter einen Text dazu, wie es gebaut ist, für alle die das auch wissen wollen.',
@@ -720,6 +720,128 @@ const de: Dict = {
           ],
         },
       },
+
+      memory: {
+        name: 'Memory',
+
+        tagline:
+          'Deck zwei Karten auf und merk dir, was darunter war. Zwölf Level, von vier Karten bis sechzig, und mit jedem geschafften Level ein größeres Brett.',
+
+        metaDescription:
+          'Memory im Browser: zwölf Level von vier bis sechzig Karten, bis zu drei Sterne pro Brett und ein freies Spiel, in dem jedes Brett von Anfang an offen ist.',
+        lead: 'Deck immer zwei Karten auf und finde jedes Paar. Zwölf Level, jedes Brett größer als das vorige, von vier Karten bis sechzig und dreißig Bildern. Schaff ein Level, um das nächste zu öffnen, oder spring im freien Spiel direkt zu jeder Größe.',
+
+        modes: 'Modus',
+        modeNames: {
+          campaign: 'Level',
+          free: 'Freies Spiel',
+        },
+
+        boards: 'Wähle ein Level',
+        level: 'Level',
+
+        locked: 'Gesperrt',
+        open: 'Noch nicht geschafft',
+        stars: ['Ein Stern', 'Zwei Sterne', 'Drei Sterne'],
+
+        moves: 'Züge',
+        time: 'Zeit',
+        best: 'Wenigste Züge',
+        goal: 'Sterne',
+        newGame: 'Neues Spiel',
+        hint: 'Drück auf eine Karte, um sie umzudrehen, dann auf eine zweite. Ein Paar bleibt offen liegen, alles andere dreht sich zurück. Die Pfeiltasten laufen über den Tisch, Enter dreht eine Karte um.',
+
+        gridLabel: 'Karten',
+        cells: {
+          hidden: 'Verdeckt',
+          matched: '{name}, Paar gefunden',
+        },
+
+        messages: {
+          pair: '{name}. Ein Paar.',
+          miss: '{name}. Kein Paar.',
+        },
+
+        pictures: {
+          apple: 'Apfel',
+          cherries: 'Kirschen',
+          lemon: 'Zitrone',
+          strawberry: 'Erdbeere',
+          watermelon: 'Wassermelone',
+          pear: 'Birne',
+          grapes: 'Trauben',
+          orange: 'Orange',
+          banana: 'Banane',
+          pineapple: 'Ananas',
+          sun: 'Sonne',
+          moon: 'Mond',
+          cloud: 'Gewitterwolke',
+          rainbow: 'Regenbogen',
+          snowflake: 'Schneeflocke',
+          leaf: 'Ahornblatt',
+          tulip: 'Tulpe',
+          mushroom: 'Pilz',
+          cactus: 'Kaktus',
+          tree: 'Tanne',
+          rocket: 'Rakete',
+          balloon: 'Heißluftballon',
+          anchor: 'Anker',
+          key: 'Schlüssel',
+          crown: 'Krone',
+          heart: 'Herz',
+          star: 'Stern',
+          gem: 'Edelstein',
+          bell: 'Glocke',
+          umbrella: 'Regenschirm',
+        },
+
+        won: {
+          title: 'Alle Paare gefunden',
+          record: 'So wenige Züge wie noch nie auf diesem Level.',
+          final: 'Das war das letzte Level. Jetzt fehlen nur noch drei Sterne auf allen zwölf.',
+          next: 'Nächstes Level',
+          bigger: 'Nächstes Brett',
+          again: 'Noch einmal',
+        },
+
+        how: {
+          label: 'So wird gespielt',
+          items: [
+            {
+              title: 'Zwei Karten pro Zug',
+              description:
+                'Drück auf eine Karte, um sie umzudrehen, dann auf eine zweite. Zeigen beide dasselbe Bild, bleiben sie offen liegen. Wenn nicht, bleiben sie lange genug offen, dass du sie dir merken kannst, bevor sie sich zurückdrehen, und ein Druck auf die nächste Karte schickt sie sofort zurück.',
+            },
+            {
+              title: 'Jeder Zug zählt',
+              description:
+                'Zwei Karten sind ein Zug, Paar oder nicht. Drei Sterne gibt es für ein Brett, das etwa so schnell abgeräumt ist, wie ein perfektes Gedächtnis es schaffen würde, zwei für bis zu halb so viele Züge mehr, und einen fürs Ankommen. Die Sterne über dem Tisch gehen aus, sobald du eine Marke überschreitest.',
+            },
+            {
+              title: 'Zwölf Level, jedes größer',
+              description:
+                'Von zwei mal zwei bis zehn mal sechs. Ein geschafftes Level öffnet das nächste, und deine wenigsten Züge werden für jedes gespeichert. Die ersten fünf teilen jeweils aus einem Teil des Stapels aus, Obst oder Natur oder Dinge, und ab dem sechsten sind alle dreißig Bilder im Spiel.',
+            },
+            {
+              title: 'Oder spring direkt hin',
+              description:
+                'Das freie Spiel öffnet alle Bretter auf einmal, ohne Sterne und ohne Sperren. Derselbe Stapel und dieselben Regeln, für die Momente, in denen du einfach den großen Tisch willst.',
+            },
+          ],
+        },
+
+        close: {
+          label: 'So ist es gebaut',
+          paragraphs: [
+            'Kein Canvas und keine Spielbibliothek, wie bei den anderen auch. Eine Karte ist ein Button mit zwei Seiten, und sie umzudrehen ist eine Transition auf einer einzigen Eigenschaft: die Ebene mit beiden Seiten dreht sich eine halbe Umdrehung um ihre senkrechte Achse, jede Seite verbirgt ihre eigene Rückseite, und der Browser zeigt die, die dir zugewandt ist. Die Drehung schießt ein paar Grad über das Ziel hinaus und setzt sich dann, und genau das lässt sie wie eine Karte mit Gewicht wirken statt wie ein Quadrat, das sich dreht. Jede Karte bringt ihre eigene Perspektive mit, passend zu ihrer Größe, sodass sich eine Karte auf dem kleinsten Brett und eine auf dem größten durch dieselbe Tiefe drehen.',
+            'Die dreißig Bilder sind gezeichnet und nicht heruntergeladen: ein Sprite-Sheet in der Seite, ein Symbol pro Bild, und jede Kartenseite verweist auf eines davon. Jedes ist Flächenfarbe in drei Tönen, die Farbe selbst, ein Glanz zum Licht hin und ein Schatten davon weg, auf einem eigenen Grund. Die Bilder behalten ihre Farben in beiden Themes und nur die Gründe folgen der Seite, sodass ein im Hellen gemerkter Apfel im Dunkeln derselbe Apfel ist.',
+            'Eine Karte weiß nicht, was sie ist, bis sie umgedreht wird. Der verdeckte Tisch in der Seite enthält keine einzige Antwort: die Vorderseite jeder Karte verweist auf nichts, und das Bild wird erst in dem Moment eingetragen, in dem sie sich umdreht. Der Stapel wird einmal pro Brett gemischt und lebt im Spiel selbst, wo die Seite ihn nicht lesen kann.',
+            'Die Sternmarken sind gemessen und nicht gewählt. Ein Spieler mit perfektem Gedächtnis, der nie eine schon gesehene Karte umdreht, außer sie vervollständigt ein Paar, hat auf jedem Brett zweihunderttausend Partien gespielt, und drei Sterne sind die Zahl der Züge, die er in neun von zehn Partien gebraucht hat. Sein Schnitt lag bei 1,61 Zügen pro Paar, was die bekannte Antwort für dieses Spiel ist und die Art, wie die Simulation geprüft wurde.',
+            'Das Brett ist so bemessen, dass es auf den Bildschirm passt, denn ein Memory-Brett, das man scrollen muss, ist eines, das man nicht sieht. Auf einem hochkant gehaltenen Telefon dreht es sich um eine Vierteldrehung, aus zehn nebeneinander werden sechs, und keine einzige Karte bewegt sich dafür: das Grid füllt sich spaltenweise statt zeilenweise, die Pfeiltasten tauschen passend ihre Achsen, und ein Screenreader läuft weiter über dieselbe Tabelle.',
+          ],
+        },
+      },
+
       accretion: {
         name: 'Akkretion',
 

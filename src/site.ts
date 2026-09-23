@@ -336,7 +336,7 @@ export interface Game {
    *
    * A fact: the day is the same in four languages and only the way it is
    * spelled out is not, so it is stored raw and `Intl.DateTimeFormat` writes it
-   * per locale in GameStamp.astro. Three of the four share a date because three
+   * per locale in GameStamp.astro. Three of the five share a date because three
    * of them were written on one day.
    *
    * ⚠️ It is stamped on the game's own page and deliberately nowhere on the
@@ -365,6 +365,7 @@ export interface Game {
 const games: Record<GameId, Game> = {
   twentyFortyEight: { slug: "2048", status: "live", date: "2026-09-11" },
   minesweeper: { slug: "minesweeper", status: "live", date: "2026-09-11" },
+  memory: { slug: "memory", status: "live", date: "2026-09-23" },
   accretion: { slug: "accretion", status: "beta", date: "2026-09-11" },
   battleship: { slug: "battleship", status: "beta", date: "2026-09-17" },
 };

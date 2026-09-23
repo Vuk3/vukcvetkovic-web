@@ -1,0 +1,581 @@
+---
+/**
+ * The Memory page, shared by the four locales.
+ *
+ * The table is empty here and dealt by the module, the way the minefield is:
+ * sixty cards of markup in every document, to hold a board that is four cards
+ * on the first visit, is markup nobody reads - and a face-down card has to
+ * carry nothing that says what is under it anyway.
+ *
+ * What *is* in the markup is everything around the table, including both
+ * halves of the page. The campaign's stars and record and the free play labels
+ * are all here, and CSS shows one set off `data-mode` on the frame, so the
+ * script never writes a string a reader sees that is not a number or a name.
+ *
+ * ⚠️ Which panel is up is decided in CSS off `data-state`, as on every game
+ * page here. The script sets attributes and never touches `hidden`.
+ */
+import { ArrowLeft, Lock, RotateCcw } from "@lucide/astro";
+import type { Lang } from "../i18n/types";
+import { getDict, localizePath } from "../i18n/utils";
+import { LEVELS, PICTURES } from "../games/memory/game";
+import { site } from "../site";
+import GameStamp from "./GameStamp.astro";
+import MemorySprites from "./games/MemorySprites.astro";
+import Section from "./Section.astro";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = getDict(lang);
+
+const copy = dict.games.items.memory;
+
+const index = localizePath("/games/", lang);
+
+/* The two modes, in the order the switch shows them. Typed against the
+   dictionary, so a third mode with no name behind it fails here. */
+const modes = ["campaign", "free"] as const satisfies readonly (keyof typeof copy.modeNames)[];
+
+/*
+ * A name for every picture in the deck, handed to the module as one object.
+ *
+ * The ids come from the module and the names from the dictionary, so a
+ * picture added to `PICTURES` with no name in en.ts is a type error on this
+ * line - the same join the minefield's three boards make.
+ */
+const names = Object.fromEntries(PICTURES.map(({ id }) => [id, copy.pictures[id]]));
+
+const three = [0, 1, 2];
+---
+
+<div class="page-head">
+  <div class="shell shell-wide">
+    <div class="crumb-row">
+      <a href={index} class="crumb enter">
+        <ArrowLeft class="size-4" aria-hidden="true" />
+        {dict.games.label}
+      </a>
+
+      <GameStamp lang={lang} date={site.games.memory.date} />
+    </div>
+
+    <h1 class="page-title enter" style="--enter-delay:80ms">{copy.name}</h1>
+
+    <p class="page-lead enter" style="--enter-delay:160ms">{copy.lead}</p>
+  </div>
+</div>
+
+<div class="sec-lite">
+  <div class="shell shell-wide">
+    <div
+      class="mem enter"
+      style="--enter-delay:240ms"
+      data-game
+      data-state="ready"
+      data-mode="campaign"
+    >
+      <fieldset class="mem-modes">
+        <legend class="sr-only">{copy.modes}</legend>
+
+        {
+          modes.map((id, i) => (
+            <label class="mem-mode">
+              <input
+                type="radio"
+                name="mem-mode"
+                value={id}
+                checked={i === 0}
+                class="sr-only"
+                data-mode-option
+              />
+              <span>{copy.modeNames[id]}</span>
+            </label>
+          ))
+        }
+      </fieldset>
+
+      {/*
+        The twelve boards. The words a tile says about its state ride on the
+        fieldset, so the script picks one of them rather than carrying its own.
+      */}
+      <fieldset
+        class="mem-levels"
+        data-levels
+        data-word-level={copy.level}
+        data-word-locked={copy.locked}
+        data-word-open={copy.open}
+        data-word-stars={JSON.stringify(copy.stars)}
+      >
+        <legend class="sr-only">{copy.boards}</legend>
+
+        <div class="mem-levels-row">
+          {
+            LEVELS.map((level, i) => (
+              <label class="mem-level">
+                <input
+                  type="radio"
+                  name="mem-level"
+                  value={i}
+                  checked={i === 0}
+                  class="sr-only"
+                  data-level-option
+                />
+                <span class="sr-only">{`${copy.level} `}</span>
+                <span class="mem-level-n">{i + 1}</span>
+
+                {/* Both ways round, because a phone held upright deals the
+                    board turned a quarter and the tile should say what it
+                    will show. The stylesheet picks one. */}
+                <span class="mem-level-size is-wide" aria-hidden="true">
+                  {level.columns} × {level.rows}
+                </span>
+                <span class="mem-level-size is-tall" aria-hidden="true">
+                  {level.rows} × {level.columns}
+                </span>
+
+                <span class="mem-level-stars" aria-hidden="true">
+                  {three.map(() => (
+                    <svg viewBox="0 0 100 100" focusable="false">
+                      <use href="#mem-rating" />
+                    </svg>
+                  ))}
+                </span>
+
+                <Lock class="mem-level-lock" aria-hidden="true" />
+                <span class="sr-only" data-level-state />
+              </label>
+            ))
+          }
+        </div>
+      </fieldset>
+
+      <div class="mem-bar">
+        <div class="mem-meter">
+          <span class="mem-meter-label">{copy.moves}</span>
+          <span class="mem-meter-value" data-moves>0</span>
+        </div>
+
+        <div class="mem-meter">
+          <span class="mem-meter-label">{copy.time}</span>
+          <span class="mem-meter-value" data-time>0:00</span>
+        </div>
+
+        <div class="mem-meter mem-for-campaign">
+          <span class="mem-meter-label">{copy.best}</span>
+          <span class="mem-meter-value" data-best>-</span>
+        </div>
+
+        {/* Decorative: the panel at the end says how many were earned, in
+            words, and a screen reader should hear it once. */}
+        <div class="mem-meter mem-for-campaign" aria-hidden="true">
+          <span class="mem-meter-label">{copy.goal}</span>
+          <span class="mem-goal" data-goal>
+            {three.map(() => (
+              <svg viewBox="0 0 100 100" focusable="false">
+                <use href="#mem-rating" />
+              </svg>
+            ))}
+          </span>
+        </div>
+
+        <div class="mem-actions">
+          <button type="button" class="cta-ghost" data-action="restart">
+            <RotateCcw class="size-4 shrink-0" aria-hidden="true" />
+            {copy.newGame}
+          </button>
+        </div>
+      </div>
+
+      <div class="mem-frame">
+        <div class="mem-table">
+          <div class="mem-fit">
+            <div
+              class="mem-board"
+              role="grid"
+              aria-label={copy.gridLabel}
+              data-board
+              data-names={JSON.stringify(names)}
+              data-label-hidden={copy.cells.hidden}
+              data-label-matched={copy.cells.matched}
+              data-msg-pair={copy.messages.pair}
+              data-msg-miss={copy.messages.miss}
+            >
+            </div>
+          </div>
+        </div>
+
+        <div class="mem-burst" aria-hidden="true" data-burst></div>
+
+        <div class="mem-panel" data-panel="won">
+          <p class="mem-panel-level" data-panel-level></p>
+          <p class="mem-panel-title">{copy.won.title}</p>
+
+          <div class="mem-panel-stars mem-for-campaign" aria-hidden="true" data-panel-stars>
+            {three.map(() => (
+              <svg viewBox="0 0 100 100" focusable="false">
+                <use href="#mem-rating" />
+              </svg>
+            ))}
+          </div>
+
+          <div class="mem-panel-meters">
+            <div class="mem-meter">
+              <span class="mem-meter-label">{copy.moves}</span>
+              <span class="mem-meter-value" data-panel-moves>0</span>
+            </div>
+
+            <div class="mem-meter">
+              <span class="mem-meter-label">{copy.time}</span>
+              <span class="mem-meter-value" data-panel-time>0:00</span>
+            </div>
+          </div>
+
+          {/* Both sentences ride on the element, the way the minefield's
+              record line does, and the script joins whichever apply. */}
+          <p
+            class="mem-panel-body"
+            data-panel-body
+            data-record={copy.won.record}
+            data-final={copy.won.final}
+          >
+          </p>
+
+          <div class="mem-panel-actions">
+            <button type="button" class="cta" data-action="next">
+              <span class="mem-for-campaign">{copy.won.next}</span>
+              <span class="mem-for-free">{copy.won.bigger}</span>
+            </button>
+            <button type="button" class="cta-ghost" data-action="restart">
+              {copy.won.again}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <p class="mem-hint">{copy.hint}</p>
+
+      {/* The table announces its cards through the grid roles. This carries
+          what a turn did and how a board ended, which the grid cannot. */}
+      <p
+        class="sr-only"
+        aria-live="polite"
+        data-live
+        data-label-moves={copy.moves}
+        data-label-time={copy.time}
+      >
+      </p>
+    </div>
+  </div>
+</div>
+
+<MemorySprites />
+
+<Section id="how" label={copy.how.label} width="wide" tone="band">
+  <ul class="svc-grid">
+    {
+      copy.how.items.map((item) => (
+        <li class="card reveal-item">
+          <h3 class="svc-title">{item.title}</h3>
+          <p class="mt-2.5 text-muted">{item.description}</p>
+        </li>
+      ))
+    }
+  </ul>
+</Section>
+
+<Section id="build" label={copy.close.label} width="wide" tone="panel">
+  <div class="prose-columns text-muted">
+    {copy.close.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+  </div>
+</Section>
+
+<script>
+  import { LEVELS, mount, pairsOf, starsFor, type PictureId } from "../games/memory/game";
+  import { scoreRecord } from "../games/record";
+
+  /*
+   * The page's side of the game: the two modes, the twelve tiles, the record
+   * behind each, the figures over the table and the panel at the end.
+   *
+   * Everything about the cards themselves is in the module. What lives here is
+   * what a board means once it is over - whether it was a record, what it
+   * unlocked, how many stars - because the module plays a board and does not
+   * know it is one of twelve.
+   */
+  const root = document.querySelector<HTMLElement>("[data-game]");
+  const board = root?.querySelector<HTMLElement>("[data-board]");
+  const burst = root?.querySelector<HTMLElement>("[data-burst]");
+  const strip = root?.querySelector<HTMLElement>("[data-levels]");
+
+  if (root && board && burst && strip) {
+    const movesOut = root.querySelector<HTMLElement>("[data-moves]");
+    const timeOut = root.querySelector<HTMLElement>("[data-time]");
+    const bestOut = root.querySelector<HTMLElement>("[data-best]");
+    const goal = root.querySelectorAll<SVGElement>("[data-goal] svg");
+    const live = root.querySelector<HTMLElement>("[data-live]");
+
+    const levelOptions = root.querySelectorAll<HTMLInputElement>("[data-level-option]");
+    const modeOptions = root.querySelectorAll<HTMLInputElement>("[data-mode-option]");
+
+    const panelLevel = root.querySelector<HTMLElement>("[data-panel-level]");
+    const panelStars = root.querySelectorAll<SVGElement>("[data-panel-stars] svg");
+    const panelMoves = root.querySelector<HTMLElement>("[data-panel-moves]");
+    const panelTime = root.querySelector<HTMLElement>("[data-panel-time]");
+    const panelBody = root.querySelector<HTMLElement>("[data-panel-body]");
+    const panelTitle = root.querySelector<HTMLElement>(".mem-panel-title");
+    const next = root.querySelector<HTMLButtonElement>('[data-action="next"]');
+
+    const lang = document.documentElement.lang || "en";
+    const format = new Intl.NumberFormat(lang);
+
+    const clock = (seconds: number) =>
+      `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+
+    const words = {
+      level: strip.dataset.wordLevel ?? "",
+      locked: strip.dataset.wordLocked ?? "",
+      open: strip.dataset.wordOpen ?? "",
+      stars: JSON.parse(strip.dataset.wordStars ?? "[]") as string[],
+      moves: live?.dataset.labelMoves ?? "",
+      time: live?.dataset.labelTime ?? "",
+    };
+
+    /*
+     * One record per level, and it is the fewest moves.
+     *
+     * The predicate is this game's half of the signature, the way 2048's is a
+     * multiple of four: every pair costs at least one move, so a board of n
+     * pairs cannot be cleared in fewer than n, and most invented figures fail
+     * on arithmetic before the signature is even read.
+     *
+     * The record is also the lock. A level is open when the one before it has a
+     * record, so there is no second key saying how far a reader has got that
+     * could ever disagree with the first.
+     */
+    const records = LEVELS.map((level, i) =>
+      scoreRecord(`game-memory-best-${i + 1}`, (moves) => moves >= pairsOf(level)),
+    );
+
+    const open = (i: number) => i === 0 || records[i - 1].read() !== null;
+
+    type Mode = "campaign" | "free";
+
+    /** Where the reader was, per mode. Not a score, so stored plainly, and read
+     *  back through the list of real levels rather than trusted. */
+    const KEYS: Record<Mode, string> = {
+      campaign: "game-memory-level",
+      free: "game-memory-free",
+    };
+    const MODE_KEY = "game-memory-mode";
+
+    const read = (key: string): string | null => {
+      try {
+        return localStorage.getItem(key);
+      } catch {
+        return null;
+      }
+    };
+
+    const write = (key: string, value: string): void => {
+      try {
+        localStorage.setItem(key, value);
+      } catch {
+        /* Nothing to do; the choice simply will not outlive the page. */
+      }
+    };
+
+    /** A stored level if it is a real one and can be played, and otherwise the
+     *  first level still without a record - which is where a returning reader
+     *  who lost their place would want to be. */
+    const placeFor = (mode: Mode): number => {
+      const stored = Number(read(KEYS[mode]));
+
+      if (Number.isInteger(stored) && stored >= 0 && stored < LEVELS.length) {
+        if (mode === "free" || open(stored)) return stored;
+      }
+
+      if (mode === "free") return 0;
+
+      const frontier = records.findIndex((record) => record.read() === null);
+      return frontier === -1 ? LEVELS.length - 1 : frontier;
+    };
+
+    let mode: Mode = read(MODE_KEY) === "free" ? "free" : "campaign";
+    let current = placeFor(mode);
+
+    /* ---- The strip and the figures --------------------------------------- */
+
+    const paintStrip = (): void => {
+      levelOptions.forEach((option, i) => {
+        const best = records[i].read();
+        const earned = best === null ? 0 : starsFor(LEVELS[i], best);
+        const tile = option.closest(".mem-level");
+
+        option.disabled = mode === "campaign" && !open(i);
+        option.checked = i === current;
+
+        tile?.querySelectorAll(".mem-level-stars svg").forEach((star, k) => {
+          star.classList.toggle("is-on", k < earned);
+        });
+
+        const state = tile?.querySelector("[data-level-state]");
+        if (!state) return;
+
+        if (mode === "free") state.textContent = "";
+        else if (option.disabled) state.textContent = `, ${words.locked}`;
+        else state.textContent = `, ${earned === 0 ? words.open : words.stars[earned - 1]}`;
+      });
+    }
+
+    const showBest = (): void => {
+      const best = records[current].read();
+      if (bestOut) bestOut.textContent = best === null ? "-" : format.format(best);
+    }
+
+    /** The stars still in reach, going out as the count passes each mark. */
+    const showGoal = (moves: number): void => {
+      const reach = starsFor(LEVELS[current], moves);
+      goal.forEach((star, k) => star.classList.toggle("is-off", k >= reach));
+    }
+
+    /* ---- The game -------------------------------------------------------- */
+
+    const controller = mount({
+      root,
+      board,
+      burst,
+      names: JSON.parse(board.dataset.names ?? "{}") as Record<PictureId, string>,
+
+      onMoves(moves) {
+        if (movesOut) movesOut.textContent = format.format(moves);
+        showGoal(moves);
+      },
+
+      onTime(seconds) {
+        if (timeOut) timeOut.textContent = clock(seconds);
+      },
+
+      onState(state, moves, seconds) {
+        root.dataset.state = state;
+        if (state === "won") cleared(moves, seconds);
+      },
+
+      onAnnounce(text) {
+        if (live) live.textContent = text;
+      },
+    });
+
+    /**
+     * A board is over: keep the record, open the next level, fill the panel.
+     *
+     * The record line only appears when there was a record to beat. On the
+     * first clear of a level every figure is "fewer than ever", and saying so
+     * would be a sentence with nothing in it.
+     */
+    const cleared = (moves: number, seconds: number): void => {
+      const level = LEVELS[current];
+      const earned = starsFor(level, moves);
+      const last = current === LEVELS.length - 1;
+
+      let beaten = false;
+
+      if (mode === "campaign") {
+        const record = records[current];
+        const best = record.read();
+
+        if (best === null || moves < best) {
+          record.write(moves);
+          beaten = best !== null;
+        }
+      }
+
+      if (panelLevel) {
+        panelLevel.textContent =
+          mode === "campaign" ? `${words.level} ${current + 1}` : `${level.columns} × ${level.rows}`;
+      }
+
+      panelStars.forEach((star, k) => {
+        star.classList.toggle("is-on", k < earned);
+        star.style.setProperty("--n", String(k));
+      });
+
+      if (panelMoves) panelMoves.textContent = format.format(moves);
+      if (panelTime) panelTime.textContent = clock(seconds);
+
+      if (panelBody) {
+        const lines = [];
+        if (beaten) lines.push(panelBody.dataset.record);
+        if (last && mode === "campaign") lines.push(panelBody.dataset.final);
+        panelBody.textContent = lines.join(" ");
+      }
+
+      paintStrip();
+      showBest();
+
+      if (live) {
+        const rating = mode === "campaign" ? ` ${words.stars[earned - 1]}.` : "";
+        live.textContent = `${panelTitle?.textContent ?? ""}. ${words.moves}: ${format.format(moves)}. ${words.time}: ${clock(seconds)}.${rating}`;
+      }
+
+      // The panel covers the table, so a keyboard left standing on a card
+      // would be standing behind it. Only when the focus was in the game at
+      // all: a reader who has scrolled off to read has not asked to be moved.
+      if (root.contains(document.activeElement)) {
+        const target = last ? root.querySelector<HTMLElement>('.mem-panel [data-action="restart"]') : next;
+        target?.focus({ preventScroll: true });
+      }
+    }
+
+    const start = (i: number): void => {
+      current = i;
+      write(KEYS[mode], String(i));
+
+      root.dataset.mode = mode;
+      root.toggleAttribute("data-last", i === LEVELS.length - 1);
+
+      paintStrip();
+      showBest();
+      showGoal(0);
+
+      // Free play draws from the whole deck on every board. The campaign's
+      // first five boards each have a subject, which is the campaign's.
+      controller.play(mode === "free" ? { ...LEVELS[i], deck: "all" } : LEVELS[i]);
+    }
+
+    for (const option of modeOptions) option.checked = option.value === mode;
+
+    start(current);
+
+    root.addEventListener("change", (event) => {
+      const input = event.target as HTMLInputElement | null;
+      if (!input) return;
+
+      if (input.matches("[data-mode-option]")) {
+        const picked: Mode = input.value === "free" ? "free" : "campaign";
+        if (picked === mode) return;
+
+        mode = picked;
+        write(MODE_KEY, mode);
+        start(placeFor(mode));
+        return;
+      }
+
+      if (input.matches("[data-level-option]")) {
+        const picked = Number(input.value);
+        if (picked === current || !levelOptions[picked] || levelOptions[picked].disabled) return;
+
+        start(picked);
+      }
+    });
+
+    root.addEventListener("click", (event) => {
+      const action = (event.target as Element | null)?.closest<HTMLElement>("[data-action]")?.dataset.action;
+
+      if (action === "restart") start(current);
+      if (action === "next" && current < LEVELS.length - 1) start(current + 1);
+    });
+  }
+</script>

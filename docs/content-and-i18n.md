@@ -365,6 +365,9 @@ anybody as protection - see
 - a `games` entry in [src/site.ts](../src/site.ts) whose id has no copy under
   `games.items`, and the reverse (§7)
 - a `Record<Lang, …>` map missing a locale after `locales` is widened
+- a picture in `PICTURES` in [games/memory/game.ts](../src/games/memory/game.ts) with no
+  name under `games.items.memory.pictures` - the page builds its name map from the module's
+  ids, so the missing key is a type error there
 
 **Silently degrades:**
 
@@ -375,11 +378,25 @@ anybody as protection - see
 - a results table whose `formats`, `values`, `columns` and `rows` are out of step - figures
   under the wrong headings (§5.1)
 - an unsupported `light-dark()` - the icon falls back to the text colour (§4)
+- a memory picture with a name but no symbol in
+  [MemorySprites.astro](../src/components/games/MemorySprites.astro) - the card turns over
+  onto its ground colour with nothing drawn on it, because a `<use>` pointing at a missing
+  id renders nothing and throws nothing
+- the three `stars` phrases in the memory copy - indexed by the count, so a locale with two
+  announces nothing for three stars
 
 ---
 
 ## Changelog
 
+- 2026-09-23 - a fifth game, `memory`, third on the index. Its copy carries `pictures`,
+  thirty names **keyed by the ids in the game module** rather than a list joined by
+  position the way Accretion's planets and Battleship's ships are - thirty is too many to
+  keep in step by counting, and a keyed object makes a missing name a type error (§8).
+  `stars` is three phrases rather than a count and a noun, for the plural reason ship
+  counts are not a sentence, and `cells.matched` and the two `messages` carry `{name}` the
+  way Battleship's `sunk` carries `{ship}`. ⚠️ The same ids join a third file,
+  MemorySprites.astro, and nothing checks that join (§8).
 - 2026-09-21 - Battleship's level notes and the shots-per-rank line in the how-to-play copy
   carry the re-measured figures: the gunner is about 55 shots where it was 60 and the
   captain about 50 where it was 51. ⚠️ **A note here quotes a number the algorithm owns**,

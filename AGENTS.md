@@ -76,13 +76,14 @@ not need the map to change a dictionary, add a project, or touch the stylesheet.
   [src/styles/global.css](./src/styles/global.css). A raw hex in a component is a bug -
   the only two in the codebase are the `theme-color` meta tags, and they are a known
   duplication.
-- **Every page but the four games ships no JavaScript file.** Four inline blocks, about 1.7 KB in
+- **Every page but the five games ships no JavaScript file.** Four inline blocks, about 1.7 KB in
   total, cover the pre-paint theme script, the theme toggle, disclosure dismissal and the
   active-section indicator. Anything new should be CSS first. If it genuinely
   needs script, ask before adding it.
-- **The exceptions are the four games**, which cannot be: 2.4 KB gz for
+- **The exceptions are the five games**, which cannot be: 2.4 KB gz for
   [2048](./src/games/2048/game.ts), 3.2 KB for
-  [minesweeper](./src/games/minesweeper/game.ts), 3.2 KB for
+  [minesweeper](./src/games/minesweeper/game.ts), 4.3 KB for
+  [memory](./src/games/memory/game.ts), 3.2 KB for
   [accretion](./src/games/accretion/game.ts) and 5.4 KB for
   [battleship](./src/games/battleship/game.ts), each on its own route, plus a shared 0.4 KB
   chunk for the stored record. That budget is the games', not a precedent - it does not
