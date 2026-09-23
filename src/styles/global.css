@@ -2407,6 +2407,38 @@
   }
 
   /*
+   * The 2048 itself catches the light once as it is made - the one tile that
+   * gets a moment of its own, the way a found pair does on the memory table.
+   * `both` parks the band off the tile on either side, and the tile clips it,
+   * so no class is needed to take it away. The tile is `overflow: clip` for
+   * this; nothing else on it ever reaches past its own edge, and its shadow is
+   * outside the box, where a clip does not reach.
+   */
+  .g2048-tile {
+    overflow: clip;
+  }
+
+  .g2048-tile.is-merged[data-tier='11']::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 30%,
+      color-mix(in oklab, #ffffff 70%, transparent) 50%,
+      transparent 70%
+    );
+    animation: g2048-shine 1000ms var(--site-ease) 140ms both;
+    pointer-events: none;
+  }
+
+  /* A push into a wall: the board leans a few pixels that way and back. The
+     direction is `--g2048-nx` and `--g2048-ny`, written by the module. */
+  .g2048-board.is-bump {
+    animation: g2048-bump 240ms var(--site-ease);
+  }
+
+  /*
    * Numbers, sized off the board and stepped down by digit count so 2 and 1024
    * both fill their tile. Set on the span rather than the tile so the pop
    * scales the whole thing, digits included.
@@ -2633,9 +2665,16 @@
     padding: 0.4rem 0.8rem 0.45rem;
   }
 
+  /* Centred, like the two figures beside it, now that the three share the row
+     evenly: left-aligned in a stretched box, the planet and its name drifted
+     apart. */
+  .acc-next {
+    justify-content: center;
+  }
+
   .acc-next .acc-meter-label {
     grid-column: 1 / -1;
-    text-align: left;
+    text-align: center;
   }
 
   .acc-next-body {
@@ -2650,27 +2689,33 @@
     line-height: 1.2;
   }
 
+  /*
+   * Two rows at every width: the three readouts share the first and the
+   * buttons the second, which is the shape the bar always had on a phone.
+   *
+   * ⚠️ **On purpose rather than by wrapping.** The well is a 30rem column, and
+   * with the sound switch beside New game the French, German and Serbian bars
+   * no longer fitted on one line while the English one did - so the same page
+   * came out in two different shapes depending on the length of a word.
+   * Measured: without the switch the widest bar was ten pixels short of the
+   * edge. One layout for all four is the honest answer to that.
+   */
+  .acc-bar > .acc-meter,
+  .acc-bar > .acc-next {
+    flex: 1;
+  }
+
   .acc-actions {
     display: flex;
     gap: 0.5rem;
-    margin-left: auto;
+    width: 100%;
   }
 
   .acc-actions .cta-ghost {
+    flex: 1;
+    justify-content: center;
     padding: 0.55rem 0.9rem;
     font-size: 0.875rem;
-  }
-
-  @media (max-width: 30rem) {
-    .acc-actions {
-      width: 100%;
-      margin-left: 0;
-    }
-
-    .acc-actions .cta-ghost {
-      flex: 1;
-      justify-content: center;
-    }
   }
 
   /*
@@ -4179,7 +4224,9 @@
 
   /* Flag mode is on. It is a mode the board is in, so it has to be visible
      from the board rather than only from the button. */
-  .ms-actions .cta-ghost[aria-pressed='true'] {
+  /* By its action and not by being a pressed button: the sound switch beside
+     it is pressed too whenever the sound is on, and it is not a flag. */
+  .ms-actions [data-action='flagging'][aria-pressed='true'] {
     border-color: var(--ms-flag);
     background-color: color-mix(in oklab, var(--ms-flag) 12%, transparent);
     color: var(--ms-flag);
@@ -5929,17 +5976,6 @@
     font-size: 0.875rem;
   }
 
-  /* The icon is the state: a speaker with its waves when the sound is on, and
-     crossed out when it is off. Both are in the markup and the pressed state
-     picks one, so the button never changes its words. */
-  .mem-sound[aria-pressed='true'] .mem-sound-off,
-  .mem-sound[aria-pressed='false'] .mem-sound-on {
-    display: none;
-  }
-
-  .mem-sound[aria-pressed='false'] {
-    color: var(--site-muted);
-  }
 
   /*
    * Two meters a row on a phone, not four.
@@ -6366,36 +6402,6 @@
     animation: mem-cheer 560ms var(--mem-spring) calc(var(--d, 0) * var(--mem-wave)) backwards;
   }
 
-  /* The burst, which is a container so its pieces can be thrown a fraction
-     of the table's size rather than a fixed distance that is a flick on a
-     desktop and off the edge on a phone. */
-  .mem-burst {
-    position: absolute;
-    inset: 0;
-    z-index: 4;
-    container-type: size;
-    pointer-events: none;
-  }
-
-  .mem-bit {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0.55rem;
-    height: 0.85rem;
-    margin: -0.425rem 0 0 -0.275rem;
-    border-radius: 2px;
-    background-color: var(--bc);
-    animation: mem-bit 1600ms linear var(--bd) both;
-  }
-
-  .mem-bit.is-round {
-    width: 0.6rem;
-    height: 0.6rem;
-    margin: -0.3rem 0 0 -0.3rem;
-    border-radius: 50%;
-  }
-
   /*
    * The cleared panel. It covers the table, like every panel on these pages,
    * because it asks the one question that has to be answered before the next
@@ -6501,6 +6507,101 @@
     text-align: center;
     color: var(--site-muted);
   }
+
+  /* ---- Shared by the game pages -------------------------------------------
+   *
+   * The three things every game has now: the sound switch, the burst over a
+   * board that has just been won, and the jolt a board takes when something
+   * goes off on it. Last in the layer on purpose - the sound switch has to win
+   * over each game's `-actions .cta-ghost` rule on a phone, at the same
+   * specificity, and order is what decides that.
+   */
+
+  /* The icon is the state: a speaker with its waves when the sound is on, and
+     crossed out when it is off. Both are in the markup and the pressed state
+     picks one, so the button never changes its words. */
+  .game-sound[aria-pressed='true'] .game-sound-off,
+  .game-sound[aria-pressed='false'] .game-sound-on {
+    display: none;
+  }
+
+  .game-sound[aria-pressed='false'] {
+    color: var(--site-muted);
+  }
+
+  /*
+   * On a phone the switch is its icon. Every bar there stacks its buttons into
+   * one full-width row, and "Zastavice", "Nova igra" and "Zvuk" do not share
+   * 350 pixels. The word stays in the accessible name - it is clipped, not
+   * removed - so a screen reader still hears what the button is.
+   */
+  @media (max-width: 34rem) {
+    :is(.g2048-actions, .ms-actions, .mem-actions, .acc-actions, .bs-actions) .game-sound {
+      flex: 0 0 auto;
+      padding-inline: 0.8rem;
+    }
+
+    .game-sound .game-sound-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+
+  /* In the well's narrow bar the switch is its icon at every width, beside a
+     New game that takes the rest of the row - see `.acc-actions`. */
+  .acc-actions .game-sound {
+    flex: 0 0 auto;
+    padding-inline: 0.8rem;
+  }
+
+  .acc-actions .game-sound .game-sound-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* The burst, which is a container so its pieces can be thrown a fraction
+     of the board's size rather than a fixed distance that is a flick on a
+     desktop and off the edge on a phone. */
+  .game-burst {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    container-type: size;
+    pointer-events: none;
+  }
+
+  .game-bit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0.55rem;
+    height: 0.85rem;
+    margin: -0.425rem 0 0 -0.275rem;
+    border-radius: 2px;
+    background-color: var(--bc);
+    animation: game-bit 1600ms linear var(--bd) both;
+  }
+
+  .game-bit.is-round {
+    width: 0.6rem;
+    height: 0.6rem;
+    margin: -0.3rem 0 0 -0.3rem;
+    border-radius: 50%;
+  }
+
+  /* A board taking a blow: a mine, two Suns going off. `translate` so it
+     composes with whatever transform the board already carries. */
+  .game-quake {
+    animation: game-quake 480ms var(--site-ease);
+  }
 }
 
 /*
@@ -6549,6 +6650,27 @@
   to {
     opacity: 0;
     translate: 0 -1.6rem;
+  }
+}
+
+@keyframes g2048-shine {
+  from {
+    translate: -110% 0;
+  }
+
+  to {
+    translate: 110% 0;
+  }
+}
+
+@keyframes g2048-bump {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  35% {
+    translate: var(--g2048-nx, 0) var(--g2048-ny, 0);
   }
 }
 
@@ -6666,13 +6788,72 @@
 }
 
 /*
+ * A piece of the burst: up and out fast, then falling. Two segments with a
+ * curve each is what makes it an arc - one straight segment is a piece of
+ * paper sliding along a line. `--bx` and `--by` are a direction and a reach
+ * from games/burst.ts, and the distances are fractions of the board.
+ */
+@keyframes game-bit {
+  0% {
+    opacity: 1;
+    translate: 0 0;
+    rotate: 0deg;
+    scale: 0.3;
+    animation-timing-function: cubic-bezier(0.12, 0.75, 0.35, 1);
+  }
+
+  45% {
+    opacity: 1;
+    translate: calc(var(--bx) * 42cqw) calc(var(--by) * 46cqh);
+    scale: 1;
+    animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.6);
+  }
+
+  100% {
+    opacity: 0;
+    translate: calc(var(--bx) * 56cqw) calc(var(--by) * 46cqh + 42cqh);
+    rotate: var(--br);
+    scale: 0.9;
+  }
+}
+
+/* A blow landing: sharp at first and dying away, in pixels because a board
+   taking a hit should move the same distance on a phone and a desktop. */
+@keyframes game-quake {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  12% {
+    translate: -7px 3px;
+  }
+
+  28% {
+    translate: 6px -4px;
+  }
+
+  46% {
+    translate: -4px 2px;
+  }
+
+  66% {
+    translate: 2px -1px;
+  }
+
+  84% {
+    translate: -1px 0;
+  }
+}
+
+/*
  * Memory motion.
  *
  * The turn itself is not here: it is a transition on `rotate`, because a turn
  * that is called back halfway has to go back from wherever it got to, and a
  * transition does that where an animation would jump. Everything here is a
- * moment on top of it - the deal, the lift, a pair sealing, a miss, the cheer
- * and the burst - and every one of them uses `translate`, `rotate` and `scale`
+ * moment on top of it - the deal, the lift, a pair sealing, a miss and the
+ * cheer - and every one of them uses `translate`, `rotate` and `scale`
  * rather than `transform`, so none of them can override another one's
  * transform or the hover lift underneath.
  */
@@ -6794,36 +6975,6 @@
   70% {
     translate: 0 3%;
     scale: 0.98;
-  }
-}
-
-/*
- * A piece of the burst: up and out fast, then falling. Two segments with a
- * curve each is what makes it an arc - one straight segment is a piece of
- * paper sliding along a line. `--bx` and `--by` are a direction and a reach
- * from the module; the distances are fractions of the table.
- */
-@keyframes mem-bit {
-  0% {
-    opacity: 1;
-    translate: 0 0;
-    rotate: 0deg;
-    scale: 0.3;
-    animation-timing-function: cubic-bezier(0.12, 0.75, 0.35, 1);
-  }
-
-  45% {
-    opacity: 1;
-    translate: calc(var(--bx) * 42cqw) calc(var(--by) * 46cqh);
-    scale: 1;
-    animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.6);
-  }
-
-  100% {
-    opacity: 0;
-    translate: calc(var(--bx) * 56cqw) calc(var(--by) * 46cqh + 42cqh);
-    rotate: var(--br);
-    scale: 0.9;
   }
 }
 

@@ -80,13 +80,13 @@ not need the map to change a dictionary, add a project, or touch the stylesheet.
   total, cover the pre-paint theme script, the theme toggle, disclosure dismissal and the
   active-section indicator. Anything new should be CSS first. If it genuinely
   needs script, ask before adding it.
-- **The exceptions are the five games**, which cannot be: 2.4 KB gz for
-  [2048](./src/games/2048/game.ts), 3.2 KB for
-  [minesweeper](./src/games/minesweeper/game.ts), 5.3 KB for
-  [memory](./src/games/memory/game.ts), 3.2 KB for
-  [accretion](./src/games/accretion/game.ts) and 5.4 KB for
-  [battleship](./src/games/battleship/game.ts), each on its own route, plus a shared 0.4 KB
-  chunk for the stored record. That budget is the games', not a precedent - it does not
+- **The exceptions are the five games**, which cannot be: 2.9 KB gz for
+  [2048](./src/games/2048/game.ts), 3.6 KB for
+  [minesweeper](./src/games/minesweeper/game.ts), 4.5 KB for
+  [memory](./src/games/memory/game.ts), 3.5 KB for
+  [accretion](./src/games/accretion/game.ts) and 6.0 KB for
+  [battleship](./src/games/battleship/game.ts), each on its own route, plus a shared 1.7 KB
+  chunk for the stored record, the sound and the burst. That budget is the games', not a precedent - it does not
   make a script cheaper anywhere else.
 - Reach for an existing component before writing a new one. Sections go through
   [Section.astro](./src/components/Section.astro), which owns the widths and the three

@@ -20,6 +20,7 @@ import { LEVELS } from "../games/minesweeper/game";
 import { site } from "../site";
 import GameStamp from "./GameStamp.astro";
 import Section from "./Section.astro";
+import SoundToggle from "./SoundToggle.astro";
 
 interface Props {
   lang: Lang;
@@ -116,6 +117,8 @@ const levels = Object.keys(LEVELS) as (keyof typeof LEVELS)[];
         </div>
 
         <div class="ms-actions">
+          <SoundToggle lang={lang} />
+
           {/* A toggle rather than a command, so it says what mode the board is
               in rather than what pressing it will do. It is the only way to
               flag on a phone that does not need explaining. */}
@@ -137,6 +140,9 @@ const levels = Object.keys(LEVELS) as (keyof typeof LEVELS)[];
       </div>
 
       <div class="ms-frame">
+        {/* The burst over a cleared field, above the panel that says so. */}
+        <div class="game-burst" aria-hidden="true" data-burst></div>
+
         {/* The scroller is the query container, and the board inside it is what
             measures itself in `cqi`. An element is not its own container. */}
         <div class="ms-scroll">
@@ -217,8 +223,11 @@ const levels = Object.keys(LEVELS) as (keyof typeof LEVELS)[];
 </Section>
 
 <script>
+  import { scatter } from "../games/burst";
   import { LEVELS, mount, type LevelId } from "../games/minesweeper/game";
+  import { voices } from "../games/minesweeper/sounds";
   import { scoreRecord } from "../games/record";
+  import { createSound } from "../games/sound";
 
   /*
    * The page's side of the game: the three figures, the record, the level
@@ -242,6 +251,15 @@ const levels = Object.keys(LEVELS) as (keyof typeof LEVELS)[];
 
     const lang = document.documentElement.lang || "en";
     const format = new Intl.NumberFormat(lang);
+
+    const burst = root.querySelector<HTMLElement>("[data-burst]");
+    const scroller = root.querySelector<HTMLElement>(".ms-scroll");
+
+    const sound = createSound(voices);
+    sound.bind(root);
+
+    /* A cleared field bursts in its own eight numbers and the red of a flag. */
+    const COLOURS = [1, 2, 3, 4, 5, 6].map((n) => `var(--ms-n${n})`).concat("var(--ms-flag)");
 
     /** Minutes and seconds, because a good expert game runs past a hundred
      *  seconds and a bare count stops being a time somewhere around there. */
@@ -295,10 +313,25 @@ const levels = Object.keys(LEVELS) as (keyof typeof LEVELS)[];
           if (timeOut) timeOut.textContent = clock(seconds);
         },
 
+        onCue(cue, level) {
+          sound.play(cue, level);
+        },
+
         onState(state, seconds) {
           root.dataset.state = state;
 
           if (state !== "won" && state !== "lost") return;
+
+          // A mine jolts the field, and a clear throws the burst over it. The
+          // jolt restarts rather than relying on the class being absent, since
+          // two losses in a row are two blows.
+          if (state === "lost" && scroller) {
+            scroller.classList.remove("game-quake");
+            void scroller.offsetWidth;
+            scroller.classList.add("game-quake");
+          }
+
+          if (state === "won" && burst) scatter(burst, COLOURS);
 
           /*
            * A win is only recorded as a best if it beats what is there, and a

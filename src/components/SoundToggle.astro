@@ -1,0 +1,31 @@
+---
+/**
+ * The sound switch, in the bar of every game.
+ *
+ * One component rather than five copies of a button, for GameStamp's reason:
+ * five copies are five chances for one page to wire it differently. It is also
+ * one switch in the other sense - games/sound.ts stores it under a name no game
+ * owns, so turning the sound off in one game turns it off in all of them.
+ *
+ * A toggle rather than a command, the minefield's flag mode again: pressed
+ * means the sound is on, the icon says which, and the words never change. The
+ * page's script sets `aria-pressed` from what is stored, so the markup's value
+ * is only what shows for the frame before it runs.
+ */
+import { Volume2, VolumeX } from "@lucide/astro";
+import type { Lang } from "../i18n/types";
+import { getDict } from "../i18n/utils";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = getDict(lang);
+---
+
+<button type="button" class="cta-ghost game-sound" data-sound-toggle aria-pressed="true">
+  <Volume2 class="size-4 shrink-0 game-sound-on" aria-hidden="true" />
+  <VolumeX class="size-4 shrink-0 game-sound-off" aria-hidden="true" />
+  <span class="game-sound-label">{dict.games.sound}</span>
+</button>

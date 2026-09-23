@@ -727,6 +727,10 @@ export function chooseShot(
 
 /* ---- The page ------------------------------------------------------------ */
 
+/** The moments the table makes a sound. What each sounds like is in
+ *  sounds.ts, and whether it is heard is the page's switch. */
+export type Cue = 'fire' | 'splash' | 'hit' | 'sunk' | 'lift' | 'place' | 'rotate' | 'shuffle' | 'win' | 'lose';
+
 export interface Options {
   /** Carries `data-state`, which is what the stylesheet keys the panels off. */
   root: HTMLElement;
@@ -748,6 +752,9 @@ export interface Options {
   onLog(side: Side, text: string): void;
   /** One sentence for the live region, covering both halves of a turn. */
   onLive(text: string): void;
+  /** `level` is 1 for your own shot and 0 for theirs, which is heard from
+   *  further away. */
+  onCue(cue: Cue, level?: number): void;
 }
 
 export interface Controller {
@@ -1211,6 +1218,7 @@ export function mount(options: Options, initial: LevelId): Controller {
       repaint('own');
       hulls('own');
       select(index);
+      options.onCue('lift');
 
       // ⚠️ **In hand is still on the board.** Lifting takes the hull away and
       // the preview is what replaces it, so without this the ship you just
@@ -1227,6 +1235,7 @@ export function mount(options: Options, initial: LevelId): Controller {
     repaint('own');
     hulls('own');
     select(nextUnplaced());
+    options.onCue('place');
 
     // The next ship is already in hand, so its shape appears under the pointer
     // without waiting for it to move.
@@ -1268,6 +1277,7 @@ export function mount(options: Options, initial: LevelId): Controller {
       hulls('enemy');
     }
 
+    options.onCue(next === 'won' ? 'win' : 'lose');
     options.onState(state, shots);
   }
 
@@ -1380,6 +1390,7 @@ export function mount(options: Options, initial: LevelId): Controller {
     node.addEventListener('animationend', () => node.remove(), { once: true });
 
     options.frame.append(node);
+    options.onCue('fire', side === 'enemy' ? 1 : 0);
   }
 
   /**
@@ -1433,6 +1444,7 @@ export function mount(options: Options, initial: LevelId): Controller {
 
     const said = describe(side, shot, shot.sunk);
     options.onLog(side, said);
+    options.onCue(shot.sunk !== null ? 'sunk' : shot.hit ? 'hit' : 'splash', side === 'enemy' ? 1 : 0);
 
     return said;
   }
@@ -1760,6 +1772,7 @@ export function mount(options: Options, initial: LevelId): Controller {
     }
 
     select(index);
+    options.onCue('lift');
   };
 
   options.ownFleet.addEventListener('click', onFleetClick);
@@ -1776,6 +1789,7 @@ export function mount(options: Options, initial: LevelId): Controller {
     if (state !== 'placing') return;
 
     setAxis(!horizontal);
+    options.onCue('rotate');
 
     // ⚠️ The ship in your hand turns now, not when the hand next moves. The
     // button changed what the preview should be, so the preview is redrawn
@@ -1801,6 +1815,7 @@ export function mount(options: Options, initial: LevelId): Controller {
       repaint('own');
       hulls('own');
       select(null);
+      options.onCue('shuffle');
     },
 
     rotate,

@@ -554,6 +554,8 @@ const de: Dict = {
      *  note in en.ts. */
     built: 'Erstellt:',
 
+    sound: 'Ton',
+
     /** Both are the loanwords German already uses for this. See the note in
      *  en.ts. */
     status: {
@@ -749,7 +751,6 @@ const de: Dict = {
         best: 'Wenigste Züge',
         goal: 'Sterne',
         newGame: 'Neues Spiel',
-        sound: 'Ton',
         hint: 'Drück auf eine Karte, um sie umzudrehen, dann auf eine zweite. Ein Paar bleibt offen liegen, alles andere dreht sich zurück. Die Pfeiltasten laufen über den Tisch, Enter dreht eine Karte um.',
 
         gridLabel: 'Karten',

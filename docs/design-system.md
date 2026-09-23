@@ -35,6 +35,7 @@ and all of its motion in CSS.
 | the active-section indicator | the second `<script>` in [Base.astro](../src/layouts/Base.astro) and `.nav-link[aria-current]` - §7 |
 | dark mode | the `.dark` block, **and** the two `theme-color` tags in [Base.astro](../src/layouts/Base.astro) - §8 and open item 1 |
 | **the 2048 board or its colour ramp** | [game.ts](../src/games/2048/game.ts), [Game2048.astro](../src/components/Game2048.astro), the `--g2048-*` tokens - §9 |
+| **a game's sounds, the switch, or the burst on a win** | `src/games/<slug>/sounds.ts` for what a game sounds like, [games/sound.ts](../src/games/sound.ts) and [games/burst.ts](../src/games/burst.ts) for the rest - §9 |
 | **a memory card, its turn, or a picture on it** | [game.ts](../src/games/memory/game.ts), [Memory.astro](../src/components/Memory.astro), [MemorySprites.astro](../src/components/games/MemorySprites.astro), the `--mem-*` tokens - §9 |
 
 **Read §5 before touching any animation.** The `animation` shorthand silently breaks the
@@ -1260,14 +1261,9 @@ never backwards - and only under `(hover: hover)`, since a phone keeps `:hover` 
 card tapped. A gold line along the top of the table is the board found so far, one element
 scaled by `--mem-done`, and the tile a cleared board unlocks pops open in the strip.
 
-**The sounds are synthesized**, in
-[games/memory/sound.ts](../src/games/memory/sound.ts): a card turning is filtered noise, a
-pair is two notes a fifth apart, a miss one low note falling, a cleared board a major
-arpeggio. No file is fetched. ⚠️ **The `AudioContext` is only created inside a gesture** -
-the page wakes it on `pointerdown` and `keydown`, which arrive before the click that turns
-a card - because a context made on load starts suspended and logs a warning for it. The
-module only emits cues, timed to what is on screen, and the page decides whether they are
-heard. The Sound toggle is remembered as a preference, not a score.
+**The sounds are synthesized**, and the table's five voices are in
+[games/memory/sounds.ts](../src/games/memory/sounds.ts). The engine and the switch are
+shared by every game - see "Sound, the burst and the jolt" below.
 
 ⚠️ **A delayed effect is checked against the turn, never against the cards.** The shake of
 a miss waits for the pair to land, and a fast player can call the miss back and have one of
@@ -1285,6 +1281,64 @@ result for this game and how the simulation was checked. **The record is also th
 level is open when the one before it has a record, so no second key can disagree about how
 far a reader has got.
 
+### Sound, the burst and the jolt, shared by all five
+
+Every game has sound now, and every win throws a burst. Both are shared the way
+[games/record.ts](../src/games/record.ts) is: the one thing that differs between games is
+handed in, and everything else is written once.
+
+| Module | Owns | A game hands it |
+|---|---|---|
+| [games/sound.ts](../src/games/sound.ts) | the `AudioContext`, one master gain, the switch, the gesture rule, a rate limit, and the two endings `fanfare` and `fall` | a `voices` object, one small function per cue, in `src/games/<slug>/sounds.ts` |
+| [games/burst.ts](../src/games/burst.ts) | the confetti pieces and their lifetime | its own palette, as `var(--…)` strings |
+| [SoundToggle.astro](../src/components/SoundToggle.astro) | the button in every bar | nothing |
+
+⚠️ **The context is only ever created inside a gesture.** `bind` listens for `pointerdown`
+and `keydown` on the *window* - 2048 and the well take their keys from the whole page, so
+the first arrow press has to be able to wake the sound it is about to make - and a cue that
+arrives before any gesture is dropped. A context made on load starts suspended and logs a
+warning for it, which is exactly what this avoids.
+
+⚠️ **One switch for five games**, stored once as `game-sound`. Turning the sound off in one
+game and finding it on in the next is the thing a reader notices.
+
+**The modules emit cues and never play anything.** Each game's module gains an `onCue`
+callback, timed to what is on screen rather than to the press - a 2048 merge is heard when
+it pops a slide later, a battleship shot when its round lands - and the page routes it to
+the engine. Whether there is sound is the page's call, and the engine drops the same cue
+inside 40ms of itself, because a flood in the minefield or a chain in the well can ask for
+one sound many times in a frame.
+
+**What each game sounds like, kept sparse on purpose:**
+
+| Game | Cues |
+|---|---|
+| 2048 | a soft slide on every move, a merge pop climbing C major pentatonic with the tile, a fanfare at 2048, a fall when stuck, a reversed slide on undo. A push that moves nothing is **silent** - it would nag a player shoving a full board |
+| Minesweeper | a tick for one cell, a sweep for a flood whose length follows the count, a high note for a flag and a lower one taking it off, a boom for a mine. Worked out in one place, `heard`, from the counts before and after a press, since a chord calls `reveal` eight times |
+| Memory | paper for a turn and for the deal, two notes a fifth apart for a pair, one falling note for a miss |
+| Accretion | a rush of air for a drop, a merge note falling down the pentatonic as bodies grow, a shimmer over a boom when two Suns go off. Two merges on one frame are one sound, the bigger |
+| Battleship | a thump when a round leaves, then a splash, a blast or a sinking where it lands - theirs the same at 62%, which is all "further away" has to mean - and a lift, a clunk and a tick while placing. Both endings are `delayed` 0.45s so they do not land on top of the last sinking |
+
+**The polish that came with it.** The burst on every win, in 2048's ramp, the minefield's
+numbers, the planets and the five hull paints. `.game-quake` on the minefield when a mine
+goes off, on the well when two Suns go off and on the battleship table when a ship sinks.
+2048 leaning towards the wall a push hit, and its 2048 tile catching the light once.
+
+⚠️ **The battleship jolt is on `.bs-frame`, outside the tilted scene.** A `translate` on an
+ancestor of a `preserve-3d` context is harmless, while anything on the chain down to a hull
+flattens the fleet onto the water - see "The tilt has no perspective in it".
+
+⚠️ **A pressed-state rule has to name its button.** The minefield styled
+`.ms-actions .cta-ghost[aria-pressed='true']` as flag mode, and the sound switch beside it
+is pressed whenever the sound is on - so it came out red. The rule now selects
+`[data-action='flagging']`.
+
+⚠️ **Accretion's bar is two rows at every width.** The well is a 30rem column, and with the
+switch beside New game the French, German and Serbian bars stopped fitting on one line
+while the English one still did. The readouts share the first row and the buttons the
+second, the switch is its icon there at every width, and on every other game only below
+34rem.
+
 ---
 
 ## 10. Open items
@@ -1299,6 +1353,11 @@ far a reader has got.
 
 ## Changelog
 
+- 2026-09-23 - sound and polish on all five games, from [games/sound.ts](../src/games/sound.ts)
+  and [games/burst.ts](../src/games/burst.ts), shared like the record, with one switch for
+  all of them. Each game's cues and what they sound like are in §9, along with the jolt, the
+  2048 bump and shine, the minefield's flag-mode rule that turned the switch red, and why
+  Accretion's bar is now two rows in every language.
 - 2026-09-23 - Memory gained its feel: the cards of a turn are held up and a found pair
   lies back down with a gold edge, a glint crosses a back on hover, a gold line along the
   top of the table fills as pairs are found, the unlocked tile pops, and every moment has a

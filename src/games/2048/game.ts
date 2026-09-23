@@ -69,6 +69,10 @@ interface Move {
   won: boolean;
 }
 
+/** The moments the board makes a sound. What each sounds like is in
+ *  sounds.ts, and whether it is heard is the page's switch. */
+export type Cue = 'slide' | 'merge' | 'win' | 'over' | 'undo';
+
 export interface Options {
   root: HTMLElement;
   board: HTMLElement;
@@ -79,6 +83,8 @@ export interface Options {
   onAnnounce(score: number, highest: number): void;
   /** Whether undo is available, so the page can disable the button. */
   onUndo(available: boolean): void;
+  /** `level` is the tier of the biggest tile a merge made, for its pitch. */
+  onCue(cue: Cue, level?: number): void;
 }
 
 export interface Controller {
@@ -381,8 +387,14 @@ export function mount(options: Options): Controller {
     //    fill. No second timer, and it cannot land early on a slow frame.
     if (move.spawned) create(move.spawned, true);
 
-    // 3. And a slide later, the merge resolves.
+    // 3. And a slide later, the merge resolves - which is also when it is
+    //    heard, so the sound lands with the pop rather than with the press.
     schedule(() => {
+      if (move.won) options.onCue('win');
+      else if (move.merged.length > 0) {
+        options.onCue('merge', Math.max(...move.merged.map((tile) => Math.log2(tile.value))));
+      }
+
       for (const tile of move.absorbed) {
         nodes.get(tile.id)?.remove();
         nodes.delete(tile.id);
@@ -450,12 +462,17 @@ export function mount(options: Options): Controller {
     };
 
     const result = slide(direction);
-    if (!result.moved) return;
+
+    if (!result.moved) {
+      bump(direction);
+      return;
+    }
 
     history = snapshot;
     score += result.gained;
 
     apply(result);
+    options.onCue('slide');
 
     options.onScore(score, result.gained);
     options.onUndo(true);
@@ -467,7 +484,35 @@ export function mount(options: Options): Controller {
       return;
     }
 
-    if (stuck()) options.onState('over');
+    if (stuck()) {
+      options.onCue('over');
+      options.onState('over');
+    }
+  }
+
+  /**
+   * A push that moved nothing, answered anyway.
+   *
+   * It used to be silence, which on a board where one direction is blocked reads
+   * as the key having been missed - so a player presses it again, and again. The
+   * board leaning a few pixels towards the wall it hit says the press arrived
+   * and the wall is why. No sound, deliberately: a player shoving a full board
+   * in one direction would hear it every time, and that is nagging.
+   */
+  const BUMP_PX = 7;
+
+  function bump(direction: Direction): void {
+    const x = direction === 'left' ? -1 : direction === 'right' ? 1 : 0;
+    const y = direction === 'up' ? -1 : direction === 'down' ? 1 : 0;
+
+    board.style.setProperty('--g2048-nx', `${x * BUMP_PX}px`);
+    board.style.setProperty('--g2048-ny', `${y * BUMP_PX}px`);
+
+    // Restart rather than rely on the class being absent: the second shove
+    // into the same wall should lean as visibly as the first.
+    board.classList.remove('is-bump');
+    void board.offsetWidth;
+    board.classList.add('is-bump');
   }
 
   function restart(): void {
@@ -493,6 +538,7 @@ export function mount(options: Options): Controller {
     score = history.score;
     history = null;
 
+    options.onCue('undo');
     repaint(false);
     options.onState('playing');
     report();

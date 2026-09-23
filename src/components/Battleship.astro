@@ -26,6 +26,7 @@ import { site } from "../site";
 import GameStamp from "./GameStamp.astro";
 import BattleshipSprites from "./games/BattleshipSprites.astro";
 import Section from "./Section.astro";
+import SoundToggle from "./SoundToggle.astro";
 
 interface Props {
   lang: Lang;
@@ -151,6 +152,8 @@ const ranks = Array.from({ length: 10 }, (_, i) => i + 1);
         </div>
 
         <div class="bs-actions">
+          <SoundToggle lang={lang} />
+
           <button type="button" class="cta-ghost" data-action="restart">
             <RotateCcw class="size-4 shrink-0" aria-hidden="true" />
             {copy.newGame}
@@ -199,6 +202,9 @@ const ranks = Array.from({ length: 10 }, (_, i) => i + 1);
         and lands in theirs, so it belongs to neither.
       */}
       <div class="bs-frame" data-frame>
+        {/* The burst over a won table, above both boards and the panel. */}
+        <div class="game-burst" aria-hidden="true" data-burst></div>
+
         <div class="bs-boards">
           {
             (["enemy", "own"] as const).map((side) => (
@@ -336,7 +342,10 @@ const ranks = Array.from({ length: 10 }, (_, i) => i + 1);
 
 <script>
   import { CELLS, HULL, LEVELS, mount, type LevelId } from "../games/battleship/game";
+  import { voices } from "../games/battleship/sounds";
+  import { scatter } from "../games/burst";
   import { scoreRecord } from "../games/record";
+  import { createSound } from "../games/sound";
 
   /*
    * The page's side of the game: the two figures, the record, the opponent
@@ -404,6 +413,15 @@ const ranks = Array.from({ length: 10 }, (_, i) => i + 1);
 
     let level = stored();
 
+    const burst = root.querySelector<HTMLElement>("[data-burst]");
+
+    const sound = createSound(voices);
+    sound.bind(root);
+
+    /* A won table bursts in the five hull paints, the tracer's gold and the
+       carrier's deck markings. */
+    const COLOURS = [0, 1, 2, 3, 4].map((n) => `var(--bs-s${n})`).concat("var(--bs-trace)", "var(--bs-mark)");
+
     const showBest = () => {
       const best = records.get(level)?.read() ?? null;
       if (bestOut) bestOut.textContent = best === null ? "-" : format.format(best);
@@ -439,10 +457,26 @@ const ranks = Array.from({ length: 10 }, (_, i) => i + 1);
           if (live) live.textContent = text;
         },
 
+        onCue(cue, level) {
+          sound.play(cue, level);
+
+          // A ship going down jolts the table, on either side: it is the one
+          // moment in a game that should be felt as well as read. The frame
+          // holds both boards and is outside their 3D scene, so a translate
+          // here moves the table without flattening anything tilted on it.
+          if (cue === "sunk") {
+            frame.classList.remove("game-quake");
+            void frame.offsetWidth;
+            frame.classList.add("game-quake");
+          }
+        },
+
         onState(state, shots) {
           root.dataset.state = state;
 
           if (state !== "won" && state !== "lost") return;
+
+          if (state === "won" && burst) scatter(burst, COLOURS);
 
           /*
            * A win is only recorded if it beats what is there, and a missing

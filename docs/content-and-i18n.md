@@ -389,6 +389,9 @@ anybody as protection - see
 
 ## Changelog
 
+- 2026-09-23 - `sound` moved from `games.items.memory` up to `games`, beside `built`, now
+  that every game carries the switch. It is one word for five games because it is one
+  switch: turning it off in one turns it off in all of them.
 - 2026-09-23 - the memory copy gained `sound`, the label on a toggle and so a noun rather
   than an instruction, and one sentence in the write-up saying the sounds are synthesized
   in the browser, in all four languages.

@@ -551,6 +551,8 @@ const sr: Dict = {
      *  See the note in en.ts. */
     built: "Napravljeno:",
 
+    sound: "Zvuk",
+
     /** Left in English on purpose: "uživo" says live *play*, not released. See
      *  the note in en.ts. */
     status: {
@@ -748,7 +750,6 @@ const sr: Dict = {
         best: "Najmanje poteza",
         goal: "Zvezdice",
         newGame: "Nova igra",
-        sound: "Zvuk",
         hint: "Pritisni karticu da je okreneš, pa još jednu. Par ostaje okrenut, a sve ostalo se vraća. Strelice šetaju po stolu, a Enter okreće karticu.",
 
         gridLabel: "Kartice",

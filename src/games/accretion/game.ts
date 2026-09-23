@@ -315,6 +315,10 @@ interface Body {
   age: number;
 }
 
+/** The moments the well makes a sound. What each sounds like is in
+ *  sounds.ts, and whether it is heard is the page's switch. */
+export type Cue = 'drop' | 'merge' | 'nova' | 'star' | 'over';
+
 export interface Options {
   root: HTMLElement;
   /** The clipped box. Measured, so the world can be scaled onto it. */
@@ -326,6 +330,8 @@ export interface Options {
   onState(state: 'playing' | 'won' | 'over'): void;
   /** Biggest body reached, for the live region and the legend. */
   onReach(tier: number): void;
+  /** `level` is the tier a merge made, so a bigger body sounds deeper. */
+  onCue(cue: Cue, level?: number): void;
 }
 
 export interface Controller {
@@ -775,6 +781,9 @@ export function mount(options: Options): Controller {
     bodies = bodies.filter((body) => !spent.has(body.id));
 
     let gained = 0;
+    /** The biggest body this pass made, which is the one that is heard - two
+     *  merges on one frame are one sound, and the larger is the event. */
+    let loudest = -1;
 
     for (const [a, b] of pairs) {
       remove(a);
@@ -789,6 +798,7 @@ export function mount(options: Options): Controller {
       if (a.tier === TIERS - 1) {
         gained += NOVA_POINTS;
         nova(x, y);
+        options.onCue('nova');
         continue;
       }
 
@@ -803,12 +813,16 @@ export function mount(options: Options): Controller {
       born.ang = (a.ang + b.ang) / 2;
       born.pang = born.ang - ((a.ang - a.pang) + (b.ang - b.pang)) / 2;
       gained += points(born.tier);
+      loudest = Math.max(loudest, born.tier);
 
       if (born.tier === TIERS - 1 && !claimed) {
         claimed = true;
+        options.onCue('star');
         options.onState('won');
       }
     }
+
+    if (loudest >= 0) options.onCue('merge', loudest);
 
     score += gained;
     options.onScore(score, gained);
@@ -860,7 +874,10 @@ export function mount(options: Options): Controller {
     if (overFor > PATIENCE / 3) root.dataset.full = '';
     else delete root.dataset.full;
 
-    if (overFor > PATIENCE) options.onState('over');
+    if (overFor > PATIENCE) {
+      options.onCue('over');
+      options.onState('over');
+    }
   }
 
   function step(): void {
@@ -958,6 +975,7 @@ export function mount(options: Options): Controller {
      * and it is enough for gravity to take over and roll one off the other.
      */
     spawn(heldTier, x + (Math.random() - 0.5) * JITTER, DROP_Y);
+    options.onCue('drop');
 
     ready = false;
     delete root.dataset.ready;

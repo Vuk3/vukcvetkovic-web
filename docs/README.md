@@ -24,9 +24,9 @@ plus a project write-up section, in **four languages** (English, Serbian, French
   variants, and **no CSS file at all** - the stylesheet is inlined into every document, and
   four small inline blocks cover the pre-paint theme script, the theme toggle, menu
   dismissal and the active-section indicator.
-- **JavaScript on five routes only.** The games have real scripts: 2.4 KB, 3.2 KB, 5.3 KB,
-  3.2 KB and 5.4 KB gz, plus a 0.4 KB chunk they share, requested by those routes and their
-  locale twins and by nothing else.
+- **JavaScript on five routes only.** The games have real scripts: 2.9 KB, 3.6 KB, 4.5 KB,
+  3.5 KB and 6.0 KB gz, plus a 1.7 KB chunk they share - the record, the sound and the
+  burst - requested by those routes and their locale twins and by nothing else.
 
 ## Where things are
 
@@ -47,6 +47,7 @@ plus a project write-up section, in **four languages** (English, Serbian, French
 | a component's markup | [src/components/](../src/components/) - rules in its [CLAUDE.md](../src/components/CLAUDE.md) |
 | **add a game** | [content-and-i18n.md §Adding a game](./content-and-i18n.md#7-adding-a-game) - a route pair of its own, not a `[slug]` |
 | **any of the games** | [src/games/](../src/games/) and its component in [src/components/](../src/components/) - boards, palettes and the solver in [design-system.md §The game boards](./design-system.md#9-the-game-boards-and-the-one-place-the-palette-opens-up) |
+| **a game's sound, or the burst on a win** | that game's `sounds.ts`, and [games/sound.ts](../src/games/sound.ts) / [games/burst.ts](../src/games/burst.ts) for what they share - [design-system.md §9](./design-system.md#9-the-game-boards-and-the-one-place-the-palette-opens-up) |
 | a page or a `getStaticPaths` | [src/pages/](../src/pages/) - rules in [src/CLAUDE.md](../src/CLAUDE.md) |
 
 ## The deep-dives

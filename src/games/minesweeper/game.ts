@@ -75,6 +75,10 @@ const HOLD_MS = 420;
  *  scrolls sideways on a phone, so this is load bearing rather than polish. */
 const DRIFT = 10;
 
+/** The moments the field makes a sound. What each sounds like is in
+ *  sounds.ts, and whether it is heard is the page's switch. */
+export type Cue = 'open' | 'flag' | 'unflag' | 'boom' | 'win';
+
 export interface Options {
   /** Carries `data-state`, which is what the stylesheet keys the panels off. */
   root: HTMLElement;
@@ -84,6 +88,8 @@ export interface Options {
    *  is a mistake the player should be able to see. */
   onMines(remaining: number): void;
   onTime(seconds: number): void;
+  /** `level` is how many cells a press opened, so a flood sounds like one. */
+  onCue(cue: Cue, level?: number): void;
 }
 
 export interface Controller {
@@ -444,13 +450,30 @@ export function mount(options: Options, initial: LevelId): Controller {
 
     disarm();
 
-    if (kind === 'flag' || kind === 'plant') {
-      flag(x, y, kind === 'plant');
-      return;
-    }
+    const was = { opened, flags, state };
 
-    if (kind === 'chord' || cells[i].revealed) chord(x, y);
+    if (kind === 'flag' || kind === 'plant') flag(x, y, kind === 'plant');
+    else if (kind === 'chord' || cells[i].revealed) chord(x, y);
     else reveal(x, y);
+
+    heard(was);
+  }
+
+  /**
+   * What a press sounded like, read off what it changed rather than what it
+   * was.
+   *
+   * One press can be a single cell, a flood of three hundred, a chord of eight
+   * or a mine, and the difference is only known afterwards - so the sound is
+   * worked out from the counts before and after, in this one place, instead of
+   * from inside `reveal`, which a chord calls up to eight times for one press.
+   */
+  function heard(was: { opened: number; flags: number; state: State }): void {
+    if (state === 'lost' && was.state !== 'lost') return options.onCue('boom');
+    if (state === 'won' && was.state !== 'won') return options.onCue('win');
+    if (opened > was.opened) return options.onCue('open', opened - was.opened);
+    if (flags > was.flags) return options.onCue('flag');
+    if (flags < was.flags) options.onCue('unflag');
   }
 
   /* ---- Building the grid --------------------------------------------------- */

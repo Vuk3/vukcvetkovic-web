@@ -555,6 +555,8 @@ const fr: Dict = {
      *  note in en.ts. */
     built: "Réalisé :",
 
+    sound: "Son",
+
     /** Left in English on purpose: "en ligne" says live *play*, not released.
      *  See the note in en.ts. */
     status: {
@@ -750,7 +752,6 @@ const fr: Dict = {
         best: "Minimum de coups",
         goal: "Étoiles",
         newGame: "Nouvelle partie",
-        sound: "Son",
         hint: "Appuyez sur une carte pour la retourner, puis sur une autre. Une paire reste visible et le reste se retourne. Les flèches parcourent la table et Entrée retourne une carte.",
 
         gridLabel: "Cartes",

@@ -18,6 +18,7 @@ import { getDict, localizePath } from "../i18n/utils";
 import { site } from "../site";
 import GameStamp from "./GameStamp.astro";
 import Section from "./Section.astro";
+import SoundToggle from "./SoundToggle.astro";
 
 interface Props {
   lang: Lang;
@@ -79,6 +80,8 @@ const cells = Array.from({ length: 16 });
         </div>
 
         <div class="g2048-actions">
+          <SoundToggle lang={lang} />
+
           <button type="button" class="cta-ghost" data-action="undo" disabled>
             <Undo2 class="size-4 shrink-0" aria-hidden="true" />
             {copy.undo}
@@ -108,6 +111,9 @@ const cells = Array.from({ length: 16 });
           /* Tiles are inserted here and never removed except when they merge. */
         }
         <div class="g2048-layer" data-layer></div>
+
+        {/* The burst over a 2048, above the panel that asks what next. */}
+        <div class="game-burst" data-burst></div>
 
         <div class="g2048-panel" data-panel="won">
           <p class="g2048-panel-title">{copy.won.title}</p>
@@ -177,7 +183,10 @@ const cells = Array.from({ length: 16 });
 
 <script>
   import { mount } from "../games/2048/game";
+  import { voices } from "../games/2048/sounds";
+  import { scatter } from "../games/burst";
   import { scoreRecord } from "../games/record";
+  import { createSound } from "../games/sound";
 
   /*
    * The page's side of the game: the two figures, the record, and the buttons.
@@ -200,6 +209,15 @@ const cells = Array.from({ length: 16 });
 
     const lang = document.documentElement.lang || "en";
     const format = new Intl.NumberFormat(lang);
+
+    const burst = root.querySelector<HTMLElement>("[data-burst]");
+
+    const sound = createSound(voices);
+    sound.bind(root);
+
+    /* The burst takes the ramp's own colours, from the first blue to the gold
+       of the tile that set it off. */
+    const RAMP = [3, 4, 5, 6, 7, 8, 9, 10, 11].map((tier) => `var(--g2048-t${tier})`);
 
     /*
      * The record is signed, so a figure typed into the storage inspector is
@@ -248,6 +266,11 @@ const cells = Array.from({ length: 16 });
 
       onState(state) {
         root.dataset.state = state;
+        if (state === "won" && burst) scatter(burst, RAMP);
+      },
+
+      onCue(cue, level) {
+        sound.play(cue, level);
       },
 
       onAnnounce(score, highest) {

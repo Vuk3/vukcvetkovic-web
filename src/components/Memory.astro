@@ -15,7 +15,7 @@
  * ⚠️ Which panel is up is decided in CSS off `data-state`, as on every game
  * page here. The script sets attributes and never touches `hidden`.
  */
-import { ArrowLeft, Lock, RotateCcw, Volume2, VolumeX } from "@lucide/astro";
+import { ArrowLeft, Lock, RotateCcw } from "@lucide/astro";
 import type { Lang } from "../i18n/types";
 import { getDict, localizePath } from "../i18n/utils";
 import { LEVELS, PICTURES } from "../games/memory/game";
@@ -23,6 +23,7 @@ import { site } from "../site";
 import GameStamp from "./GameStamp.astro";
 import MemorySprites from "./games/MemorySprites.astro";
 import Section from "./Section.astro";
+import SoundToggle from "./SoundToggle.astro";
 
 interface Props {
   lang: Lang;
@@ -182,18 +183,7 @@ const three = [0, 1, 2];
         </div>
 
         <div class="mem-actions">
-          {/* A toggle rather than a command, the minefield's flag mode again:
-              pressed means the sound is on, and the icon says which. */}
-          <button
-            type="button"
-            class="cta-ghost mem-sound"
-            data-action="sound"
-            aria-pressed="true"
-          >
-            <Volume2 class="size-4 shrink-0 mem-sound-on" aria-hidden="true" />
-            <VolumeX class="size-4 shrink-0 mem-sound-off" aria-hidden="true" />
-            {copy.sound}
-          </button>
+          <SoundToggle lang={lang} />
 
           <button type="button" class="cta-ghost" data-action="restart">
             <RotateCcw class="size-4 shrink-0" aria-hidden="true" />
@@ -224,7 +214,7 @@ const three = [0, 1, 2];
             table. Decorative: the live region says each pair as it lands. */}
         <div class="mem-progress" aria-hidden="true"></div>
 
-        <div class="mem-burst" aria-hidden="true" data-burst></div>
+        <div class="game-burst" aria-hidden="true" data-burst></div>
 
         <div class="mem-panel" data-panel="won">
           <p class="mem-panel-level" data-panel-level></p>
@@ -311,7 +301,8 @@ const three = [0, 1, 2];
 
 <script>
   import { LEVELS, mount, pairsOf, starsFor, type PictureId } from "../games/memory/game";
-  import { createSound } from "../games/memory/sound";
+  import { voices } from "../games/memory/sounds";
+  import { createSound } from "../games/sound";
   import { scoreRecord } from "../games/record";
 
   /*
@@ -424,23 +415,9 @@ const three = [0, 1, 2];
     let mode: Mode = read(MODE_KEY) === "free" ? "free" : "campaign";
     let current = placeFor(mode);
 
-    /*
-     * The sound, on unless the reader turned it off. Stored plainly, like the
-     * level, because it is a preference and not a score.
-     *
-     * ⚠️ **Woken on the way down, not on the click.** `pointerdown` and
-     * `keydown` arrive before the click that turns a card, so the context is
-     * running by the time the first cue asks for it - and they are real
-     * gestures, which is the only place a browser lets audio start.
-     */
-    const SOUND_KEY = "game-memory-sound";
-    const sound = createSound(read(SOUND_KEY) !== "off");
-    const soundButton = root.querySelector<HTMLButtonElement>('[data-action="sound"]');
-
-    soundButton?.setAttribute("aria-pressed", String(read(SOUND_KEY) !== "off"));
-
-    root.addEventListener("pointerdown", () => sound.wake(), { capture: true });
-    root.addEventListener("keydown", () => sound.wake(), { capture: true });
+    /* The table's five sounds, behind the switch every game shares. */
+    const sound = createSound(voices);
+    sound.bind(root);
 
     /* ---- The strip and the figures --------------------------------------- */
 
@@ -627,12 +604,6 @@ const three = [0, 1, 2];
       if (action === "restart") start(current);
       if (action === "next" && current < LEVELS.length - 1) start(current + 1);
 
-      if (action === "sound" && soundButton) {
-        const on = soundButton.getAttribute("aria-pressed") !== "true";
-        soundButton.setAttribute("aria-pressed", String(on));
-        write(SOUND_KEY, on ? "on" : "off");
-        sound.setOn(on);
-      }
     });
   }
 </script>

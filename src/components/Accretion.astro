@@ -20,6 +20,7 @@ import { LOSS_Y, TIERS, WORLD_H, WORLD_W } from "../games/accretion/game";
 import { site } from "../site";
 import GameStamp from "./GameStamp.astro";
 import Section from "./Section.astro";
+import SoundToggle from "./SoundToggle.astro";
 
 interface Props {
   lang: Lang;
@@ -99,6 +100,8 @@ const shape = `--acc-ratio:${WORLD_W} / ${WORLD_H}; --acc-line-at:${Math.round((
         </div>
 
         <div class="acc-actions">
+          <SoundToggle lang={lang} />
+
           <button type="button" class="cta-ghost" data-action="restart">
             <RotateCcw class="size-4 shrink-0" aria-hidden="true" />
             {copy.newGame}
@@ -117,6 +120,9 @@ const shape = `--acc-ratio:${WORLD_W} / ${WORLD_H}; --acc-line-at:${Math.round((
           Out here it is a percentage of the field and always spans it exactly.
         */}
         <div class="acc-line" aria-hidden="true"></div>
+
+        {/* The burst over the first Sun, above the panel that announces it. */}
+        <div class="game-burst" aria-hidden="true" data-burst></div>
 
         <div class="acc-panel" data-panel="won">
           <p class="acc-panel-title">{copy.won.title}</p>
@@ -182,7 +188,10 @@ const shape = `--acc-ratio:${WORLD_W} / ${WORLD_H}; --acc-line-at:${Math.round((
 
 <script>
   import { mount } from "../games/accretion/game";
+  import { voices } from "../games/accretion/sounds";
+  import { scatter } from "../games/burst";
   import { scoreRecord } from "../games/record";
+  import { createSound } from "../games/sound";
 
   /*
    * The page's side of the game: the two figures, what is coming next, how far
@@ -205,6 +214,14 @@ const shape = `--acc-ratio:${WORLD_W} / ${WORLD_H}; --acc-line-at:${Math.round((
 
     const lang = document.documentElement.lang || "en";
     const format = new Intl.NumberFormat(lang);
+
+    const burst = root.querySelector<HTMLElement>("[data-burst]");
+
+    const sound = createSound(voices);
+    sound.bind(root);
+
+    /* The first Sun bursts in the planets' own colours, Mars to the Sun. */
+    const COLOURS = [2, 3, 4, 5, 6, 7, 8, 9].map((tier) => `var(--acc-p${tier})`);
 
     // The names are in the markup already, in the sequence under the board, so
     // the script reads them back rather than being handed a second copy.
@@ -255,6 +272,19 @@ const shape = `--acc-ratio:${WORLD_W} / ${WORLD_H}; --acc-line-at:${Math.round((
 
       onState(state) {
         root.dataset.state = state;
+        if (state === "won" && burst) scatter(burst, COLOURS);
+      },
+
+      onCue(cue, level) {
+        sound.play(cue, level);
+
+        // Two Suns going off shake the well. It restarts rather than relying
+        // on the class being absent, because a long game has more than one.
+        if (cue === "nova") {
+          field.classList.remove("game-quake");
+          void field.offsetWidth;
+          field.classList.add("game-quake");
+        }
       },
 
       onReach(tier) {

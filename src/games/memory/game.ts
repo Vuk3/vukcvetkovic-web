@@ -14,7 +14,7 @@
  * holds no answers. The deck lives in this closure and nowhere else.
  */
 
-import type { Cue } from './sound';
+import { scatter } from '../burst';
 
 /** The three parts of the deck. The first campaign boards deal from one each,
  *  which gives a small board a subject instead of a handful of strangers. */
@@ -148,11 +148,10 @@ const DEAL_MAX = 680;
 const WAVE_MS = 42;
 const CHEER_MS = 560;
 
-/** Pieces in the burst over a cleared board. Enough to read as a burst on a
- *  sixty card table and few enough that none of them is ever a frame cost. */
-const BURST = 56;
-
 export type State = 'ready' | 'playing' | 'won';
+
+/** The moments the table makes a sound. What each sounds like is in sounds.ts. */
+export type Cue = 'deal' | 'flip' | 'pair' | 'miss' | 'clear';
 
 interface Card {
   picture: PictureId;
@@ -515,43 +514,15 @@ export function mount(options: Options): Controller {
     const doneAt = still ? cheerAt + 200 : cheerAt + furthest * WAVE_MS + CHEER_MS * 0.7;
 
     later(doneAt, () => {
-      if (!still) scatter();
+      scatter(burst, COLOURS);
       options.onState('won', moves, elapsed);
     });
   }
 
-  /**
-   * The burst over a cleared table.
-   *
-   * Pieces of the card backs and the deck's own colours rather than generic
-   * confetti, thrown from the middle of the table. Each one is an element with
-   * four custom properties and one animation, and the whole layer is emptied
-   * on the next deal - nothing here outlives a board.
-   */
-  const COLOURS = ['red', 'orange', 'yellow', 'lime', 'teal', 'sky', 'violet', 'pink'];
-
-  function scatter(): void {
-    const pieces = document.createDocumentFragment();
-
-    for (let k = 0; k < BURST; k++) {
-      const piece = document.createElement('span');
-      const angle = Math.random() * Math.PI * 2;
-      const reach = 0.35 + Math.random() * 0.65;
-
-      piece.className = 'mem-bit';
-      piece.style.setProperty('--bx', (Math.cos(angle) * reach).toFixed(3));
-      piece.style.setProperty('--by', (Math.sin(angle) * reach - 0.35).toFixed(3));
-      piece.style.setProperty('--br', `${Math.round((Math.random() - 0.5) * 900)}deg`);
-      piece.style.setProperty('--bd', `${Math.round(Math.random() * 180)}ms`);
-      piece.style.setProperty('--bc', `var(--mem-${COLOURS[k % COLOURS.length]})`);
-      if (k % 3 === 0) piece.classList.add('is-round');
-
-      pieces.append(piece);
-    }
-
-    burst.replaceChildren(pieces);
-    later(2200, () => burst.replaceChildren());
-  }
+  /** The deck's own colours for the burst over a cleared table. */
+  const COLOURS = ['red', 'orange', 'yellow', 'lime', 'teal', 'sky', 'violet', 'pink'].map(
+    (name) => `var(--mem-${name})`,
+  );
 
   /* ---- Dealing ------------------------------------------------------------- */
 

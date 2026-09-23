@@ -230,8 +230,11 @@ into each page rather than emitting a bundle. 1.7 KB of JS per page, in a 26 KB 
 page, with no extra request. Keep it that way: see [src/components/CLAUDE.md](../src/components/CLAUDE.md).
 
 The six files in `_astro` are the five game engines and the piece they share. 2048 is
-2.4 KB gz, Minesweeper 3.2 KB, Memory 5.3 KB, Accretion 3.2 KB, Battleship 5.4 KB, and
-[games/record.ts](../src/games/record.ts) 0.4 KB. Each engine is requested by its own route
+2.9 KB gz, Minesweeper 3.6 KB, Memory 4.5 KB, Accretion 3.5 KB, Battleship 6.0 KB, and the
+shared chunk 1.7 KB: [games/record.ts](../src/games/record.ts),
+[games/sound.ts](../src/games/sound.ts) and [games/burst.ts](../src/games/burst.ts) in one
+file, because all five games import all three and Rollup puts modules with the same
+importers into the same chunk. Each engine is requested by its own route
 and that route's three locale twins, and by nothing else, which is the point: a game pays
 for itself and the rest of the site is unchanged.
 
@@ -339,6 +342,10 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-09-23 - every game has sound and a burst on a win, from two modules shared the way
+  the record is. They land in the record's chunk rather than a file each, since all five
+  games import all three, which takes that chunk from 0.4 KB to 1.7 KB and leaves `_astro`
+  at six files (§5).
 - 2026-09-23 - a fifth game and its route pair, `/games/memory/`, taking the build to 52
   pages and the sitemap to 48 URLs. `_astro` now holds six files. The route table gained
   Battleship's row as well, which it had been missing since that game was added (§1, §5).

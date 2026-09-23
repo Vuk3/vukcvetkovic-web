@@ -12,10 +12,12 @@ inlines them into each page too - 1.7 KB total, no extra request.
 ⚠️ **The exceptions are the five games**, [Game2048.astro](./Game2048.astro),
 [Minesweeper.astro](./Minesweeper.astro), [Memory.astro](./Memory.astro),
 [Accretion.astro](./Accretion.astro) and [Battleship.astro](./Battleship.astro), whose
-scripts import a module and are therefore emitted as real files: 2.4 KB, 3.2 KB, 5.3 KB,
-3.2 KB and 5.4 KB gz, plus a shared 0.4 KB chunk for
-[games/record.ts](../games/record.ts), each requested only by its own route and that
-route's three locale twins. A game cannot be CSS. Nothing else here gets to cite them - the
+scripts import a module and are therefore emitted as real files: 2.9 KB, 3.6 KB, 4.5 KB,
+3.5 KB and 6.0 KB gz, plus a shared 1.7 KB chunk for [games/record.ts](../games/record.ts),
+[games/sound.ts](../games/sound.ts) and [games/burst.ts](../games/burst.ts), each requested
+only by its own route and that route's three locale twins. The sound switch in every bar is
+[SoundToggle.astro](./SoundToggle.astro), one component for the reason
+[GameStamp.astro](./GameStamp.astro) is one. A game cannot be CSS. Nothing else here gets to cite them - the
 rules below are unchanged for every other component.
 
 - **Reach for CSS first.** The language switcher and the mobile menu are native `<details>`

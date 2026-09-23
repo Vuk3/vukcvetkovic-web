@@ -617,6 +617,13 @@ const en = {
     built: "Built:",
 
     /**
+     * The sound switch in every game's bar. A toggle, so it names the thing
+     * rather than the action, and one word for all five games because it is
+     * one switch - see SoundToggle.astro.
+     */
+    sound: "Sound",
+
+    /**
      * The two words a game's status can carry: on the ribbon across the corner
      * of its card, and on the badge beside its title. Which one a game gets is
      * `status` in src/site.ts, and a status with no word here is a type error
@@ -846,8 +853,6 @@ const en = {
         best: "Fewest moves",
         goal: "Stars",
         newGame: "New game",
-        /** A toggle, so it names the thing rather than the action. */
-        sound: "Sound",
         hint: "Press a card to turn it, then another. A pair stays face up and anything else turns back over. The arrow keys walk the table and Enter turns a card.",
 
         /** The table, and what a card says when there is no picture to read.
