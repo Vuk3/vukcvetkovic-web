@@ -15,6 +15,7 @@
  */
 import type { PictureId } from '../../games/memory/game';
 import MemorySprites from './MemorySprites.astro';
+import '../../styles/games/memory.css';
 
 interface Card {
   picture?: PictureId;
@@ -51,7 +52,7 @@ const shown = [...new Set(cards.flatMap((card) => (card.picture ? [card.picture]
 {/*
   Two elements, not one. The outer is the query container and the inner is the
   board, because a container cannot size itself in its own `cqi` - see the
-  warning on `.game-art` in global.css.
+  warning on `.game-art` in styles/games/index.css.
 */}
 <div class="game-art game-art-mem" aria-hidden="true">
   <div class="game-art-board">

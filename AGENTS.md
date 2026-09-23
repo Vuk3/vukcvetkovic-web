@@ -89,6 +89,12 @@ not need the map to change a dictionary, add a project, or touch the stylesheet.
   [cube](./src/games/cube/game.ts), each on its own route, plus a shared 1.7 KB
   chunk for the stored record, the sound and the burst. That budget is the games', not a precedent - it does not
   make a script cheaper anywhere else.
+- **A game's CSS lives in [src/styles/games/](./src/styles/games/), never in global.css**:
+  one file per game with its tokens, its rules and its keyframes, imported by that game's
+  component and its thumbnail. The stylesheet is inlined into every document, so a rule in
+  global.css is paid for by every page on the site, and a game's rules belong only on the
+  pages that show the game. Every file there opens with the same `@layer` line as
+  global.css - read the note at the top of global.css before adding one.
 - Reach for an existing component before writing a new one. Sections go through
   [Section.astro](./src/components/Section.astro), which owns the widths and the three
   head shapes.

@@ -89,10 +89,16 @@ changing it.
   to them (`text-muted`, `bg-band`, `border-hairline`). The exceptions are all declared away
   from the components that use them: brand colours for technology marks in
   [src/tech.ts](../tech.ts), and the six game boards as `--g2048-*`, `--ms-*`, `--mem-*`,
-  `--acc-*`, `--bs-*` and `--cube-*` tokens in [global.css](../styles/global.css).
+  `--acc-*`, `--bs-*` and `--cube-*` tokens, each in its game's own file under
+  [styles/games/](../styles/games/).
 - **Tailwind utilities for one-off layout, a named class in
   [global.css](../styles/global.css) for anything that repeats or carries reasoning.** A
   clamp with a comment explaining how the number was arrived at belongs in the stylesheet.
+- **A game's styles go in `styles/games/<slug>.css`, not in global.css**, imported by the
+  game's component and by its thumbnail. The shared game rules - the sound switch, the
+  burst, the jolt - are `styles/games/shared.css`, imported by each game component *after*
+  its own file, since the sound switch wins a tie by order. The games index grid is
+  `styles/games/index.css`.
 - Comment **why**. This codebase does so at a density well above normal, deliberately -
   match it.
 

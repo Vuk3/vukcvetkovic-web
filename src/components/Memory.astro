@@ -24,6 +24,10 @@ import GameStamp from "./GameStamp.astro";
 import MemorySprites from "./games/MemorySprites.astro";
 import Section from "./Section.astro";
 import SoundToggle from "./SoundToggle.astro";
+/* This game's rules, then the ones every game page shares, in that order:
+   see the note at the top of styles/games/shared.css. */
+import "../styles/games/memory.css";
+import "../styles/games/shared.css";
 
 interface Props {
   lang: Lang;

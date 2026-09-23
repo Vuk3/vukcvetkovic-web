@@ -15,8 +15,9 @@
  * them. The same split as the labels on the minefield.
  *
  * Which panel is up, and whether the placing bar is showing, is decided in CSS
- * off `data-state` on the frame - see the .bs-* rules in global.css. The script
- * sets one attribute and never touches `hidden`.
+ * off `data-state` on the frame - see the .bs-* rules in
+ * styles/games/battleship.css. The script sets one attribute and never touches
+ * `hidden`.
  */
 import { ArrowLeft, Play, RotateCcw, RotateCw, Shuffle } from "@lucide/astro";
 import type { Lang } from "../i18n/types";
@@ -27,6 +28,10 @@ import GameStamp from "./GameStamp.astro";
 import BattleshipSprites from "./games/BattleshipSprites.astro";
 import Section from "./Section.astro";
 import SoundToggle from "./SoundToggle.astro";
+/* This game's rules, then the ones every game page shares, in that order:
+   see the note at the top of styles/games/shared.css. */
+import "../styles/games/battleship.css";
+import "../styles/games/shared.css";
 
 interface Props {
   lang: Lang;

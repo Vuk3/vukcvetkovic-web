@@ -18,6 +18,7 @@
  */
 
 import BattleshipSprites from './BattleshipSprites.astro';
+import '../../styles/games/battleship.css';
 
 /**
  * Row-major, 5 across and 2 down, against the 5:2 box every game card uses.
@@ -60,7 +61,7 @@ const fleet = [
 {/*
   Two elements, not one. The outer is the query container and the inner is the
   board, because a container cannot size itself in its own `cqi` - see the
-  warning on `.game-art` in global.css.
+  warning on `.game-art` in styles/games/index.css.
 */}
 <div class="game-art game-art-bs" aria-hidden="true">
   <div class="bs-board">

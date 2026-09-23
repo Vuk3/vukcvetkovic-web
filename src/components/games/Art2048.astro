@@ -12,6 +12,7 @@
  * position: paper at one end and the gold 2048 at the other, so the card shows
  * what the game looks like at its best.
  */
+import '../../styles/games/2048.css';
 
 /** Row-major, 5 across and 2 down. `null` is an empty cell. */
 const cells = [
@@ -23,7 +24,7 @@ const cells = [
 {/*
   Two elements, not one. The outer is the query container and the inner is the
   board, because a container cannot size itself in its own `cqi` - see the
-  warning on `.game-art` in global.css.
+  warning on `.game-art` in styles/games/index.css.
 */}
 <div class="game-art game-art-2048" aria-hidden="true">
   <div class="game-art-board">

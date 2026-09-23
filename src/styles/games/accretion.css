@@ -1,0 +1,1611 @@
+/*
+ * Accretion: the game's tokens, its rules and its motion.
+ *
+ * ⚠️ **Only the pages that show this game carry this file.** The stylesheet is
+ * inlined into every document, so anything in global.css is paid for by every
+ * page on the site. This file is imported by Accretion.astro and by
+ * games/ArtAccretion.astro, so it is inlined into the game's own page and its three locale
+ * twins, and into the games index for the thumbnail, which draws with the same
+ * rules - and into nothing else. See docs/design-system.md §9.
+ */
+
+/*
+ * The layer order, the same line global.css opens with. See the note there:
+ * this file can land in a page ahead of global.css, and whichever stylesheet
+ * names the layers first is the one that orders them.
+ */
+@layer properties, theme, base, components, games, utilities;
+
+:root {
+  /*
+   * Accretion, and the fourth and last place the palette opens up.
+   *
+   * ⚠️ **Unlike the other three, these colours were not chosen to be told
+   * apart.** They are the planets' own, and they happen to be distinguishable
+   * because planets are: rusty Mars, banded sand for Jupiter, the pale gold of
+   * Saturn, ice blue for Uranus against the deeper blue of Neptune. That is
+   * the whole argument for using the solar system rather than fruit - the
+   * sequence brings its own palette and its own order, and a player already
+   * knows both.
+   *
+   * The well is deliberately darker than any surface on the site. It is the
+   * one place that reads as a window rather than as paper, in both themes,
+   * because a sky that answers the light mode toggle is not a sky.
+   */
+  --acc-well: #12151c;
+  --acc-well-edge: #262d3a;
+  --acc-line: #e0574f;
+
+  /* The sky: two star tints beside white, and the three nebulae. */
+  --acc-star-cool: #cfd8ff;
+  --acc-star-warm: #ffe3b8;
+  --acc-nebula-a: #7d5ad8;
+  --acc-nebula-b: #2f8fb8;
+  --acc-nebula-c: #b04e92;
+
+  --acc-p0: #b9b6ae;
+  --acc-p1: #8e8579;
+  --acc-p2: #c2603a;
+  --acc-p3: #e0c48a;
+  --acc-p4: #3d7fc4;
+  --acc-p5: #2f56c8;
+  --acc-p6: #74c8cf;
+  --acc-p7: #e3c583;
+  --acc-p8: #d29a6a;
+  --acc-p9: #ffcb45;
+}
+
+.dark {
+  /*
+   * The well barely moves between themes, because it is a window onto the same
+   * sky either way. Only its edge lifts, so the frame still reads against a
+   * dark page instead of dissolving into it.
+   */
+  --acc-well: #0b0e14;
+  --acc-well-edge: #2b3342;
+}
+
+@layer games {
+  /* ---- Accretion ----------------------------------------------------------
+   *
+   * A physics game drawn entirely in CSS. Every body is a div with a border
+   * radius and a background, and the only thing the frame writes onto it is a
+   * transform - so the planets are stylesheet, not pictures, and they stay
+   * sharp at any zoom and at any board size.
+   *
+   * See src/games/accretion/game.ts and src/components/Accretion.astro.
+   */
+
+  .acc {
+    max-width: 32.5rem;
+    margin-inline: auto;
+  }
+
+  .acc-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: clamp(0.75rem, 2vw, 1.1rem);
+  }
+
+  .acc-meter {
+    position: relative;
+    min-width: 5.25rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius);
+    background-color: var(--site-card);
+    padding: 0.45rem 0.8rem 0.5rem;
+    text-align: center;
+  }
+
+  .acc-meter-label {
+    display: block;
+    font-size: 0.6875rem;
+    line-height: 1.3;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--site-muted);
+  }
+
+  .acc-meter-value {
+    display: block;
+    font-stretch: 112%;
+    font-weight: 660;
+    font-size: 1.25rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+  }
+
+  /* Out of flow, so the card cannot change size under it and shift the well
+     every time a merge lands. */
+  .acc-gain {
+    position: absolute;
+    inset: auto 0 0.35rem 0;
+    font-stretch: 110%;
+    font-weight: 640;
+    font-size: 1rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--site-accent);
+    pointer-events: none;
+    animation: acc-gain 700ms var(--site-ease) forwards;
+  }
+
+  /* What is coming. The one readout that is a picture rather than a figure,
+     because the answer is an object and not a number. */
+  .acc-next {
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    gap: 0 0.55rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius);
+    background-color: var(--site-card);
+    padding: 0.4rem 0.8rem 0.45rem;
+  }
+
+  /* Centred, like the two figures beside it, now that the three share the row
+     evenly: left-aligned in a stretched box, the planet and its name drifted
+     apart. */
+  .acc-next {
+    justify-content: center;
+  }
+
+  .acc-next .acc-meter-label {
+    grid-column: 1 / -1;
+    text-align: center;
+  }
+
+  .acc-next-body {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+
+  .acc-next-name {
+    font-stretch: 108%;
+    font-weight: 620;
+    font-size: 0.9375rem;
+    line-height: 1.2;
+  }
+
+  /*
+   * Two rows at every width: the three readouts share the first and the
+   * buttons the second, which is the shape the bar always had on a phone.
+   *
+   * ⚠️ **On purpose rather than by wrapping.** The well is a 30rem column, and
+   * with the sound switch beside New game the French, German and Serbian bars
+   * no longer fitted on one line while the English one did - so the same page
+   * came out in two different shapes depending on the length of a word.
+   * Measured: without the switch the widest bar was ten pixels short of the
+   * edge. One layout for all four is the honest answer to that.
+   */
+  .acc-bar > .acc-meter,
+  .acc-bar > .acc-next {
+    flex: 1;
+  }
+
+  .acc-actions {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .acc-actions .cta-ghost {
+    flex: 1;
+    justify-content: center;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.875rem;
+  }
+
+  /*
+   * The well.
+   *
+   * `--acc-ratio` and `--acc-line` come from the module's own constants
+   * through an inline style, so the box and the simulation cannot disagree
+   * about the shape of the well or where the line across it sits.
+   */
+  .acc-field {
+    position: relative;
+    aspect-ratio: var(--acc-ratio);
+    overflow: hidden;
+    border: 1px solid var(--acc-well-edge);
+    border-radius: var(--site-radius-card);
+    /*
+     * The ground the sky is laid on: the band's glow and three soft pools of
+     * colour under the nebulae. The stars and the clouds themselves are the
+     * `.acc-sky` layers, which move.
+     */
+    background:
+      linear-gradient(
+        163deg,
+        transparent 0 22%,
+        color-mix(in oklab, #6f7cc8 11%, transparent) 38%,
+        color-mix(in oklab, #8e7ec8 9%, transparent) 50%,
+        transparent 68% 100%
+      ),
+      radial-gradient(60% 42% at 78% 14%, color-mix(in oklab, #5b4ea8 22%, transparent) 0%, transparent 72%),
+      radial-gradient(52% 38% at 16% 34%, color-mix(in oklab, #2f5c99 18%, transparent) 0%, transparent 70%),
+      radial-gradient(80% 50% at 50% 104%, color-mix(in oklab, #1a2340 60%, transparent) 0%, transparent 78%),
+      var(--acc-well);
+    /* The pointer aims and drops, so the browser must not also read a drag
+       across the well as a scroll. */
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: crosshair;
+  }
+
+  /*
+   * ⚠️ **One transform carries the whole simulation onto the box.**
+   *
+   * The solver runs in its own 1200 by 1650 space and never learns how wide
+   * it is being shown, so a resize is this one number changing and nothing
+   * else: not a radius, not a position, not a step. `transform-origin` has to
+   * be the top left corner or the scale would also move the world.
+   */
+  .acc-world {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1200px;
+    height: 1650px;
+    transform: scale(var(--acc-scale, 0.4));
+    transform-origin: 0 0;
+  }
+
+  /*
+   * The sky: four layers, each a little larger than the well so it can slide.
+   *
+   * The module moves each layer by its `data-depth` as the aim crosses the
+   * well, the nearest the most, which is the whole of the depth - nothing in
+   * here is 3D but the difference in how far things move. Promoted, so that
+   * moving one is a composite and the nebulae's noise is computed once rather
+   * than on every frame.
+   */
+  .acc-sky {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .acc-sky-layer {
+    position: absolute;
+    top: -5%;
+    left: -5%;
+    width: 110%;
+    height: 110%;
+    will-change: transform;
+  }
+
+  /* A star is a zero-length stroke with round caps, and the stroke keeps its
+     width in pixels whatever the scale, because a star is a point of light and
+     must not grow with the board. */
+  .acc-dust {
+    fill: none;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .acc-dust-white {
+    stroke: white;
+  }
+
+  .acc-dust-cool {
+    stroke: var(--acc-star-cool);
+  }
+
+  .acc-dust-warm {
+    stroke: var(--acc-star-warm);
+  }
+
+  .acc-nebulae {
+    opacity: 0.62;
+  }
+
+  .acc-nebula-a {
+    flood-color: var(--acc-nebula-a);
+  }
+
+  .acc-nebula-b {
+    flood-color: var(--acc-nebula-b);
+  }
+
+  .acc-nebula-c {
+    flood-color: var(--acc-nebula-c);
+  }
+
+  /* A near star: a white core in a tinted glow, placed by its centre. */
+  .acc-star {
+    --acc-star-tint: white;
+    position: absolute;
+    width: var(--acc-star-size);
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle closest-side,
+      white 0 12%,
+      color-mix(in oklab, var(--acc-star-tint) 75%, transparent) 22%,
+      color-mix(in oklab, var(--acc-star-tint) 16%, transparent) 52%,
+      transparent 100%
+    );
+    animation: acc-twinkle var(--acc-twinkle) ease-in-out var(--acc-delay) infinite;
+  }
+
+  .acc-star[data-tone='cool'] {
+    --acc-star-tint: var(--acc-star-cool);
+  }
+
+  .acc-star[data-tone='warm'] {
+    --acc-star-tint: var(--acc-star-warm);
+  }
+
+  /* The brightest throw the four spikes a telescope's vanes put on a star,
+     which is what makes a point of light read as a star rather than a dot. */
+  .acc-star[data-spikes]::before,
+  .acc-star[data-spikes]::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 280%;
+    height: 1px;
+    translate: -50% -50%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklab, var(--acc-star-tint) 70%, transparent) 50%,
+      transparent
+    );
+  }
+
+  .acc-star[data-spikes]::after {
+    rotate: 90deg;
+  }
+
+  /* A galaxy far enough away to be a smudge: a warm core in a tilted disc of
+     bluer light, with a fainter, wider halo for the arms. */
+  .acc-galaxy {
+    position: absolute;
+    top: 61%;
+    left: 74%;
+    width: 4.6rem;
+    height: 1.5rem;
+    translate: -50% -50%;
+    rotate: -24deg;
+    border-radius: 50%;
+    background: radial-gradient(
+      closest-side,
+      color-mix(in oklab, var(--acc-star-warm) 95%, transparent) 0 7%,
+      color-mix(in oklab, var(--acc-star-cool) 38%, transparent) 26%,
+      color-mix(in oklab, var(--acc-nebula-a) 18%, transparent) 62%,
+      transparent 100%
+    );
+    opacity: 0.7;
+  }
+
+  .acc-galaxy::before {
+    content: '';
+    position: absolute;
+    inset: -40% -18%;
+    border-radius: 50%;
+    rotate: 12deg;
+    background: radial-gradient(
+      closest-side,
+      transparent 40%,
+      color-mix(in oklab, var(--acc-star-cool) 14%, transparent) 62%,
+      transparent 100%
+    );
+  }
+
+  /* A shooting star, now and then: a streak with its head in front, across a
+     few percent of a long cycle and invisible for the rest. */
+  .acc-meteor {
+    position: absolute;
+    width: 8rem;
+    height: 1.5px;
+    border-radius: 1px;
+    background: linear-gradient(90deg, transparent, color-mix(in oklab, white 90%, transparent));
+    transform-origin: right center;
+    rotate: 146deg;
+    opacity: 0;
+    animation: acc-meteor var(--acc-every) linear var(--acc-delay) infinite;
+  }
+
+  /*
+   * The line the well must not stay above.
+   *
+   * It warns before it decides: the module sets `data-full` a third of the way
+   * into the count, and a line that only appears once the game is lost is a
+   * line that told the player nothing.
+   */
+  .acc-line {
+    position: absolute;
+    top: var(--acc-line-at);
+    right: 0;
+    left: 0;
+    height: 3px;
+    background:
+      linear-gradient(90deg, transparent, color-mix(in oklab, var(--acc-line) 70%, transparent) 8% 92%, transparent),
+      repeating-linear-gradient(
+        90deg,
+        color-mix(in oklab, var(--acc-line) 55%, transparent) 0 12px,
+        transparent 12px 22px
+      );
+    /* Sitting under the bodies, so a planet crossing it passes in front rather
+       than being cut in half by it. */
+    z-index: 0;
+    opacity: 0.55;
+    transition:
+      opacity 260ms var(--site-ease),
+      box-shadow 260ms var(--site-ease);
+  }
+
+  .acc[data-full] .acc-line {
+    opacity: 1;
+    box-shadow: 0 0 14px 2px color-mix(in oklab, var(--acc-line) 45%, transparent);
+    animation: acc-warn 900ms var(--site-ease) infinite;
+  }
+
+  /*
+   * A body.
+   *
+   * ⚠️ **Every planet is gradients on one div, and that is the whole renderer.**
+   * There is no image, no SVG and no sprite, so a body is sharp at any zoom,
+   * costs no request, and scales with the well rather than with the viewport.
+   *
+   * The sphere itself is `--acc-sphere`, held in a custom property so the ten
+   * planets below can stack their own detail on top of it without writing it
+   * out again. Layers paint front to back, so a planet reads as: markings,
+   * then clouds, then the lit ball underneath.
+   *
+   * Every length in here is a percentage, which is what makes one rule work for
+   * a body 15px across in the sequence and 230px across in the well.
+   */
+  .acc-body {
+    --acc-sphere: radial-gradient(
+      circle at 32% 26%,
+      color-mix(in oklab, var(--acc-tint) 52%, white) 0%,
+      color-mix(in oklab, var(--acc-tint) 84%, white) 22%,
+      var(--acc-tint) 48%,
+      color-mix(in oklab, var(--acc-tint) 74%, black) 84%,
+      color-mix(in oklab, var(--acc-tint) 52%, black) 100%
+    );
+
+    /*
+     * ⚠️ **The three layers that make a circle read as a sphere**, and they go
+     * over the surface markings rather than under them - a highlight sits on
+     * the clouds, and the shadow darkens them.
+     *
+     * The specular is small and tight, because a large soft one reads as a
+     * bubble. The rim is the piece most often missed: real spheres are lit a
+     * second time along the dark limb by light bouncing back, and without it
+     * the shaded side dies into a flat edge. The terminator then does the bulk
+     * of the work, following the curve rather than fading straight down.
+     *
+     * All of it in percentages, because `box-shadow` takes none and these have
+     * to hold from a 15px body in the sequence to a 230px one in the field.
+     */
+    /*
+     * ⚠️ **The specular is split out of the stack**, because one surface on
+     * this board does not want it: Earth's land, which is drawn on top of the
+     * ocean and re-applies the shading so that it answers the terminator. A
+     * glint is water, and re-applying the whole stack put one on the middle of
+     * North America. So `--acc-form` is the rim and the terminator - the part
+     * that says "sphere" - and `--acc-shade` is that plus the highlight.
+     */
+    --acc-form:
+      radial-gradient(
+        circle at 50% 50%,
+        transparent 0 82%,
+        color-mix(in oklab, white 13%, transparent) 94%,
+        color-mix(in oklab, white 4%, transparent) 100%
+      ),
+      radial-gradient(
+        circle at 34% 28%,
+        transparent 0 24%,
+        color-mix(in oklab, black 9%, transparent) 48%,
+        color-mix(in oklab, black 30%, transparent) 72%,
+        color-mix(in oklab, black 58%, transparent) 96%,
+        color-mix(in oklab, black 42%, transparent) 100%
+      );
+
+    --acc-shade:
+      radial-gradient(
+        circle at 31% 25%,
+        color-mix(in oklab, white 62%, transparent) 0 3%,
+        color-mix(in oklab, white 28%, transparent) 7%,
+        transparent 15%
+      ),
+      var(--acc-form);
+
+    /* Kept for the planets that were written against it. */
+    --acc-limb: radial-gradient(
+      circle at 62% 68%,
+      transparent 0 58%,
+      color-mix(in oklab, black 12%, transparent) 92%,
+      color-mix(in oklab, black 20%, transparent) 100%
+    );
+
+    /*
+     * ⚠️ **`position` belongs here and nowhere else below.**
+     *
+     * It is `relative` so that Saturn's ring, an absolutely positioned
+     * pseudo-element, anchors to its own planet in the readout and in the
+     * sequence under the board. Inside the field `.acc-world .acc-body`
+     * overrides it to `absolute`, and that works only because this selector is
+     * one class and that one is two.
+     *
+     * A `position` on any `.acc-body[data-tier=…]` rule ties that two-class
+     * specificity and, coming later in the file, wins. Saturn carried exactly
+     * that and was quietly dropped out of absolute positioning inside the
+     * field: the solver held it in one place and the browser drew it wherever
+     * normal flow had put it, so bodies stacked against a Saturn that was not
+     * there.
+     */
+    position: relative;
+
+    display: block;
+    border-radius: 50%;
+    background-image: var(--acc-shade), var(--acc-limb), var(--acc-sphere);
+    background-repeat: no-repeat;
+  }
+
+  /* ⚠️ Two classes on purpose: this has to outrank the `position` on
+     `.acc-body`, and it must stay stronger than anything keyed on a tier. */
+  .acc-world .acc-body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* Forty of these, each a transform away from moving on every frame.
+       Promoting them is what keeps a full well at sixty frames on a phone. */
+    will-change: transform;
+  }
+
+  /*
+   * ---- The Moon: maria, and craters that are holes ----
+   *
+   * ⚠️ **A crater is three layers, and the third is the one that sells it.**
+   * A flat dark disc is a stain on the surface. A rim a shade lighter than the
+   * plain, a floor a shade darker, and a shadow thrown *back across the floor
+   * from the lit side* is a hole: the wall the light falls on from outside is
+   * the wall that shades the inside, so the shadow sits up and to the left,
+   * against the light, which is the opposite of where a beginner puts it.
+   *
+   * Only the two largest get all three. At the fifteen pixels a Moon is drawn
+   * at in the sequence under the board, the small ones are one gradient with a
+   * dark floor and a bright rim in a single stop list.
+   */
+  .acc-body[data-tier='0'] {
+    --acc-tint: var(--acc-p0);
+    background-image:
+      var(--acc-shade),
+      radial-gradient(ellipse 12.6% 12.6% at 62% 59%, transparent 0 82%, color-mix(in oklab, var(--acc-p0) 58%, white) 86% 96%, transparent 100%),
+      radial-gradient(ellipse 11% 11% at 62% 59%, color-mix(in oklab, var(--acc-p0) 72%, black) 0 78%, transparent 84%),
+      radial-gradient(ellipse 8.2% 8.2% at 60.2% 57.2%, color-mix(in oklab, var(--acc-p0) 48%, black) 0 68%, transparent 82%),
+      radial-gradient(ellipse 9.4% 9.4% at 37% 71%, transparent 0 82%, color-mix(in oklab, var(--acc-p0) 60%, white) 86% 96%, transparent 100%),
+      radial-gradient(ellipse 8% 8% at 37% 71%, color-mix(in oklab, var(--acc-p0) 74%, black) 0 78%, transparent 84%),
+      radial-gradient(ellipse 5.8% 5.8% at 35.4% 69.4%, color-mix(in oklab, var(--acc-p0) 50%, black) 0 68%, transparent 82%),
+      radial-gradient(ellipse 6.4% 6.4% at 71% 33%, color-mix(in oklab, var(--acc-p0) 62%, black) 0 58%, color-mix(in oklab, var(--acc-p0) 64%, white) 74% 92%, transparent 100%),
+      radial-gradient(ellipse 4.4% 4.4% at 47% 21%, color-mix(in oklab, var(--acc-p0) 64%, black) 0 56%, color-mix(in oklab, var(--acc-p0) 66%, white) 72% 92%, transparent 100%),
+      radial-gradient(ellipse 3.8% 3.8% at 25% 53%, color-mix(in oklab, var(--acc-p0) 66%, black) 0 56%, color-mix(in oklab, var(--acc-p0) 68%, white) 72% 92%, transparent 100%),
+      /* The maria are floods rather than holes, so they get no rim and a soft
+         edge - which is also what keeps them from reading as two more craters. */
+      radial-gradient(ellipse 25% 20% at 43% 41%, color-mix(in oklab, var(--acc-p0) 68%, black) 0 58%, color-mix(in oklab, var(--acc-p0) 84%, black) 86%, transparent 100%),
+      radial-gradient(ellipse 17% 13% at 67% 74%, color-mix(in oklab, var(--acc-p0) 72%, black) 0 58%, color-mix(in oklab, var(--acc-p0) 86%, black) 86%, transparent 100%),
+      var(--acc-limb),
+      var(--acc-sphere);
+  }
+
+  /*
+   * ---- Mercury: cratered, with Caloris and the scarps ----
+   *
+   * Mercury and the Moon are the same colour family and the same surface, so
+   * without one feature of its own the small grey body is just the other small
+   * grey body. Caloris is that feature: a basin with concentric rings rather
+   * than a bowl, drawn as one gradient with five alternating stops.
+   */
+  .acc-body[data-tier='1'] {
+    --acc-tint: var(--acc-p1);
+    background-image:
+      var(--acc-shade),
+      radial-gradient(
+        ellipse 21% 21% at 35% 37%,
+        color-mix(in oklab, var(--acc-p1) 84%, white) 0 38%,
+        color-mix(in oklab, var(--acc-p1) 78%, black) 44% 54%,
+        color-mix(in oklab, var(--acc-p1) 76%, white) 60% 68%,
+        color-mix(in oklab, var(--acc-p1) 76%, black) 74% 84%,
+        color-mix(in oklab, var(--acc-p1) 70%, white) 88% 96%,
+        transparent 100%
+      ),
+      radial-gradient(ellipse 10.4% 10.4% at 58% 53%, transparent 0 82%, color-mix(in oklab, var(--acc-p1) 58%, white) 86% 96%, transparent 100%),
+      radial-gradient(ellipse 9% 9% at 58% 53%, color-mix(in oklab, var(--acc-p1) 70%, black) 0 78%, transparent 84%),
+      radial-gradient(ellipse 6.6% 6.6% at 56.4% 51.4%, color-mix(in oklab, var(--acc-p1) 48%, black) 0 68%, transparent 82%),
+      radial-gradient(ellipse 7% 7% at 72% 69%, color-mix(in oklab, var(--acc-p1) 62%, black) 0 58%, color-mix(in oklab, var(--acc-p1) 64%, white) 74% 92%, transparent 100%),
+      radial-gradient(ellipse 5.4% 5.4% at 43% 77%, color-mix(in oklab, var(--acc-p1) 64%, black) 0 56%, color-mix(in oklab, var(--acc-p1) 66%, white) 72% 92%, transparent 100%),
+      radial-gradient(ellipse 4% 4% at 27% 64%, color-mix(in oklab, var(--acc-p1) 66%, black) 0 56%, color-mix(in oklab, var(--acc-p1) 68%, white) 72% 92%, transparent 100%),
+      radial-gradient(ellipse 3.2% 3.2% at 67% 25%, color-mix(in oklab, var(--acc-p1) 66%, black) 0 56%, color-mix(in oklab, var(--acc-p1) 68%, white) 72% 92%, transparent 100%),
+      /* A lobate scarp. The planet shrank as its core cooled and the crust
+         buckled, and these cliffs are the only long line on it - a cliff is a
+         lit face over a shadow, so it is two thin stripes and not one. */
+      radial-gradient(ellipse 23% 1.2% at 49% 82.4%, color-mix(in oklab, var(--acc-p1) 76%, white) 0 52%, transparent 100%),
+      radial-gradient(ellipse 23% 1.2% at 49% 84%, color-mix(in oklab, var(--acc-p1) 76%, black) 0 52%, transparent 100%),
+      var(--acc-limb),
+      var(--acc-sphere);
+  }
+
+  /*
+   * ---- Mars: two small caps, the dark highlands, and one straight line ----
+   *
+   * ⚠️ **The caps have to be small.** They were a third of the disc across and
+   * read as a hat rather than as ice - at any distance the planet was a rusty
+   * ball wearing two white blobs. Small and bright is what reads as Mars,
+   * because the caps are the recognition and a cap that big stops being one.
+   */
+  .acc-body[data-tier='2'] {
+    --acc-tint: var(--acc-p2);
+    background-image:
+      var(--acc-shade),
+      radial-gradient(ellipse 19% 7% at 49% 3%, color-mix(in oklab, white 90%, var(--acc-p2)) 0 56%, color-mix(in oklab, white 50%, transparent) 84%, transparent 100%),
+      radial-gradient(ellipse 12% 5% at 53% 97%, color-mix(in oklab, white 82%, var(--acc-p2)) 0 54%, color-mix(in oklab, white 40%, transparent) 84%, transparent 100%),
+      /* Olympus Mons: a bright shield with a dark caldera on it. The caldera
+         is drawn as a ring rather than as a dot, because a dot four pixels
+         across on a disc this size reads as a dead pixel. */
+      radial-gradient(ellipse 5.4% 5.4% at 29% 43%, transparent 0 20%, color-mix(in oklab, var(--acc-p2) 66%, black) 24% 30%, color-mix(in oklab, var(--acc-p2) 78%, white) 44% 78%, transparent 100%),
+      /* Valles Marineris. The one straight line on the planet, and the reason
+         a red disc with dark patches reads as this red disc. */
+      radial-gradient(ellipse 22% 2.2% at 45% 57%, color-mix(in oklab, var(--acc-p2) 50%, black) 0 54%, transparent 100%),
+      /* Syrtis Major and the southern highlands. Hard-edged and overlapping,
+         for the reason set out on Earth below: three soft ellipses at three
+         darknesses read as a bruise with a hole in it, and the same three cut
+         clean and mixed to one tone union into a single dark wedge. */
+      radial-gradient(ellipse 8% 11% at 62% 37%, color-mix(in oklab, var(--acc-p2) 56%, black) 0 92%, transparent 100%),
+      radial-gradient(ellipse 10% 5% at 67% 45%, color-mix(in oklab, var(--acc-p2) 56%, black) 0 92%, transparent 100%),
+      radial-gradient(ellipse 5% 6% at 56% 33%, color-mix(in oklab, var(--acc-p2) 56%, black) 0 92%, transparent 100%),
+      radial-gradient(ellipse 11% 7% at 33% 68%, color-mix(in oklab, var(--acc-p2) 62%, black) 0 90%, transparent 100%),
+      radial-gradient(ellipse 7% 5% at 78% 63%, color-mix(in oklab, var(--acc-p2) 62%, black) 0 90%, transparent 100%),
+      /* Hellas: a basin two kilometres deep and full of bright dust, so it
+         goes the other way from every other marking here. */
+      radial-gradient(ellipse 10% 8% at 56% 77%, color-mix(in oklab, var(--acc-p2) 78%, white) 0 52%, transparent 100%),
+      var(--acc-limb),
+      var(--acc-sphere);
+  }
+
+  /*
+   * ---- Venus: nothing but cloud, and the Y ----
+   *
+   * There is no surface to draw, so the only structure available is the one
+   * the ultraviolet pictures show: two dark arms meeting low and left in a
+   * lazy Y, bright zones between them, and a bright hood over each pole.
+   */
+  .acc-body[data-tier='3'] {
+    --acc-tint: var(--acc-p3);
+    background-image:
+      var(--acc-shade),
+      radial-gradient(ellipse 30% 9% at 50% 4%, color-mix(in oklab, white 44%, transparent) 0 52%, transparent 100%),
+      radial-gradient(ellipse 26% 8% at 50% 96%, color-mix(in oklab, white 34%, transparent) 0 52%, transparent 100%),
+      radial-gradient(ellipse 34% 7% at 46% 24%, color-mix(in oklab, white 30%, transparent) 0 54%, transparent 100%),
+      radial-gradient(ellipse 30% 6% at 52% 45%, color-mix(in oklab, white 24%, transparent) 0 54%, transparent 100%),
+      radial-gradient(ellipse 26% 5% at 40% 77%, color-mix(in oklab, white 20%, transparent) 0 54%, transparent 100%),
+      radial-gradient(ellipse 28% 7% at 38% 34%, color-mix(in oklab, var(--acc-p3) 70%, #8a6a2e) 0 56%, transparent 100%),
+      radial-gradient(ellipse 24% 6% at 44% 55%, color-mix(in oklab, var(--acc-p3) 72%, #8a6a2e) 0 56%, transparent 100%),
+      radial-gradient(ellipse 30% 6% at 58% 67%, color-mix(in oklab, var(--acc-p3) 76%, #8a6a2e) 0 56%, transparent 100%),
+      var(--acc-limb),
+      var(--acc-sphere);
+  }
+
+  /*
+   * ---- Earth: ocean, a shelf, two landmasses, ice and weather ----
+   *
+   * ⚠️ **The land is the one thing here that is not a gradient, and it has to
+   * be.** Every other body on the board is made of ellipses because craters,
+   * storms and belts are ellipses. A coastline is not, and no pile of ellipses
+   * becomes one: stacked soft they are blobs, and stacked hard they are a
+   * chain of circles with the joins showing. So the coasts are
+   * `clip-path: polygon()`, which is real geometry, and in percentages like
+   * everything else here - the same coast at fifteen pixels and at two hundred
+   * and thirty.
+   *
+   * ⚠️ **The vertices are the real coastline, projected rather than drawn.**
+   * They are about sixty points per landmass taken from the actual outline in
+   * degrees and put through an azimuthal projection centred on 12°N 32°W,
+   * which is the Atlantic - so what the planet shows is the Americas down the
+   * left and Africa and Europe up the right. Hand-drawn continents at this
+   * size look like nothing on Earth, and everybody has seen this planet.
+   *
+   * ⚠️ **Azimuthal equidistant, and not orthographic.** Orthographic is what a
+   * camera actually sees and it was the first thing tried: its radius goes as
+   * the sine of the angle from the centre, so everything past sixty degrees
+   * piles into the rim and Europe came out a smear with Asia a sliver behind
+   * it. Equidistant puts the angle in linearly, which brings the far side of
+   * the hemisphere back towards the middle at a size you can read. The planet
+   * still reads as a sphere because the shading stack is what sells that, not
+   * the projection.
+   *
+   * ⚠️ **Two polygons because a body has two pseudo-elements**, and that is
+   * not a compromise: the Americas really are one landmass joined at Panama
+   * and Africa and Eurasia really are one joined at Suez. Both rings trace
+   * their inland seas as bays - Hudson Bay and the Gulf of Mexico, the
+   * Mediterranean in at Gibraltar and back out, the Red Sea up to Sinai - so
+   * the water inside a continent stays water.
+   *
+   * ⚠️ **The Mediterranean and the Red Sea are opened by a few degrees**, and
+   * they are the only places the outline is not the true one. At their real
+   * widths Sicily touches Tunisia and the Red Sea is a hairline, which on a
+   * body a centimetre across welds Europe onto Africa and leaves Arabia as a
+   * spike. Three degrees of exaggeration on each shore is the difference
+   * between a planet with a Mediterranean on it and a planet without.
+   *
+   * ⚠️ **Each one carries `--acc-shade` as well**, and that is not decoration.
+   * A pseudo-element paints over its parent's background, so land without the
+   * shading stack on it is land that ignores the terminator - lit at the dark
+   * limb, flat where the planet is round, and instantly readable as a sticker.
+   *
+   * ⚠️ **The weather is under the land** for the same reason, which is why it
+   * is placed over ocean. Cloud drawn across a coastline would be hidden by
+   * it, so a front that crosses one just disappears at the shore.
+   *
+   * ⚠️ **The shelf is what the coast stands in.** Land dropped straight onto
+   * deep blue is a sticker on a ball. A paler blue around each group is
+   * shallow water, and it is soft where the land is hard because that is the
+   * way round the two actually are.
+   */
+  .acc-body[data-tier='4'] {
+    --acc-tint: var(--acc-p4);
+    background-image:
+      var(--acc-shade),
+      radial-gradient(ellipse 6% 2.2% at 56% 30%, color-mix(in oklab, white 42%, transparent) 0 38%, transparent 100%),
+      radial-gradient(ellipse 6% 2.2% at 54% 68%, color-mix(in oklab, white 34%, transparent) 0 38%, transparent 100%),
+      radial-gradient(ellipse 6% 2% at 17% 72%, color-mix(in oklab, white 30%, transparent) 0 38%, transparent 100%),
+      radial-gradient(ellipse 19% 6.5% at 50% 2%, color-mix(in oklab, white 88%, var(--acc-p4)) 0 56%, transparent 100%),
+      radial-gradient(ellipse 22% 6% at 50% 99%, color-mix(in oklab, white 88%, var(--acc-p4)) 0 56%, transparent 100%),
+      radial-gradient(ellipse 21% 46% at 30% 53%, color-mix(in oklab, var(--acc-p4) 82%, white) 0 66%, transparent 100%),
+      radial-gradient(ellipse 21% 38% at 78% 48%, color-mix(in oklab, var(--acc-p4) 82%, white) 0 66%, transparent 100%),
+      var(--acc-limb),
+      var(--acc-sphere);
+  }
+
+  /*
+   * Both landmasses: a full-size box, shaded like the planet under it, cut to
+   * a coastline, and painted in climate bands rather than in one green.
+   *
+   * ⚠️ **`--acc-form` and not `--acc-shade`**, so the land takes the
+   * terminator and the rim but not the highlight - see the note where the two
+   * are split. A specular is a glint off water and it was landing in the
+   * middle of North America.
+   *
+   * ⚠️ **The bands are latitudes, so the stops are arithmetic.** The
+   * projection puts 70°N at 22% of the body, 40°N at 40%, 25°N at 48%, the
+   * equator at 63% and 30°S at 80%, which is where the tundra, the two belts
+   * of desert and the rainforest go. A continent in one flat green is a shape
+   * and not a place, and getting the sand at the right latitude is most of
+   * what makes this read as Earth rather than as a green island.
+   */
+  .acc-body[data-tier='4']::before,
+  .acc-body[data-tier='4']::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      var(--acc-form),
+      linear-gradient(
+        180deg,
+        #80896a 22%,
+        #4a7a46 31%,
+        #6d8449 40%,
+        #a2915c 48%,
+        #5d8442 56%,
+        #2f6f3c 63%,
+        #3c7740 70%,
+        #7a8752 79%,
+        #5d7f4a 88%
+      );
+    background-repeat: no-repeat;
+  }
+
+  /* The Americas, with Hudson Bay and the Gulf of Mexico traced as the bays
+     they are - two indentations that are most of what makes the northern half
+     read as North America rather than as a lump. */
+  .acc-body[data-tier='4']::before {
+    clip-path: polygon(
+      35.2% 11.9%, 35.5% 13.5%, 35.6% 15.6%, 36.8% 17.3%,
+      38.5% 18.1%, 39.1% 19.5%, 38.8% 21.6%, 36.5% 22.4%,
+      33.6% 24.4%, 33.5% 26.6%, 35.3% 26.9%, 37.2% 25.1%,
+      38.1% 23.4%, 39.2% 24.7%, 40.3% 26.4%, 40.9% 29.1%,
+      41.9% 31.8%, 42.3% 34.9%, 39.5% 34.3%, 36.8% 34.8%,
+      34.8% 35.4%, 32.4% 36.6%, 30.4% 39.1%, 27.9% 40.2%,
+      26.3% 44.3%, 25.6% 42.0%, 25.1% 40.4%, 23.0% 40.2%,
+      20.8% 39.0%, 18.5% 40.0%, 16.8% 43.8%, 17.8% 45.8%,
+      20.1% 46.0%, 22.0% 45.4%, 20.7% 47.7%, 20.5% 48.3%,
+      23.0% 49.9%, 22.5% 51.8%, 24.3% 54.3%, 25.3% 55.2%,
+      28.5% 54.0%, 34.0% 55.7%, 39.5% 59.4%, 40.5% 62.4%,
+      44.1% 63.7%, 47.6% 65.6%, 49.4% 67.3%, 47.0% 70.8%,
+      47.0% 73.1%, 41.8% 77.0%, 39.3% 82.3%, 36.8% 84.6%,
+      34.8% 85.8%, 34.0% 88.8%, 33.9% 93.2%, 33.7% 95.1%,
+      30.1% 92.1%, 29.5% 87.7%, 28.5% 83.9%, 28.7% 79.5%,
+      28.7% 74.6%, 27.9% 71.4%, 24.9% 69.1%, 22.0% 63.5%,
+      22.8% 61.1%, 23.0% 59.2%, 24.9% 57.7%, 24.7% 55.7%,
+      21.9% 54.3%, 20.5% 50.4%, 16.9% 46.8%, 13.0% 41.6%,
+      11.7% 36.1%, 12.9% 30.1%, 15.3% 23.0%, 20.8% 18.6%,
+      24.5% 15.4%
+    );
+  }
+
+  /* Africa and Eurasia: the Mediterranean in at Gibraltar and back out, the
+     Red Sea up to Sinai, and Scandinavia off the top, which is the one
+     peninsula that makes Europe read as Europe. */
+  .acc-body[data-tier='4']::after {
+    clip-path: polygon(
+      62.9% 39.9%, 65.0% 38.7%, 65.9% 37.2%, 66.0% 35.2%,
+      67.4% 34.0%, 68.1% 33.7%, 69.8% 35.0%, 71.3% 35.0%,
+      72.1% 33.8%, 73.6% 33.8%, 75.1% 33.6%, 76.2% 32.9%,
+      77.0% 31.6%, 78.8% 31.9%, 80.3% 31.6%, 81.6% 33.3%,
+      82.3% 35.3%, 81.9% 36.5%, 80.7% 36.5%, 78.3% 37.2%,
+      76.1% 38.4%, 73.2% 39.0%, 70.7% 39.4%, 68.0% 40.3%,
+      65.3% 41.1%, 63.3% 41.3%, 62.2% 43.1%, 60.7% 45.7%,
+      59.7% 50.0%, 59.5% 53.6%, 62.1% 56.8%, 66.9% 58.6%,
+      71.4% 57.2%, 75.1% 57.7%, 75.5% 61.4%, 77.4% 71.4%,
+      78.5% 77.2%, 79.4% 81.1%, 80.2% 82.4%, 84.2% 81.6%,
+      88.5% 75.5%, 91.1% 69.2%, 94.1% 62.2%, 94.0% 55.9%,
+      96.6% 48.6%, 96.2% 42.4%, 92.3% 45.1%, 86.7% 40.9%,
+      82.6% 37.7%, 83.9% 35.9%, 89.8% 39.7%, 94.9% 42.4%,
+      93.6% 36.4%, 89.1% 30.1%, 81.0% 23.3%, 65.7% 14.3%,
+      65.2% 15.5%, 66.0% 17.0%, 64.0% 17.4%, 62.4% 17.2%,
+      61.0% 17.7%, 61.0% 19.4%, 61.0% 21.0%, 61.3% 23.0%,
+      61.0% 24.5%, 62.0% 26.2%, 63.7% 26.0%, 63.5% 26.8%,
+      64.1% 28.6%, 63.5% 29.6%, 63.3% 30.9%, 62.9% 31.7%,
+      61.8% 33.3%, 63.4% 35.4%, 61.0% 36.0%, 60.7% 36.7%,
+      61.4% 39.6%
+    );
+  }
+
+  /*
+   * ---- Neptune: banded, with the dark spot and the scooter ----
+   *
+   * ⚠️ **The bands are written out rather than repeated.** A
+   * `repeating-linear-gradient` puts every band at the same width and the same
+   * spacing, and the eye reads that as a pattern laid over a ball rather than
+   * as weather on one. Uneven widths, uneven gaps and edges that ramp instead
+   * of cutting are the whole difference, and they cost one longer declaration.
+   */
+  .acc-body[data-tier='5'] {
+    --acc-tint: var(--acc-p5);
+    background-image:
+      var(--acc-shade),
+      radial-gradient(ellipse 12% 8% at 62% 39%, color-mix(in oklab, var(--acc-p5) 44%, black) 0 56%, color-mix(in oklab, var(--acc-p5) 66%, black) 84%, transparent 100%),
+      radial-gradient(ellipse 9% 2.6% at 60% 47%, color-mix(in oklab, white 58%, transparent) 0 52%, transparent 100%),
+      radial-gradient(ellipse 13% 2.4% at 40% 63%, color-mix(in oklab, white 46%, transparent) 0 50%, transparent 100%),
+      radial-gradient(ellipse 9% 2% at 57% 73%, color-mix(in oklab, white 34%, transparent) 0 50%, transparent 100%),
+      linear-gradient(
+        177deg,
+        color-mix(in oklab, var(--acc-p5) 76%, black) 0 6%,
+        transparent 8% 12%,
+        color-mix(in oklab, var(--acc-p5) 86%, white) 15% 20%,
+        transparent 22% 25%,
+        color-mix(in oklab, var(--acc-p5) 74%, black) 28% 32%,
+        transparent 34% 37%,
+        color-mix(in oklab, var(--acc-p5) 90%, white) 40% 46%,
+        transparent 48% 51%,
+        color-mix(in oklab, var(--acc-p5) 72%, black) 54% 58%,
+        transparent 60% 63%,
+        color-mix(in oklab, var(--acc-p5) 88%, white) 66% 71%,
+        transparent 73% 76%,
+        color-mix(in oklab, var(--acc-p5) 76%, black) 79% 83%,
+        transparent 85% 89%,
+        color-mix(in oklab, var(--acc-p5) 84%, white) 92% 100%
+      ),
+      var(--acc-limb),
+      var(--acc-sphere);
+  }
+
+  /*
+   * ---- Uranus: tipped on its side, and almost featureless ----
+   *
+   * The banding runs down the disc rather than across it, because the planet
+   * lies on its side and that is the one fact everybody knows about it.
+   *
+   * ⚠️ **Soft edges, and not many of them.** A hard repeating stripe on a body
+   * with no other relief does not read as cloud, it reads as a rendering fault
+   * - which is exactly what the old evenly repeated version looked like at the
+   * size a planet is actually drawn. Three wide bands that ramp in and out,
+   * and a polar hood that faces us from the side rather than from the top.
+   */
+  .acc-body[data-tier='6'] {
+    --acc-tint: var(--acc-p6);
+    background-image:
+      var(--acc-shade),
+      radial-gradient(ellipse 22% 30% at 20% 46%, color-mix(in oklab, white 26%, transparent) 0 36%, transparent 100%),
+      radial-gradient(ellipse 16% 11% at 69% 67%, color-mix(in oklab, var(--acc-p6) 70%, #1d6f88) 0 54%, transparent 100%),
+      linear-gradient(
+        94deg,
+        transparent 0 10%,
+        color-mix(in oklab, var(--acc-p6) 88%, white) 20% 30%,
+        transparent 38% 45%,
+        color-mix(in oklab, var(--acc-p6) 86%, #1d6f88) 52% 61%,
+        transparent 69% 76%,
+        color-mix(in oklab, var(--acc-p6) 90%, white) 83% 91%,
+        transparent 100%
+      ),
+      var(--acc-limb),
+      var(--acc-sphere);
+  }
+
+  /* ---- Saturn: banded, and the ring below ---- */
+  .acc-body[data-tier='7'] {
+    --acc-tint: var(--acc-p7);
+    /*
+     * ⚠️ **Saturn paints above every other body, ring and all.** The ring
+     * reaches 1.7 diameters across, so on a full field it always has a
+     * neighbour under one of its tips, and a ring that disappears behind a
+     * planet reads as a rendering fault rather than as depth - the tip is a
+     * thin ellipse and half of it simply goes missing.
+     *
+     * ⚠️ It is `z-index` alone, and must stay that way: a `position` here
+     * would tie `.acc-world .acc-body` on specificity, win on order, and drop
+     * Saturn out of the field's absolute positioning. See the warning on
+     * `.acc-body`.
+     *
+     * 1 is under `.acc-panel` at 3, so a game that ends still covers it.
+     *
+     * The `z-index` also makes the stacking context the ring's back half
+     * needs: its `-1` stays behind this planet rather than falling behind the
+     * whole field. `isolation` did that job before and is now redundant.
+     */
+    z-index: 1;
+    background-image:
+      var(--acc-shade),
+      /*
+       * ⚠️ **The ring's shadow, laid across the planet on the ring's own
+       * line.** Nothing else on this body says that the ring is a solid
+       * object standing in the same light as the planet - without it the two
+       * are a ball and a hoop that happen to share a centre.
+       *
+       * ⚠️ The axis is 164 degrees and not 74. A band runs across its
+       * gradient's axis rather than along it, so the perpendicular of the
+       * ring's own -16 is what puts the shadow on the ring's line - 74 lays it
+       * the other way and reads as a scratch across the planet.
+       */
+      linear-gradient(
+        164deg,
+        transparent 0 49%,
+        color-mix(in oklab, black 17%, transparent) 53% 56%,
+        transparent 60% 100%
+      ),
+      linear-gradient(
+        177deg,
+        color-mix(in oklab, var(--acc-p7) 88%, #8a6330) 0 6%,
+        transparent 10% 16%,
+        color-mix(in oklab, var(--acc-p7) 90%, white) 20% 27%,
+        transparent 31% 36%,
+        color-mix(in oklab, var(--acc-p7) 86%, #8a6330) 39% 44%,
+        transparent 48% 53%,
+        color-mix(in oklab, var(--acc-p7) 92%, white) 56% 63%,
+        transparent 67% 72%,
+        color-mix(in oklab, var(--acc-p7) 88%, #8a6330) 75% 80%,
+        transparent 84% 89%,
+        color-mix(in oklab, var(--acc-p7) 90%, white) 92% 100%
+      ),
+      var(--acc-limb),
+      var(--acc-sphere);
+  }
+
+  /*
+   * ---- Jupiter: the belts, the zones, the spot and its wake ----
+   *
+   * The largest body below the Sun, so it is the one that gets looked at, and
+   * the one where uneven banding pays for itself twice over. The spot is a
+   * storm rather than a dot: a dark core, a lighter collar, a bright ring of
+   * cloud thrown out around it, and the turbulent wake upstream that is how
+   * you can tell which way the belt is running.
+   */
+  .acc-body[data-tier='8'] {
+    --acc-tint: var(--acc-p8);
+    background-image:
+      var(--acc-shade),
+      radial-gradient(ellipse 15% 9% at 63% 60%, transparent 0 74%, color-mix(in oklab, white 30%, transparent) 84% 93%, transparent 100%),
+      radial-gradient(ellipse 12% 7% at 63% 60%, #b8452a 0 46%, #a13c22 62% 80%, color-mix(in oklab, #b8452a 45%, transparent) 92%, transparent 100%),
+      radial-gradient(ellipse 8% 3% at 43% 63%, color-mix(in oklab, white 26%, transparent) 0 52%, transparent 100%),
+      radial-gradient(ellipse 4% 2.4% at 33% 73%, color-mix(in oklab, white 42%, transparent) 0 54%, transparent 100%),
+      radial-gradient(ellipse 3.4% 2% at 51% 79%, color-mix(in oklab, white 38%, transparent) 0 54%, transparent 100%),
+      /* Festoons: the dark hooks that hang off the north equatorial belt into
+         the bright zone under it. */
+      radial-gradient(ellipse 17% 1.8% at 47% 43%, color-mix(in oklab, var(--acc-p8) 62%, #6b3f22) 0 52%, transparent 100%),
+      linear-gradient(
+        178deg,
+        color-mix(in oklab, var(--acc-p8) 74%, #6b3f22) 0 6%,
+        transparent 9% 13%,
+        color-mix(in oklab, var(--acc-p8) 70%, white) 16% 22%,
+        transparent 25% 28%,
+        color-mix(in oklab, var(--acc-p8) 66%, #7a4a28) 31% 38%,
+        transparent 41% 45%,
+        color-mix(in oklab, var(--acc-p8) 74%, white) 47% 53%,
+        transparent 56% 59%,
+        color-mix(in oklab, var(--acc-p8) 64%, #6b3f22) 62% 69%,
+        transparent 72% 76%,
+        color-mix(in oklab, var(--acc-p8) 72%, white) 78% 84%,
+        transparent 87% 90%,
+        color-mix(in oklab, var(--acc-p8) 76%, #7a4a28) 93% 100%
+      ),
+      var(--acc-limb),
+      var(--acc-sphere);
+  }
+
+  /*
+   * ---- The Sun ----
+   *
+   * The one body that is not lit from outside, so it does not get the sphere
+   * gradient: it brightens from the middle and its limb is the coolest part,
+   * which is the opposite of every planet above it.
+   */
+  /*
+   * ⚠️ **The Sun takes no shading stack.** It is not lit from outside, so a
+   * terminator across it is simply wrong: it brightens from the middle and its
+   * limb is the coolest part, which is the opposite of every planet above it.
+   *
+   * ⚠️ **No pattern on the surface, and that is a decision that was tried the
+   * other way.** Granulation is the obvious thing to reach for and every cheap
+   * way of writing it in CSS is a repeat: crossed linear gradients come out
+   * looking woven, and a tiled cell comes out looking like polka dots. Either
+   * one reads as a texture stuck onto a ball rather than as a surface, and
+   * both are worst at exactly the size this body is usually drawn. What a star
+   * actually needs is the thing a planet does not get - light coming from
+   * inside it - so the modelling here is all soft: a hot core, mottled plasma
+   * over it, and a limb that cools to red.
+   *
+   * ⚠️ **It runs hot in the middle and deep red at the limb**, which is the
+   * opposite of every planet above it. A star is lit from inside, so a
+   * terminator across it is simply wrong and limb darkening is the whole of
+   * the shading. The chromosphere is the thin red edge outside that, and
+   * without it a star is a circle of paint however well the middle is drawn.
+   *
+   * The spots take an umbra and a penumbra in one stop list, and the active
+   * regions around them are the white-hot patches a spot group always comes
+   * with.
+   */
+  .acc-body[data-tier='9'] {
+    --acc-tint: var(--acc-p9);
+    background-image:
+      radial-gradient(circle at 50% 50%, transparent 0 84%, color-mix(in oklab, #ff8c1e 50%, transparent) 93%, color-mix(in oklab, #df3806 78%, transparent) 100%),
+      radial-gradient(ellipse 5.6% 4.2% at 64% 57%, #4e1d03 0 32%, #8c3d06 44% 70%, color-mix(in oklab, #c2670f 50%, transparent) 88%, transparent 100%),
+      radial-gradient(ellipse 3.2% 2.4% at 50% 72%, #571f03 0 34%, #92430a 48% 74%, transparent 96%),
+      radial-gradient(ellipse 9% 6% at 29% 33%, color-mix(in oklab, #fff6cf 66%, transparent) 0 26%, color-mix(in oklab, #ffdd88 34%, transparent) 62%, transparent 100%),
+      radial-gradient(ellipse 7% 5% at 71% 71%, color-mix(in oklab, #fff6cf 56%, transparent) 0 26%, color-mix(in oklab, #ffdd88 28%, transparent) 62%, transparent 100%),
+      radial-gradient(ellipse 5.5% 4% at 57% 23%, color-mix(in oklab, #fff6cf 46%, transparent) 0 26%, color-mix(in oklab, #ffdd88 22%, transparent) 62%, transparent 100%),
+      radial-gradient(ellipse 8% 6% at 69% 58%, color-mix(in oklab, #ffe9a8 30%, transparent) 0 30%, transparent 100%),
+      /* Plasma, as seven soft mottles at two temperatures. Big, overlapping
+         and low contrast, so they read as the surface churning rather than as
+         marks on it. */
+      radial-gradient(ellipse 22% 17% at 36% 30%, color-mix(in oklab, #fff0bc 22%, transparent) 0 40%, transparent 100%),
+      radial-gradient(ellipse 18% 15% at 64% 38%, color-mix(in oklab, #d84e0a 16%, transparent) 0 40%, transparent 100%),
+      radial-gradient(ellipse 20% 16% at 30% 62%, color-mix(in oklab, #d84e0a 14%, transparent) 0 40%, transparent 100%),
+      radial-gradient(ellipse 16% 14% at 55% 47%, color-mix(in oklab, #fff0bc 16%, transparent) 0 40%, transparent 100%),
+      radial-gradient(ellipse 15% 13% at 46% 78%, color-mix(in oklab, #fff0bc 14%, transparent) 0 40%, transparent 100%),
+      radial-gradient(ellipse 14% 12% at 76% 62%, color-mix(in oklab, #d84e0a 14%, transparent) 0 40%, transparent 100%),
+      radial-gradient(ellipse 13% 11% at 22% 44%, color-mix(in oklab, #fff0bc 12%, transparent) 0 40%, transparent 100%),
+      radial-gradient(
+        circle at 50% 50%,
+        color-mix(in oklab, white 66%, var(--acc-p9)) 0%,
+        color-mix(in oklab, white 16%, var(--acc-p9)) 24%,
+        var(--acc-p9) 42%,
+        color-mix(in oklab, var(--acc-p9) 44%, #ef7c15) 68%,
+        color-mix(in oklab, var(--acc-p9) 18%, #d8480c) 88%,
+        color-mix(in oklab, var(--acc-p9) 6%, #a82405) 100%
+      );
+  }
+
+  /* ⚠️ The glow is in pixels and therefore only in the well, where a Sun is
+     always about the same size. `box-shadow` takes no percentages at all, so a
+     glow that scaled with the element is not available - and one sized for the
+     well would swallow the 15px Sun in the sequence under the board. */
+  .acc-world .acc-body[data-tier='9'] {
+    /* Three rings rather than two, and the outer one is red: a corona is not
+       the disc's own colour spread thinner, it cools outwards the same way the
+       limb does. */
+    box-shadow:
+      0 0 14px 3px color-mix(in oklab, #ffd06a 70%, transparent),
+      0 0 34px 10px color-mix(in oklab, #ff8a1e 40%, transparent),
+      0 0 70px 22px color-mix(in oklab, #e84d0c 22%, transparent);
+  }
+
+  /*
+   * Saturn's ring, in two halves.
+   *
+   * ⚠️ The order is what sells it. `::before` sits behind the planet, so the
+   * far side of the ring passes behind it, and `::after` is the same ellipse
+   * clipped to its lower half and drawn on top, so the near side passes in
+   * front. One ellipse on top of everything reads as a hoop around a circle
+   * rather than as a ring around a sphere.
+   */
+  .acc-body[data-tier='7']::before,
+  .acc-body[data-tier='7']::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /*
+     * ⚠️ **The ring may not reach past the body, and at 208% it did.** Turned
+     * sixteen degrees it hung 0.11 of a radius below Saturn, so a Saturn
+     * resting on the floor had the ring sliced off by the edge of the field -
+     * which reads as the planet having sunk halfway through the bottom. At
+     * 170% the furthest point of the ring is 0.93 of a radius from the centre,
+     * inside the body's own silhouette, so nothing can be cut that the body
+     * would not have been cut with it.
+     *
+     * It is closer to the real thing as well. Saturn's rings reach about 2.3
+     * planet radii and 208% of the diameter is 4.2 of them.
+     */
+    width: 170%;
+    height: 48%;
+    translate: -50% -50%;
+    rotate: -16deg;
+    /* ⚠️ An annulus drawn with a gradient, not a border. `border-width` takes
+       no percentages either, and a ring in pixels would be a hairline in the
+       well and a slab in the sequence. Gradient stops are percentages of the
+       element, so this one ring works at every size the game draws it.
+
+       Five rings and three gaps rather than one band with a notch in it, and
+       they are the real ones in the real order: the faint C ring against the
+       planet, the bright B ring, the Cassini division, the A ring split by the
+       thin Encke gap, and the F ring on its own outside everything. The
+       transparency is the point as much as the spacing - a ring you can see
+       the sky through is the difference between a ring and a hoop. */
+    background: radial-gradient(
+      ellipse 50% 50% at 50% 50%,
+      transparent 0 54%,
+      color-mix(in oklab, var(--acc-p7) 30%, transparent) 56% 60%,
+      color-mix(in oklab, var(--acc-p7) 46%, white) 61% 71%,
+      color-mix(in oklab, var(--acc-p7) 22%, transparent) 72.5% 76%,
+      color-mix(in oklab, var(--acc-p7) 58%, white) 77.5% 86%,
+      color-mix(in oklab, var(--acc-p7) 26%, transparent) 87% 88.5%,
+      color-mix(in oklab, var(--acc-p7) 54%, white) 89.5% 93%,
+      transparent 94% 96%,
+      color-mix(in oklab, var(--acc-p7) 38%, white) 96.5% 97.5%,
+      transparent 98.5%
+    );
+  }
+
+  /*
+   * The far half, which passes behind the planet.
+   *
+   * ⚠️ **`z-index: -1` does not put it behind the planet, and never did.**
+   * Saturn carries `z-index: 1`, which makes it a stacking context, and inside
+   * one the order is: the element's own background first, then negative
+   * children. So the back of the ring was being painted *over* the planet the
+   * whole time and could be read straight through it - faint enough to miss
+   * while the ring was one soft band, and impossible to miss once it had
+   * divisions in it.
+   *
+   * The fix is to cut the planet out of this half rather than to fight the
+   * order. The mask is transparent inside the planet's silhouette and opaque
+   * outside it, so there is nothing left to show through.
+   *
+   * ⚠️ The two numbers are arithmetic, not taste. This box is 170% wide and
+   * 48% tall against a square body, and the transform on it is a pure rotation
+   * - no scale - so the planet's disc is still a circle in here. A radius of
+   * half the body is 50/170 of this box's width and 50/48 of its height, plus
+   * a whisker so the cut tucks under the planet's limb rather than landing on
+   * it.
+   */
+  .acc-body[data-tier='7']::before {
+    z-index: -1;
+    opacity: 0.78;
+    mask-image: radial-gradient(
+      ellipse 29.5% 104.4% at 50% 50%,
+      transparent 0 99%,
+      #000 100%
+    );
+  }
+
+  .acc-body[data-tier='7']::after {
+    z-index: 1;
+    clip-path: inset(50% 0 0 0);
+  }
+
+  /*
+   * ⚠️ **Uranus has no ring here, and it did.** The real ones are nearly
+   * vertical because the planet is tipped on its side, which is the one fact
+   * about it everybody knows - and drawn at the size a body actually appears
+   * at, a tall thin ellipse around a small circle stops reading as a planet at
+   * all. It looked like a bug, and on a board where every other body is
+   * plainly round it is worse than a missing detail.
+   */
+
+  /*
+   * The body being aimed. It is handed to the simulation on the drop, and the
+   * copy up here goes with it: left showing for the pause before the next one,
+   * it reads as a second body left behind at the top of the well.
+   */
+  .acc:not([data-ready]) .acc-held {
+    opacity: 0;
+  }
+
+  /*
+   * The ring a merge sends out from the rim of the body it made, in that
+   * body's colour.
+   *
+   * ⚠️ **Placed with `translate`, never `transform`**, and the same goes for
+   * `.acc-nova`. Their keyframes animate `scale`, and the individual transform
+   * properties apply before `transform` does - so on an element placed by
+   * `transform`, a `scale` keyframe scales its position too and slides it
+   * towards the corner of the well. Placed by `translate`, it grows about its
+   * own centre. `closest-side` makes 100% the rim.
+   */
+  .acc-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle closest-side,
+      transparent 74%,
+      color-mix(in oklab, var(--acc-tint) 70%, white) 88%,
+      transparent 100%
+    );
+    pointer-events: none;
+    animation: acc-ring 460ms var(--site-ease) forwards;
+  }
+
+  /* Two Suns meeting. The only thing on the board that is not a body. */
+  .acc-nova {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    margin: -4px 0 0 -4px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff 0%, var(--acc-p9) 40%, transparent 72%);
+    pointer-events: none;
+    animation: acc-nova 780ms var(--site-ease) forwards;
+  }
+
+  .acc-panel {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    border-radius: var(--site-radius-card);
+    padding: var(--site-pad);
+    text-align: center;
+
+    /*
+     * ⚠️ **The palette is re-declared here rather than the buttons restyled**,
+     * which is the move `.panel` makes and the note on it explains.
+     *
+     * It has more cause than `.panel` does. The well is dark space in both
+     * themes - a sky that answers the theme toggle is not a sky - so in the
+     * light theme every token underneath this panel is the wrong way round.
+     * `.cta-ghost` was the visible cost: it painted `--site-card` at near-white
+     * and then took the panel's near-white text on top of it, so New game was a
+     * button that was not there.
+     *
+     * The other two games need none of this. Their trays follow the theme, so
+     * the tokens are already right over them.
+     */
+    --site-fg: #f2f4f8;
+    --site-bg: var(--acc-well);
+    --site-muted: color-mix(in oklab, var(--site-fg) 74%, transparent);
+    --site-card: color-mix(in oklab, var(--acc-well) 55%, transparent);
+    --site-hairline: color-mix(in oklab, var(--site-fg) 26%, transparent);
+    /* The dark-surface accent, in both themes: cobalt on a night sky is a
+       button you have to look for, and `.cta` fills itself with this. */
+    --site-accent: var(--site-panel-accent);
+
+    color: var(--site-fg);
+    background-color: color-mix(in oklab, var(--acc-well) 84%, transparent);
+    backdrop-filter: blur(4px);
+    animation: acc-panel 260ms var(--site-ease);
+  }
+
+  .acc[data-state='over'] .acc-panel[data-panel='over'] {
+    display: flex;
+  }
+
+  .acc-panel-title {
+    font-stretch: 116%;
+    font-weight: 680;
+    font-size: clamp(1.75rem, 9vw, 2.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+  }
+
+  .acc-panel-body {
+    max-width: 24rem;
+    font-size: clamp(0.9375rem, 3.4vw, 1.0625rem);
+    line-height: 1.5;
+    /* The panel's own muted, which is what the other two games write here too. */
+    color: var(--site-muted);
+  }
+
+  .acc-panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 0.7rem;
+  }
+
+  .acc-hint {
+    margin-top: clamp(0.75rem, 2vw, 1.1rem);
+    font-size: 0.875rem;
+    text-align: center;
+    color: var(--site-muted);
+  }
+
+  /*
+   * The sequence, which is the legend and the drawing at once.
+   *
+   * A merge game is unreadable until you know what becomes what, and this is
+   * the answer in one line. It fills in as the well climbs, so it doubles as
+   * the only progress the game has.
+   */
+  .acc-chain {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.35rem 0.6rem;
+    margin-top: clamp(0.9rem, 2.4vw, 1.4rem);
+  }
+
+  .acc-link {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    /* Unreached steps are present but quiet: the sequence is a map of where
+       the game goes, and greying it out entirely would hide the map. */
+    opacity: 0.42;
+    transition: opacity 320ms var(--site-ease);
+  }
+
+  .acc-link[data-reached] {
+    opacity: 1;
+  }
+
+  .acc-chain-body {
+    width: 0.95rem;
+    height: 0.95rem;
+    flex-shrink: 0;
+  }
+
+  .acc-chain-name {
+    font-size: 0.75rem;
+    line-height: 1.2;
+    color: var(--site-muted);
+  }
+
+  .acc-link[data-reached] .acc-chain-name {
+    color: var(--site-fg);
+  }
+
+  /*
+   * Wide screens: the well in the middle at the full height of the screen, and
+   * everything else beside it.
+   *
+   * ⚠️ **Height is what limits the well, not width.** Stacked, the bar and the
+   * well together were already the height of a laptop screen at 30rem, so the
+   * only way to a bigger well was to take the bar out from above it. The bar
+   * becomes the left-hand column and the sequence the right-hand one - the
+   * shape the genre's own game has - and the well is sized to the screen: the
+   * height the page has below the header, turned into a width through the
+   * well's own ratio, between the old 30rem and a cap.
+   *
+   * ⚠️ **Each side is one grid item, never several.** Placed one readout per
+   * row, the two columns shared their row heights, and the tall Next card on
+   * the right opened a gap between Score and Best on the left.
+   */
+  @media (min-width: 64rem) {
+    .acc {
+      display: grid;
+      grid-template-columns: minmax(8.5rem, 11rem) auto minmax(8.5rem, 11rem);
+      grid-template-rows: auto 1fr;
+      grid-template-areas:
+        'bar field chain'
+        'bar field hint';
+      justify-content: center;
+      align-items: start;
+      gap: 0.75rem clamp(1rem, 2vw, 1.75rem);
+      max-width: none;
+    }
+
+    .acc-bar {
+      grid-area: bar;
+      flex-direction: column;
+      align-items: stretch;
+      margin-bottom: 0;
+    }
+
+    .acc-bar > .acc-meter,
+    .acc-bar > .acc-next {
+      flex: none;
+    }
+
+    .acc-bar > .acc-next {
+      grid-template-columns: auto;
+      justify-items: center;
+      gap: 0.35rem;
+      padding: 0.6rem 0.8rem 0.7rem;
+    }
+
+    .acc-bar > .acc-next .acc-next-body {
+      width: 2.6rem;
+      height: 2.6rem;
+    }
+
+    .acc-field {
+      grid-area: field;
+      width: clamp(30rem, calc((100svh - 6rem) * (var(--acc-ratio))), 32.5rem);
+    }
+
+    /* Down the side rather than under the well, largest last, so the column
+       fills in from the top as the game climbs. */
+    .acc-chain {
+      grid-area: chain;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      align-items: flex-start;
+      gap: 0.5rem;
+      margin-top: 0.35rem;
+    }
+
+    .acc-chain-body {
+      width: 1.35rem;
+      height: 1.35rem;
+    }
+
+    .acc-chain-name {
+      font-size: 0.8125rem;
+    }
+
+    .acc-hint {
+      grid-area: hint;
+      margin-top: 0.5rem;
+      text-align: start;
+      text-wrap: pretty;
+    }
+  }
+
+  .game-art-acc {
+    background:
+      radial-gradient(120% 90% at 50% 0%, color-mix(in oklab, var(--acc-well) 78%, white) 0%, transparent 72%),
+      var(--acc-well);
+  }
+
+  /*
+   * A packed field rather than a row.
+   *
+   * Every body is placed by its own centre, in `cqi` against the thumbnail, so
+   * the whole arrangement keeps its proportions whether the card is a third of
+   * a 72rem shell or the full width of a phone - the same reason the 2048 still
+   * is sized that way.
+   */
+  .game-art-well {
+    position: relative;
+    height: 100%;
+  }
+
+  /* `--cx`, `--cy` and `--d` are percentages of the card's width, so the
+     arithmetic stays beside the numbers it comes from in the component. */
+  .game-art-orb {
+    position: absolute;
+    top: calc((var(--cy) - var(--d) / 2) * 1cqi);
+    left: calc((var(--cx) - var(--d) / 2) * 1cqi);
+    width: calc(var(--d) * 1cqi);
+    height: calc(var(--d) * 1cqi);
+  }
+
+  /* The Sun carries a glow in the field, in pixels, which would swallow the
+     whole card at this size. Here it gets one sized for a thumbnail. */
+  /* ⚠️ Three warm rings, and they have to stay inside the old one's reach. The
+     card's layout is checked against a glow about 2.4 units past the disc and
+     the tightest gap in the field is 2.96 - see ArtAccretion.astro - so this is
+     a warmer glow at the same size rather than a bigger one. */
+  .game-art-well .acc-body[data-tier='9'] {
+    box-shadow:
+      0 0 0.9cqi 0.2cqi color-mix(in oklab, #ffd06a 58%, transparent),
+      0 0 2cqi 0.5cqi color-mix(in oklab, #ff8a1e 32%, transparent),
+      0 0 3.4cqi 0.9cqi color-mix(in oklab, #e84d0c 18%, transparent);
+  }
+}
+
+/*
+ * Accretion motion.
+ *
+ * Almost nothing here is animated, because almost everything that moves is
+ * moved by the module writing a transform - including a merge, whose two
+ * halves slide into the body they made and whose new body swells into its
+ * size. What is left is the two flashes that are not bodies at all: the ring a
+ * merge sends out, and the one a pair of Suns leaves behind.
+ */
+@keyframes acc-twinkle {
+  0%,
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+    scale: 0.8;
+  }
+}
+
+@keyframes acc-meteor {
+  0%,
+  94% {
+    opacity: 0;
+    translate: 0 0;
+  }
+
+  95% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    translate: -15rem 10rem;
+  }
+}
+
+@keyframes acc-ring {
+  from {
+    opacity: 0.85;
+    scale: 0.94;
+  }
+
+  to {
+    opacity: 0;
+    scale: 1.5;
+  }
+}
+
+@keyframes acc-nova {
+  0% {
+    opacity: 1;
+    scale: 1;
+  }
+
+  100% {
+    opacity: 0;
+    scale: 46;
+  }
+}
+
+@keyframes acc-gain {
+  from {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  to {
+    opacity: 0;
+    translate: 0 -1.7rem;
+  }
+}
+
+/* The line, once something has been sitting above it. A pulse rather than a
+   colour change, because a colour change on a thin line is easy to miss. */
+@keyframes acc-warn {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes acc-panel {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

@@ -1,7 +1,8 @@
 # Design system
 
-One stylesheet, [src/styles/global.css](../src/styles/global.css), and almost every number
-in it carries a comment saying how it was arrived at. The system is near-monochrome with a
+One stylesheet for the site, [src/styles/global.css](../src/styles/global.css), one per game
+under [src/styles/games/](../src/styles/games/), and almost every number in them carries a
+comment saying how it was arrived at. The system is near-monochrome with a
 single cobalt accent, one typeface on two axes, a **card** as the page's structural unit,
 and all of its motion in CSS.
 
@@ -35,6 +36,7 @@ and all of its motion in CSS.
 | the active-section indicator | the second `<script>` in [Base.astro](../src/layouts/Base.astro) and `.nav-link[aria-current]` - §7 |
 | dark mode | the `.dark` block, **and** the two `theme-color` tags in [Base.astro](../src/layouts/Base.astro) - §8 and open item 1 |
 | **the 2048 board or its colour ramp** | [game.ts](../src/games/2048/game.ts), [Game2048.astro](../src/components/Game2048.astro), the `--g2048-*` tokens - §9 |
+| **a game's styles, its colours or its keyframes** | its own file under [src/styles/games/](../src/styles/games/), never global.css - §9 |
 | **a game's sounds, the switch, or the burst on a win** | `src/games/<slug>/sounds.ts` for what a game sounds like, [games/sound.ts](../src/games/sound.ts) and [games/burst.ts](../src/games/burst.ts) for the rest - §9 |
 | **a memory card, its turn, or a picture on it** | [game.ts](../src/games/memory/game.ts), [Memory.astro](../src/components/Memory.astro), [MemorySprites.astro](../src/components/games/MemorySprites.astro), the `--mem-*` tokens - §9 |
 | **the cube: a puzzle, how a drag turns it, its colours or its light** | [game.ts](../src/games/cube/game.ts), [Cube.astro](../src/components/Cube.astro), [ArtCube.astro](../src/components/games/ArtCube.astro), the `--cube-*` tokens - §9 |
@@ -693,6 +695,25 @@ open item 1.
 
 ## 9. The game boards, and the one place the palette opens up
 
+⚠️ **Each game's CSS is its own file**, [src/styles/games/](../src/styles/games/)`<slug>.css`:
+its tokens on `:root` and `.dark`, its rules, the rules that make its board into a thumbnail,
+and its keyframes. The game's component and its thumbnail import it, so it is inlined into
+the game's own page, its locale twins and the games index, and into nothing else. The rules
+every game page shares - the sound switch, the burst, the jolt - are `shared.css`, imported
+by each game component after its own file, and the grid of the index is `index.css`.
+
+⚠️ **The rules are in a cascade layer of their own, `games`, between `components` and
+`utilities`.** Astro does not promise where in a page an imported stylesheet lands: on the
+cube's page and the games index a game's file comes out ahead of global.css, and on Memory's
+after it. A game's rules are written to win a tie against the site's own - a game's
+`.mem-actions .cta-ghost` over `.cta-ghost:hover` - and a layer after `components` keeps
+that true wherever the bytes fall, while `utilities` still beats both.
+Every file under games/ and global.css open with the same `@layer` line, because the first
+stylesheet to name the layers is the one that orders them. The move was checked by comparing
+the computed style of every element and pseudo-element on every game page, the index and
+the home page against a build with the rules still in global.css, on a seeded deal: nothing
+differed but the phase of the animations that run on a clock.
+
 Six pages carry a game, and all six are built the way the rest of the site is: markup,
 tokens, and no canvas or game library anywhere. They are deliberately different from each
 other, which is most of what this section is about.
@@ -1079,10 +1100,9 @@ layers are promoted, so moving one is a composite and the noise is not recompute
 motion stops the parallax and the drift, and the stylesheet's blanket rule stops the twinkle
 and the meteors.
 
-⚠️ **It is in the component and not the stylesheet because the stylesheet is inlined into
-every page.** The markup adds 3.4 KB gz to this page and nothing anywhere else. The rules
-that style it, and the wide layout, are in [global.css](../src/styles/global.css) like the
-other games' and add 0.8 KB gz to every page.
+⚠️ **It is markup in the component and not rules in accretion.css**, because that file is
+inlined into the games index as well, for the thumbnail, and only this page has a sky. The
+markup adds 3.4 KB gz to this page and nothing anywhere else.
 
 ### The record is signed
 
@@ -1429,10 +1449,6 @@ for exactly this.
 percentage of padding is taken from the *parent's* width, which here is the whole tile, and
 it left the colours a quarter of the icon wide.
 
-⚠️ **The cube's rules add about 1.7 KB gz to every page**, since the stylesheet is inlined
-into every document. That is the Accretion trade again at twice the size, accepted for the
-same reason: the tile rules are needed on the games index as well as on the game.
-
 ### Sound, the burst and the jolt, shared by all six
 
 Every game has sound now, and every win throws a burst. Both are shared the way
@@ -1509,6 +1525,13 @@ card opened a gap between Score and Best.
 
 ## Changelog
 
+- 2026-09-24 - every game's CSS moved out of global.css into its own file under
+  [src/styles/games/](../src/styles/games/), with the rules every game page shares in
+  `shared.css` and the index grid in `index.css`, so a game's rules are inlined only into
+  the pages that show it. They sit in a `games` cascade layer after `components`, which is
+  what keeps a tie going their way now that Astro can place them before global.css. Every
+  element's computed style was compared before and after on every game page, and nothing
+  moved (§9).
 - 2026-09-24 - a sixth game, [Cube](../src/games/cube/game.ts): the 2×2, 3×3, 4×4 and 5×5
   and the pyramid, as a `preserve-3d` scene of one element per sticker, on one engine that
   finds every turn from the geometry rather than a table. A drag turns one step at most and

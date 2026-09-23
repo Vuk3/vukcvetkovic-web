@@ -22,6 +22,10 @@ import { site } from "../site";
 import GameStamp from "./GameStamp.astro";
 import Section from "./Section.astro";
 import SoundToggle from "./SoundToggle.astro";
+/* This game's rules, then the ones every game page shares, in that order:
+   see the note at the top of styles/games/shared.css. */
+import "../styles/games/accretion.css";
+import "../styles/games/shared.css";
 
 interface Props {
   lang: Lang;
@@ -71,9 +75,10 @@ const shape = `--acc-ratio:${WORLD_W} / ${WORLD_H}; --acc-line-at:${Math.round((
  * Seeded, so the sky is the same on every build, in every language and for
  * every reader. A star is one `M x y h0` in a path with round caps - a dot the
  * width of the stroke - and every star of one size and tone shares a path, so
- * three hundred of them are a few kilobytes of markup and no request. It is in
- * this component rather than the stylesheet because the stylesheet is inlined
- * into every page on the site, and only this one has a sky.
+ * three hundred of them are a few kilobytes of markup and no request. It is
+ * markup in this component rather than rules in styles/games/accretion.css,
+ * because that file is inlined into the games index as well, for the
+ * thumbnail, and only this page has a sky.
  */
 function seeded(seed: number) {
   let a = seed;

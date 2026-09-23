@@ -9,8 +9,8 @@
  * would give up for nothing.
  *
  * ⚠️ Which panel is up is decided in CSS off `data-state` on the frame, see the
- * .g2048-* rules in global.css. The script sets one attribute and never
- * touches `hidden`, so the two panels can never both be showing.
+ * .g2048-* rules in styles/games/2048.css. The script sets one attribute and
+ * never touches `hidden`, so the two panels can never both be showing.
  */
 import { ArrowLeft, RotateCcw, Undo2 } from "@lucide/astro";
 import type { Lang } from "../i18n/types";
@@ -19,6 +19,10 @@ import { site } from "../site";
 import GameStamp from "./GameStamp.astro";
 import Section from "./Section.astro";
 import SoundToggle from "./SoundToggle.astro";
+/* This game's rules, then the ones every game page shares, in that order:
+   see the note at the top of styles/games/shared.css. */
+import "../styles/games/2048.css";
+import "../styles/games/shared.css";
 
 interface Props {
   lang: Lang;

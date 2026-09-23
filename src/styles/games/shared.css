@@ -1,0 +1,173 @@
+/*
+ * What every game page has and no other page does: the sound switch, the burst
+ * over a board that has just been won, and the jolt a board takes when
+ * something goes off on it.
+ *
+ * Imported by each of the six game components, after that game's own file,
+ * and nowhere else. ⚠️ **After, because order decides a tie here**: the sound
+ * switch has to win over each game's `-actions .cta-ghost` rule on a phone, at
+ * the same specificity. See docs/design-system.md §9.
+ */
+
+/*
+ * The layer order, the same line global.css opens with. See the note there:
+ * this file can land in a page ahead of global.css, and whichever stylesheet
+ * names the layers first is the one that orders them.
+ */
+@layer properties, theme, base, components, games, utilities;
+
+@layer games {
+  /* ---- Shared by the game pages -------------------------------------------
+   *
+   * The three things every game has now: the sound switch, the burst over a
+   * board that has just been won, and the jolt a board takes when something
+   * goes off on it. Last in the layer on purpose - the sound switch has to win
+   * over each game's `-actions .cta-ghost` rule on a phone, at the same
+   * specificity, and order is what decides that.
+   */
+
+  /* The icon is the state: a speaker with its waves when the sound is on, and
+     crossed out when it is off. Both are in the markup and the pressed state
+     picks one, so the button never changes its words. */
+  .game-sound[aria-pressed='true'] .game-sound-off,
+  .game-sound[aria-pressed='false'] .game-sound-on {
+    display: none;
+  }
+
+  .game-sound[aria-pressed='false'] {
+    color: var(--site-muted);
+  }
+
+  /*
+   * On a phone the switch is its icon. Every bar there stacks its buttons into
+   * one full-width row, and "Zastavice", "Nova igra" and "Zvuk" do not share
+   * 350 pixels. The word stays in the accessible name - it is clipped, not
+   * removed - so a screen reader still hears what the button is.
+   */
+  @media (max-width: 34rem) {
+    :is(.g2048-actions, .ms-actions, .mem-actions, .acc-actions, .bs-actions, .cube-actions) .game-sound {
+      flex: 0 0 auto;
+      padding-inline: 0.8rem;
+    }
+
+    .game-sound .game-sound-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+
+  /* In the well's narrow bar the switch is its icon at every width, beside a
+     New game that takes the rest of the row - see `.acc-actions`. */
+  .acc-actions .game-sound {
+    flex: 0 0 auto;
+    padding-inline: 0.8rem;
+  }
+
+  .acc-actions .game-sound .game-sound-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* The burst, which is a container so its pieces can be thrown a fraction
+     of the board's size rather than a fixed distance that is a flick on a
+     desktop and off the edge on a phone. */
+  .game-burst {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    container-type: size;
+    pointer-events: none;
+  }
+
+  .game-bit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0.55rem;
+    height: 0.85rem;
+    margin: -0.425rem 0 0 -0.275rem;
+    border-radius: 2px;
+    background-color: var(--bc);
+    animation: game-bit 1600ms linear var(--bd) both;
+  }
+
+  .game-bit.is-round {
+    width: 0.6rem;
+    height: 0.6rem;
+    margin: -0.3rem 0 0 -0.3rem;
+    border-radius: 50%;
+  }
+
+  /* A board taking a blow: a mine, two Suns going off. `translate` so it
+     composes with whatever transform the board already carries. */
+  .game-quake {
+    animation: game-quake 480ms var(--site-ease);
+  }
+}
+
+/*
+ * A piece of the burst: up and out fast, then falling. Two segments with a
+ * curve each is what makes it an arc - one straight segment is a piece of
+ * paper sliding along a line. `--bx` and `--by` are a direction and a reach
+ * from games/burst.ts, and the distances are fractions of the board.
+ */
+@keyframes game-bit {
+  0% {
+    opacity: 1;
+    translate: 0 0;
+    rotate: 0deg;
+    scale: 0.3;
+    animation-timing-function: cubic-bezier(0.12, 0.75, 0.35, 1);
+  }
+
+  45% {
+    opacity: 1;
+    translate: calc(var(--bx) * 42cqw) calc(var(--by) * 46cqh);
+    scale: 1;
+    animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.6);
+  }
+
+  100% {
+    opacity: 0;
+    translate: calc(var(--bx) * 56cqw) calc(var(--by) * 46cqh + 42cqh);
+    rotate: var(--br);
+    scale: 0.9;
+  }
+}
+
+/* A blow landing: sharp at first and dying away, in pixels because a board
+   taking a hit should move the same distance on a phone and a desktop. */
+@keyframes game-quake {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  12% {
+    translate: -7px 3px;
+  }
+
+  28% {
+    translate: 6px -4px;
+  }
+
+  46% {
+    translate: -4px 2px;
+  }
+
+  66% {
+    translate: 2px -1px;
+  }
+
+  84% {
+    translate: -1px 0;
+  }
+}

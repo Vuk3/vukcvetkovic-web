@@ -7,7 +7,8 @@
  * 2048 is its ramp, a burst in the minefield its eight numbers.
  *
  * Each piece is an element with four custom properties and one animation, the
- * `.game-bit` rules in global.css, thrown from the middle of the layer - which
+ * `.game-bit` rules in styles/games/shared.css, thrown from the middle of the
+ * layer - which
  * is a size container, so the distances are fractions of the board rather than
  * a fixed reach that is a flick on a desktop and off the edge on a phone.
  */

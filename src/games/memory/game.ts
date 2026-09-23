@@ -70,7 +70,8 @@ export type PictureId = (typeof PICTURES)[number]['id'];
 
 export interface Level {
   /** Across and down on a screen wider than it is tall. A phone held upright
-   *  gets the same board turned a quarter - see `.mem-board` in global.css. */
+   *  gets the same board turned a quarter - see `.mem-board` in
+   *  styles/games/memory.css. */
   columns: number;
   rows: number;
   /** The most moves that still earn three stars, and two. See `LEVELS`. */

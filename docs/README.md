@@ -21,7 +21,8 @@ plus a project write-up section, in **four languages** (English, Serbian, French
 - **Cloudflare** through `@astrojs/cloudflare`, whose only job here is `imageService:
   'compile'` and the assets shape. Nothing in the repository runs the deploy.
 - **56 pages**, 4 locales, 4 projects, 6 games. Three woff2 faces, a handful of webp
-  variants, and **no CSS file at all** - the stylesheet is inlined into every document, and
+  variants, and **no CSS file at all** - the stylesheet is inlined into every document, each
+  game's rules only into the pages that show it, and
   four small inline blocks cover the pre-paint theme script, the theme toggle, menu
   dismissal and the active-section indicator.
 - **JavaScript on six routes only.** The games have real scripts: 2.9 KB, 3.6 KB, 4.5 KB,
@@ -40,6 +41,7 @@ plus a project write-up section, in **four languages** (English, Serbian, French
 | a route, a URL shape, a 404, the sitemap or robots.txt | [routing-and-deploy.md](./routing-and-deploy.md) |
 | the Cloudflare or image configuration | [routing-and-deploy.md §Cloudflare](./routing-and-deploy.md#5-cloudflare-and-what-actually-ships) |
 | **colour, type, spacing or layout width** | [design-system.md](./design-system.md) |
+| **a game's styles, colours or keyframes** | [src/styles/games/](../src/styles/games/), one file per game - [design-system.md §9](./design-system.md#9-the-game-boards-and-the-one-place-the-palette-opens-up) |
 | a section's width or tone | [Section.astro](../src/components/Section.astro) - [design-system.md §Sections](./design-system.md#3-sections-and-the-card) |
 | **how a card, chip or pill looks** | [design-system.md §Sections](./design-system.md#3-sections-and-the-card) |
 | the request diagram on a project page | [ArchitectureDiagram.astro](../src/components/ArchitectureDiagram.astro), [diagram-tokens.ts](../src/diagram-tokens.ts), [diagram-layout.ts](../src/diagram-layout.ts) - [design-system.md §The request diagram](./design-system.md#6-the-request-diagram) |

@@ -225,6 +225,12 @@ nothing render-blocking stands between the first response and the first paint, a
 costs about 9 KB gz a page and the CSS is no longer cached across pages. The full reasoning
 is on the option in [astro.config.ts](../astro.config.ts).
 
+⚠️ **A game's CSS is inlined only into the pages that show it.** Each game has a file under
+[src/styles/games/](../src/styles/games/), imported by its component and its thumbnail, so
+a page with no game carries 9 KB gz of CSS, a game's page 11 to 15 KB, and the games index
+25 KB, since it shows all six. The games' rules together come to about 18 KB gz, which is
+what every page would carry if they were in global.css.
+
 The four `<script>` blocks - the pre-paint theme script, the theme toggle, the disclosure
 dismissal and the active-section indicator - are all small enough that Astro inlines them
 into each page rather than emitting a bundle. 1.7 KB of JS per page, in a 26 KB gz home
@@ -344,6 +350,9 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-09-24 - each game's CSS moved out of global.css into its own file under
+  `src/styles/games/`, inlined only where that game is shown. A page with no game went from
+  27 KB gz of CSS to 9 KB (§5).
 - 2026-09-24 - a sixth game and its route pair, `/games/cube/`, taking the build to 56 pages
   and the sitemap to 52 URLs. `_astro` now holds seven JavaScript files, the cube's engine
   8.0 KB gz (§1, §5).

@@ -12,6 +12,7 @@
  * all eight numbers and both glyphs, which is exactly ten cells and exactly
  * what the card has room for.
  */
+import '../../styles/games/minesweeper.css';
 
 /** Row-major, 5 across and 2 down, against the 5:2 box every game card uses. */
 const cells = [
@@ -23,7 +24,7 @@ const cells = [
 {/*
   Two elements, not one. The outer is the query container and the inner is the
   board, because a container cannot size itself in its own `cqi` - see the
-  warning on `.game-art` in global.css.
+  warning on `.game-art` in styles/games/index.css.
 */}
 <div class="game-art game-art-ms" aria-hidden="true">
   <div class="game-art-board">

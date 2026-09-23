@@ -1,0 +1,192 @@
+/*
+ * The games index: the grid of cards, the thumbnail's frame and the status
+ * ribbon across its corner.
+ *
+ * Imported by GameIndex.astro and nothing else. Each thumbnail's own drawing -
+ * its tray, and the few overrides that make a real board into a still - lives
+ * in that game's file, beside the rules it overrides, and comes in with the
+ * thumbnail component that imports it.
+ */
+
+/*
+ * The layer order, the same line global.css opens with. See the note there:
+ * this file can land in a page ahead of global.css, and whichever stylesheet
+ * names the layers first is the one that orders them.
+ */
+@layer properties, theme, base, components, games, utilities;
+
+@layer games {
+  /* ---- The games index ----------------------------------------------- */
+
+  /*
+   * Three across, fixed, and a short row stays short.
+   *
+   * Not one big card with a row under it either. That shape was borrowed from
+   * the projects section and it was the wrong loan: a project is a write-up,
+   * so the first one earns the extra room, while a game is a thing you either
+   * want to play or you do not.
+   *
+   * `auto-fit` was tried here so that one game would stretch to fill the row
+   * rather than sitting in the first third of it, and it is the wrong answer:
+   * a card is a fixed-size object and stretching it to 72rem turns the
+   * thumbnail into a wall. An unfilled track reads as a grid waiting for the
+   * next entry, which is what it is.
+   */
+  .game-grid {
+    display: grid;
+    gap: clamp(0.875rem, 1.5vw, 1.25rem);
+  }
+
+  @media (min-width: 40rem) {
+    .game-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /*
+   * Three across on a wide screen, two below that.
+   *
+   * ⚠️ **Four games leave one card alone on the second row, and that is
+   * accepted.** Two columns fill a square exactly and were tried, but the games
+   * are a growing list rather than a set of four - at five and six a row of
+   * three is full again, and a layout that has to be re-decided every time one
+   * is added is the wrong shape for it.
+   */
+  @media (min-width: 64rem) {
+    .game-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  /*
+   * The thumbnail's frame: the bleed, the corners and the clip.
+   *
+   * Negative margins of exactly `--card-pad`, which is why `.card` names it:
+   * the picture is the top of the card rather than something sitting inside
+   * it with a frame of ground around it. The radius is the card's own, less
+   * the border, so the two curves sit on each other rather than beside.
+   *
+   * ⚠️ **It is a separate element from `.game-art` because it clips.** The
+   * status ribbon is a straight band laid across the bottom-right corner, long
+   * enough to run off both of the edges it crosses, and something has to cut
+   * it there. Putting the clip on `.game-art` instead would work and would put
+   * the ribbon inside the `aria-hidden` the art carries, which is right for a
+   * drawing of a board and wrong for the word "Beta".
+   */
+  .game-shot {
+    position: relative;
+    overflow: clip;
+    margin: calc(-1 * var(--card-pad)) calc(-1 * var(--card-pad)) clamp(1rem, 1.6vw, 1.35rem);
+    border-radius: calc(var(--site-radius-card) - 1px) calc(var(--site-radius-card) - 1px) 0 0;
+  }
+
+  /*
+   * The thumbnail itself, which fills the frame above.
+   *
+   * `container-type` so everything inside is sized off the thumbnail. Three of
+   * these across a 72rem shell and one across a phone are very different
+   * widths, and a viewport clamp cannot tell them apart.
+   *
+   * ⚠️ **The container declares no `cqi` of its own, and cannot.** An element
+   * is not its own query container, so a `cqi` length in a rule on this
+   * selector resolves against the nearest container *above* it - and where
+   * there is none, against the viewport. Putting the gap and the padding here
+   * is what made the first version look the way it did: 2.5% of the window
+   * between cells, on a card a third of the window wide, so the cells were
+   * squeezed down to the size of their own text. Everything measured in `cqi`
+   * belongs on `.game-art-board` below.
+   */
+  .game-art {
+    container-type: inline-size;
+    aspect-ratio: 5 / 2;
+  }
+
+  /*
+   * The status ribbon, cut across the thumbnail's bottom-right corner.
+   *
+   * A corner ribbon rather than a pill in the card body, because the card's own
+   * bottom-right corner is where the tagline ends and a band there would lie
+   * across the last line of it. The thumbnail has a real corner with nothing in
+   * it, and a band on a picture reads as a stamp on the picture.
+   *
+   * Every card carries one, because a mark that only the odd one out has is a
+   * mark the reader has nothing to compare against - "Beta" means something
+   * once "Live" is sitting on the two cards beside it.
+   *
+   * Only the odd one out is coloured, though. Beta takes the accent, which is
+   * the page's one way of saying look here, and Live is a paper band at the
+   * card's own tone. Three accent ribbons would point at nothing.
+   */
+  .game-status {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    /* Longer than the corner it cuts, because both ends run off the thumbnail
+       and are cut by it. 16rem clears the widest a card ever gets. */
+    width: 16rem;
+    padding: 0.3rem 0;
+    text-align: center;
+
+    /* The page's label voice. At this size the three words it can carry - LIVE,
+       BETA, BÊTA - come to about 2.6rem, well inside the 4.2rem of band the
+       corner leaves visible. */
+    font-size: 0.75rem;
+    font-stretch: 106%;
+    font-weight: 620;
+    letter-spacing: 0.14em;
+    line-height: 1.3;
+    text-transform: uppercase;
+
+    background-color: color-mix(in oklab, var(--site-card) 92%, transparent);
+    color: var(--site-muted);
+    box-shadow: var(--site-lift);
+
+    /*
+     * Rotated about the corner it cuts, and both numbers are arithmetic rather
+     * than taste. `translate(50%)` centres the band on the corner's vertical,
+     * and the y lifts it up that vertical; rotating about the corner then lays
+     * it on the diagonal without changing how far from the corner it sits. So
+     * its centre line ends up 1.31rem + half of its 1.575rem height = 2.1rem
+     * from the corner. A diagonal that far off a right angle crosses each edge
+     * 2.97rem out and leaves 4.2rem of band between the two, which is the
+     * visible width quoted above.
+     *
+     * ⚠️ The order matters. Transforms read right to left, so the band moves in
+     * its own upright axes and is rotated after. Swapping the two sends it off
+     * along the diagonal instead.
+     */
+    transform-origin: 100% 100%;
+    transform: rotate(-45deg) translate(50%, -1.31rem);
+  }
+
+  .game-status[data-status='beta'] {
+    background-color: var(--site-accent);
+    /* The same pairing the one filled thing on the site uses - see `.cta`. */
+    color: var(--site-bg);
+  }
+
+  /*
+   * Five across and two down, against that 5:2 box. It is the one pairing that
+   * keeps the cells square whatever the card is doing, and a 2048 board with
+   * oblong cells does not read as a 2048 board.
+   *
+   * Gap and padding are equal, and both are the same fraction of a cell that
+   * `--g2048-gap` is on the real board, so the still is in the game's own
+   * proportions rather than near them.
+   */
+  .game-art-board {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 2cqi;
+    height: 100%;
+    padding: 2cqi;
+  }
+
+  /* `.project-title` carries a top margin to clear the year tag above it on a
+     project card. A game card has no year, and the thumbnail's own bottom
+     margin is the whole gap. */
+  .game-grid .project-title {
+    margin-top: 0;
+  }
+}
