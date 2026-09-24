@@ -13,7 +13,7 @@ inlines them into each page too - 1.7 KB total, no extra request.
 [Minesweeper.astro](./Minesweeper.astro), [Memory.astro](./Memory.astro),
 [Accretion.astro](./Accretion.astro), [Battleship.astro](./Battleship.astro) and
 [Cube.astro](./Cube.astro), whose scripts import a module and are therefore emitted as real
-files: 2.9 KB, 3.6 KB, 4.5 KB, 5.3 KB, 6.0 KB and 10.8 KB gz, plus a shared 1.7 KB chunk for [games/record.ts](../games/record.ts),
+files: 2.9 KB, 3.6 KB, 4.5 KB, 5.3 KB, 6.0 KB and 10.9 KB gz, plus a shared 1.7 KB chunk for [games/record.ts](../games/record.ts),
 [games/sound.ts](../games/sound.ts) and [games/burst.ts](../games/burst.ts), each requested
 only by its own route and that route's three locale twins. The sound switch in every bar is
 [SoundToggle.astro](./SoundToggle.astro), one component for the reason

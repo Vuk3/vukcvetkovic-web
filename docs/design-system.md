@@ -722,7 +722,7 @@ other, which is most of what this section is about.
 | | [2048](../src/games/2048/game.ts) | [Minesweeper](../src/games/minesweeper/game.ts) | [Memory](../src/games/memory/game.ts) | [Accretion](../src/games/accretion/game.ts) | [Battleship](../src/games/battleship/game.ts) | [Cube](../src/games/cube/game.ts) |
 |---|---|---|---|---|---|---|
 | what it is made of | 16 divs that move | up to 480 buttons that change state | up to 60 buttons that turn over | up to 46 circles that fall | 200 buttons, and 10 drawn ships over them | up to 150 stickers in a 3D scene |
-| the hard part | motion, at sixty frames | the rules, and the keyboard | the turn, and keeping three animations off each other | the solver, and making it settle | the opponent, and what it is not allowed to see | the drag: which layer a finger means, and keeping the sticker under it |
+| the hard part | motion, at sixty frames | the rules, and the keyboard | the turn, and keeping three animations off each other | the solver, and making it settle | the opponent, and what it is not allowed to see | the drag: which layer a finger means, and how fast it turns under it |
 | the board in the markup | yes, 16 cells, fixed | no, the module builds it | no, the module deals it, and a face-down card holds no picture | no, play creates every body | no, and the fleet is a layer of its own | no, the module builds the scene from the geometry |
 | to a screen reader | hidden, narrated by a live region | a real `role="grid"` | a real `role="grid"`, and a live region for each turn | a live region, and the sequence below it | two `role="grid"`s and a live region for the turn | hidden, and a live region for the scramble and the solve |
 | what a turn costs | two custom properties | a class | one attribute, and a transition on `rotate` | a frame of simulation | a class, and a count over 200 placements | a transform on each sticker in the layer, every frame the layer moves |
@@ -1411,25 +1411,44 @@ flick carries `CARRY` of its speed past the release and the goal is clamped to o
 either way. ⚠️ A drag once carried as far as the finger went, and a long one turned a
 layer twice or three times, which read as the layer running away from the hand.
 
-⚠️ **The rate of a drag is worked out on every move, from where the sticker is now.** It
-was measured once, at the start, and the sticker trailed the finger by a quarter of the
-way by the end of a turn - 200 pixels of finger for 173 of sticker - because a sticker goes
-round a circle and on screen its motion slows and bends as it turns towards a side face.
-`follow` takes the sticker's screen velocity at the current angle through the same
-projection the browser draws with, so the sticker stays under the finger for the whole
-turn. `FLOOR` bounds that velocity from below, since a sticker whose path runs straight at
-the reader barely moves on screen and a hair of finger would otherwise spin the layer.
+⚠️ **A drag is read along the row, at one rate for the whole turn.** The rate is how fast
+the grabbed sticker sets off along its face, through the same projection the browser
+draws with, fixed when the turn is picked. Measured on the 3×3 as it opens, the sticker
+stays within about a tenth of the finger turning towards a side the reader can see - 171
+pixels of sticker for 156 of finger, 209 for 208 - and falls behind turning away, where it
+goes out of sight. Worked out again on every move to keep the sticker under the finger all
+the way, the layer sped up under a steady finger as its sticker turned away, to twice as
+fast by the end, and the drag read as twitchy. The angle comes from how far the finger is
+from the press rather than from moves added up, so a finger that comes back has the layer
+back exactly where it started. `FLOOR` bounds the rate on a face seen edge on, where a hair
+of finger would otherwise spin the layer.
 
-**Which layer a drag means is chosen once**, after `SLOP`: every axis the sticker could turn
-about is tried, and the one whose motion on screen best matches the finger wins, so the
-right layer turns from any angle the puzzle has been left at. On the pyramid a drag on the
-middle row takes the tip with it, since a tip left behind is a quirk of the mechanism
-rather than a move anyone means.
+**Which layer a drag means is chosen once**, when the finger has gone `AIM` - ten pixels
+with a mouse, fourteen with a finger - and points plainly one way: within about thirty
+degrees of a row or a column on the cube, fifteen on the pyramid. A closer call waits for
+more of the drag, up to 24 and 32 pixels, and then the nearest way is taken. Nothing moves
+while it waits, and the layer then catches up with the whole of the drag. ⚠️ A press on a
+trackpad or a glass moves a few pixels by itself, often straight down, and read after five
+pixels that was the direction a drag along a row often got.
+
+⚠️ **The way each layer would go is taken along the face**, as a row or a column runs on
+screen, not the way the sticker's centre sets off round its circle. The two agree only in
+the middle of a row: anywhere else the circle dips into the puzzle. In the view the page
+opens with, 13 of the 72 drags along a row or a column from a visible sticker turned the
+wrong layer that way - the bottom row dragged to the right from its left sticker at the
+front, or from the right side, turned a column. Along the face none do. Driven through the
+page in Chrome from five views, 330 of 336 such drags turned the right layer, and the six
+were on a face seen within ten degrees of edge on, where a row and a column run almost the
+same way on screen. On the pyramid a drag on the middle row takes the tip with it, since a
+tip left behind is a quirk of the mechanism rather than a move anyone means.
 
 **Let go and a spring takes the layer to its step**, at a damping ratio of 0.78: one degree
 of overshoot and no wobble. The click is played as the layer first reaches the step, not
 when the spring stops ringing. A layer still landing is landed at once only when a new
-drag actually grips, not on the press, so a tap during a landing costs nothing.
+drag gets going, not on the press, so a tap during a landing costs nothing. ⚠️ It is
+landed before the pressed sticker's place is read: until then a sticker in the landing
+layer is still in its old place, on another face, and a drag along the bottom row just
+after R was read as a drag on the bottom face.
 
 ⚠️ **The whole puzzle turns freely and stays where it is left.** A drag off the puzzle, or
 with the right button on it, turns it like a trackball, and a flick coasts, its speed
@@ -1585,6 +1604,11 @@ card opened a gap between Score and Best.
 
 ## Changelog
 
+- 2026-09-24 - a cube drag turns the layer the finger is going along. The way each layer
+  would go is read along the face, which 13 of 72 drags in the opening view got wrong
+  before, the bottom row to the right among them, a layer still landing lands before the
+  pressed sticker is read, and the way is picked after ten pixels and only when it is
+  plain. The rate is fixed for the turn, so a steady finger turns the layer steadily (§9).
 - 2026-09-24 - a cube hint opens with the move in plain words - which layer, by where it is
   on screen, and which way its stickers go - worked out from the view and checked against
   the real motion in 15,186 cases. The sentences under it now say why rather than what (§9).

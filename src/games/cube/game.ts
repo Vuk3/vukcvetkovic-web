@@ -799,14 +799,26 @@ const GIVE = 0.14;
 
 /**
  * The least a layer's sticker moves on screen per radian of turn, as a share
- * of how far it is from the axis, when working out how far a finger has turned
- * it. Without a floor, a sticker whose path runs straight at the reader moves
- * almost nowhere on screen, and a tiny movement of the finger spins the layer.
+ * of how fast it moves along its face seen square on, when working out how far
+ * a finger has turned it. Without a floor, a sticker on a face seen edge on
+ * moves almost nowhere on screen, and a tiny movement of the finger spins the
+ * layer.
  */
 const FLOOR = 0.45;
 
-/** A drag shorter than this, in pixels, is a press. About half a fingertip. */
-const SLOP = { mouse: 5, touch: 9 };
+/**
+ * How far a finger on a sticker goes before its direction picks the turn, in
+ * pixels, and how much nearer one way it must point than any other by then, as
+ * the cosine of the angle: within about thirty degrees of a way on the cube,
+ * fifteen on the pyramid, whose ways are closer together. Past `reach` the
+ * nearest is taken however close the call.
+ *
+ * ⚠️ A press on a trackpad or a glass moves a few pixels on its own, often
+ * straight down as the finger flattens, and a direction read off the first five
+ * was often that one: a drag along a row turned a column. Waiting costs
+ * nothing, since the layer then catches up with the whole of the drag.
+ */
+const AIM = { mouse: { from: 10, reach: 24 }, touch: { from: 14, reach: 32 }, margin: 0.25 };
 
 /** How far a flick carries past where the finger let go, in seconds of its
  *  speed. Enough that a quick flick of a third of a step completes it. */
@@ -872,10 +884,9 @@ interface Press {
   cy: number;
   unitPx: number;
   depth: number;
-  /** The angle the finger has turned the layer through, before the limit of
-   *  one step is applied. Kept so a finger that went past the end and comes
-   *  back picks the layer up where it left it. */
-  raw: number;
+  /** Radians of turn per pixel of drag, across and down the screen, fixed
+   *  when the turn is picked. */
+  rate: [number, number];
   lastX: number;
   lastY: number;
   lastT: number;
@@ -1648,48 +1659,77 @@ export function mount(options: Options): Controller {
     return [v[0] * f, v[1] * f];
   }
 
-  /** How a point of the puzzle moves on screen as a turn about `axis`
-   *  carries it, in pixels per radian. */
-  function along(p: Press, point: Vec, axis: Vec, m: Mat): [number, number] {
+  /** How a point of the puzzle moving by `motion` a radian moves on screen,
+   *  in pixels per radian. */
+  function along(p: Press, point: Vec, motion: Vec, m: Mat): [number, number] {
     const here = project(p, point, m);
-    const there = project(p, add(point, scale(cross(axis, point), 0.01)), m);
+    const there = project(p, add(point, scale(motion, 0.01)), m);
     return [(there[0] - here[0]) / 0.01, (there[1] - here[1]) / 0.01];
   }
 
   /**
-   * A press on a sticker has moved far enough to mean something: pick the turn.
+   * A press on a sticker has moved far enough to mean something: pick the turn,
+   * or say it is too close a call to pick yet.
    *
    * Every axis the sticker could turn about is tried, and the one whose motion
    * on screen best matches the finger's wins. That motion is measured through
    * the real projection, so the choice is right at any angle the puzzle has
    * been turned to.
    */
-  function grip(p: Press, dx: number, dy: number): boolean {
-    if (p.tile === null) return false;
+  function grip(p: Press, dx: number, dy: number): 'turn' | 'view' | 'wait' {
+    if (p.tile === null) return 'view';
+
+    // A layer still landing from the last drag lands now. By the time a finger
+    // has moved far enough to start another, it is nearly there anyway.
+    // ⚠️ Before the sticker's slot is read: one that was in the landing layer
+    // is still in its old slot until then, on another face, and a drag along
+    // the bottom row just after R was read as a drag on the bottom face.
+    if (active || queue.length) flush();
 
     const slot = shape.slots[slotOf[p.tile]];
     const m = qmatrix(orientation);
     const drag = Math.hypot(dx, dy);
 
-    let best: { axis: number; score: number } | null = null;
+    let best: { axis: number; score: number; motion: [number, number]; speed: number; radius: number } | null = null;
+    let second = 0;
 
-    shape.axes.forEach((axis, i) => {
-      if (Math.abs(dot(axis, slot.normal)) > 0.5) return;
+    for (const [i, axis] of shape.axes.entries()) {
+      if (Math.abs(dot(axis, slot.normal)) > 0.5) continue;
 
-      const [ax, ay] = along(p, slot.centre, axis, m);
-      const speed = Math.hypot(ax, ay);
-      if (speed < 1e-6) return;
+      /* Along the face, the way a row or a column runs as the reader sees it,
+         rather than the way the sticker's centre sets off round its circle.
+         ⚠️ Anywhere but the middle of a row the two part, since the circle
+         dips into the puzzle: seen from above, the back sticker of the
+         bottom row on the right side set off almost straight up the screen,
+         and a drag along the row turned a column. */
+      const slide = unit(cross(slot.normal, axis));
+      const radius = dot(cross(axis, slot.centre), slide);
+      const motion = along(p, slot.centre, scale(slide, radius), m);
+      const speed = Math.hypot(motion[0], motion[1]);
+      if (speed < 1e-6) continue;
 
-      const score = Math.abs((ax * dx + ay * dy) / (speed * drag));
-      if (!best || score > best.score) best = { axis: i, score };
-    });
+      const score = Math.abs((motion[0] * dx + motion[1] * dy) / (speed * drag));
+      if (!best || score > best.score) {
+        second = best?.score ?? 0;
+        best = { axis: i, score, motion, speed, radius: Math.abs(radius) };
+      } else if (score > second) {
+        second = score;
+      }
+    }
 
-    if (!best) return false;
-    const { axis } = best;
+    if (!best) return 'view';
 
-    // A layer still landing from the last drag lands now. By the time a finger
-    // has moved far enough to start another, it is nearly there anyway.
-    if (active || queue.length) flush();
+    const aim = p.touch ? AIM.touch : AIM.mouse;
+    if (drag < aim.reach && best.score - second < AIM.margin) return 'wait';
+
+    const { axis, motion, speed } = best;
+
+    // The drag is read along the row and nowhere else, at one rate for the
+    // whole turn: a finger that wanders across it turns nothing, and a steady
+    // finger turns the layer steadily.
+    const floor = FLOOR * p.unitPx * best.radius;
+    const rate = 1 / (speed * Math.max(speed, floor));
+    p.rate = [motion[0] * rate, motion[1] * rate];
 
     /* The slab the sticker's piece is in. On the cube that is its own layer.
        On the pyramid a press on the middle row takes the tip with it, since a
@@ -1710,36 +1750,27 @@ export function mount(options: Options): Controller {
     }
 
     begin({ axis, lo, hi, turns: 0 }, 'drag', 'hand');
-    return true;
+    return 'turn';
   }
 
   /**
-   * The finger has moved by `mx`, `my` with a layer in hand: turn it by as
-   * much.
+   * The finger is `dx`, `dy` from where it pressed with a layer in hand: turn
+   * the layer by as much.
    *
-   * ⚠️ **The rate is worked out again on every move, from where the sticker is
-   * now**, not once from where it started. A sticker goes round a circle, and
-   * on screen its motion slows and bends as it turns towards a side face, so a
-   * rate fixed at the start left it trailing the finger by a quarter of the way
-   * by the end of the turn. Measured this way it stays under the finger for
-   * the whole of it.
+   * ⚠️ **The rate is the one picked with the turn**, not worked out again from
+   * where the sticker is now. Kept under the finger all the way, the layer sped
+   * up under a steady finger as its sticker turned away towards a side face,
+   * to twice as fast by the end, and the turn read as twitchy. Measured from
+   * the press rather than added up, a finger that comes back to where it
+   * started has the layer back where it started, exactly.
    */
-  function follow(p: Press, turn: Active, mx: number, my: number, dt: number) {
-    if (p.tile === null) return;
-
-    const axis = shape.axes[turn.axis];
-    const centre = shape.slots[slotOf[p.tile]].centre;
-    const [ax, ay] = along(p, apply(rotation(axis, turn.angle), centre), axis, qmatrix(orientation));
-
-    const floor = FLOOR * p.unitPx * length(cross(axis, centre));
-    const speed = Math.max(ax * ax + ay * ay, floor * floor);
-
-    p.raw += (mx * ax + my * ay) / speed;
+  function follow(p: Press, turn: Active, dx: number, dy: number, dt: number) {
+    const raw = dx * p.rate[0] + dy * p.rate[1];
 
     // One step either way, and past it only the give, easing out.
     const step = shape.step;
-    const over = Math.abs(p.raw) - step;
-    const angle = over <= 0 ? p.raw : Math.sign(p.raw) * (step + GIVE * (1 - Math.exp(-over / GIVE)));
+    const over = Math.abs(raw) - step;
+    const angle = over <= 0 ? raw : Math.sign(raw) * (step + GIVE * (1 - Math.exp(-over / GIVE)));
 
     turn.velocity = turn.velocity * 0.55 + ((angle - turn.angle) / dt) * 0.45;
     turn.angle = angle;
@@ -1773,7 +1804,7 @@ export function mount(options: Options): Controller {
       cy: 0,
       unitPx: 1,
       depth: 2000,
-      raw: 0,
+      rate: [0, 0],
       lastX: event.clientX,
       lastY: event.clientY,
       lastT: event.timeStamp,
@@ -1809,23 +1840,20 @@ export function mount(options: Options): Controller {
     const dt = Math.max(1, event.timeStamp - p.lastT) / 1000;
 
     if (p.mode === 'pending') {
-      if (Math.hypot(dx, dy) < (p.touch ? SLOP.touch : SLOP.mouse)) return;
+      if (Math.hypot(dx, dy) < (p.touch ? AIM.touch.from : AIM.mouse.from)) return;
 
-      // The whole of the way from the press counts, so the layer catches up
-      // with the finger on the first frame rather than starting behind it.
-      if (grip(p, dx, dy)) {
-        p.mode = 'turn';
-        p.lastX = p.x;
-        p.lastY = p.y;
-      } else {
-        p.mode = 'view';
-      }
+      // Nothing moves while the call is close. The last place and time stay
+      // at the press meanwhile, so whatever is picked catches up with the
+      // whole of the drag on its first frame, at the drag's speed so far.
+      const took = grip(p, dx, dy);
+      if (took === 'wait') return;
+      p.mode = took;
     }
 
     const mx = event.clientX - p.lastX;
     const my = event.clientY - p.lastY;
 
-    if (p.mode === 'turn' && active?.mode === 'drag') follow(p, active, mx, my, dt);
+    if (p.mode === 'turn' && active?.mode === 'drag') follow(p, active, dx, dy, dt);
 
     if (p.mode === 'view') {
       const moved = Math.hypot(mx, my);

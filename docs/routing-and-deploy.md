@@ -238,7 +238,7 @@ page, with no extra request. Keep it that way: see [src/components/CLAUDE.md](..
 
 Seven of the files in `_astro` are the six game engines and the piece they share. 2048 is
 2.9 KB gz, Minesweeper 3.6 KB, Memory 4.5 KB, Accretion 5.3 KB, Battleship 6.0 KB, Cube
-10.8 KB, and the shared chunk 1.7 KB: [games/record.ts](../src/games/record.ts),
+10.9 KB, and the shared chunk 1.7 KB: [games/record.ts](../src/games/record.ts),
 [games/sound.ts](../src/games/sound.ts) and [games/burst.ts](../src/games/burst.ts) in one
 file, because all six games import all three and Rollup puts modules with the same
 importers into the same chunk. Each engine is requested by its own route
@@ -354,6 +354,7 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-09-24 - the cube's engine is 10.9 KB gz, with the drag reading rows along the face.
 - 2026-09-24 - the cube's hints: its engine is 10.8 KB gz, and the planner is an eighth
   file of 4.4 KB, fetched only when a hint is first asked for (§5).
 - 2026-09-24 - each game's CSS moved out of global.css into its own file under
