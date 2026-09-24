@@ -1,6 +1,6 @@
 # Routing and deploy
 
-Fifty-six prerendered pages, four locales, four projects, six games, on Cloudflare.
+Sixty prerendered pages, four locales, four projects, seven games, on Cloudflare.
 Every route exists twice - once unprefixed for English and once under `[lang]` for the other three - and
 the whole build is static: `dist/server` comes out **empty** and nothing runs at request
 time.
@@ -33,7 +33,7 @@ and only one of them is obvious.
 ## 1. Every route exists twice
 
 `prefixDefaultLocale: false`, so English is unprefixed and the other three locales are
-generated from a `[lang]` route. That gives twenty-two route files for eleven logical pages:
+generated from a `[lang]` route. That gives twenty-four route files for twelve logical pages:
 
 | Page | English | Prefixed | Body |
 |---|---|---|---|
@@ -48,6 +48,7 @@ generated from a `[lang]` route. That gives twenty-two route files for eleven lo
 | Accretion | [games/accretion/index.astro](../src/pages/games/accretion/index.astro) | [\[lang\]/games/accretion/index.astro](<../src/pages/[lang]/games/accretion/index.astro>) | [Accretion.astro](../src/components/Accretion.astro) |
 | Battleship | [games/battleship/index.astro](../src/pages/games/battleship/index.astro) | [\[lang\]/games/battleship/index.astro](<../src/pages/[lang]/games/battleship/index.astro>) | [Battleship.astro](../src/components/Battleship.astro) |
 | Cube | [games/cube/index.astro](../src/pages/games/cube/index.astro) | [\[lang\]/games/cube/index.astro](<../src/pages/[lang]/games/cube/index.astro>) | [Cube.astro](../src/components/Cube.astro) |
+| Four in a Row | [games/four-in-a-row/index.astro](../src/pages/games/four-in-a-row/index.astro) | [\[lang\]/games/four-in-a-row/index.astro](<../src/pages/[lang]/games/four-in-a-row/index.astro>) | [FourInARow.astro](../src/components/FourInARow.astro) |
 
 ⚠️ **A game gets a route pair of its own, and that is the one place this table breaks its
 own pattern.** It is about the *files*, not the URLs - `/projects/encryptix/` and
@@ -57,7 +58,7 @@ where that slug comes from:
 | | On disk | Pages built |
 |---|---|---|
 | projects | one file, `projects/[slug]/index.astro` | four, from `getStaticPaths` |
-| games | one directory per game, `games/2048/`, `games/minesweeper/`, `games/memory/`, `games/accretion/`, `games/battleship/`, `games/cube/` | one each, no parameter |
+| games | one directory per game, `games/2048/`, `games/minesweeper/`, `games/memory/`, `games/accretion/`, `games/battleship/`, `games/cube/`, `games/four-in-a-row/` | one each, no parameter |
 
 Every project page is the same page with different data, so one parameterised file covers
 all four and always will. A game is its own program - its own markup, its own script, its
@@ -90,7 +91,7 @@ there as a page, so a note left in that directory builds as a public HTML page a
 [src/CLAUDE.md](../src/CLAUDE.md) rather than in `src/pages/`. Prefix anything else with `_`
 to keep it out of the route table, and **check the page count**: the build prints it, and it
 should be four locales times four fixed shapes, plus a 404, one detail page per project per
-locale, and one page per game per locale - 56 with four projects and six games today.
+locale, and one page per game per locale - 60 with four projects and seven games today.
 
 ---
 
@@ -236,16 +237,16 @@ dismissal and the active-section indicator - are all small enough that Astro inl
 into each page rather than emitting a bundle. 1.7 KB of JS per page, in a 26 KB gz home
 page, with no extra request. Keep it that way: see [src/components/CLAUDE.md](../src/components/CLAUDE.md).
 
-Seven of the files in `_astro` are the six game engines and the piece they share. 2048 is
+Eight of the files in `_astro` are the seven game engines and the piece they share. 2048 is
 2.9 KB gz, Minesweeper 3.6 KB, Memory 4.5 KB, Accretion 5.3 KB, Battleship 6.0 KB, Cube
-10.9 KB, and the shared chunk 1.7 KB: [games/record.ts](../src/games/record.ts),
+10.9 KB, Four in a Row 6.1 KB, and the shared chunk 1.7 KB: [games/record.ts](../src/games/record.ts),
 [games/sound.ts](../src/games/sound.ts) and [games/burst.ts](../src/games/burst.ts) in one
-file, because all six games import all three and Rollup puts modules with the same
+file, because all seven games import all three and Rollup puts modules with the same
 importers into the same chunk. Each engine is requested by its own route
 and that route's three locale twins, and by nothing else, which is the point: a game pays
 for itself and the rest of the site is unchanged.
 
-The eighth is the cube's hint planner, 4.4 KB gz, and it is a dynamic `import()` rather
+The ninth is the cube's hint planner, 4.4 KB gz, and it is a dynamic `import()` rather
 than part of the engine: the page does not name it and nothing preloads it, so it is
 fetched the first time a reader asks for a hint and never otherwise.
 
@@ -354,6 +355,8 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-09-24 - a seventh game and its route pair, `/games/four-in-a-row/`, taking the
+  build to 60 pages and the files in `_astro` to nine. Its engine is 6.1 KB gz.
 - 2026-09-24 - the cube's engine is 10.9 KB gz, with the drag reading rows along the face.
 - 2026-09-24 - the cube's hints: its engine is 10.8 KB gz, and the planner is an eighth
   file of 4.4 KB, fetched only when a hint is first asked for (§5).

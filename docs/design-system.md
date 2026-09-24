@@ -715,18 +715,18 @@ the computed style of every element and pseudo-element on every game page, the i
 the home page against a build with the rules still in global.css, on a seeded deal: nothing
 differed but the phase of the animations that run on a clock.
 
-Six pages carry a game, and all six are built the way the rest of the site is: markup,
+Seven pages carry a game, and all seven are built the way the rest of the site is: markup,
 tokens, and no canvas or game library anywhere. They are deliberately different from each
 other, which is most of what this section is about.
 
-| | [2048](../src/games/2048/game.ts) | [Minesweeper](../src/games/minesweeper/game.ts) | [Memory](../src/games/memory/game.ts) | [Accretion](../src/games/accretion/game.ts) | [Battleship](../src/games/battleship/game.ts) | [Cube](../src/games/cube/game.ts) |
-|---|---|---|---|---|---|---|
-| what it is made of | 16 divs that move | up to 480 buttons that change state | up to 60 buttons that turn over | up to 46 circles that fall | 200 buttons, and 10 drawn ships over them | up to 150 stickers in a 3D scene |
-| the hard part | motion, at sixty frames | the rules, and the keyboard | the turn, and keeping three animations off each other | the solver, and making it settle | the opponent, and what it is not allowed to see | the drag: which layer a finger means, and how fast it turns under it |
-| the board in the markup | yes, 16 cells, fixed | no, the module builds it | no, the module deals it, and a face-down card holds no picture | no, play creates every body | no, and the fleet is a layer of its own | no, the module builds the scene from the geometry |
-| to a screen reader | hidden, narrated by a live region | a real `role="grid"` | a real `role="grid"`, and a live region for each turn | a live region, and the sequence below it | two `role="grid"`s and a live region for the turn | hidden, and a live region for the scramble and the solve |
-| what a turn costs | two custom properties | a class | one attribute, and a transition on `rotate` | a frame of simulation | a class, and a count over 200 placements | a transform on each sticker in the layer, every frame the layer moves |
-| runs when idle | no | no | no | **yes** | no | no |
+| | [2048](../src/games/2048/game.ts) | [Minesweeper](../src/games/minesweeper/game.ts) | [Memory](../src/games/memory/game.ts) | [Accretion](../src/games/accretion/game.ts) | [Battleship](../src/games/battleship/game.ts) | [Cube](../src/games/cube/game.ts) | [Four in a Row](../src/games/four/game.ts) |
+|---|---|---|---|---|---|---|---|
+| what it is made of | 16 divs that move | up to 480 buttons that change state | up to 60 buttons that turn over | up to 46 circles that fall | 200 buttons, and 10 drawn ships over them | up to 150 stickers in a 3D scene | a drawn face with 42 holes, up to 42 discs behind it, and 7 buttons over both |
+| the hard part | motion, at sixty frames | the rules, and the keyboard | the turn, and keeping three animations off each other | the solver, and making it settle | the opponent, and what it is not allowed to see | the drag: which layer a finger means, and how fast it turns under it | the opponent, and seeing far enough ahead in a third of a second |
+| the board in the markup | yes, 16 cells, fixed | no, the module builds it | no, the module deals it, and a face-down card holds no picture | no, play creates every body | no, and the fleet is a layer of its own | yes, the face and the seven columns, and the module drops every disc |
+| to a screen reader | hidden, narrated by a live region | a real `role="grid"` | a real `role="grid"`, and a live region for each turn | a live region, and the sequence below it | two `role="grid"`s and a live region for the turn | seven buttons named by column, and a live region for every disc and the result |
+| what a turn costs | two custom properties | a class | one attribute, and a transition on `rotate` | a frame of simulation | a class, and a count over 200 placements | a transform on each sticker in the layer, every frame the layer moves | one element and one `translate` animation |
+| runs when idle | no | no | no | **yes** | no | no | no |
 
 ### A tile keeps its element for its whole life
 
@@ -1528,7 +1528,135 @@ for exactly this.
 percentage of padding is taken from the *parent's* width, which here is the whole tile, and
 it left the colours a quarter of the icon wide.
 
-### Sound, the burst and the jolt, shared by all six
+### Four in a Row: a toy in a studio
+
+The page is one scene, drawn the way a toy is photographed: one light high on the left, a
+backdrop that sweeps from wall to floor with no horizon, and the board standing on it with
+its shadow under it. The board is the one loud thing, and everything round it is quiet so
+that it can be. The score, whose move it is and the two controls are inside the scene
+rather than in bars of their own - `Ti 2 : 1 Velemajstor`, set at the page's widest and
+heaviest, with the side to move ringed in its own colour - and the four opponents above it
+are four chess pieces on badges of the board's blue, standing in a row without a card round
+each: a pawn, a knight, a rook and a queen, since the titles are a chess ladder and the
+pieces are the ladder everyone reads at a glance. Boxes round cartoon faces, and three
+separate strips, were the first version, and it read as settings round a board - and the
+faces as a toy for children - rather than as a game.
+
+⚠️ **The plastic is an SVG laid over the discs, not a background under them.**
+[FourFace.astro](../src/components/games/FourFace.astro) is one path - a rounded frame with
+42 holes cut in it by `evenodd` - and a disc is 0.86 of a square against a hole of 0.78, so
+its rim is always behind the plastic and a falling disc passes behind the bars between the
+rows. A CSS background with holes was the first idea and cannot do the frame: a repeating
+hole runs on into the border, and stopping it there takes three mask layers composited
+against each other. `.four-board` itself has no background at all, which is what makes the
+holes holes: what shows through an empty one is the studio behind, barely tinted by
+`.four-back`, the way the real board is see-through.
+
+**What makes it plastic** is all in that one drawing: a gloss along the top edge, a bevel
+round every hole that is dark where it faces down and light where it faces up - one
+`<circle>` per hole stroked with a gradient in `objectBoundingBox` units, so every hole is
+lit the same way - and inside each hole the shadow its own rim throws on the disc behind
+it. The face also casts a `drop-shadow` into the holes, which puts the plastic in front of
+the discs rather than level with them. A disc is a domed gradient with a raised rim of two
+inset shadows, a recessed face with concentric grooves in fractions of its own radius, and
+one glint.
+
+⚠️ **The board's thickness is a strip along its bottom edge and nothing more.** It sits
+behind everything on the board, and the first version was a slab the size of the board:
+it showed through every hole, and every empty hole looked filled with navy. For the same
+reason each foot starts 12 units above the board's edge, below the corner holes, which
+end 29 above it.
+
+The order inside `.four-board` is the design: the feet and the edge, the back, the discs,
+the face, the winning lines, and the seven column buttons over all of it, reaching up over
+the space above the board so a press on a hole, a bar or the air above is that column.
+
+⚠️ **One number sizes the board.** `--cell` is declared on `.four-well`, an inline-size
+container, as a 7.36th of its width - seven squares and a frame of 0.18 each side - and
+resolved on the children, for the reason `--u` is on the cube's stage. The well is as wide
+as the screen's height allows, `(100svh - 12.5rem) / 1.22`, because everything from the
+space above the board to the floor is 1.22 of its width and a bottom row below the fold is a
+row you drop into blind, and a little narrower than the scene, for the feet.
+
+⚠️ **"Play again" hangs below the status line, in the space above the board**, rather than
+sitting under it. Under it, the scene grew by a button's height the moment a game ended and
+pushed the board down under the last disc.
+
+⚠️ **The dimming at the end is opacity alone, and only a little.** A yellow disc taken
+further back, or desaturated, turns mustard against the dark theme's navy - the one colour
+on the board that reads as dirty rather than dim. The same limit keeps the badges not
+chosen blue rather than grey.
+
+**The thumbnail is a product shot rather than a crop**: the whole board on the studio
+floor, three discs standing on their edges in front of it, and a red disc half through the
+slot over the fifth column. ⚠️ The discs stand rather than lie in a stack: a stack of red
+and yellow seen from the front was a hamburger. The position is one a game could reach, six discs each and red to move, and the
+disc going in is the one that finishes the diagonal.
+
+### A disc falls under gravity, not for a duration
+
+A fall of six squares and a fall of one cannot share a duration, so `fall` in
+[game.ts](../src/games/four/game.ts) works the time out from the distance: square root, with
+`GRAVITY` set so the longest fall takes about four tenths of a second. The disc then
+bounces twice, to at most 0.16 of a square and then a fifth of that. The keyframes are
+`translate` in pixels through the exact Bézier halves of `t²`, so the curve is free fall
+rather than an easing that looks like it, and the win pulse is `scale`, so the two never
+meet on one property. Three clicks land on the same three moments, read from the same
+`fall`. A new game empties the board the way the slider under the real one does: every disc
+drops out of the bottom at once, the lowest first.
+
+⚠️ **The model moves when the disc leaves the hand, and the picture follows.** `play` has
+run before the fall starts, so nothing waits on an animation, and a new game in the middle
+of one costs an element rather than a state to unwind.
+
+### The opponent keeps its own score as it goes
+
+The board has 69 lines of four. A `Position` counts each colour in each line and keeps
+every line's worth and their total, and a disc changes only the lines through its square -
+13 at most - so a win is a count reaching four, a threat is a three next to an open square,
+and the value of a position is a running total rather than a sum at every leaf. The worth
+is 1, 4 and 16 for one, two and three discs in a live line, and a threat whose open square
+is on its owner's rows is worth 12 more: with perfect play the side that went first ends
+up with the odd rows and the other side with the even ones. Checked against a fresh sum
+after 2,000 random games of play and undo, and against a brute force scan for wins over
+3,000, with no difference in either.
+
+⚠️ **The search never runs on the game's own position.** Running out of time is an
+exception thrown from twelve moves deep, and every disc dropped on the way down was still
+on the board when it reached the `catch` - a column that filled itself. `chooseColumn` copies
+the position first.
+
+The four opponents, weakest first, and what they cost:
+
+| | how it chooses | time a move |
+|---|---|---|
+| beginner | its own four three times in four, otherwise a column weighted to the middle | nothing |
+| amateur | three moves ahead: a win, a block, never a gift, then anything within 12 of its best | under a millisecond |
+| master | seven moves ahead, among the moves within 3 of its best that do not lose by force | about 3ms |
+| grandmaster | iterative deepening with a table of 262,144 positions until `THINK_MS`, 320ms | 13 to 15 moves ahead from the opening, and from about the sixteenth disc a known result |
+
+Measured over sixty simulated games per pair with the first move alternating: the amateur
+beat the beginner 60 times, the master beat the amateur 57, and the grandmaster
+beat the master 57 and drew twice.
+
+### Their turn starts at your landing
+
+⚠️ **The choice is made the moment your disc hits, while it is still bouncing.** The bounce
+is a compositor animation, so the grandmaster's third of a second on the main thread is
+spent under a picture that is already moving. `REPLY_MS` from your landing is the beat
+before their disc appears, however long the thinking took, since the weaker three decide
+in milliseconds and a reply on the same beat reads as part of your move. Their disc then
+glides to its column and sometimes stops over another one first. That stop is theatre, and
+the write-up on the page says so.
+
+⚠️ **The disc in hand is one element for both players, so the pointer moves it only on
+your turn.** It moved it on theirs as well, and a mouse left over the board had their disc
+following it about on the spot and then dropping into a column nowhere near it. `setAim`
+keeps the column on every move and draws it only when it is yours, and `showHand` puts your
+disc there when your turn comes rather than sliding it over from where theirs let go. An exchange, from your press to your next turn, takes
+about a second and a half to two against the grandmaster.
+
+### Sound, the burst and the jolt, shared by all seven
 
 Every game has sound now, and every win throws a burst. Both are shared the way
 [games/record.ts](../src/games/record.ts) is: the one thing that differs between games is
@@ -1546,7 +1674,7 @@ the first arrow press has to be able to wake the sound it is about to make - and
 arrives before any gesture is dropped. A context made on load starts suspended and logs a
 warning for it, which is exactly what this avoids.
 
-⚠️ **One switch for six games**, stored once as `game-sound`. Turning the sound off in one
+⚠️ **One switch for seven games**, stored once as `game-sound`. Turning the sound off in one
 game and finding it on in the next is the thing a reader notices.
 
 **The modules emit cues and never play anything.** Each game's module gains an `onCue`
@@ -1565,10 +1693,11 @@ one sound many times in a frame.
 | Memory | paper for a turn and for the deal, two notes a fifth apart for a pair, one falling note for a miss |
 | Accretion | a rush of air for a drop, a merge note falling down the pentatonic as bodies grow, a shimmer over a boom when two Suns go off. Two merges on one frame are one sound, the bigger |
 | Cube | two clicks a few milliseconds apart over a short low knock when a layer lands on its step, and a third click for a half turn. A faint tick at each step a drag passes, a softer click for a layer let go short of a step and falling back, a rattle for each turn of a scramble over a rush of air, and the fanfare 0.12s after the last click |
+| Four in a Row | three clicks of plastic for a landing - the hit and two bounces, each quieter, on the moments the disc is drawn at - over a knock through the board, harder for a longer fall and a few semitones higher for yellow. A slide for a disc let go, a rattle for the board emptying, a knock for a full column. The endings are `delayed` 0.28s, past the bounces |
 | Battleship | a thump when a round leaves, then a splash, a blast or a sinking where it lands - theirs the same at 62%, which is all "further away" has to mean - and a lift, a clunk and a tick while placing. Both endings are `delayed` 0.45s so they do not land on top of the last sinking |
 
 **The polish that came with it.** The burst on every win, in 2048's ramp, the minefield's
-numbers, the planets and the five hull paints. `.game-quake` on the minefield when a mine
+numbers, the planets, the five hull paints and the two discs over the board's blue. `.game-quake` on the minefield when a mine
 goes off, on the well when two Suns go off and on the battleship table when a ship sinks.
 2048 leaning towards the wall a push hit, and its 2048 tile catching the light once.
 
@@ -1604,6 +1733,19 @@ card opened a gap between Score and Best.
 
 ## Changelog
 
+- 2026-09-24 - Four in a Row redrawn as a toy in a studio: a sweep for a backdrop, the
+  board glossy with a bevel and a shadow in every hole, feet on the floor, discs with a rim,
+  grooves and a glint, the score inside the scene, the opponents as four chess pieces in a
+  row, and a thumbnail that is a product shot of the whole board. The opponent's disc no
+  longer follows your pointer while it thinks, which is what made its move look jerky (§9).
+- 2026-09-24 - a seventh game, [Four in a Row](../src/games/four/game.ts): a seven by six
+  board against four opponents, from a beginner that plays near the middle to a
+  grandmaster that deepens its search for a third of a second, each beating the one below
+  in 57 to 60 of 60 simulated games. The board is a drawn face over the discs, a disc falls
+  under gravity and bounces twice, the board empties through the bottom for a new game, and
+  the opponent's disc glides to its column. §9 records the layers, why the face is SVG,
+  the running score and the parity rule in the evaluation, why the search works on a copy,
+  and `--four-*`, the seventh place the palette opens up.
 - 2026-09-24 - a cube drag turns the layer the finger is going along. The way each layer
   would go is read along the face, which 13 of 72 drags in the opening view got wrong
   before, the bottom row to the right among them, a layer still landing lands before the

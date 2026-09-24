@@ -76,17 +76,18 @@ not need the map to change a dictionary, add a project, or touch the stylesheet.
   [src/styles/global.css](./src/styles/global.css). A raw hex in a component is a bug -
   the only two in the codebase are the `theme-color` meta tags, and they are a known
   duplication.
-- **Every page but the six games ships no JavaScript file.** Four inline blocks, about 1.7 KB in
+- **Every page but the seven games ships no JavaScript file.** Four inline blocks, about 1.7 KB in
   total, cover the pre-paint theme script, the theme toggle, disclosure dismissal and the
   active-section indicator. Anything new should be CSS first. If it genuinely
   needs script, ask before adding it.
-- **The exceptions are the six games**, which cannot be: 2.9 KB gz for
+- **The exceptions are the seven games**, which cannot be: 2.9 KB gz for
   [2048](./src/games/2048/game.ts), 3.6 KB for
   [minesweeper](./src/games/minesweeper/game.ts), 4.5 KB for
   [memory](./src/games/memory/game.ts), 5.3 KB for
   [accretion](./src/games/accretion/game.ts), 6.0 KB for
-  [battleship](./src/games/battleship/game.ts) and 10.9 KB for
-  [cube](./src/games/cube/game.ts), each on its own route, plus a shared 1.7 KB
+  [battleship](./src/games/battleship/game.ts), 10.9 KB for
+  [cube](./src/games/cube/game.ts) and 6.1 KB for
+  [four in a row](./src/games/four/game.ts), each on its own route, plus a shared 1.7 KB
   chunk for the stored record, the sound and the burst, and 4.4 KB for the cube's hints, fetched only when one is
   asked for. That budget is the games', not a precedent - it does not
   make a script cheaper anywhere else.

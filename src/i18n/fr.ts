@@ -45,7 +45,7 @@ const fr: Dict = {
     paragraphs: [
       "Je travaille sur des projets clients, du premier modèle de données jusqu’au déploiement sur AWS. Je pars toujours du domaine : quelles sont les données, qui peut y accéder et avec quels systèmes elles doivent communiquer. L’API, les services et l’interface React en découlent.",
       "Je suis titulaire d’un master en génie logiciel. Mon mémoire comparait deux écosystèmes d’apprentissage automatique sur une même tâche : un modèle YOLOv8m en Python et un modèle ML.NET en .NET, derrière une seule passerelle NestJS et un seul frontend React. Pour mon mémoire de licence, j’ai implémenté les algorithmes de chiffrement RC6 et XXTEA à partir de leur spécification.",
-      "Le meilleur exemple de mon travail frontend, c’est ce site : quatre langues et six jeux écrits sans canvas ni bibliothèque de jeu. Chaque jeu est accompagné d’un texte qui explique comment il a été construit.",
+      "Le meilleur exemple de mon travail frontend, c’est ce site : quatre langues et sept jeux écrits sans canvas ni bibliothèque de jeu. Chaque jeu est accompagné d’un texte qui explique comment il a été construit.",
     ],
   },
 
@@ -567,7 +567,7 @@ const fr: Dict = {
     index: {
       metaTitle: "Jeux - Vuk Cvetković",
       metaDescription:
-        "Les jeux de navigateur de Vuk Cvetković : 2048, le démineur, un Memory en douze niveaux, la bataille navale contre quatre adversaires, un jeu où l’on fusionne des mondes pour en former de plus grands, et un cube en 3D du 2×2 au 5×5. Chacun a sa propre page.",
+        "Les jeux de navigateur de Vuk Cvetković : 2048, le démineur, un Memory en douze niveaux, la bataille navale contre quatre adversaires, un jeu où l’on fusionne des mondes pour en former de plus grands, un cube en 3D du 2×2 au 5×5, et un quatre en ligne contre un grand maître. Chacun a sa propre page.",
       heading: "Jeux",
       intro:
         "Des jeux qui méritent plus d’une partie. Chacun a sa page, avec en dessous un texte sur la façon dont il est construit, pour ceux que cela intéresse.",
@@ -1233,6 +1233,100 @@ const fr: Dict = {
             "Après un mouvement, une case prend la position de la place où elle est arrivée au lieu de garder la rotation qui l’y a menée. Les deux peuvent différer d’un quart de tour dans le plan de la case, ce qui ne se voit pas puisque chaque case est symétrique autour de son centre, et aucune erreur d’arrondi ne s’accumule, quelle que soit la durée de la partie.",
             "Chaque case est éclairée depuis une seule direction, fixée à vous plutôt qu’au casse-tête, si bien que la face du dessus est la plus claire et celle de droite la plus sombre, quelle que soit la façon dont il est tourné. La luminosité est recalculée pendant que la vue tourne et n’est écrite que lorsqu’elle change de façon visible. Les sons sont eux aussi produits dans le navigateur : chaque mouvement, c’est deux clics à quelques millisecondes d’écart sur un coup bref et grave.",
             "Les indices suivent la méthode qu’on apprend plutôt que la solution la plus courte, parce qu’une solution la plus courte peut seulement dire qu’un mouvement rapproche d’un coup, ce qui n’apprend rien. Le 3×3 se résout en sept étapes, couronne par couronne, le 2×2 en trois et la pyramide en trois, et chaque mouvement porte son étape, la pièce qu’il concerne et, au sein d’une séquence, la séquence elle-même. Là où une étape relève du jugement plutôt que d’une séquence, comme savoir quelle arête blanche descendre ensuite et comment, une courte recherche trouve le moins de mouvements pour cette seule pièce sans déplacer ce qui est déjà en place. Le plan est recalculé dès que le casse-tête n’est pas là où il devait être, et il a été vérifié en le suivant depuis mille cinq cents mélanges au hasard, qu’il a tous résolus.",
+          ],
+        },
+      },
+
+      fourInARow: {
+        name: "Quatre en ligne",
+
+        tagline:
+          "Lâchez un pion et alignez-en quatre avant l’adversaire. Quatre adversaires, de celui qui regarde à peine à celui qui voit quinze coups à l’avance.",
+
+        metaDescription:
+          "Quatre en ligne dans le navigateur, contre quatre adversaires : la grille classique de sept sur six, des pions qui tombent et rebondissent, et un grand maître qui voit quinze coups à l’avance.",
+        lead: "Lâchez vos pions dans la grille et alignez-en quatre avant votre adversaire : à l’horizontale, à la verticale ou en diagonale. Toute la difficulté tient à l’adversaire choisi. Le débutant regarde à peine, et le grand maître voit plus loin que vous.",
+
+        opponents: "Choisissez votre adversaire",
+        levels: {
+          beginner: {
+            name: "Débutant",
+            note: "Joue près du centre et ne voit que ses propres alignements. Il ne bloquera pas les vôtres.",
+          },
+          amateur: {
+            name: "Amateur",
+            note: "Prend une victoire, bloque la vôtre et ne vous en offre jamais. Deux menaces à la fois en viennent à bout.",
+          },
+          master: {
+            name: "Maître",
+            note: "Voit sept coups à l’avance. Un piège ne suffira pas, il vous faut un plan.",
+          },
+          grandmaster: {
+            name: "Grand maître",
+            note: "Voit jusqu’à quinze coups à l’avance et joue son meilleur coup. Attendez-vous à perdre, surtout quand il commence.",
+          },
+        },
+
+        wins: "Victoires",
+        losses: "Défaites",
+        newGame: "Nouvelle partie",
+
+        you: "Vous",
+
+        board: "Grille",
+        column: "Colonne {n}",
+        columnFull: "Colonne {n}, pleine",
+
+        status: {
+          you: "À vous de jouer",
+          them: "À l’adversaire",
+          won: "Quatre en ligne. Vous gagnez !",
+          lost: "L’adversaire en a aligné quatre avant vous.",
+          draw: "La grille est pleine. Match nul.",
+        },
+        again: "Rejouer",
+
+        moves: {
+          you: "Vous : colonne {n}.",
+          them: "{name} : colonne {n}.",
+        },
+
+        hint: "Appuyez sur une colonne pour lâcher un pion, ou faites glisser un doigt le long du haut de la grille et relâchez. Les flèches choisissent une colonne et Entrée lâche le pion, ou appuyez sur 1 à 7.",
+
+        how: {
+          label: "Comment jouer",
+          items: [
+            {
+              title: "Quatre alignés, c’est gagné",
+              description:
+                "Un pion tombe sur la case libre la plus basse de sa colonne. Le premier à aligner quatre pions à lui, à l’horizontale, à la verticale ou en diagonale, gagne, et une grille remplie avant cela donne un match nul.",
+            },
+            {
+              title: "Deux menaces à la fois",
+              description:
+                "Trois pions alignés avec la quatrième case libre, c’est une menace. On peut en bloquer une, pas deux, et c’est ainsi que se gagnent la plupart des parties : pas avec un long piège, mais avec un coup qui ouvre deux cases à la fois.",
+            },
+            {
+              title: "Attention à ce qui est dessous",
+              description:
+                "Ne lâchez jamais un pion juste sous une case où votre adversaire gagne, car vous lui permettez d’y jouer. En fin de partie, toute la lutte consiste souvent à savoir qui devra jouer le premier sous la menace de l’autre.",
+            },
+            {
+              title: "Choisissez votre adversaire",
+              description:
+                "Quatre adversaires, du débutant au grand maître, et vos victoires et défaites sont conservées pour chacun. Le premier joueur change à chaque partie, et c’est important : en jouant parfaitement, celui qui commence et joue d’abord dans la colonne du milieu gagne toujours.",
+            },
+          ],
+        },
+
+        close: {
+          label: "Comment c’est construit",
+          paragraphs: [
+            "Pas de canvas ni de bibliothèque de jeu, comme pour les autres. La grille est un dessin posé sur les pions plutôt qu’un fond placé dessous : une seule pièce de plastique percée de 42 trous, et chaque pion un peu plus large que son trou. Un pion tombe donc derrière les barres entre les rangées et apparaît à travers les trous, comme sur le vrai jeu, et le bord de chaque pion reste caché derrière le plastique. L’intérieur de chaque trou, ce sont deux fins croissants, l’un dans l’ombre en haut, l’autre éclairé en bas, et c’est surtout ce duo qui donne l’impression qu’un pion est enfoncé dans la grille plutôt que peint dessus.",
+            "Un pion tombe sous l’effet de la gravité et non en un temps fixé, si bien qu’une longue chute dans une colonne vide et une courte sur une colonne presque pleine durent chacune le temps que prendrait un vrai pion. Il rebondit deux fois sur ce qu’il rencontre, chaque rebond plus bas que le précédent. Le mouvement est la parabole elle-même, tracée avec les courbes exactes de la chute libre, et les trois clics que vous entendez tombent aux trois mêmes instants. Une nouvelle partie vide la grille comme la réglette sous un vrai jeu : tous les pions tombent par le bas en même temps, le plus bas d’abord.",
+            "L’adversaire tient le score de la position au fil de la partie au lieu de le recalculer à chaque fois. La grille compte 69 lignes de quatre, chaque ligne compte les pions de chaque couleur qu’elle contient, et un pion ne modifie que les lignes qui passent par sa case, treize au plus. Une victoire, c’est un compteur qui atteint quatre, une menace, c’est trois à côté d’une case vide, et la valeur de toute la grille est un total tenu à jour. Le seul vrai morceau de théorie, c’est la parité : la grille se remplit par le bas, et en jouant parfaitement, celui qui a commencé finit avec les rangées impaires et l’autre avec les paires. Une menace sur vos propres rangées vaut donc davantage qu’une menace sur les siennes.",
+            "Les quatre diffèrent par la distance à laquelle ils voient. Le débutant prend la plupart du temps son propre alignement et joue sinon près du centre. L’amateur voit trois coups à l’avance, ce qui suffit pour prendre une victoire, en bloquer une et ne jamais en offrir. Le maître voit sept coups à l’avance et choisit parmi les coups à quelques points du meilleur, si bien que deux parties contre lui se ressemblent rarement. Le grand maître approfondit sa recherche d’un coup à la fois jusqu’à ce qu’un tiers de seconde soit écoulé, en réutilisant une table de 262 144 positions déjà vues. Depuis l’ouverture, cela fait treize à quinze coups à l’avance, et à partir du seizième pion environ, il sait en général comment la partie se termine.",
+            "Chacun bat celui du dessous presque à chaque fois. Sur soixante parties simulées par paire, en alternant le premier joueur, l’amateur a battu le débutant 60 fois, le maître a battu l’amateur 57 fois, et le grand maître a battu le maître 57 fois, avec deux nuls. La pause avant que le pion de l’adversaire ne bouge, et l’arrêt qu’il marque parfois au-dessus d’une autre colonne, servent seulement à ce que vous puissiez suivre le coup : à ce moment-là, le choix est déjà fait.",
           ],
         },
       },

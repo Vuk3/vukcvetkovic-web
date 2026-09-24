@@ -1,0 +1,24 @@
+---
+import FourInARow from '../../../components/FourInARow.astro';
+import { defaultLocale } from '../../../i18n/types';
+import { getDict } from '../../../i18n/utils';
+import Base from '../../../layouts/Base.astro';
+import { site } from '../../../site';
+
+/*
+ * Four in a Row, in the unprefixed default locale. `/sr/games/four-in-a-row/`
+ * and the other two come from [lang]/games/four-in-a-row/index.astro.
+ *
+ * ⚠️ A route pair per game, deliberately, for the reason the Battleship route
+ * gives: a `[slug]` route choosing a component from a map would put every
+ * game's script into every game's page.
+ */
+const lang = defaultLocale;
+const dict = getDict(lang);
+
+const title = `${dict.games.items.fourInARow.name} - ${site.name}`;
+---
+
+<Base lang={lang} title={title} description={dict.games.items.fourInARow.metaDescription}>
+  <FourInARow lang={lang} />
+</Base>

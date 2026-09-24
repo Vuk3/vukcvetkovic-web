@@ -9,11 +9,12 @@ Three woff2 faces and five webp variants, and no CSS file either: the stylesheet
 into every document. The four `<script>` blocks that exist are small enough that Astro
 inlines them into each page too - 1.7 KB total, no extra request.
 
-⚠️ **The exceptions are the six games**, [Game2048.astro](./Game2048.astro),
+⚠️ **The exceptions are the seven games**, [Game2048.astro](./Game2048.astro),
 [Minesweeper.astro](./Minesweeper.astro), [Memory.astro](./Memory.astro),
-[Accretion.astro](./Accretion.astro), [Battleship.astro](./Battleship.astro) and
-[Cube.astro](./Cube.astro), whose scripts import a module and are therefore emitted as real
-files: 2.9 KB, 3.6 KB, 4.5 KB, 5.3 KB, 6.0 KB and 10.9 KB gz, plus a shared 1.7 KB chunk for [games/record.ts](../games/record.ts),
+[Accretion.astro](./Accretion.astro), [Battleship.astro](./Battleship.astro),
+[Cube.astro](./Cube.astro) and [FourInARow.astro](./FourInARow.astro), whose scripts import a
+module and are therefore emitted as real files: 2.9 KB, 3.6 KB, 4.5 KB, 5.3 KB, 6.0 KB,
+10.9 KB and 6.1 KB gz, plus a shared 1.7 KB chunk for [games/record.ts](../games/record.ts),
 [games/sound.ts](../games/sound.ts) and [games/burst.ts](../games/burst.ts), each requested
 only by its own route and that route's three locale twins. The sound switch in every bar is
 [SoundToggle.astro](./SoundToggle.astro), one component for the reason
@@ -83,13 +84,14 @@ changing it.
   [ProjectDetail.astro](./ProjectDetail.astro), [GameIndex.astro](./GameIndex.astro),
   [Game2048.astro](./Game2048.astro), [Minesweeper.astro](./Minesweeper.astro),
   [Memory.astro](./Memory.astro), [Accretion.astro](./Accretion.astro),
-  [Battleship.astro](./Battleship.astro), [Cube.astro](./Cube.astro). See
+  [Battleship.astro](./Battleship.astro), [Cube.astro](./Cube.astro),
+  [FourInARow.astro](./FourInARow.astro). See
   [src/CLAUDE.md](../CLAUDE.md).
 - **No raw hex.** Colour comes from the `--site-*` tokens or the Tailwind utilities mapped
   to them (`text-muted`, `bg-band`, `border-hairline`). The exceptions are all declared away
   from the components that use them: brand colours for technology marks in
-  [src/tech.ts](../tech.ts), and the six game boards as `--g2048-*`, `--ms-*`, `--mem-*`,
-  `--acc-*`, `--bs-*` and `--cube-*` tokens, each in its game's own file under
+  [src/tech.ts](../tech.ts), and the seven game boards as `--g2048-*`, `--ms-*`, `--mem-*`,
+  `--acc-*`, `--bs-*`, `--cube-*` and `--four-*` tokens, each in its game's own file under
   [styles/games/](../styles/games/).
 - **Tailwind utilities for one-off layout, a named class in
   [global.css](../styles/global.css) for anything that repeats or carries reasoning.** A

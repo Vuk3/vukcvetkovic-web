@@ -3,7 +3,7 @@
  * over a board that has just been won, and the jolt a board takes when
  * something goes off on it.
  *
- * Imported by each of the six game components, after that game's own file,
+ * Imported by each of the seven game components, after that game's own file,
  * and nowhere else. ⚠️ **After, because order decides a tie here**: the sound
  * switch has to win over each game's `-actions .cta-ghost` rule on a phone, at
  * the same specificity. See docs/design-system.md §9.
@@ -45,7 +45,7 @@
    * removed - so a screen reader still hears what the button is.
    */
   @media (max-width: 34rem) {
-    :is(.g2048-actions, .ms-actions, .mem-actions, .acc-actions, .bs-actions, .cube-actions) .game-sound {
+    :is(.g2048-actions, .ms-actions, .mem-actions, .acc-actions, .bs-actions, .cube-actions, .four-actions) .game-sound {
       flex: 0 0 auto;
       padding-inline: 0.8rem;
     }

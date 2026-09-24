@@ -326,8 +326,8 @@ five are code.
    and `undo` mean nothing to the next one and nothing forces them to appear in it.
 2. **The other three dictionaries**, which are now type errors until they match.
 3. **[src/site.ts](../src/site.ts)**, a new entry in `games` keyed by the same id, with a
-   `slug` and a `status`. There is no date on a game, unlike a project, and the title is
-   prose and lives in the dictionaries. `status` is `live` or `beta`, and it is required
+   `slug`, a `status` and the `date` it was written, a day rather than a project's year.
+   The title is prose and lives in the dictionaries. `status` is `live` or `beta`, and it is required
    rather than defaulting: it puts the ribbon on the card and the badge beside the title,
    and flipping it to `live` is the one line that takes both off. `GameId` is
    `keyof Dict["games"]["items"]`, so a
@@ -395,6 +395,14 @@ anybody as protection - see
 
 ## Changelog
 
+- 2026-09-24 - a seventh game, `fourInARow`, last on the index. ⚠️ Its title is not a trade
+  name in any language, for the cube's reason: Four in a Row, Četiri u nizu, Quatre en
+  ligne and Vier in einer Reihe, since two of the names it is sold under are the everyday
+  French and German ones. The four opponents are four steps up - beginner, amateur, master and
+  grandmaster in each language - the line read out
+  after every disc is a name, a colon and a column so it never has to agree with anything,
+  and About and the games index description count seven games in all four languages. The
+  add-a-game steps now name the `date` a game carries.
 - 2026-09-24 - the cube's `advice` gained `move`: a sentence for a turn and one for a half
   turn, with `{layer}` and `{way}` filled from `layers` and `ways`. ⚠️ The layers are
   written the way the sentence needs them, with the article in French and German and in

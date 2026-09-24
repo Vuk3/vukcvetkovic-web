@@ -1,0 +1,142 @@
+---
+/**
+ * The front of the board, and the feet it stands on.
+ *
+ * ⚠️ **A drawing over the discs, not a background under them.** On the real
+ * thing a disc drops between two walls and shows through the holes, and the
+ * plastic around each hole hides its edge. So the discs are a layer of their
+ * own and this is laid over them, and a disc is drawn a little wider than its
+ * hole - the rim of it is behind the plastic, and a falling disc passes behind
+ * the bars between the rows. A CSS background with holes cut in it was the
+ * first idea and cannot do the frame: a repeating hole runs on into the
+ * border, and a mask that stops it there needs three layers composited against
+ * each other.
+ *
+ * It is drawn as moulded plastic under one light, high on the left, because
+ * that is what makes a flat blue shape read as a thing on a table: a sheen
+ * across the top, a bevel round every hole that is dark where it faces down
+ * and light where it faces up, and inside each hole the shadow its own rim
+ * throws on whatever is behind it.
+ *
+ * A file of its own because the game and the thumbnail on the games index
+ * both draw the same board, for Battleship's reason: a card that copies the
+ * drawing is a card that drifts from it.
+ *
+ * ⚠️ **The ids are global, so this appears once per document.** The board is
+ * only ever on the game page and the thumbnail only on the index.
+ *
+ * The geometry is a hundred units to a square and eighteen of frame, so the
+ * module can put a winning line on a square's centre with no sum it has to
+ * share with this file but those two numbers - see `centre` in game.ts.
+ */
+import { COLUMNS, ROWS } from "../../games/four/game";
+
+const CELL = 100;
+const FRAME = 18;
+/** A disc is 86 across and a hole 78, so 4 of each disc's edge is always
+ *  behind the plastic. */
+const HOLE = 39;
+const RADIUS = 34;
+
+const width = COLUMNS * CELL + FRAME * 2;
+const height = ROWS * CELL + FRAME * 2;
+
+const centres: [number, number][] = [];
+for (let row = 0; row < ROWS; row++) {
+  for (let column = 0; column < COLUMNS; column++) {
+    centres.push([FRAME + column * CELL + CELL / 2, FRAME + row * CELL + CELL / 2]);
+  }
+}
+
+const circle = (x: number, y: number, r: number) =>
+  `M${x - r} ${y}a${r} ${r} 0 1 0 ${r * 2} 0a${r} ${r} 0 1 0 ${-r * 2} 0Z`;
+
+const frame = (inset: number) => {
+  const r = RADIUS - inset;
+  const w = width - inset * 2;
+  const h = height - inset * 2;
+  return `M${inset + r} ${inset}h${w - r * 2}a${r} ${r} 0 0 1 ${r} ${r}v${h - r * 2}a${r} ${r} 0 0 1 ${-r} ${r}h${-(w - r * 2)}a${r} ${r} 0 0 1 ${-r} ${-r}v${-(h - r * 2)}a${r} ${r} 0 0 1 ${r} ${-r}Z`;
+};
+
+const body = frame(0) + centres.map(([x, y]) => circle(x, y, HOLE)).join("");
+
+/*
+ * One foot, the left, in the same units: it starts behind the bottom corner
+ * of the board and spreads to the table, wider at the bottom, the way the
+ * real stand does. The right one is the same path mirrored.
+ *
+ * ⚠️ It starts 12 above the board's bottom edge and no higher: the corner
+ * holes end 29 above it, and a foot reaching further up shows through them.
+ */
+const foot = "M8 -12 H78 L98 70 Q101 88 86 90 H-34 Q-50 90 -44 72 Z";
+const footTop = "M-40 78 Q-30 70 -18 70 H90";
+---
+
+<svg class="four-face" viewBox={`0 0 ${width} ${height}`} aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="four-face-fill" x1="0" y1="0" x2="0.18" y2="1">
+      <stop offset="0" class="four-face-top" />
+      <stop offset="0.45" class="four-face-mid" />
+      <stop offset="1" class="four-face-bottom" />
+    </linearGradient>
+
+    {/* The gloss: a band of light along the top edge and a softer one below
+        it, the way a lamp shows in a curved moulding. */}
+    <linearGradient id="four-face-sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" class="four-sheen-strong" />
+      <stop offset="0.035" class="four-sheen-strong" />
+      <stop offset="0.09" class="four-sheen-none" />
+      <stop offset="0.5" class="four-sheen-none" />
+      <stop offset="1" class="four-sheen-foot" />
+    </linearGradient>
+
+    {/* The bevel round a hole, per hole: its upper half faces down and away
+        from the light, its lower half up towards it. */}
+    <linearGradient id="four-face-bevel" x1="0" y1="0" x2="0.25" y2="1">
+      <stop offset="0" class="four-bevel-dark" />
+      <stop offset="0.5" class="four-bevel-mid" />
+      <stop offset="1" class="four-bevel-light" />
+    </linearGradient>
+
+    {/* The rim's shadow inside the hole, over the disc or the back behind it:
+        heavy at the top, gone by the middle. */}
+    <radialGradient id="four-face-hollow" cx="0.5" cy="0.66" r="0.62">
+      <stop offset="0.7" class="four-hollow-none" />
+      <stop offset="1" class="four-hollow-deep" />
+    </radialGradient>
+
+    <linearGradient id="four-foot-fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" class="four-foot-top" />
+      <stop offset="1" class="four-foot-bottom" />
+    </linearGradient>
+  </defs>
+
+  <path class="four-face-body" d={body} fill-rule="evenodd" fill="url(#four-face-fill)" />
+  <path class="four-face-gloss" d={body} fill-rule="evenodd" fill="url(#four-face-sheen)" />
+
+  <g class="four-face-holes">
+    {
+      centres.map(([x, y]) => (
+        <Fragment>
+          <circle cx={x} cy={y} r={HOLE + 2.6} class="four-face-bevel" stroke="url(#four-face-bevel)" />
+          <circle cx={x} cy={y} r={HOLE} class="four-face-hollow" fill="url(#four-face-hollow)" />
+        </Fragment>
+      ))
+    }
+  </g>
+
+  <path class="four-face-edge" d={frame(1.25)} />
+</svg>
+
+<svg class="four-feet" viewBox={`0 0 ${width} 100`} aria-hidden="true" focusable="false">
+  <ellipse class="four-feet-shadow" cx="26" cy="92" rx="92" ry="9" />
+  <ellipse class="four-feet-shadow" cx={width - 26} cy="92" rx="92" ry="9" />
+  <g>
+    <path d={foot} fill="url(#four-foot-fill)" />
+    <path class="four-foot-edge" d={footTop} />
+  </g>
+  <g transform={`translate(${width} 0) scale(-1 1)`}>
+    <path d={foot} fill="url(#four-foot-fill)" />
+    <path class="four-foot-edge" d={footTop} />
+  </g>
+</svg>

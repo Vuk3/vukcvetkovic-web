@@ -1,0 +1,1064 @@
+/*
+ * Four in a Row: the game's tokens, its rules and its motion.
+ *
+ * ⚠️ **Only the pages that show this game carry this file.** It is imported by
+ * FourInARow.astro and by games/ArtFour.astro, so it is inlined into the game's
+ * own page and its three locale twins, and into the games index for the
+ * thumbnail - and into nothing else. See docs/design-system.md §9.
+ *
+ * The look is a toy photographed in a studio: one light, high on the left, a
+ * backdrop that sweeps from wall to floor without a horizon, and moulded
+ * plastic that shows it - a sheen along the top of the board, a bevel round
+ * every hole, the shadow each rim throws into its hole, and discs with a
+ * raised rim, grooves and a glint. The board is the one loud thing on the
+ * page, and everything round it is kept quiet so that it can be.
+ */
+
+/*
+ * The layer order, the same line global.css opens with. See the note there:
+ * this file can land in a page ahead of global.css, and whichever stylesheet
+ * names the layers first is the one that orders them.
+ */
+@layer properties, theme, base, components, games, utilities;
+
+:root {
+  /*
+   * ⚠️ **The seventh place the palette opens up, on the cube's grounds: the
+   * colours are the game.** A blue frame with red and yellow discs is what
+   * this game looks like on every shelf, so the board and the discs are the
+   * same in both themes, and only the studio they stand in follows the page.
+   *
+   * Each plastic comes in three: the colour, the light on it and the shade on
+   * its far side, which is all a flat shape needs to read as moulded.
+   */
+  --four-board: #1f56e8;
+  --four-board-light: #5a8dff;
+  --four-board-deep: #0e2f9a;
+
+  --four-red: #e8243a;
+  --four-red-light: #ff8a92;
+  --four-red-deep: #950d1d;
+
+  --four-yellow: #ffc414;
+  --four-yellow-light: #fff1a8;
+  --four-yellow-deep: #bf7a00;
+
+  /* The chess pieces on the opponents' badges: ivory, over a shadow in the
+     board's deepest blue. */
+  --four-piece: #f7f9ff;
+  --four-piece-shade: #0a2273;
+
+  /* Light and shadow, named, since a raw value in a rule is a value nobody
+     can find. The line is the winning line. */
+  --four-line: #ffffff;
+  --four-dark: #000000;
+
+  /*
+   * The studio: a wall that is lightest behind the board and a floor that
+   * darkens towards you, with no line between them - a seamless sweep, the
+   * way product shots are taken - and a faint pool of the board's own blue
+   * where it stands.
+   */
+  --four-wall: #f1f4f9;
+  --four-wall-edge: #dde3ee;
+  --four-floor: #cfd8e6;
+  --four-bloom: color-mix(in oklab, #1f56e8 10%, transparent);
+  --four-shadow: color-mix(in oklab, #0b1733 34%, transparent);
+  /* The back of the board, seen through an empty hole. */
+  --four-hole: color-mix(in oklab, #0e2f9a 9%, transparent);
+}
+
+.dark {
+  /* The studio only: the board and the discs are the game and do not change.
+     At night the wall is navy and the board is lit by its own glow. */
+  --four-wall: #18223a;
+  --four-wall-edge: #0f1627;
+  --four-floor: #0a0f1c;
+  --four-bloom: color-mix(in oklab, #3d73ff 22%, transparent);
+  --four-shadow: color-mix(in oklab, #000 62%, transparent);
+  --four-hole: color-mix(in oklab, #050a18 72%, transparent);
+}
+
+@layer games {
+  /* ---- The thumbnail ---------------------------------------------------- */
+
+  /*
+   * A product shot of the real board at a card's size: the whole board
+   * standing on the floor, a red disc on its way into the fifth column, and
+   * three discs standing on their edges in front of it. The same face and
+   * discs as the game, placed by hundredths of the card's width.
+   */
+  .game-art-four {
+    position: relative;
+    overflow: clip;
+    background:
+      radial-gradient(38% 70% at 58% 42%, var(--four-bloom), transparent 75%),
+      radial-gradient(60% 110% at 58% 30%, var(--four-wall), transparent 80%),
+      linear-gradient(var(--four-wall-edge), var(--four-floor));
+  }
+
+  /* The whole board and its feet in the card's 40 of height: 35 wide is
+     30 of board and 4 of feet, under 4.4 for the disc going in. */
+  .game-art-four .four-well {
+    position: absolute;
+    top: 4.4cqi;
+    left: 42cqi;
+    width: 35cqi;
+  }
+
+  .game-art-four .four-board {
+    margin: 0;
+  }
+
+  .game-art-four .four-disc.is-win,
+  .game-art-four .four-line {
+    animation: none;
+  }
+
+  .game-art-four .four-line {
+    stroke-dashoffset: 0;
+  }
+
+  /* The disc on its way in, half through the slot over the fifth column:
+     its lower half is behind the plastic, the way a disc going in is. Two
+     classes, so it wins over the placement every disc has. */
+  .four-disc.four-art-falling {
+    left: calc(4 * var(--cell) + var(--cell) * 0.07);
+    top: calc(var(--cell) * -0.8);
+  }
+
+  /*
+   * Three discs standing on their edges on the floor in front of the board,
+   * the way pieces are left on a table: the one further back smaller and
+   * higher, each tipped a few degrees, each with its own shadow. The real
+   * disc, face on, at the size `--s` in hundredths of the card.
+   *
+   * ⚠️ **Standing, not stacked.** A stack of red and yellow discs lying flat
+   * was the first version, and seen from the front it was a hamburger.
+   */
+  .four-art-chip {
+    --cell: calc(var(--s) * 1cqi / 0.86);
+
+    position: absolute;
+    left: calc(var(--x) * 1cqi);
+    bottom: calc(var(--y) * 1cqi);
+    width: calc(var(--s) * 1cqi);
+    height: calc(var(--s) * 1cqi);
+  }
+
+  .four-art-chip::before {
+    content: '';
+    position: absolute;
+    right: -12%;
+    bottom: -9%;
+    left: -12%;
+    height: 22%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, var(--four-shadow), transparent);
+  }
+
+  .four-art-chip .four-disc {
+    left: 0;
+    top: 0;
+    rotate: var(--tilt);
+  }
+
+  /* ---- The sprites and the opponents ------------------------------------ */
+
+  /* Markup, not layout: for Battleship's reason, an `<svg>` with only `<defs>`
+     in it is still an inline box. */
+  .four-sprites {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+
+  /*
+   * Four opponents, as four chess pieces on badges of the board's blue,
+   * standing in a row - the real radios the minefield uses, for its reasons,
+   * without a card round each. A box round each was the first version, and
+   * four boxes read as settings rather than as four opponents.
+   */
+  .four-levels {
+    width: 100%;
+    margin: 0 auto clamp(1rem, 2.4vw, 1.5rem);
+  }
+
+  .four-levels-title {
+    display: block;
+    width: 100%;
+    margin-bottom: 0.8rem;
+    font-size: 0.875rem;
+    font-weight: 560;
+    text-align: center;
+    color: var(--site-muted);
+  }
+
+  .four-levels-row {
+    display: flex;
+    justify-content: center;
+    gap: clamp(0.25rem, 3vw, 2.25rem);
+  }
+
+  .four-level {
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    gap: 0.45rem;
+    width: clamp(4.9rem, 21vw, 7.5rem);
+    border-radius: var(--site-radius);
+    padding: 0.35rem 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 560;
+    line-height: 1.2;
+    text-align: center;
+    color: var(--site-muted);
+    cursor: pointer;
+    transition: color 180ms var(--site-ease);
+  }
+
+  .four-rank {
+    display: block;
+    width: clamp(3.4rem, 13vw, 4.6rem);
+    height: clamp(3.4rem, 13vw, 4.6rem);
+    border-radius: 50%;
+    background: radial-gradient(circle at 42% 30%, var(--four-board-light), var(--four-board) 55%, var(--four-board-deep));
+    box-shadow:
+      inset 0 2px 0 color-mix(in oklab, var(--four-line) 28%, transparent),
+      0 8px 16px -8px var(--four-shadow);
+    /* The ones not chosen step back, still blue: drained further than this,
+       the badge goes grey on the dark theme and reads as switched off. */
+    filter: saturate(0.8);
+    opacity: 0.8;
+    transition:
+      filter 220ms var(--site-ease),
+      opacity 220ms var(--site-ease),
+      transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow 220ms var(--site-ease);
+  }
+
+  .four-level:hover {
+    color: var(--site-fg);
+  }
+
+  .four-level:hover .four-rank {
+    filter: saturate(0.85);
+    opacity: 0.92;
+    transform: translateY(-2px);
+  }
+
+  /* The chosen one stands up, in full colour, ringed in the page's accent. */
+  .four-level:has(:checked) {
+    font-weight: 650;
+    color: var(--site-fg);
+  }
+
+  .four-level:has(:checked) .four-rank {
+    filter: none;
+    opacity: 1;
+    transform: translateY(-4px) scale(1.08);
+    box-shadow:
+      inset 0 2px 0 color-mix(in oklab, var(--four-line) 28%, transparent),
+      0 0 0 3px var(--site-bg),
+      0 0 0 5px var(--site-accent),
+      0 14px 22px -10px var(--four-shadow);
+  }
+
+  .four-level:has(:focus-visible) {
+    outline: 2px solid var(--site-accent);
+    outline-offset: 2px;
+  }
+
+  /* Under the badge rather than under the name: a name long enough to take
+     two lines on a phone stood its marks lower than the others'. The badges
+     are all one size. */
+  .four-level-rank {
+    display: flex;
+    order: 1;
+    gap: 3px;
+  }
+
+  .four-level-name {
+    order: 2;
+  }
+
+  .four-level-rank > span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: var(--site-hairline);
+  }
+
+  .four-level-rank > span.is-on {
+    background-color: var(--site-muted);
+  }
+
+  .four-level:has(:checked) .four-level-rank > span.is-on {
+    background-color: var(--site-accent);
+  }
+
+  .four-level-note {
+    /* Reserved whether the line is one or two, so choosing an opponent never
+       moves the board under the pointer. */
+    max-width: 34rem;
+    min-height: 2.8rem;
+    margin: 0.75rem auto 0;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    text-align: center;
+    text-wrap: balance;
+    color: var(--site-muted);
+  }
+
+  /* ---- The studio ------------------------------------------------------- */
+
+  .four-frame {
+    position: relative;
+  }
+
+  /*
+   * The scene: the score and whose move it is along the top, then the board,
+   * then the floor it stands on. The backdrop is a sweep - light behind the
+   * board, darker at the edges and towards you - and the pool of blue is the
+   * board lighting its own surroundings.
+   */
+  .four-stage {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    overflow: clip;
+    border-radius: var(--site-radius-card);
+    background:
+      radial-gradient(34% 46% at 50% 62%, var(--four-bloom), transparent 72%),
+      radial-gradient(62% 70% at 50% 42%, var(--four-wall), transparent 82%),
+      linear-gradient(var(--four-wall-edge) 0%, var(--four-wall-edge) 45%, var(--four-floor) 100%);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--site-fg) 6%, transparent);
+    padding: clamp(1.1rem, 2.6vw, 1.75rem) clamp(1rem, 3vw, 1.5rem) 0;
+  }
+
+  /* The two controls, in the corner of the scene on a wide screen and in a
+     row of their own over the score on a phone. */
+  .four-actions {
+    position: absolute;
+    top: clamp(0.75rem, 1.6vw, 1rem);
+    right: clamp(0.75rem, 1.6vw, 1rem);
+    z-index: 6;
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .four-actions .cta-ghost {
+    border-color: color-mix(in oklab, var(--site-fg) 12%, transparent);
+    background-color: color-mix(in oklab, var(--site-card) 70%, transparent);
+    padding: 0.5rem 0.85rem;
+    font-size: 0.875rem;
+    backdrop-filter: blur(6px);
+  }
+
+  @media (max-width: 48rem) {
+    .four-actions {
+      position: static;
+      justify-self: stretch;
+      justify-content: flex-end;
+      margin-bottom: 0.9rem;
+    }
+  }
+
+  @media (max-width: 34rem) {
+    /* Icons alone, for the reason the sound switch is: the row is short. */
+    .four-actions .cta-ghost {
+      padding-inline: 0.8rem;
+    }
+
+    .four-action-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+
+  /*
+   * The score, as one line: you, your wins, theirs, them.
+   *
+   * The figures are the page's type at its widest and heaviest, the way a
+   * scoreboard is set, and tabular so a win never shifts the line. The side
+   * whose move it is is the only thing in colour: its disc gets a ring of its
+   * own colour, breathing.
+   */
+  .four-score {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(0.8rem, 2.4vw, 1.6rem);
+    width: min(100%, 36rem);
+  }
+
+  .four-side {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+    justify-self: end;
+    font-size: clamp(0.9375rem, 1.6vw, 1.0625rem);
+    font-weight: 620;
+    color: var(--site-muted);
+    transition: color 220ms var(--site-ease);
+  }
+
+  .four-side[data-side='them'] {
+    justify-self: start;
+  }
+
+  .four-side-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .four-chip,
+  .four-side-face {
+    flex: none;
+    width: clamp(1.9rem, 4vw, 2.4rem);
+    height: clamp(1.9rem, 4vw, 2.4rem);
+    border-radius: 50%;
+    transition: box-shadow 220ms var(--site-ease);
+  }
+
+  .four-chip {
+    background: radial-gradient(circle at 36% 30%, var(--four-red-light) 0, var(--four-red) 45%, var(--four-red-deep));
+    box-shadow: inset 0 0 0 3px color-mix(in oklab, var(--four-red-deep) 40%, transparent);
+  }
+
+  .four-side-face {
+    background: radial-gradient(circle at 42% 30%, var(--four-board-light), var(--four-board) 55%, var(--four-board-deep));
+  }
+
+  .four[data-state='you'] .four-side[data-side='you'],
+  .four[data-state='won'] .four-side[data-side='you'],
+  .four[data-state='them'] .four-side[data-side='them'],
+  .four[data-state='lost'] .four-side[data-side='them'] {
+    color: var(--site-fg);
+  }
+
+  .four[data-state='you'] .four-chip {
+    animation: four-turn 1.6s ease-in-out infinite;
+    --ring: var(--four-red);
+  }
+
+  .four[data-state='them'] .four-side-face {
+    animation: four-turn 1.6s ease-in-out infinite;
+    --ring: var(--four-yellow);
+  }
+
+  .four-tally {
+    display: flex;
+    align-items: baseline;
+    gap: 0.28em;
+    font-size: clamp(1.9rem, 4.6vw, 2.75rem);
+    font-stretch: 125%;
+    font-weight: 780;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .four-tally-colon {
+    position: relative;
+    top: -0.08em;
+    font-weight: 400;
+    color: var(--site-muted);
+  }
+
+  @media (max-width: 34rem) {
+    /* Theirs is the badge alone on a phone: "Großmeister" and "Grand maître"
+       do not fit beside the score in 360 pixels, a name cut to "Großmeis…"
+       reads as a fault, and the piece says who it is - with the name in the
+       row of four right above. */
+    .four-side[data-side='them'] .four-side-name {
+      display: none;
+    }
+  }
+
+  /* Whose move it is, or how it ended, under the score. Every sentence is in
+     the markup and the state picks one. */
+  .four-status {
+    position: relative;
+    margin-top: 0.55rem;
+    text-align: center;
+  }
+
+  .four-status-line {
+    font-size: 0.9375rem;
+    font-weight: 540;
+    line-height: 1.4;
+    color: var(--site-muted);
+  }
+
+  .four-status-line > span {
+    display: none;
+  }
+
+  .four[data-state='you'] [data-for='you'],
+  .four[data-state='them'] [data-for='them'],
+  .four[data-state='won'] [data-for='won'],
+  .four[data-state='lost'] [data-for='lost'],
+  .four[data-state='draw'] [data-for='draw'] {
+    display: inline;
+  }
+
+  .four:is([data-state='won'], [data-state='lost'], [data-state='draw']) .four-status-line {
+    font-weight: 650;
+    color: var(--site-fg);
+  }
+
+  /* Three dots after "their move" while they think. */
+  .four-dots {
+    display: inline-flex;
+    gap: 3px;
+    margin-left: 0.35em;
+    vertical-align: middle;
+  }
+
+  .four-dots > span {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: currentColor;
+    animation: four-think 900ms ease-in-out infinite;
+  }
+
+  .four-dots > span:nth-child(2) {
+    animation-delay: 150ms;
+  }
+
+  .four-dots > span:nth-child(3) {
+    animation-delay: 300ms;
+  }
+
+  /*
+   * Play again, under the line that says how it ended.
+   *
+   * ⚠️ **Hung below the line rather than set under it**, in the space above
+   * the board where the disc in hand was. Set under it, the scene grew by a
+   * button's height the moment a game ended and pushed the whole board down
+   * under the last disc - the one moment you are looking at it hardest.
+   * Nothing is in that space once a game is over.
+   */
+  .four-again {
+    position: absolute;
+    top: calc(100% + 0.7rem);
+    right: 0;
+    left: 0;
+    z-index: 5;
+    display: none;
+    /* Centred by its margins rather than a `translate`, which `four-rise`
+       animates. */
+    width: max-content;
+    margin-inline: auto;
+    padding: 0.55rem 1.2rem;
+    font-size: 0.9375rem;
+    white-space: nowrap;
+  }
+
+  .four:is([data-state='won'], [data-state='lost'], [data-state='draw']) .four-again {
+    display: inline-flex;
+    animation: four-rise 320ms var(--site-ease) 450ms both;
+  }
+
+  /* ---- The board -------------------------------------------------------- */
+
+  /*
+   * The board's width, and with it every length on it.
+   *
+   * ⚠️ **A container, and `--cell` is declared here and resolved on the
+   * board's children**, for the reason `--u` is on the cube's stage: an
+   * unregistered property is carried as its tokens, so the `cqi` in it is
+   * measured against the nearest container of whatever uses it, which is
+   * this. One square is a 7.36th of the width - seven squares and a frame of
+   * 0.18 of one each side - so the whole board is one number.
+   *
+   * ⚠️ **As wide as the screen is tall allows, and never taller than it.**
+   * From the space above the board to the floor is 1.22 of the width, and a
+   * board whose bottom row is below the fold is a board you drop discs into
+   * blind. 12.5 rem is the header and the score over the board.
+   */
+  .four-well {
+    --cell: calc(100cqi / 7.36);
+
+    container-type: inline-size;
+    /* Less a little each side, for the feet, which spread half a square past
+       the board and were cut by the edge of the scene on a phone. */
+    width: min(calc(100% - 1.6rem), 38rem, calc((100svh - 12.5rem) / 1.22));
+  }
+
+  /*
+   * ⚠️ **No background, and that is what makes the holes holes.** The face is
+   * a drawing over everything else and the only thing here with plastic in
+   * it; what shows through a hole is whatever is under it in this box, which
+   * is a disc or the back.
+   */
+  .four-board {
+    position: relative;
+    /* Its own stacking context, so the feet and the edge can sit behind
+       everything on the board without dropping behind the studio as well. */
+    isolation: isolate;
+    aspect-ratio: 736 / 636;
+    /* The space above for the disc in hand, and below for the feet. */
+    margin: calc(var(--cell) * 1.45) 0 calc(var(--cell) * 1.02);
+  }
+
+  /*
+   * The thickness of the board, showing along its bottom edge, and the soft
+   * shadow it throws on the floor between the feet.
+   *
+   * ⚠️ **Only a strip along the bottom.** It sits behind everything on the
+   * board, so a slab the size of the board shows through every hole: the
+   * first version did, and every empty hole looked filled with navy.
+   */
+  .four-board::before {
+    content: '';
+    position: absolute;
+    right: 0.4%;
+    bottom: calc(var(--cell) * -0.1);
+    left: 0.4%;
+    z-index: -1;
+    /* Starts below the bottom row's holes, which end 0.29 of a square above
+       the frame's edge, and runs a tenth of a square past it. */
+    height: calc(var(--cell) * 0.34);
+    border-radius: 0 0 calc(var(--cell) * 0.34) calc(var(--cell) * 0.34);
+    background: var(--four-board-deep);
+  }
+
+  .four-board::after {
+    content: '';
+    position: absolute;
+    right: 4%;
+    bottom: calc(var(--cell) * -0.95);
+    left: 4%;
+    z-index: -3;
+    height: calc(var(--cell) * 0.5);
+    border-radius: 50%;
+    background: radial-gradient(closest-side, var(--four-shadow), transparent);
+  }
+
+  /* What is behind the board, seen through the holes: the studio, through the
+     back of the frame. */
+  .four-back {
+    position: absolute;
+    inset: calc(var(--cell) * 0.18);
+    border-radius: calc(var(--cell) * 0.12);
+    background-color: var(--four-hole);
+  }
+
+  /* The column the disc in hand is over, lit from behind in the board's own
+     blue, so its empty holes glow rather than turning grey. */
+  .four-glow {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--col, 3) * var(--cell));
+    width: var(--cell);
+    background: linear-gradient(color-mix(in oklab, var(--four-board-light) 70%, transparent), color-mix(in oklab, var(--four-board-light) 30%, transparent));
+    opacity: 0;
+    transition:
+      left 160ms var(--site-ease),
+      opacity 200ms var(--site-ease);
+  }
+
+  .four-glow.is-up {
+    opacity: 0.6;
+  }
+
+  .four-discs {
+    position: absolute;
+    inset: calc(var(--cell) * 0.18);
+  }
+
+  /*
+   * A disc, made the way the real ones are: a raised rim, a recessed face
+   * with grooves in it, and one glint where the light catches it.
+   *
+   * The body is domed by a gradient off the upper left, the rim is two inset
+   * shadows - light on its top edge, shade on its bottom one - `::before` is
+   * the recessed face with its concentric grooves in fractions of its own
+   * radius, so they are the same at any size, and `::after` is the glint.
+   *
+   * ⚠️ **Placed by two custom properties and moved by `translate` alone.** The
+   * fall is a `translate` keyframe from the module, the win is a `scale`
+   * keyframe here, and the two never meet on one property.
+   */
+  .four-disc {
+    --c: var(--four-red);
+    --c-light: var(--four-red-light);
+    --c-deep: var(--four-red-deep);
+
+    position: absolute;
+    left: calc(var(--col, 0) * var(--cell) + var(--cell) * 0.07);
+    top: calc((5 - var(--row, 0)) * var(--cell) + var(--cell) * 0.07);
+    width: calc(var(--cell) * 0.86);
+    height: calc(var(--cell) * 0.86);
+    border-radius: 50%;
+    background: radial-gradient(circle at 36% 28%, var(--c-light) 0%, var(--c) 40%, var(--c) 62%, var(--c-deep) 100%);
+    box-shadow:
+      inset 0 calc(var(--cell) * 0.024) calc(var(--cell) * 0.01) color-mix(in oklab, var(--c-light) 70%, transparent),
+      inset 0 calc(var(--cell) * -0.03) calc(var(--cell) * 0.045) color-mix(in oklab, var(--c-deep) 85%, transparent);
+    transition:
+      opacity 420ms var(--site-ease),
+      filter 420ms var(--site-ease);
+  }
+
+  .four-disc[data-player='2'] {
+    --c: var(--four-yellow);
+    --c-light: var(--four-yellow-light);
+    --c-deep: var(--four-yellow-deep);
+  }
+
+  .four-disc::before {
+    content: '';
+    position: absolute;
+    inset: 17%;
+    border-radius: 50%;
+    background:
+      repeating-radial-gradient(circle closest-side, transparent 0 15%, color-mix(in oklab, var(--c-deep) 12%, transparent) 15% 18%),
+      radial-gradient(circle at 40% 32%, color-mix(in oklab, var(--c-light) 55%, var(--c)), var(--c) 55%, color-mix(in oklab, var(--c-deep) 45%, var(--c)));
+    box-shadow:
+      inset 0 calc(var(--cell) * 0.028) calc(var(--cell) * 0.03) color-mix(in oklab, var(--c-deep) 80%, transparent),
+      0 calc(var(--cell) * 0.014) 0 color-mix(in oklab, var(--c-light) 65%, transparent);
+  }
+
+  .four-disc::after {
+    content: '';
+    position: absolute;
+    top: 8%;
+    left: 15%;
+    width: 42%;
+    height: 22%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in oklab, var(--four-line) 78%, transparent), transparent);
+    rotate: -28deg;
+  }
+
+  /*
+   * The disc in hand, above the board over the column it would go down, with
+   * its shadow on the board's top edge. It slides between columns by `--aim`,
+   * eased, and a disc dropped from it starts exactly where it was. It fades
+   * in and vanishes at once: fading out would leave a second disc at the top
+   * for the first frames of the one that fell from it.
+   */
+  .four-hover {
+    left: calc(var(--cell) * 0.07);
+    top: calc(var(--cell) * (0.07 - 1.3));
+    translate: calc(var(--aim, 3) * var(--cell)) 0;
+    opacity: 0;
+    filter: drop-shadow(0 calc(var(--cell) * 0.16) calc(var(--cell) * 0.09) color-mix(in oklab, var(--four-dark) 30%, transparent));
+    transition: translate var(--glide, 140ms) var(--site-ease);
+  }
+
+  .four-hover.is-up {
+    opacity: 1;
+    animation: four-hold 2.4s ease-in-out infinite;
+    transition:
+      translate var(--glide, 140ms) var(--site-ease),
+      opacity 160ms var(--site-ease);
+  }
+
+  .four-hover.is-still {
+    transition: none;
+  }
+
+  /* Where it would land: the same disc, seen faintly through its hole. */
+  .four-ghost {
+    opacity: 0;
+    transition:
+      left 150ms var(--site-ease),
+      top 150ms var(--site-ease),
+      opacity 150ms var(--site-ease);
+  }
+
+  .four-ghost.is-up {
+    opacity: 0.34;
+  }
+
+  /*
+   * The four that won breathe, and the rest step back a little.
+   *
+   * ⚠️ **A little, by opacity alone.** A yellow disc taken further back than
+   * this, or desaturated, stops being yellow against the navy of the dark
+   * theme and turns mustard - the one colour on the board that reads as
+   * dirty rather than dim.
+   */
+  .four-disc.is-win {
+    animation: four-win 820ms var(--site-ease) 380ms infinite alternate both;
+  }
+
+  .four-disc.is-dim {
+    opacity: 0.68;
+  }
+
+  /*
+   * The face, over the discs.
+   *
+   * ⚠️ **The shadow it casts falls into the holes as well as round the
+   * board**, and that is deliberate: it is what puts the plastic in front of
+   * the discs rather than level with them. A `drop-shadow` on a drawing that
+   * never changes is painted once, and the discs move underneath it on their
+   * own layers.
+   */
+  .four-face {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    filter: drop-shadow(0 calc(var(--cell) * 0.05) calc(var(--cell) * 0.05) color-mix(in oklab, var(--four-dark) 40%, transparent));
+    pointer-events: none;
+  }
+
+  .four-face-top {
+    stop-color: var(--four-board-light);
+  }
+
+  .four-face-mid {
+    stop-color: var(--four-board);
+  }
+
+  .four-face-bottom {
+    stop-color: var(--four-board-deep);
+  }
+
+  .four-sheen-strong {
+    stop-color: var(--four-line);
+    stop-opacity: 0.34;
+  }
+
+  .four-sheen-none {
+    stop-color: var(--four-line);
+    stop-opacity: 0;
+  }
+
+  .four-sheen-foot {
+    stop-color: var(--four-dark);
+    stop-opacity: 0.16;
+  }
+
+  .four-face-bevel {
+    fill: none;
+    stroke-width: 5.2;
+  }
+
+  .four-bevel-dark {
+    stop-color: var(--four-dark);
+    stop-opacity: 0.42;
+  }
+
+  .four-bevel-mid {
+    stop-color: var(--four-board);
+    stop-opacity: 0;
+  }
+
+  .four-bevel-light {
+    stop-color: var(--four-line);
+    stop-opacity: 0.5;
+  }
+
+  .four-hollow-none {
+    stop-color: var(--four-dark);
+    stop-opacity: 0;
+  }
+
+  .four-hollow-deep {
+    stop-color: var(--four-board-deep);
+    stop-opacity: 0.7;
+  }
+
+  .four-face-edge {
+    fill: none;
+    stroke: var(--four-line);
+    stroke-width: 2.5;
+    stroke-opacity: 0.28;
+  }
+
+  /* The feet, behind the board's two bottom corners, and their shadows. */
+  .four-feet {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: -2;
+    width: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .four-foot-top {
+    stop-color: var(--four-board);
+  }
+
+  .four-foot-bottom {
+    stop-color: var(--four-board-deep);
+  }
+
+  .four-foot-edge {
+    fill: none;
+    stroke: var(--four-board-light);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    opacity: 0.45;
+  }
+
+  .four-feet-shadow {
+    fill: var(--four-shadow);
+    filter: blur(6px);
+  }
+
+  /* The winning line, drawn in over the four from one end to the other. */
+  .four-lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .four-line {
+    fill: none;
+    stroke: var(--four-line);
+    stroke-width: 11;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    filter: drop-shadow(0 0 6px color-mix(in oklab, var(--four-line) 80%, transparent)) drop-shadow(0 2px 3px color-mix(in oklab, var(--four-dark) 40%, transparent));
+    animation: four-draw 460ms var(--site-ease) 300ms forwards;
+  }
+
+  /*
+   * The seven columns, over the whole board and the space above it, so a
+   * press on a hole, on the bar between two, or on the air above the board is
+   * a press on that column.
+   *
+   * ⚠️ **`pan-y`, not `none`.** A finger sliding along the top chooses a
+   * column, and one sliding down the page is scrolling it - the board is most
+   * of a phone's width, and a page that cannot be scrolled from on top of it
+   * is a page stuck on the game.
+   */
+  .four-columns {
+    position: absolute;
+    top: calc(var(--cell) * -1.45);
+    right: calc(var(--cell) * 0.18);
+    bottom: 0;
+    left: calc(var(--cell) * 0.18);
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    touch-action: pan-y;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .four-column {
+    border: 0;
+    border-radius: calc(var(--cell) * 0.3);
+    background: none;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .four-column:focus-visible {
+    outline: 2px solid var(--site-accent);
+    outline-offset: -1px;
+  }
+
+  .four:not([data-state='you']) .four-column {
+    cursor: default;
+  }
+
+  .four[data-state='you'] .four-column[aria-disabled='true'] {
+    cursor: not-allowed;
+  }
+
+  .four-hint {
+    max-width: 44rem;
+    margin: clamp(0.8rem, 2vw, 1.15rem) auto 0;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    text-align: center;
+    text-wrap: balance;
+    color: var(--site-muted);
+  }
+}
+
+/* A winning disc breathing, a little bigger and a little brighter. `scale` so
+   it composes with the fall's `translate`. */
+@keyframes four-win {
+  from {
+    scale: 1;
+    filter: brightness(1);
+  }
+
+  to {
+    scale: 1.07;
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes four-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* The disc in hand, held: a slow drift of a few percent of a square, the way
+   a disc between two fingers is never quite still. */
+@keyframes four-hold {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(calc(var(--cell) * -0.045));
+  }
+}
+
+/* Whose move it is: a ring of their colour round their disc, breathing. */
+@keyframes four-turn {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 2px var(--site-bg),
+      0 0 0 4px color-mix(in oklab, var(--ring) 90%, transparent);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 2px var(--site-bg),
+      0 0 0 7px color-mix(in oklab, var(--ring) 35%, transparent);
+  }
+}
+
+@keyframes four-think {
+  0%,
+  100% {
+    opacity: 0.25;
+    translate: 0 0;
+  }
+
+  40% {
+    opacity: 1;
+    translate: 0 -2px;
+  }
+}
+
+@keyframes four-rise {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}

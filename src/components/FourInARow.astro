@@ -1,0 +1,415 @@
+---
+/**
+ * The Four in a Row page, shared by the four locales.
+ *
+ * The opponents come first, as in Battleship, since who you are playing is
+ * the whole of the difficulty. Then the score against whoever that is, the
+ * line naming whose move it is, and the board.
+ *
+ * ⚠️ **The board is three layers and the order is the point**: the discs, the
+ * plastic face over them with the holes cut in it, and the seven columns over
+ * both as real buttons. A disc falls behind the face and shows through the
+ * holes, the way it does on the real one, and a press anywhere in a column -
+ * the holes, the bars between them, the space above the board - is that
+ * column. See styles/games/four.css.
+ *
+ * Which line is showing over the board is decided in CSS off `data-state` on
+ * the game, like Battleship's panels. Every sentence it can say is in the
+ * markup, so the script sets one attribute and never writes a string there.
+ */
+import { ArrowLeft, RotateCcw } from "@lucide/astro";
+import type { Lang } from "../i18n/types";
+import { getDict, localizePath } from "../i18n/utils";
+import { COLUMNS, LEVELS } from "../games/four/game";
+import { site } from "../site";
+import GameStamp from "./GameStamp.astro";
+import FourFace from "./games/FourFace.astro";
+import FourSprites from "./games/FourSprites.astro";
+import Section from "./Section.astro";
+import SoundToggle from "./SoundToggle.astro";
+/* This game's rules, then the ones every game page shares, in that order:
+   see the note at the top of styles/games/shared.css. */
+import "../styles/games/four.css";
+import "../styles/games/shared.css";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = getDict(lang);
+
+const copy = dict.games.items.fourInARow;
+
+const index = localizePath("/games/", lang);
+
+const columns = Array.from({ length: COLUMNS }, (_, i) => i);
+const first = LEVELS[0];
+---
+
+<div class="page-head">
+  <div class="shell shell-wide">
+    <div class="crumb-row">
+      <a href={index} class="crumb enter">
+        <ArrowLeft class="size-4" aria-hidden="true" />
+        {dict.games.label}
+      </a>
+
+      <GameStamp lang={lang} date={site.games.fourInARow.date} />
+    </div>
+
+    <h1 class="page-title enter" style="--enter-delay:80ms">{copy.name}</h1>
+
+    <p class="page-lead enter" style="--enter-delay:160ms">{copy.lead}</p>
+  </div>
+</div>
+
+<div class="sec-lite">
+  <div class="shell shell-wide">
+    <div
+      class="four enter"
+      style="--enter-delay:240ms"
+      data-game
+      data-state="you"
+      data-label-column={copy.column}
+      data-label-full={copy.columnFull}
+      data-msg-you={copy.moves.you}
+      data-msg-them={copy.moves.them}
+    >
+      <FourSprites />
+
+      {/*
+        Four opponents, as real radios for the minefield's reasons: one tab
+        stop for the set, the arrow keys already work, and the label is the
+        control. The same arrangement as Battleship's, down to the line under
+        the set that is written from whichever is chosen.
+      */}
+      <fieldset class="four-levels">
+        <legend class="four-levels-title">{copy.opponents}</legend>
+
+        <div class="four-levels-row">
+          {
+            LEVELS.map((id, i) => (
+              <label class="four-level" data-note={copy.levels[id].note} data-name={copy.levels[id].name}>
+                <input
+                  type="radio"
+                  name="four-level"
+                  value={id}
+                  checked={i === 0}
+                  class="sr-only"
+                  data-level-option
+                />
+                <svg class="four-rank" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+                  <use href={`#four-face-${id}`} />
+                </svg>
+                <span class="four-level-name">{copy.levels[id].name}</span>
+
+                {/* How strong each one is, as marks: strength is position in
+                    the list. Decorative, for the reason Battleship's are. */}
+                <span class="four-level-rank" aria-hidden="true">
+                  {LEVELS.map((_, n) => (
+                    <span class={n <= i ? "is-on" : undefined} />
+                  ))}
+                </span>
+              </label>
+            ))
+          }
+        </div>
+
+        <p class="four-level-note" data-note-out aria-live="polite">{copy.levels[first].note}</p>
+      </fieldset>
+
+      {/*
+        The whole game is one scene: the score and whose move it is along the
+        top, the board standing in the middle, and the floor it stands on. The
+        two controls sit in its corner rather than in a bar of their own, so
+        nothing between the choice of opponent and the board competes with it.
+      */}
+      <div class="four-frame" data-frame>
+        {/* The burst over a won game, above the board. */}
+        <div class="game-burst" aria-hidden="true" data-burst></div>
+
+        <div class="four-stage">
+          <div class="four-actions">
+            <SoundToggle lang={lang} />
+
+            <button type="button" class="cta-ghost" data-action="restart">
+              <RotateCcw class="size-4 shrink-0" aria-hidden="true" />
+              <span class="four-action-label">{copy.newGame}</span>
+            </button>
+          </div>
+
+          {/*
+            The score against whoever is chosen, as one line: you, your wins,
+            theirs, them. The side whose move it is lights up. The two figures
+            carry their names for a screen reader, and the rest is decoration
+            it hears from the live region instead, once.
+          */}
+          <div class="four-score">
+            <div class="four-side" data-side="you" aria-hidden="true">
+              <span class="four-chip" data-player="1"></span>
+              <span class="four-side-name">{copy.you}</span>
+            </div>
+
+            <p class="four-tally">
+              <span class="sr-only">{copy.wins}</span>
+              <span class="four-tally-n" data-wins>0</span>
+              <span class="four-tally-colon" aria-hidden="true">:</span>
+              <span class="sr-only">{copy.losses}</span>
+              <span class="four-tally-n" data-losses>0</span>
+            </p>
+
+            <div class="four-side" data-side="them" aria-hidden="true">
+              <span class="four-side-name" data-them-name>{copy.levels[first].name}</span>
+              <svg class="four-side-face" viewBox="0 0 64 64" focusable="false">
+                <use href={`#four-face-${first}`} data-them-face />
+              </svg>
+            </div>
+          </div>
+
+          <div class="four-status">
+            <p class="four-status-line" aria-hidden="true">
+              <span data-for="you">{copy.status.you}</span>
+              <span data-for="them">{copy.status.them}<span class="four-dots"><span></span><span></span><span></span></span></span>
+              <span data-for="won">{copy.status.won}</span>
+              <span data-for="lost">{copy.status.lost}</span>
+              <span data-for="draw">{copy.status.draw}</span>
+            </p>
+
+            <button type="button" class="cta four-again" data-action="restart">{copy.again}</button>
+          </div>
+
+          <div class="four-well">
+            <div class="four-board" data-board>
+              <div class="four-back">
+                <span class="four-glow" data-glow></span>
+              </div>
+
+              <div class="four-discs" data-discs>
+                <span class="four-disc four-ghost" data-ghost data-player="1"></span>
+                <span class="four-disc four-hover" data-hover data-player="1"></span>
+              </div>
+
+              <FourFace />
+
+              <svg class="four-lines" viewBox="0 0 736 636" aria-hidden="true" focusable="false" data-lines></svg>
+
+              {/*
+                The seven columns, over the whole board and the space above it.
+                Their names are written here in the page's language and the
+                module adds "full" when a column is, from the same two
+                patterns on the game element.
+              */}
+              <div class="four-columns" role="group" aria-label={copy.board} data-columns>
+                {
+                  columns.map((i) => (
+                    <button
+                      type="button"
+                      class="four-column"
+                      data-col={i}
+                      tabindex={i === 3 ? 0 : -1}
+                      aria-label={copy.column.replace("{n}", String(i + 1))}
+                    />
+                  ))
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="four-hint">{copy.hint}</p>
+
+      <p class="sr-only" aria-live="polite" data-live></p>
+    </div>
+  </div>
+</div>
+
+<Section id="how" label={copy.how.label} width="wide" tone="band">
+  <ul class="svc-grid">
+    {
+      copy.how.items.map((item) => (
+        <li class="card reveal-item">
+          <h3 class="svc-title">{item.title}</h3>
+          <p class="mt-2.5 text-muted">{item.description}</p>
+        </li>
+      ))
+    }
+  </ul>
+</Section>
+
+<Section id="build" label={copy.close.label} width="wide" tone="panel">
+  <div class="prose-columns text-muted">
+    {copy.close.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+  </div>
+</Section>
+
+<script>
+  import { LEVELS, mount, type LevelId } from "../games/four/game";
+  import { voices } from "../games/four/sounds";
+  import { scatter } from "../games/burst";
+  import { scoreRecord } from "../games/record";
+  import { createSound } from "../games/sound";
+
+  /*
+   * The page's side of the game: the opponents, the score against each, and
+   * the sentences read out. Everything about the board itself is in the
+   * module.
+   *
+   * A score per opponent, for Battleship's reason: three wins against the
+   * beginner and three against the grandmaster are not the same three.
+   */
+  const root = document.querySelector<HTMLElement>("[data-game]");
+  const board = root?.querySelector<HTMLElement>("[data-board]");
+  const discs = root?.querySelector<HTMLElement>("[data-discs]");
+  const hover = root?.querySelector<HTMLElement>("[data-hover]");
+  const ghost = root?.querySelector<HTMLElement>("[data-ghost]");
+  const glow = root?.querySelector<HTMLElement>("[data-glow]");
+  const lines = root?.querySelector<SVGSVGElement>("[data-lines]");
+  const group = root?.querySelector<HTMLElement>("[data-columns]");
+
+  if (root && board && discs && hover && ghost && glow && lines && group) {
+    const winsOut = root.querySelector<HTMLElement>("[data-wins]");
+    const lossesOut = root.querySelector<HTMLElement>("[data-losses]");
+    const live = root.querySelector<HTMLElement>("[data-live]");
+    const burst = root.querySelector<HTMLElement>("[data-burst]");
+    const options = root.querySelectorAll<HTMLInputElement>("[data-level-option]");
+    const themFace = root.querySelector<SVGUseElement>("[data-them-face]");
+    const themName = root.querySelector<HTMLElement>("[data-them-name]");
+    const noteOut = root.querySelector<HTMLElement>("[data-note-out]");
+
+    const lang = document.documentElement.lang || "en";
+    const format = new Intl.NumberFormat(lang);
+
+    /*
+     * Wins and losses, each a record of its own. Any count is a count a game
+     * could have produced, so there is nothing to bound it by - the signature
+     * is what stops a figure typed into storage from sticking.
+     */
+    const scores = new Map<LevelId, { wins: ReturnType<typeof scoreRecord>; losses: ReturnType<typeof scoreRecord> }>();
+    for (const id of LEVELS) {
+      scores.set(id, {
+        wins: scoreRecord(`game-four-wins-${id}`),
+        losses: scoreRecord(`game-four-losses-${id}`),
+      });
+    }
+
+    /** The opponent last played, read back through the real list. */
+    const LEVEL_KEY = "game-four-level";
+
+    const stored = (): LevelId => {
+      try {
+        const value = localStorage.getItem(LEVEL_KEY);
+        if (value && (LEVELS as readonly string[]).includes(value)) return value as LevelId;
+      } catch {
+        /* Storage unavailable; the beginner is the right place to start anyway. */
+      }
+
+      return "beginner";
+    };
+
+    let level = stored();
+
+    const sound = createSound(voices);
+    sound.bind(root);
+
+    /* A won game bursts in the two discs' colours and the board's blue. */
+    const COLOURS = ["var(--four-red)", "var(--four-red-light)", "var(--four-yellow)", "var(--four-board-light)"];
+
+    const showScore = () => {
+      const score = scores.get(level);
+      if (winsOut) winsOut.textContent = format.format(score?.wins.read() ?? 0);
+      if (lossesOut) lossesOut.textContent = format.format(score?.losses.read() ?? 0);
+    };
+
+    /** The chosen label, which carries the opponent's name and its note. */
+    const picked = () => root.querySelector<HTMLInputElement>("[data-level-option]:checked")?.closest<HTMLElement>("[data-note]");
+
+    /** Who you are playing, on the line over the board: the badge and the name. */
+    const showOpponent = () => {
+      const label = picked();
+      if (noteOut && label?.dataset.note) noteOut.textContent = label.dataset.note;
+      if (themName && label?.dataset.name) themName.textContent = label.dataset.name;
+      // Written only when the opponent changes, never per move: a `<use>` is
+      // rebuilt whenever its `href` is set, even to the same value.
+      themFace?.setAttribute("href", `#four-face-${level}`);
+    };
+
+    const say = (text: string) => {
+      if (live) live.textContent = text;
+    };
+
+    const controller = mount(
+      {
+        root,
+        board,
+        discs,
+        hover,
+        ghost,
+        glow,
+        lines,
+        columns: [...group.querySelectorAll<HTMLButtonElement>("[data-col]")],
+
+        onMove(p, column) {
+          const pattern = p === 1 ? root.dataset.msgYou : root.dataset.msgThem;
+          const name = picked()?.dataset.name ?? "";
+          say((pattern ?? "").replace("{n}", format.format(column + 1)).replace("{name}", name));
+        },
+
+        onCue(cue, amount) {
+          sound.play(cue, amount);
+        },
+
+        onState(state) {
+          root.dataset.state = state;
+
+          if (state !== "won" && state !== "lost" && state !== "draw") return;
+
+          if (state === "won" && burst) scatter(burst, COLOURS);
+
+          const score = scores.get(level);
+          if (score && state !== "draw") {
+            const record = state === "won" ? score.wins : score.losses;
+            record.write((record.read() ?? 0) + 1);
+            showScore();
+          }
+
+          // The line over the board says how it ended, and a screen reader is
+          // told the same words after the last move.
+          const line = root.querySelector<HTMLElement>(`[data-for="${state}"]`);
+          window.setTimeout(() => say(line?.textContent ?? ""), 700);
+        },
+      },
+      level,
+    );
+
+    // The markup checks the first opponent, because it has to check one and
+    // the stored choice is not known until here.
+    for (const option of options) option.checked = option.value === level;
+
+    showScore();
+    showOpponent();
+
+    root.addEventListener("change", (event) => {
+      const next = (event.target as HTMLInputElement | null)?.value as LevelId | undefined;
+      if (!next || !(LEVELS as readonly string[]).includes(next) || next === level) return;
+
+      level = next;
+
+      try {
+        localStorage.setItem(LEVEL_KEY, level);
+      } catch {
+        /* Nothing to do; the choice simply will not outlive the page. */
+      }
+
+      showScore();
+      showOpponent();
+      controller.setLevel(level);
+    });
+
+    root.addEventListener("click", (event) => {
+      const button = (event.target as Element | null)?.closest<HTMLElement>("[data-action]");
+      if (button?.dataset.action === "restart") controller.restart();
+    });
+  }
+</script>

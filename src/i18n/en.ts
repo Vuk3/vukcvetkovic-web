@@ -51,7 +51,7 @@ const en = {
     paragraphs: [
       "I work on client projects from the first data model to the deployment on AWS. I always start from the domain: what the data is, who can access it, and which systems it has to talk to, and the API, the services and the React interface follow from that.",
       "I have a master’s in software engineering. My thesis compared two machine learning ecosystems on the same task: a YOLOv8m model in Python and an ML.NET model in .NET, behind one NestJS gateway and one React front end. For my bachelor’s thesis I implemented the RC6 and XXTEA ciphers from their specifications.",
-      "The best example of my front end work is this site itself: four languages, and six games written without a canvas or a game library. Each game has a write-up on how it was built.",
+      "The best example of my front end work is this site itself: four languages, and seven games written without a canvas or a game library. Each game has a write-up on how it was built.",
     ],
   },
 
@@ -624,7 +624,7 @@ const en = {
 
     /**
      * The sound switch in every game's bar. A toggle, so it names the thing
-     * rather than the action, and one word for all six games because it is
+     * rather than the action, and one word for all seven games because it is
      * one switch - see SoundToggle.astro.
      */
     sound: "Sound",
@@ -649,7 +649,7 @@ const en = {
     index: {
       metaTitle: "Games - Vuk Cvetković",
       metaDescription:
-        "Browser games by Vuk Cvetković: 2048, Minesweeper, Memory in twelve levels, Battleship against four opponents, a game about merging worlds into bigger ones, and a 3D cube from 2×2 to 5×5. Each gets a page of its own.",
+        "Browser games by Vuk Cvetković: 2048, Minesweeper, Memory in twelve levels, Battleship against four opponents, a game about merging worlds into bigger ones, a 3D cube from 2×2 to 5×5, and four in a row against a grandmaster. Each gets a page of its own.",
       heading: "Games",
       intro:
         "Games worth more than one go. Each has a page of its own, and underneath it a write-up on how it was built, for anyone who wants that too.",
@@ -1397,6 +1397,123 @@ const en = {
             "After a turn, a sticker takes the position of the place it landed in rather than keeping the rotation that got it there. The two can differ by a quarter turn in the sticker's own plane, which cannot be seen because every sticker is symmetric about its centre, and it means no rounding error builds up however long you play.",
             "Each sticker is lit from one direction, fixed to you rather than to the puzzle, so the face on top is the bright one and the face on the right the dim one however the puzzle is turned. The brightness is recalculated as the view turns and only written when it changes by a visible amount. The sounds are made in the browser as well: every turn is two clicks a few milliseconds apart over a short, low knock.",
             "The hints follow the method people are taught rather than the shortest solution, because a shortest solution can only say that a move is one closer, which teaches nothing. The 3×3 is solved in the seven steps of the layer by layer method, the 2×2 in three and the pyramid in three, and each move carries its step, the piece it is about and, inside a sequence, the sequence itself. Where a step is judgement rather than a sequence, such as which white edge to bring down next and how, a short search finds the fewest moves for that one piece that keep everything already placed in place. The plan is worked out again whenever the puzzle is not where it said it would be, and it was checked by following it from fifteen hundred random scrambles, every one of which it solved.",
+          ],
+        },
+      },
+
+      fourInARow: {
+        /**
+         * Not the trade name, in any of the four, for the cube's reason. The
+         * names the game is sold under are registered marks, and two of them
+         * are the everyday names in French and German, so every title here
+         * says what the game is instead: four in a row.
+         */
+        name: "Four in a Row",
+
+        tagline:
+          "Drop a disc and get four in a row before they do. Four opponents, from one that barely looks to one that sees fifteen moves ahead.",
+
+        metaDescription:
+          "Four in a row in the browser, against four opponents: the classic seven by six board, discs that fall and bounce, and a grandmaster that sees fifteen moves ahead.",
+        lead: "Drop your discs into the board and line up four before your opponent does: across, down or on a diagonal. Who you play is the whole of the difficulty. The beginner barely looks, and the grandmaster sees further ahead than you will.",
+
+        opponents: "Choose your opponent",
+        /**
+         * A name and one line on how hard each one is.
+         *
+         * Four steps on the way up rather than adjectives, for the reason
+         * Battleship uses ranks: "easy" says how it will go for you, and a
+         * title says who you are up against. ⚠️ The line says what beating it
+         * takes, not how it works, which is the write-up's job further down.
+         */
+        levels: {
+          beginner: {
+            name: "Beginner",
+            note: "Plays near the middle and only sees its own fours. It will not block yours.",
+          },
+          amateur: {
+            name: "Amateur",
+            note: "Takes a win, blocks yours and never hands you one. Two threats at once will beat it.",
+          },
+          master: {
+            name: "Master",
+            note: "Looks seven moves ahead. A trap will not do it, you need a plan.",
+          },
+          grandmaster: {
+            name: "Grandmaster",
+            note: "Sees up to fifteen moves ahead and plays its best. Expect to lose, above all when it goes first.",
+          },
+        },
+
+        /** Against whoever is chosen, and kept for each of them. */
+        wins: "Wins",
+        losses: "Losses",
+        newGame: "New game",
+
+        /** Your side of the line over the board. Theirs is the opponent's
+         *  name, from `levels`. */
+        you: "You",
+
+        /** The group of seven columns and each column's name. `{n}` is its
+         *  number, 1 to 7, and the second is what a full one says. */
+        board: "Board",
+        column: "Column {n}",
+        columnFull: "Column {n}, full",
+
+        /** The line over the board: whose move it is, or how it ended. */
+        status: {
+          you: "Your move",
+          them: "Their move",
+          won: "Four in a row. You win!",
+          lost: "They got four first.",
+          draw: "The board is full. A draw.",
+        },
+        again: "Play again",
+
+        /** Read out after every disc. `{name}` is the opponent's name and `{n}`
+         *  the column. A colon rather than a verb, so the name never has to
+         *  agree with anything in the four languages. */
+        moves: {
+          you: "You: column {n}.",
+          them: "{name}: column {n}.",
+        },
+
+        hint: "Press a column to drop a disc, or slide a finger along the top of the board and let go. The arrow keys pick a column and Enter drops, or press 1 to 7.",
+
+        how: {
+          label: "How to play",
+          items: [
+            {
+              title: "Four in a row wins",
+              description:
+                "A disc falls to the lowest free square in its column. The first to have four of their own in a line, across, down or on a diagonal, wins, and a board that fills up first is a draw.",
+            },
+            {
+              title: "Two threats at once",
+              description:
+                "Three in a line with the fourth square free is a threat. One can be blocked and two cannot, and that is how most games are won: not with one long trap, but with a move that opens two squares at once.",
+            },
+            {
+              title: "Mind what is underneath",
+              description:
+                "Never drop a disc straight under a square your opponent wins on, because it lets them play there. Late in a game the whole fight is often about who has to play under whose threat first.",
+            },
+            {
+              title: "Pick who you are playing",
+              description:
+                "Four opponents, from the beginner to the grandmaster, and your wins and losses are kept for each. Who goes first alternates from game to game, and it matters: with perfect play, the side that goes first and starts in the middle column always wins.",
+            },
+          ],
+        },
+
+        close: {
+          label: "How it is built",
+          paragraphs: [
+            "No canvas and no game library, like the rest of them. The board is a drawing laid over the discs rather than a background under them: one shape of plastic with 42 holes cut in it, and every disc a little wider than its hole. So a disc falls behind the bars between the rows and shows through the holes, the way it does on the real one, and the rim of every disc stays hidden behind the plastic. The inside of each hole is two thin crescents, shaded at the top and lit at the bottom, and that pair is most of why a disc looks set into the board rather than painted on it.",
+            "A disc falls under gravity rather than for a set time, so a long fall down an empty column and a short one onto a nearly full column each take the time a real one would. It bounces twice off whatever it lands on, each bounce lower than the last. The movement is the parabola itself, drawn with the exact curves for free fall, and the three clicks you hear land on the same three moments. A new game empties the board the way the slider under a real one does: every disc drops out of the bottom at once, the lowest first.",
+            "The opponent keeps a score of the position as it goes rather than working it out from scratch. The board has 69 lines of four, each line counts the discs of each colour in it, and a disc only changes the lines through its own square, thirteen at most. A win is a count reaching four, a threat is a count of three next to an empty square, and the value of the whole board is a running total. The one piece of real theory in it is parity: the board fills from the bottom, and with perfect play the side that went first ends up with the odd rows and the other side with the even ones, so a threat on your own rows is worth more than one on theirs.",
+            "The four differ in how far ahead they look. The beginner takes its own four most of the time and otherwise plays near the middle. The amateur looks three moves ahead, which is enough to take a win, block one and never hand one over. The master looks seven ahead and picks among the moves within a few points of its best, so two games against it rarely go the same way. The grandmaster searches one move deeper at a time until a third of a second is up, reusing a table of 262,144 positions it has already seen. From the opening that is thirteen to fifteen moves ahead, and from about the sixteenth disc on it usually knows how the game ends.",
+            "Each of them beats the one below it nearly every time. In sixty simulated games per pair, with the first move alternating, the amateur beat the beginner 60 times, the master beat the amateur 57 times, and the grandmaster beat the master 57 times and drew twice. The pause before an opponent's disc moves, and the stop it sometimes makes over another column, are only there so you can follow the move: by then the choice has already been made.",
           ],
         },
       },

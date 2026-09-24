@@ -47,7 +47,7 @@ const de: Dict = {
     paragraphs: [
       'Ich arbeite an Kundenprojekten vom ersten Datenmodell bis zum Deployment auf AWS. Dabei fange ich immer bei der Domäne an: welche Daten es gibt, wer darauf zugreifen darf und mit welchen Systemen sie sprechen müssen. Daraus ergeben sich die API, die Services und die React-Oberfläche.',
       'Ich habe einen Master in Software Engineering. In meiner Masterarbeit habe ich zwei Machine-Learning-Ökosysteme anhand derselben Aufgabe verglichen: ein YOLOv8m-Modell in Python und ein ML.NET-Modell in .NET, beide hinter einem gemeinsamen NestJS-Gateway und einem React-Frontend. Für meine Bachelorarbeit habe ich die Verschlüsselungsverfahren RC6 und XXTEA nach ihren Spezifikationen implementiert.',
-      'Das beste Beispiel für meine Frontend-Arbeit ist diese Website selbst: vier Sprachen und sechs Spiele, geschrieben ohne Canvas und ohne Spielbibliothek. Zu jedem Spiel gibt es einen Text darüber, wie es gebaut ist.',
+      'Das beste Beispiel für meine Frontend-Arbeit ist diese Website selbst: vier Sprachen und sieben Spiele, geschrieben ohne Canvas und ohne Spielbibliothek. Zu jedem Spiel gibt es einen Text darüber, wie es gebaut ist.',
     ],
   },
 
@@ -568,7 +568,7 @@ const de: Dict = {
     index: {
       metaTitle: 'Spiele - Vuk Cvetković',
       metaDescription:
-        'Browserspiele von Vuk Cvetković: 2048, Minesweeper, Memory in zwölf Leveln, Schiffe versenken gegen vier Gegner, ein Spiel, in dem Welten zu größeren verschmelzen, und ein Zauberwürfel in 3D von 2×2 bis 5×5. Jedes hat eine eigene Seite.',
+        'Browserspiele von Vuk Cvetković: 2048, Minesweeper, Memory in zwölf Leveln, Schiffe versenken gegen vier Gegner, ein Spiel, in dem Welten zu größeren verschmelzen, ein Zauberwürfel in 3D von 2×2 bis 5×5 und Vier in einer Reihe gegen einen Großmeister. Jedes hat eine eigene Seite.',
       heading: 'Spiele',
       intro:
         'Spiele, die mehr als eine Runde wert sind. Jedes hat eine eigene Seite, und darunter steht für alle, die es interessiert, wie es gebaut ist.',
@@ -1233,6 +1233,100 @@ const de: Dict = {
             'Nach einem Zug übernimmt ein Feld die Lage des Platzes, an dem es gelandet ist, statt die Drehung zu behalten, die es dorthin gebracht hat. Die beiden können sich um eine Vierteldrehung in der Ebene des Feldes unterscheiden, was man nicht sieht, weil jedes Feld um seine Mitte symmetrisch ist, und so sammelt sich kein Rundungsfehler an, egal wie lange du spielst.',
             'Jedes Feld wird aus einer einzigen Richtung beleuchtet, die an dich gebunden ist und nicht an das Puzzle, sodass die obere Seite die hellste und die rechte die dunkelste ist, wie auch immer es gedreht ist. Die Helligkeit wird neu berechnet, während sich die Ansicht dreht, und nur geschrieben, wenn sie sich sichtbar ändert. Auch die Klänge entstehen im Browser: Jeder Zug sind zwei Klicks im Abstand von ein paar Millisekunden über einem kurzen, tiefen Klopfen.',
             'Die Tipps folgen der Methode, die man lernt, und nicht der kürzesten Lösung, denn eine kürzeste Lösung kann nur sagen, dass ein Zug einen Schritt näher bringt, und daraus lernt man nichts. Der 3×3 wird in den sieben Schritten der Schicht-für-Schicht-Methode gelöst, der 2×2 in drei und die Pyramide in drei, und jeder Zug trägt seinen Schritt, das Teil, um das es geht, und innerhalb einer Folge die Folge selbst. Wo ein Schritt eine Frage des Urteils ist und keine Folge, etwa welche weiße Kante als nächste nach unten kommt und wie, findet eine kurze Suche die wenigsten Züge für dieses eine Teil, ohne zu bewegen, was schon an seinem Platz ist. Der Plan wird neu berechnet, sobald das Puzzle nicht dort ist, wo er es erwartet hat, und er wurde geprüft, indem er von fünfzehnhundert zufälligen Mischungen aus befolgt wurde, und hat jede davon gelöst.',
+          ],
+        },
+      },
+
+      fourInARow: {
+        name: 'Vier in einer Reihe',
+
+        tagline:
+          'Wirf eine Scheibe ein und bring vier in eine Reihe, bevor dein Gegner es schafft. Vier Gegner, von einem, der kaum hinschaut, bis zu einem, der fünfzehn Züge vorausdenkt.',
+
+        metaDescription:
+          'Vier in einer Reihe im Browser, gegen vier Gegner: das klassische Brett mit sieben mal sechs Feldern, Scheiben, die fallen und abprallen, und ein Großmeister, der fünfzehn Züge vorausdenkt.',
+        lead: 'Wirf deine Scheiben ins Brett und bring vier in eine Reihe, bevor dein Gegner es schafft: waagerecht, senkrecht oder diagonal. Wie schwer es wird, entscheidet allein der Gegner, den du wählst. Der Anfänger schaut kaum hin, und der Großmeister sieht weiter voraus als du.',
+
+        opponents: 'Wähle deinen Gegner',
+        levels: {
+          beginner: {
+            name: 'Anfänger',
+            note: 'Spielt nahe der Mitte und sieht nur seine eigenen Vierer. Deine blockt er nicht.',
+          },
+          amateur: {
+            name: 'Amateur',
+            note: 'Nimmt einen Sieg mit, blockt deinen und schenkt dir nie einen. Zwei Drohungen auf einmal schlagen ihn.',
+          },
+          master: {
+            name: 'Meister',
+            note: 'Denkt sieben Züge voraus. Eine Falle reicht nicht, du brauchst einen Plan.',
+          },
+          grandmaster: {
+            name: 'Großmeister',
+            note: 'Denkt bis zu fünfzehn Züge voraus und spielt seinen besten Zug. Rechne mit einer Niederlage, vor allem wenn er anfängt.',
+          },
+        },
+
+        wins: 'Siege',
+        losses: 'Niederlagen',
+        newGame: 'Neues Spiel',
+
+        you: 'Du',
+
+        board: 'Brett',
+        column: 'Spalte {n}',
+        columnFull: 'Spalte {n}, voll',
+
+        status: {
+          you: 'Du bist dran',
+          them: 'Dein Gegner ist dran',
+          won: 'Vier in einer Reihe. Du gewinnst!',
+          lost: 'Dein Gegner hatte zuerst vier.',
+          draw: 'Das Brett ist voll. Unentschieden.',
+        },
+        again: 'Noch einmal',
+
+        moves: {
+          you: 'Du: Spalte {n}.',
+          them: '{name}: Spalte {n}.',
+        },
+
+        hint: 'Drücke auf eine Spalte, um eine Scheibe einzuwerfen, oder zieh einen Finger oben am Brett entlang und lass los. Die Pfeiltasten wählen eine Spalte und Enter wirft ein, oder drück 1 bis 7.',
+
+        how: {
+          label: 'So wird gespielt',
+          items: [
+            {
+              title: 'Vier in einer Reihe gewinnen',
+              description:
+                'Eine Scheibe fällt auf das tiefste freie Feld ihrer Spalte. Wer zuerst vier eigene in einer Linie hat, waagerecht, senkrecht oder diagonal, gewinnt, und ist das Brett vorher voll, endet es unentschieden.',
+            },
+            {
+              title: 'Zwei Drohungen auf einmal',
+              description:
+                'Drei in einer Linie mit freiem viertem Feld sind eine Drohung. Eine lässt sich blocken, zwei nicht, und so werden die meisten Partien gewonnen: nicht mit einer langen Falle, sondern mit einem Zug, der zwei Felder auf einmal öffnet.',
+            },
+            {
+              title: 'Achte darauf, was darunter liegt',
+              description:
+                'Wirf nie eine Scheibe direkt unter ein Feld, auf dem dein Gegner gewinnt, denn damit lässt du ihn dort spielen. Spät in der Partie geht es oft nur noch darum, wer zuerst unter der Drohung des anderen spielen muss.',
+            },
+            {
+              title: 'Wähle deinen Gegner',
+              description:
+                'Vier Gegner, vom Anfänger bis zum Großmeister, und deine Siege und Niederlagen werden für jeden einzeln gespeichert. Wer anfängt, wechselt von Partie zu Partie, und das zählt: Bei perfektem Spiel gewinnt immer, wer anfängt und in der mittleren Spalte beginnt.',
+            },
+          ],
+        },
+
+        close: {
+          label: 'Wie es gebaut ist',
+          paragraphs: [
+            'Kein Canvas und keine Spielbibliothek, wie bei den anderen. Das Brett ist eine Zeichnung, die über den Scheiben liegt, statt ein Hintergrund darunter: ein Stück Kunststoff mit 42 Löchern, und jede Scheibe ist ein wenig breiter als ihr Loch. So fällt eine Scheibe hinter den Stegen zwischen den Reihen hindurch und ist durch die Löcher zu sehen, wie beim echten Spiel, und der Rand jeder Scheibe bleibt hinter dem Kunststoff verborgen. Das Innere jedes Lochs sind zwei schmale Sicheln, oben im Schatten und unten im Licht, und dieses Paar sorgt vor allem dafür, dass eine Scheibe im Brett zu sitzen scheint, statt aufgemalt zu sein.',
+            'Eine Scheibe fällt nach der Schwerkraft und nicht in einer festen Zeit, also dauern ein langer Fall durch eine leere Spalte und ein kurzer auf eine fast volle jeweils so lange wie bei einer echten Scheibe. Sie prallt zweimal von dem ab, worauf sie landet, jedes Mal niedriger. Die Bewegung ist die Parabel selbst, gezeichnet mit den exakten Kurven des freien Falls, und die drei Klicks, die du hörst, fallen auf dieselben drei Momente. Ein neues Spiel leert das Brett wie der Schieber unter einem echten: Alle Scheiben fallen gleichzeitig unten heraus, die unterste zuerst.',
+            'Der Gegner führt die Bewertung der Stellung laufend mit, statt sie jedes Mal neu zu berechnen. Das Brett hat 69 Linien aus vier Feldern, jede Linie zählt die Scheiben jeder Farbe in ihr, und eine Scheibe ändert nur die Linien durch ihr eigenes Feld, höchstens dreizehn. Ein Sieg ist ein Zähler, der vier erreicht, eine Drohung sind drei neben einem freien Feld, und der Wert des ganzen Bretts ist eine laufende Summe. Das einzige Stück echter Theorie darin ist die Parität: Das Brett füllt sich von unten, und bei perfektem Spiel bekommt, wer angefangen hat, die ungeraden Reihen und der andere die geraden. Eine Drohung auf den eigenen Reihen ist deshalb mehr wert als eine auf denen des Gegners.',
+            'Die vier unterscheiden sich darin, wie weit sie vorausdenken. Der Anfänger nimmt seinen eigenen Vierer meistens mit und spielt sonst nahe der Mitte. Der Amateur denkt drei Züge voraus, was reicht, um einen Sieg mitzunehmen, einen zu blocken und nie einen herzuschenken. Der Meister denkt sieben Züge voraus und wählt unter den Zügen, die nur wenige Punkte hinter seinem besten liegen, sodass zwei Partien gegen ihn selten gleich verlaufen. Der Großmeister vertieft seine Suche Zug um Zug, bis eine Drittelsekunde um ist, und nutzt dabei eine Tabelle mit 262.144 schon gesehenen Stellungen. Von der Eröffnung an sind das dreizehn bis fünfzehn Züge, und etwa ab der sechzehnten Scheibe weiß er meist schon, wie die Partie ausgeht.',
+            'Jeder schlägt den unter ihm fast immer. In sechzig simulierten Partien pro Paar, mit wechselndem ersten Zug, schlug der Amateur den Anfänger 60 Mal, der Meister den Amateur 57 Mal und der Großmeister den Meister 57 Mal, bei zwei Unentschieden. Die Pause, bevor sich die Scheibe des Gegners bewegt, und der Halt, den sie manchmal über einer anderen Spalte macht, sind nur dazu da, dass du den Zug verfolgen kannst: Die Wahl ist dann längst getroffen.',
           ],
         },
       },

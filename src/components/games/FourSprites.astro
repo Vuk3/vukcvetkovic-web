@@ -1,0 +1,82 @@
+---
+/**
+ * The four opponents, drawn once: a chess piece each.
+ *
+ * The titles are a chess ladder - beginner, amateur, master, grandmaster - so
+ * the badges are the ladder everyone already knows how to read: a pawn, a
+ * knight, a rook and a queen, weakest to strongest by what the pieces are
+ * worth. Faces on discs were the first version, and a set of cartoon faces
+ * reads as a toy for children rather than as four opponents of rising
+ * strength.
+ *
+ * Each piece is a white silhouette over a copy of itself set a little lower in
+ * the board's deep blue, which is the whole of its shading: on the badge's
+ * blue that reads as a carved piece standing on a disc, at any size, with no
+ * gradient to resolve inside a `<use>`.
+ *
+ * ⚠️ **Colour goes in through `style`, never through a `fill` attribute**, for
+ * Battleship's reason: these are `<use>`d, and only inherited custom properties
+ * reach inside that shadow tree. `--piece` is set on each copy.
+ *
+ * ⚠️ **The ids are global, so this appears once per document.** It is only on
+ * the game page.
+ */
+
+const pieces = {
+  /* A ball on a collar on a flared stem. */
+  beginner: `
+    <circle cx="32" cy="19.5" r="6.4" />
+    <path d="M24.6 30.6h14.8a2.1 2.1 0 0 0 0-4.2H24.6a2.1 2.1 0 0 0 0 4.2z" />
+    <path d="M27.4 30.6c-0.2 6.6-2.6 10.6-5.4 14.2h20c-2.8-3.6-5.2-7.6-5.4-14.2z" />
+  `,
+  /* A horse's head facing left, the way the piece is always drawn: the mane
+     down the back, one ear, the muzzle forward, the throat cut in under the
+     jaw, and an eye cut through, which shows the shadow copy beneath. */
+  amateur: `
+    <path fill-rule="evenodd" d="M42.6 44.8C43.2 38 41.6 32.2 40.6 28c-0.8-5.8 0.6-11.2-3-15l0.6-4.4-3.8 3C29.4 11.8 25 15.4 22.4 21.4l-3.1 6.8c-0.5 1.4 0.1 2.8 1.5 3.2l3.8 1c1.6 0.4 3.2-0.2 4.4-1.4 1.2 2.8-0.8 6.2-3.6 9-1.4 1.4-2.4 3-2.6 4.8zM31.9 19.2a1.5 1.5 0 1 0-3 0 1.5 1.5 0 1 0 3 0z" />
+  `,
+  /* Battlements on a tapering tower. */
+  master: `
+    <path d="M20.6 13.6h5.2v4.2h3.6v-4.2h5.2v4.2h3.6v-4.2h5.2v9.4H20.6z" />
+    <path d="M22.4 23h19.2l-1.6 3.2H24z" />
+    <path d="M24.6 26.2h14.8l1.5 18.6H23.1z" />
+  `,
+  /* A crown of five points with a ball on each, on a waisted body. */
+  grandmaster: `
+    <circle cx="18.8" cy="15.4" r="2.5" />
+    <circle cx="25.4" cy="12.4" r="2.5" />
+    <circle cx="32" cy="10.8" r="2.6" />
+    <circle cx="38.6" cy="12.4" r="2.5" />
+    <circle cx="45.2" cy="15.4" r="2.5" />
+    <path d="M19 17.4l4.1 13.8h17.8L45 17.4l-6.5 7.6L32 13.6l-6.5 11.4z" />
+    <path d="M22.6 31h18.8a1.8 1.8 0 0 1 0 3.6H22.6a1.8 1.8 0 0 1 0-3.6z" />
+    <path d="M24.4 34.6h15.2c-0.4 4.2 0.4 7.4 2.8 10.2H21.6c2.4-2.8 3.2-6 2.8-10.2z" />
+  `,
+} as const;
+
+/** The base every piece stands on: a foot and a plinth under it. */
+const base = `
+  <path d="M19.4 44.8h25.2a1.6 1.6 0 0 1 1.6 1.6v2.6H17.8v-2.6a1.6 1.6 0 0 1 1.6-1.6z" />
+  <rect x="16.4" y="49" width="31.2" height="4.4" rx="1.8" />
+`;
+---
+
+<svg class="four-sprites" aria-hidden="true" focusable="false">
+  <defs>
+    {
+      Object.entries(pieces).map(([id, body]) => (
+        <Fragment>
+          <symbol id={`four-piece-${id}`} viewBox="0 0 64 64">
+            <g style="fill:var(--piece)" set:html={body + base} />
+          </symbol>
+
+          {/* The badge's drawing: the piece, and its shadow a step below it. */}
+          <symbol id={`four-face-${id}`} viewBox="0 0 64 64">
+            <use href={`#four-piece-${id}`} y="1.8" style="--piece:var(--four-piece-shade)" />
+            <use href={`#four-piece-${id}`} style="--piece:var(--four-piece)" />
+          </symbol>
+        </Fragment>
+      ))
+    }
+  </defs>
+</svg>

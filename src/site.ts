@@ -207,11 +207,28 @@ const projects: Project[] = [
     year: "2026",
     /* The one round trip: the front end asks, and the front end is answered. */
     flowShape: "roundTrip",
-    tech: ["React", "NestJS", "FastAPI", "Ultralytics", "ASP.NET Core", "ML.NET"],
+    tech: [
+      "React",
+      "NestJS",
+      "FastAPI",
+      "Ultralytics",
+      "ASP.NET Core",
+      "ML.NET",
+    ],
     stack: [
       { id: "frontend", items: ["React"] },
       { id: "gateway", items: ["NestJS"] },
-      { id: "pythonService", items: ["Python", "FastAPI", "Ultralytics", "PyTorch", "OpenCV", "NumPy"] },
+      {
+        id: "pythonService",
+        items: [
+          "Python",
+          "FastAPI",
+          "Ultralytics",
+          "PyTorch",
+          "OpenCV",
+          "NumPy",
+        ],
+      },
       { id: "dotnetService", items: ["ASP.NET Core", "C#", "ML.NET"] },
       { id: "data", items: ["Roboflow"] },
     ],
@@ -244,10 +261,7 @@ const projects: Project[] = [
     ],
     results: {
       formats: ["count", "seconds", "seconds"],
-      rows: [
-        { values: [150, 68.91, 70.13] },
-        { values: [150, 44.16, 40.39] },
-      ],
+      rows: [{ values: [150, 68.91, 70.13] }, { values: [150, 44.16, 40.39] }],
     },
     links: {},
   },
@@ -336,7 +350,7 @@ export interface Game {
    *
    * A fact: the day is the same in four languages and only the way it is
    * spelled out is not, so it is stored raw and `Intl.DateTimeFormat` writes it
-   * per locale in GameStamp.astro. Three of the six share a date because three
+   * per locale in GameStamp.astro. Three of the seven share a date because three
    * of them were written on one day.
    *
    * ⚠️ It is stamped on the game's own page and deliberately nowhere on the
@@ -369,6 +383,7 @@ const games: Record<GameId, Game> = {
   accretion: { slug: "accretion", status: "beta", date: "2026-09-11" },
   battleship: { slug: "battleship", status: "beta", date: "2026-09-17" },
   cube: { slug: "cube", status: "beta", date: "2026-09-24" },
+  fourInARow: { slug: "four-in-a-row", status: "beta", date: "2026-09-24" },
 };
 
 export const site = {

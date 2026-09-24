@@ -47,7 +47,7 @@ const sr: Dict = {
     paragraphs: [
       "Radim na klijentskim projektima od prvog modela podataka do deploymenta na AWS-u. Uvek krećem od domena: koji su podaci, ko sme da im pristupa i sa kojim sistemima treba da komuniciraju, a iz toga proizlaze API, servisi i React interfejs.",
       "Završio sam master studije softverskog inženjerstva. U master radu sam poredio dva ekosistema mašinskog učenja na istom zadatku: YOLOv8m model u Python-u i ML.NET model u .NET-u, iza jednog NestJS gateway-a i jednog React frontenda. Za diplomski rad sam implementirao algoritme šifrovanja RC6 i XXTEA po njihovim specifikacijama.",
-      "Najbolji primer mog frontend rada je sam ovaj sajt: četiri jezika i šest igara napisanih bez canvasa i bez biblioteke za igre. Uz svaku igru postoji tekst o tome kako je napravljena.",
+      "Najbolji primer mog frontend rada je sam ovaj sajt: četiri jezika i sedam igara napisanih bez canvasa i bez biblioteke za igre. Uz svaku igru postoji tekst o tome kako je napravljena.",
     ],
   },
 
@@ -565,7 +565,7 @@ const sr: Dict = {
     index: {
       metaTitle: "Igre - Vuk Cvetković",
       metaDescription:
-        "Igre u pretraživaču koje je napravio Vuk Cvetković: 2048, Minolovac, Memorija u dvanaest nivoa, Potapanje brodova protiv četiri protivnika, igra u kojoj se planete spajaju u veće i kocka u 3D od 2×2 do 5×5. Svaka ima svoju stranicu.",
+        "Igre u pretraživaču koje je napravio Vuk Cvetković: 2048, Minolovac, Memorija u dvanaest nivoa, Potapanje brodova protiv četiri protivnika, igra u kojoj se planete spajaju u veće, kocka u 3D od 2×2 do 5×5 i četiri u nizu protiv velemajstora. Svaka ima svoju stranicu.",
       heading: "Igre",
       intro:
         "Igre koje vredi igrati više puta. Svaka ima svoju stranicu, a ispod igre i tekst o tome kako je napravljena, za one koje to zanima.",
@@ -1237,6 +1237,100 @@ const sr: Dict = {
             "Posle okreta nalepnica uzima položaj mesta na koje je stigla, umesto da zadrži rotaciju kojom je tamo došla. Ta dva položaja mogu da se razlikuju za četvrtinu kruga u ravni same nalepnice, što se ne vidi jer je svaka nalepnica simetrična oko svog centra, i zato se greška zaokruživanja ne skuplja koliko god dugo da igraš.",
             "Svaka nalepnica je osvetljena iz jednog pravca koji je vezan za tebe, a ne za slagalicu, pa je gornja strana uvek najsvetlija, a desna najtamnija, kako god da je okreneš. Osvetljenje se preračunava dok se pogled okreće i upisuje se samo kad se promeni toliko da se vidi. I zvuci se prave u pretraživaču: svaki okret su dva klika u razmaku od nekoliko milisekundi preko kratkog, dubokog udarca.",
             "Saveti prate metod koji se uči, a ne najkraće rešenje, jer najkraće rešenje može samo da kaže da je potez jedan bliže cilju, a iz toga se ništa ne nauči. Kocka 3×3 se slaže u sedam koraka metoda sloj po sloj, 2×2 u tri, a piramida u tri, i uz svaki potez ide korak kom pripada, deo na koji se odnosi i, ako je deo niza, sam niz. Gde je korak stvar procene, a ne niza, kao koju belu ivicu spustiti sledeću i kako, kratka pretraga nađe najmanje poteza za taj jedan deo tako da sve što je već složeno ostane na mestu. Plan se ponovo računa kad god slagalica nije tamo gde je plan rekao da će biti, a proveren je tako što je praćen od hiljadu i petsto nasumičnih mešanja, i svako je složio.",
+          ],
+        },
+      },
+
+      fourInARow: {
+        name: "Četiri u nizu",
+
+        tagline:
+          "Ubaci disk i složi četiri u nizu pre protivnika. Četiri protivnika, od onog koji jedva gleda do onog koji vidi petnaest poteza unapred.",
+
+        metaDescription:
+          "Četiri u nizu u browseru, protiv četiri protivnika: klasična tabla sedam puta šest, diskovi koji padaju i odskaču, i velemajstor koji vidi petnaest poteza unapred.",
+        lead: "Ubacuj diskove u tablu i složi četiri u nizu pre protivnika: vodoravno, uspravno ili ukoso. Težinu određuje samo protivnik koga izabereš. Početnik jedva gleda, a velemajstor vidi dalje nego ti.",
+
+        opponents: "Izaberi protivnika",
+        levels: {
+          beginner: {
+            name: "Početnik",
+            note: "Igra oko sredine i vidi samo svoje četvorke. Tvoje neće blokirati.",
+          },
+          amateur: {
+            name: "Amater",
+            note: "Uzima pobedu, blokira tvoju i nikad ti je ne pokloni. Dve pretnje odjednom ga pobeđuju.",
+          },
+          master: {
+            name: "Majstor",
+            note: "Gleda sedam poteza unapred. Zamka neće biti dovoljna, treba ti plan.",
+          },
+          grandmaster: {
+            name: "Velemajstor",
+            note: "Vidi i do petnaest poteza unapred i igra najbolje što ume. Spremi se na poraz, pogotovo kad on igra prvi.",
+          },
+        },
+
+        wins: "Pobede",
+        losses: "Porazi",
+        newGame: "Nova igra",
+
+        you: "Ti",
+
+        board: "Tabla",
+        column: "Kolona {n}",
+        columnFull: "Kolona {n}, puna",
+
+        status: {
+          you: "Tvoj potez",
+          them: "Potez protivnika",
+          won: "Četiri u nizu. Pobeda!",
+          lost: "Protivnik je prvi složio četiri.",
+          draw: "Tabla je puna. Nerešeno.",
+        },
+        again: "Igraj ponovo",
+
+        moves: {
+          you: "Ti: kolona {n}.",
+          them: "{name}: kolona {n}.",
+        },
+
+        hint: "Pritisni kolonu da ubaciš disk, ili prevuci prstom po vrhu table i pusti. Strelicama biraš kolonu, a Enter ubacuje, ili pritisni broj od 1 do 7.",
+
+        how: {
+          label: "Kako se igra",
+          items: [
+            {
+              title: "Pobeđuje četiri u nizu",
+              description:
+                "Disk pada na najniže slobodno mesto u koloni. Pobeđuje ko prvi složi četiri svoja u liniji, vodoravno, uspravno ili ukoso, a ako se tabla pre toga napuni, nerešeno je.",
+            },
+            {
+              title: "Dve pretnje odjednom",
+              description:
+                "Tri u liniji sa slobodnim četvrtim mestom su pretnja. Jednu protivnik može da blokira, dve ne može, i tako se dobija većina partija: ne jednom dugom zamkom, nego potezom koji otvori dva mesta odjednom.",
+            },
+            {
+              title: "Pazi šta je ispod",
+              description:
+                "Nikad ne ubacuj disk tačno ispod mesta na kom protivnik pobeđuje, jer mu time to mesto otvaraš. Kasno u partiji cela borba je često samo oko toga ko će prvi morati da igra ispod tuđe pretnje.",
+            },
+            {
+              title: "Biraš protiv koga igraš",
+              description:
+                "Četiri protivnika, od početnika do velemajstora, i za svakog se posebno pamte tvoje pobede i porazi. Ko igra prvi smenjuje se iz partije u partiju, i to je važno: uz savršenu igru, onaj ko igra prvi i počne u srednjoj koloni uvek pobeđuje.",
+            },
+          ],
+        },
+
+        close: {
+          label: "Kako je napravljena",
+          paragraphs: [
+            "Bez canvasa i bez biblioteke za igre, kao i ostale. Tabla je crtež položen preko diskova, a ne pozadina ispod njih: jedan komad plastike sa 42 rupe, a svaki disk je malo širi od svoje rupe. Zato disk pada iza prečki između redova i vidi se kroz rupe, kao na pravoj tabli, a ivica svakog diska ostaje skrivena iza plastike. Unutrašnjost svake rupe su dva tanka srpa, jedan gore u senci, a drugi dole osvetljen, i taj par je najveći deo razloga što disk izgleda utisnut u tablu, a ne nacrtan na njoj.",
+            "Disk pada po gravitaciji, a ne za zadato vreme, pa dug pad niz praznu kolonu i kratak na skoro punu traju koliko bi trajali pravi. Od onoga na šta padne odskoči dvaput, svaki put niže. Kretanje je sama parabola, nacrtana tačnim krivama slobodnog pada, a tri klika koja čuješ padaju u ista tri trenutka. Nova igra prazni tablu kao letvica ispod prave: svi diskovi ispadnu kroz dno odjednom, najniži prvi.",
+            "Protivnik vodi računa o poziciji dok se igra, umesto da je svaki put procenjuje iz početka. Tabla ima 69 linija od četiri polja, svaka linija broji diskove svake boje u sebi, a disk menja samo linije kroz svoje polje, najviše trinaest. Pobeda je brojač koji stigne do četiri, pretnja je tri pored praznog polja, a vrednost cele table je zbir koji se stalno ažurira. Jedini deo prave teorije u tome je parnost: tabla se puni odozdo, pa uz savršenu igru onom ko je igrao prvi pripadnu neparni redovi, a drugom parni. Zato pretnja na tvojim redovima vredi više od pretnje na tuđim.",
+            "Četiri protivnika se razlikuju po tome koliko daleko gledaju. Početnik uglavnom uzme svoju četvorku kad je vidi, a inače igra oko sredine. Amater gleda tri poteza unapred, što je dovoljno da uzme pobedu, blokira tuđu i nikad je ne pokloni. Majstor gleda sedam poteza unapred i bira među potezima koji su za nekoliko poena od najboljeg, pa se dve partije protiv njega retko odigraju isto. Velemajstor produbljuje pretragu za po jedan potez dok ne istekne trećina sekunde, uz tabelu od 262.144 pozicije koje je već video. Od otvaranja je to trinaest do petnaest poteza unapred, a otprilike od šesnaestog diska obično već zna kako se partija završava.",
+            "Svaki od njih skoro uvek pobedi onog ispod sebe. U šezdeset simuliranih partija po paru, uz smenu ko igra prvi, amater je pobedio početnika 60 puta, majstor amatera 57 puta, a velemajstor majstora 57 puta, uz dve nerešene. Pauza pre nego što se protivnikov disk pomeri i zastanak iznad druge kolone koji ponekad napravi služe samo tome da se potez vidi, jer je izbor tada već napravljen.",
           ],
         },
       },
