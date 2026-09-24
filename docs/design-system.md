@@ -40,6 +40,7 @@ and all of its motion in CSS.
 | **a game's sounds, the switch, or the burst on a win** | `src/games/<slug>/sounds.ts` for what a game sounds like, [games/sound.ts](../src/games/sound.ts) and [games/burst.ts](../src/games/burst.ts) for the rest - §9 |
 | **a memory card, its turn, or a picture on it** | [game.ts](../src/games/memory/game.ts), [Memory.astro](../src/components/Memory.astro), [MemorySprites.astro](../src/components/games/MemorySprites.astro), the `--mem-*` tokens - §9 |
 | **the cube: a puzzle, how a drag turns it, its colours or its light** | [game.ts](../src/games/cube/game.ts), [Cube.astro](../src/components/Cube.astro), [ArtCube.astro](../src/components/games/ArtCube.astro), the `--cube-*` tokens - §9 |
+| **what a cube hint says or which move it picks** | [hint.ts](../src/games/cube/hint.ts) for the methods, `advice` in the dictionaries for the words - §9 |
 
 **Read §5 before touching any animation.** The `animation` shorthand silently breaks the
 scroll timelines, and one custom property has to stay registered.
@@ -1437,6 +1438,65 @@ to settle back square to the nearest of the orientations the solid maps onto, an
 read as the puzzle refusing to be turned. The keys still reorient by quarters, and the
 letters always mean the faces as they are seen now: U is whatever is on top.
 
+### Hints follow a method, not the shortest solution
+
+A hint shows the next move and says what it is for: the step of the method it belongs to,
+the piece it is about as chips of that piece's colours, and, when the move is part of a
+sequence, the sequence with this move picked out. The planner is
+[hint.ts](../src/games/cube/hint.ts), loaded the first time a hint is asked for, so a solve
+that never asks costs nothing.
+
+⚠️ **The methods are the ones people are taught.** A shortest solution can only say that a
+move is one closer, and on the 3×3 it needs a solver several times the size of the game.
+So the 3×3 is solved layer by layer in seven steps, the 2×2 in three around one fixed white
+corner - it has no centres, so that corner says which colour every face is, and only the
+three faces it is not on are turned - and the pyramid in three: tips, centres, edges. The
+4×4 and 5×5 have no hint.
+
+**Judgement is a search, sequences are sequences.** Which cross edge to bring down and how
+is the fewest moves for that one piece that keep every piece already placed where it is,
+found by iterative deepening over a handful of tracked stickers, which is what an
+experienced person does by eye. Corners and middle edges are the taught procedure - take it
+out if it is in the wrong slot, turn the top until it is over its place, apply the sequence
+- with the easiest piece first. The last layer is a short breadth first search over the
+top turns and the step's one sequence, used whole. Following the plan from 500 random
+scrambles of each puzzle solved every one, and a plan takes about a millisecond on the
+cubes and twenty on the pyramid.
+
+**A plan is kept while the puzzle follows it.** Each step carries the state it leaves, so a
+turn that lands where the plan said picks up the next step without planning again. A half
+turn made as one quarter gets the other quarter. Anything else is planned again from where
+the puzzle is, so a hint is never about a puzzle that is not the one on screen. After each
+turn the next hint appears by itself until the card is closed.
+
+⚠️ **The puzzle is turned to the way the method holds it**, whenever that changes: white
+face up for the cross, where it can be seen being built, then yellow face up and the
+sequence's own front in front. Otherwise "the top layer" and the R in R U R' U' would mean
+some other face whenever the reader had turned the puzzle. It is not turned on every move,
+since a reader who turned it to look at something would have it snatched back.
+
+⚠️ **Every hint opens with the move in plain words**, the largest line on the card: "Turn
+the right side up", "Turn the top layer to the left", "Turn the front face clockwise",
+"Turn the top layer half way round". The notation is under it for whoever wants to learn it,
+but a reader who has never seen R U R' U' has to be told which layer and which way in the
+terms of the puzzle in front of them, and the first version of the card, which only said
+why, left Vuk not knowing what to turn. `describeTurn` in
+[game.ts](../src/games/cube/game.ts) works both out from the view: the way is where the
+nearest sticker of the layer that faces the reader goes on screen - up, down, left or right,
+or clockwise for a layer whose axis points out of the screen - and the layer is named by the
+same split, a side for one whose stickers go up or down, a top or bottom layer for one whose
+stickers go across. It is said again when turning the whole puzzle changes it. Checked
+against the real motion of that sticker for every face turn in 400 random views of each
+puzzle: the way agreed in all 15,186. ⚠️ An earlier version read the way off the axis alone
+and was wrong for about one move in twenty-five once the view was tilted, because the axis
+only agrees with what the reader sees while the view is square on. On the pyramid the
+corners are named top, back, and left or right of each other.
+
+**The layer to turn rocks towards the way it should go**, about sixteen degrees and back,
+then rests, and is a shade brighter. It is drawn exactly like a turn - the plates open, the
+light follows - and it is only ever a picture of one: a press puts it back before a hand can
+take hold. A solve made with a hint is not a record, and the panel says so.
+
 ### The stage is a height, not a ratio
 
 ⚠️ **`.cube-stage` takes its height off `.cube-frame`'s width in `cqi`, and must not go
@@ -1525,6 +1585,15 @@ card opened a gap between Score and Best.
 
 ## Changelog
 
+- 2026-09-24 - a cube hint opens with the move in plain words - which layer, by where it is
+  on screen, and which way its stickers go - worked out from the view and checked against
+  the real motion in 15,186 cases. The sentences under it now say why rather than what (§9).
+- 2026-09-24 - the cube has hints on the 2×2, the 3×3 and the pyramid, from
+  [hint.ts](../src/games/cube/hint.ts): the next move of a method people are taught, with
+  its step, its piece and its sequence, the layer rocking the way it should turn, the
+  puzzle turned to the way the method holds it, and a solve with hints kept out of the
+  record. §9 records why the methods are taught ones rather than shortest solutions, how
+  a plan is kept while the puzzle follows it, and how it was checked.
 - 2026-09-24 - every game's CSS moved out of global.css into its own file under
   [src/styles/games/](../src/styles/games/), with the rules every game page shares in
   `shared.css` and the index grid in `index.css`, so a game's rules are inlined only into

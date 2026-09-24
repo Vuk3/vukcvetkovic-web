@@ -1215,8 +1215,8 @@ const en = {
         /** One per kind of puzzle, since the cube and the pyramid are turned
          *  with different letters. The page shows the one that applies. */
         hint: {
-          cube: "Drag a sticker to turn its layer, and drag anywhere around the cube to turn all of it. On a keyboard, U, D, L, R, F and B turn a face, Shift turns it the other way, a number first reaches a deeper layer, and the arrow keys turn the whole cube.",
-          pyramid: "Drag a sticker to turn its corner, and drag anywhere around the pyramid to turn all of it. On a keyboard, U, L, R and B turn a corner, Shift turns it the other way, 1 first turns the tip alone, and the arrow keys turn the whole pyramid.",
+          cube: "Drag a sticker to turn its layer, and drag anywhere around the cube to turn all of it. On a keyboard, U, D, L, R, F and B turn a face, Shift turns it the other way, a number first reaches a deeper layer, and the arrow keys turn the whole cube. H shows a hint.",
+          pyramid: "Drag a sticker to turn its corner, and drag anywhere around the pyramid to turn all of it. On a keyboard, U, L, R and B turn a corner, Shift turns it the other way, 1 first turns the tip alone, and the arrow keys turn the whole pyramid. H shows a hint.",
         },
 
         /** Read out, since the scene itself cannot be. */
@@ -1224,11 +1224,142 @@ const en = {
           scrambled: "Scrambled. The clock starts with your first turn.",
         },
 
+        /**
+         * The hint: the button, the card, and two things for every move.
+         *
+         * `move` is what to do, in the words of someone holding the puzzle:
+         * which layer, named by where it is on screen, and which way the
+         * stickers facing the reader go. The game works out both from the view
+         * and the page puts them in `turn` or, for half a turn, `half`. So the
+         * layers are written the way the sentence needs them, with their
+         * article or case.
+         *
+         * `stages` is why: a sentence for every kind of move in every step of
+         * every method, keyed by the step and the move as the hint module names
+         * them.
+         *
+         * ⚠️ `{piece}` is where the page draws the piece's colours as chips,
+         * not as words: a colour named in the sentence would have to agree
+         * with "edge" or "corner" in every language, for every combination of
+         * colours. `colours` is only what a screen reader hears for the chips,
+         * in the order of the faces in the game module.
+         *
+         * ⚠️ `left` carries its own colon, for the reason `built` does.
+         */
+        advice: {
+          button: "Hint",
+          step: "Step {n} of {total}",
+          left: "Moves left in this step:",
+          play: "Play it",
+          close: "Close the hint",
+          colours: ["white", "red", "green", "yellow", "orange", "blue"],
+          move: {
+            turn: "Turn {layer} {way}.",
+            half: "Turn {layer} half way round.",
+            layers: {
+              top: "the top layer",
+              bottom: "the bottom layer",
+              left: "the left side",
+              right: "the right side",
+              front: "the front face",
+              back: "the back face",
+              middle: "the middle layer",
+              tipTop: "the top tip",
+              tipLeft: "the left tip",
+              tipRight: "the right tip",
+              tipBack: "the back tip",
+              cornerTop: "the top corner",
+              cornerLeft: "the left corner",
+              cornerRight: "the right corner",
+              cornerBack: "the back corner",
+            },
+            ways: {
+              up: "up",
+              down: "down",
+              left: "to the left",
+              right: "to the right",
+              clockwise: "clockwise",
+              anticlockwise: "anticlockwise",
+            },
+          },
+          stages: {
+            cross: {
+              title: "White cross",
+              place:
+                "This brings the {piece} edge towards the white face, between the white centre and the centre of its other colour, without moving the white edges already there.",
+            },
+            corners: {
+              title: "White corners",
+              out: "The {piece} corner is on the white layer but in the wrong place, so it comes out to the top layer first.",
+              align: "This brings the {piece} corner right above its place.",
+              insert: "This sequence drops the {piece} corner into place, white side down. It is repeated until it lands.",
+            },
+            middle: {
+              title: "Middle layer",
+              out: "The {piece} edge is in the middle layer but in the wrong place, so it comes out to the top first.",
+              align: "This stands the {piece} edge over the centre of its own colour.",
+              right: "This sequence takes the {piece} edge down into the middle layer, to the right.",
+              left: "This sequence takes the {piece} edge down into the middle layer, to the left.",
+            },
+            yellowCross: {
+              title: "Yellow cross",
+              align: "This lines the yellow shape up for the sequence.",
+              alg: "This sequence turns the top edges yellow side up. Sometimes it takes it twice.",
+            },
+            yellowEdges: {
+              title: "Yellow edges",
+              align: "This lines the top edges up with the centres below them.",
+              alg: "This sequence swaps top edges round and leaves the layers below as they were.",
+            },
+            yellowCorners: {
+              title: "Yellow corners in place",
+              alg: "This sequence moves three top corners round, and the one at the front right stays where it is.",
+            },
+            yellowTwist: {
+              title: "Twisting the yellow corners",
+              twist:
+                "This sequence is repeated until the top corner at the front right shows yellow on top. The layers below come apart meanwhile and go back together at the end.",
+              next: "This brings the next corner to the front right.",
+              finish: "The last turn, and it is solved.",
+            },
+            layer: {
+              title: "First layer",
+              out: "The {piece} corner is on the white layer but in the wrong place, so it comes out to the top layer first.",
+              align: "This brings the {piece} corner right above its place.",
+              insert: "This sequence drops the {piece} corner into place, white side down. It is repeated until it lands.",
+            },
+            orient: {
+              title: "Yellow on top",
+              align: "This lines the corners up for the sequence.",
+              alg: "This sequence turns the top corners yellow side up. Sometimes it takes it more than once.",
+            },
+            permute: {
+              title: "Last layer",
+              align: "This sets up the swap.",
+              alg: "This sequence swaps top corners and leaves the layer below as it was.",
+              finish: "The last turn, and it is solved.",
+            },
+            tips: {
+              title: "Tips",
+              place: "This twists the {piece} tip until its colours match the centre under it.",
+            },
+            centres: {
+              title: "Centres",
+              place: "This turns a corner with its tip until its three centre colours match the faces around it.",
+            },
+            edges: {
+              title: "Edges",
+              place: "This brings the {piece} edge into place, keeping the centres and the edges already placed where they are.",
+            },
+          },
+        },
+
         won: {
           title: "Solved",
           record: "Your best time on this puzzle.",
           again: "Scramble again",
           next: "Next puzzle",
+          assisted: "Solved with hints, so it does not count as a record.",
         },
 
         how: {
@@ -1247,7 +1378,7 @@ const en = {
             {
               title: "Scramble, then beat the clock",
               description:
-                "Scramble mixes it with a few dozen random turns. The clock starts with your first turn and stops the moment every face is one colour, and your best time is kept for each puzzle. Undo takes back the last turn.",
+                "Scramble mixes it with a few dozen random turns. The clock starts with your first turn and stops the moment every face is one colour, and your best time is kept for each puzzle. Undo takes back the last turn. Stuck? Hint shows the next move and what it is for, one step of the method at a time, and a solve made with hints does not count as a record.",
             },
             {
               title: "Five puzzles",
@@ -1265,6 +1396,7 @@ const en = {
             "A drag is measured through the same projection the browser draws with. Every axis the sticker under your finger could turn about is tried, and the one whose motion on screen best matches your finger wins, so the right layer turns from any angle, at a speed that keeps the sticker under your finger. When you let go, a spring pulls the layer to the nearest step. It is set a little under critical damping, so the layer overshoots by a degree or two and settles back, which is what makes it read as plastic clicking into place.",
             "After a turn, a sticker takes the position of the place it landed in rather than keeping the rotation that got it there. The two can differ by a quarter turn in the sticker's own plane, which cannot be seen because every sticker is symmetric about its centre, and it means no rounding error builds up however long you play.",
             "Each sticker is lit from one direction, fixed to you rather than to the puzzle, so the face on top is the bright one and the face on the right the dim one however the puzzle is turned. The brightness is recalculated as the view turns and only written when it changes by a visible amount. The sounds are made in the browser as well: every turn is two clicks a few milliseconds apart over a short, low knock.",
+            "The hints follow the method people are taught rather than the shortest solution, because a shortest solution can only say that a move is one closer, which teaches nothing. The 3×3 is solved in the seven steps of the layer by layer method, the 2×2 in three and the pyramid in three, and each move carries its step, the piece it is about and, inside a sequence, the sequence itself. Where a step is judgement rather than a sequence, such as which white edge to bring down next and how, a short search finds the fewest moves for that one piece that keep everything already placed in place. The plan is worked out again whenever the puzzle is not where it said it would be, and it was checked by following it from fifteen hundred random scrambles, every one of which it solved.",
           ],
         },
       },

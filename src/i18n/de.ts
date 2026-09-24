@@ -1071,12 +1071,123 @@ const de: Dict = {
         },
 
         hint: {
-          cube: 'Zieh an einem Feld, um seine Schicht zu drehen, und zieh irgendwo neben dem Würfel, um ihn ganz zu drehen. Auf der Tastatur drehen U, D, L, R, F und B eine Seite, mit Umschalt in die andere Richtung, eine Zahl davor erreicht eine tiefere Schicht, und die Pfeiltasten drehen den ganzen Würfel.',
-          pyramid: 'Zieh an einem Feld, um seine Ecke zu drehen, und zieh irgendwo neben der Pyramide, um sie ganz zu drehen. Auf der Tastatur drehen U, L, R und B eine Ecke, mit Umschalt in die andere Richtung, eine 1 davor dreht nur die Spitze, und die Pfeiltasten drehen die ganze Pyramide.',
+          cube: 'Zieh an einem Feld, um seine Schicht zu drehen, und zieh irgendwo neben dem Würfel, um ihn ganz zu drehen. Auf der Tastatur drehen U, D, L, R, F und B eine Seite, mit Umschalt in die andere Richtung, eine Zahl davor erreicht eine tiefere Schicht, und die Pfeiltasten drehen den ganzen Würfel. H zeigt einen Tipp.',
+          pyramid: 'Zieh an einem Feld, um seine Ecke zu drehen, und zieh irgendwo neben der Pyramide, um sie ganz zu drehen. Auf der Tastatur drehen U, L, R und B eine Ecke, mit Umschalt in die andere Richtung, eine 1 davor dreht nur die Spitze, und die Pfeiltasten drehen die ganze Pyramide. H zeigt einen Tipp.',
         },
 
         messages: {
           scrambled: 'Gemischt. Die Uhr läuft ab deinem ersten Zug.',
+        },
+
+        /** See the note in en.ts. The layers are in the accusative, since the
+         *  sentence is "Dreh {layer} {way}", `{piece}` is drawn as colour
+         *  chips, and `left` carries its own colon. */
+        advice: {
+          button: 'Tipp',
+          step: 'Schritt {n} von {total}',
+          left: 'Restliche Züge in diesem Schritt:',
+          play: 'Ausführen',
+          close: 'Tipp schließen',
+          colours: ['weiß', 'rot', 'grün', 'gelb', 'orange', 'blau'],
+          move: {
+            turn: 'Dreh {layer} {way}.',
+            half: 'Dreh {layer} um eine halbe Umdrehung.',
+            layers: {
+              top: 'die obere Schicht',
+              bottom: 'die untere Schicht',
+              left: 'die linke Seite',
+              right: 'die rechte Seite',
+              front: 'die vordere Seite',
+              back: 'die hintere Seite',
+              middle: 'die mittlere Schicht',
+              tipTop: 'die obere Spitze',
+              tipLeft: 'die linke Spitze',
+              tipRight: 'die rechte Spitze',
+              tipBack: 'die hintere Spitze',
+              cornerTop: 'die obere Ecke',
+              cornerLeft: 'die linke Ecke',
+              cornerRight: 'die rechte Ecke',
+              cornerBack: 'die hintere Ecke',
+            },
+            ways: {
+              up: 'nach oben',
+              down: 'nach unten',
+              left: 'nach links',
+              right: 'nach rechts',
+              clockwise: 'im Uhrzeigersinn',
+              anticlockwise: 'gegen den Uhrzeigersinn',
+            },
+          },
+          stages: {
+            cross: {
+              title: 'Weißes Kreuz',
+              place:
+                'Das bringt die Kante {piece} zur weißen Seite, zwischen den weißen Mittelstein und den Mittelstein ihrer anderen Farbe, ohne die weißen Kanten zu bewegen, die schon dort sind.',
+            },
+            corners: {
+              title: 'Weiße Ecken',
+              out: 'Die Ecke {piece} ist in der weißen Schicht, aber am falschen Platz, also kommt sie zuerst in die obere Schicht.',
+              align: 'Das bringt die Ecke {piece} genau über ihren Platz.',
+              insert: 'Diese Folge setzt die Ecke {piece} mit Weiß nach unten an ihren Platz. Sie wird wiederholt, bis die Ecke sitzt.',
+            },
+            middle: {
+              title: 'Mittlere Schicht',
+              out: 'Die Kante {piece} ist in der mittleren Schicht, aber am falschen Platz, also kommt sie zuerst nach oben.',
+              align: 'Das stellt die Kante {piece} über den Mittelstein ihrer Farbe.',
+              right: 'Diese Folge bringt die Kante {piece} nach rechts hinunter in die mittlere Schicht.',
+              left: 'Diese Folge bringt die Kante {piece} nach links hinunter in die mittlere Schicht.',
+            },
+            yellowCross: {
+              title: 'Gelbes Kreuz',
+              align: 'Das legt die gelbe Form so, wie die Folge es braucht.',
+              alg: 'Diese Folge dreht die oberen Kanten mit Gelb nach oben. Manchmal braucht es sie zweimal.',
+            },
+            yellowEdges: {
+              title: 'Gelbe Kanten',
+              align: 'Das richtet die oberen Kanten an den Mittelsteinen darunter aus.',
+              alg: 'Diese Folge tauscht obere Kanten und lässt die Schichten darunter, wie sie waren.',
+            },
+            yellowCorners: {
+              title: 'Gelbe Ecken an ihren Platz',
+              alg: 'Diese Folge lässt drei obere Ecken reihum wandern, und die vorne rechts bleibt, wo sie ist.',
+            },
+            yellowTwist: {
+              title: 'Gelbe Ecken drehen',
+              twist:
+                'Diese Folge wird wiederholt, bis die obere Ecke vorne rechts Gelb nach oben zeigt. Die unteren Schichten geraten dabei durcheinander und finden am Ende von selbst zurück.',
+              next: 'Das bringt die nächste Ecke nach vorne rechts.',
+              finish: 'Der letzte Zug, und er ist gelöst.',
+            },
+            layer: {
+              title: 'Erste Schicht',
+              out: 'Die Ecke {piece} ist in der weißen Schicht, aber am falschen Platz, also kommt sie zuerst in die obere Schicht.',
+              align: 'Das bringt die Ecke {piece} genau über ihren Platz.',
+              insert: 'Diese Folge setzt die Ecke {piece} mit Weiß nach unten an ihren Platz. Sie wird wiederholt, bis die Ecke sitzt.',
+            },
+            orient: {
+              title: 'Gelb nach oben',
+              align: 'Das legt die Ecken so, wie die Folge es braucht.',
+              alg: 'Diese Folge dreht die oberen Ecken mit Gelb nach oben. Manchmal braucht es sie mehrmals.',
+            },
+            permute: {
+              title: 'Letzte Schicht',
+              align: 'Das bereitet den Tausch vor.',
+              alg: 'Diese Folge tauscht obere Ecken und lässt die Schicht darunter, wie sie war.',
+              finish: 'Der letzte Zug, und er ist gelöst.',
+            },
+            tips: {
+              title: 'Spitzen',
+              place: 'Das dreht die Spitze {piece}, bis ihre Farben zum Mittelstück darunter passen.',
+            },
+            centres: {
+              title: 'Mittelstücke',
+              place: 'Das dreht eine Ecke mit ihrer Spitze, bis ihre drei Mittelfarben zu den Seiten ringsum passen.',
+            },
+            edges: {
+              title: 'Kanten',
+              place: 'Das bringt die Kante {piece} an ihren Platz, ohne die Mittelstücke und die schon gelösten Kanten zu bewegen.',
+            },
+          },
         },
 
         won: {
@@ -1084,6 +1195,7 @@ const de: Dict = {
           record: 'Deine Bestzeit für dieses Puzzle.',
           again: 'Neu mischen',
           next: 'Nächstes Puzzle',
+          assisted: 'Mit Tipps gelöst, deshalb zählt es nicht als Bestzeit.',
         },
 
         how: {
@@ -1102,7 +1214,7 @@ const de: Dict = {
             {
               title: 'Mischen, dann gegen die Uhr',
               description:
-                'Mischen verdreht es mit ein paar Dutzend zufälligen Zügen. Die Uhr läuft ab deinem ersten Zug und bleibt stehen, sobald jede Seite einfarbig ist, und deine Bestzeit wird für jedes Puzzle einzeln gespeichert. Rückgängig nimmt den letzten Zug zurück.',
+                'Mischen verdreht es mit ein paar Dutzend zufälligen Zügen. Die Uhr läuft ab deinem ersten Zug und bleibt stehen, sobald jede Seite einfarbig ist, und deine Bestzeit wird für jedes Puzzle einzeln gespeichert. Rückgängig nimmt den letzten Zug zurück. Du kommst nicht weiter? Tipp zeigt den nächsten Zug und wofür er da ist, Schritt für Schritt, und eine Lösung mit Tipps zählt nicht als Bestzeit.',
             },
             {
               title: 'Fünf Puzzles',
@@ -1120,6 +1232,7 @@ const de: Dict = {
             'Ein Ziehen wird durch dieselbe Projektion gemessen, mit der der Browser zeichnet. Jede Achse, um die sich das Feld unter deinem Finger drehen könnte, wird ausprobiert, und die, deren Bewegung auf dem Bildschirm am besten zu deinem Finger passt, gewinnt. So dreht sich aus jedem Winkel die richtige Schicht, und zwar so schnell, dass das Feld unter deinem Finger bleibt. Lässt du los, zieht eine Feder die Schicht zum nächsten Schritt. Sie ist etwas unter der kritischen Dämpfung eingestellt, sodass die Schicht ein, zwei Grad überschwingt und zurückfedert, und genau das wirkt wie Plastik, das einrastet.',
             'Nach einem Zug übernimmt ein Feld die Lage des Platzes, an dem es gelandet ist, statt die Drehung zu behalten, die es dorthin gebracht hat. Die beiden können sich um eine Vierteldrehung in der Ebene des Feldes unterscheiden, was man nicht sieht, weil jedes Feld um seine Mitte symmetrisch ist, und so sammelt sich kein Rundungsfehler an, egal wie lange du spielst.',
             'Jedes Feld wird aus einer einzigen Richtung beleuchtet, die an dich gebunden ist und nicht an das Puzzle, sodass die obere Seite die hellste und die rechte die dunkelste ist, wie auch immer es gedreht ist. Die Helligkeit wird neu berechnet, während sich die Ansicht dreht, und nur geschrieben, wenn sie sich sichtbar ändert. Auch die Klänge entstehen im Browser: Jeder Zug sind zwei Klicks im Abstand von ein paar Millisekunden über einem kurzen, tiefen Klopfen.',
+            'Die Tipps folgen der Methode, die man lernt, und nicht der kürzesten Lösung, denn eine kürzeste Lösung kann nur sagen, dass ein Zug einen Schritt näher bringt, und daraus lernt man nichts. Der 3×3 wird in den sieben Schritten der Schicht-für-Schicht-Methode gelöst, der 2×2 in drei und die Pyramide in drei, und jeder Zug trägt seinen Schritt, das Teil, um das es geht, und innerhalb einer Folge die Folge selbst. Wo ein Schritt eine Frage des Urteils ist und keine Folge, etwa welche weiße Kante als nächste nach unten kommt und wie, findet eine kurze Suche die wenigsten Züge für dieses eine Teil, ohne zu bewegen, was schon an seinem Platz ist. Der Plan wird neu berechnet, sobald das Puzzle nicht dort ist, wo er es erwartet hat, und er wurde geprüft, indem er von fünfzehnhundert zufälligen Mischungen aus befolgt wurde, und hat jede davon gelöst.',
           ],
         },
       },

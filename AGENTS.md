@@ -85,9 +85,10 @@ not need the map to change a dictionary, add a project, or touch the stylesheet.
   [minesweeper](./src/games/minesweeper/game.ts), 4.5 KB for
   [memory](./src/games/memory/game.ts), 5.3 KB for
   [accretion](./src/games/accretion/game.ts), 6.0 KB for
-  [battleship](./src/games/battleship/game.ts) and 8.0 KB for
+  [battleship](./src/games/battleship/game.ts) and 10.8 KB for
   [cube](./src/games/cube/game.ts), each on its own route, plus a shared 1.7 KB
-  chunk for the stored record, the sound and the burst. That budget is the games', not a precedent - it does not
+  chunk for the stored record, the sound and the burst, and 4.4 KB for the cube's hints, fetched only when one is
+  asked for. That budget is the games', not a precedent - it does not
   make a script cheaper anywhere else.
 - **A game's CSS lives in [src/styles/games/](./src/styles/games/), never in global.css**:
   one file per game with its tokens, its rules and its keyframes, imported by that game's

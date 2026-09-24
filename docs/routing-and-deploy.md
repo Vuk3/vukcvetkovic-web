@@ -217,7 +217,7 @@ wrangler is invoked directly. The adapter also injects `_headers` (immutable
 
 ### What lands in `dist/client/_astro/`
 
-Three woff2 faces, five webp variants and **seven JavaScript files**, which are the games.
+Three woff2 faces, five webp variants and **eight JavaScript files**, which are the games.
 
 `build.inlineStylesheets: 'always'` puts the whole stylesheet inside every document, so
 nothing render-blocking stands between the first response and the first paint, and the
@@ -236,14 +236,18 @@ dismissal and the active-section indicator - are all small enough that Astro inl
 into each page rather than emitting a bundle. 1.7 KB of JS per page, in a 26 KB gz home
 page, with no extra request. Keep it that way: see [src/components/CLAUDE.md](../src/components/CLAUDE.md).
 
-The seven files in `_astro` are the six game engines and the piece they share. 2048 is
+Seven of the files in `_astro` are the six game engines and the piece they share. 2048 is
 2.9 KB gz, Minesweeper 3.6 KB, Memory 4.5 KB, Accretion 5.3 KB, Battleship 6.0 KB, Cube
-8.0 KB, and the shared chunk 1.7 KB: [games/record.ts](../src/games/record.ts),
+10.8 KB, and the shared chunk 1.7 KB: [games/record.ts](../src/games/record.ts),
 [games/sound.ts](../src/games/sound.ts) and [games/burst.ts](../src/games/burst.ts) in one
 file, because all six games import all three and Rollup puts modules with the same
 importers into the same chunk. Each engine is requested by its own route
 and that route's three locale twins, and by nothing else, which is the point: a game pays
 for itself and the rest of the site is unchanged.
+
+The eighth is the cube's hint planner, 4.4 KB gz, and it is a dynamic `import()` rather
+than part of the engine: the page does not name it and nothing preloads it, so it is
+fetched the first time a reader asks for a hint and never otherwise.
 
 ⚠️ **Accretion is the only page on the site that runs on every frame**, because it is a
 physics simulation rather than a board that changes when pressed. A well of 46 bodies
@@ -350,6 +354,8 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-09-24 - the cube's hints: its engine is 10.8 KB gz, and the planner is an eighth
+  file of 4.4 KB, fetched only when a hint is first asked for (§5).
 - 2026-09-24 - each game's CSS moved out of global.css into its own file under
   `src/styles/games/`, inlined only where that game is shown. A page with no game went from
   27 KB gz of CSS to 9 KB (§5).

@@ -30,6 +30,8 @@
  * the ones whose angle to the light changed.
  */
 
+import type { Step } from './hint';
+
 /* ---- The puzzles ---------------------------------------------------------- */
 
 export type PuzzleId = 'two' | 'three' | 'four' | 'five' | 'pyramid';
@@ -137,6 +139,8 @@ function qnorm(q: Quat): Quat {
   return [q[0] / n, q[1] / n, q[2] / n, q[3] / n];
 }
 
+const qdot = (a: Quat, b: Quat) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
+
 function qmatrix(q: Quat): Mat {
   const [w, x, y, z] = q;
   return [
@@ -157,6 +161,27 @@ function between(from: Quat, to: Quat): Vec {
 
   const angle = 2 * Math.atan2(s, e[0]);
   return [(e[1] / s) * angle, (e[2] / s) * angle, (e[3] / s) * angle];
+}
+
+/** The rotation a row-major matrix is, as a quaternion. */
+function fromMatrix(m: Mat): Quat {
+  const [a, b, c, d, e, f, g, h, i] = m;
+  const trace = a + e + i;
+
+  if (trace > 0) {
+    const s = Math.sqrt(trace + 1) * 2;
+    return qnorm([s / 4, (h - f) / s, (c - g) / s, (d - b) / s]);
+  }
+  if (a > e && a > i) {
+    const s = Math.sqrt(1 + a - e - i) * 2;
+    return qnorm([(h - f) / s, s / 4, (b + d) / s, (c + g) / s]);
+  }
+  if (e > i) {
+    const s = Math.sqrt(1 + e - a - i) * 2;
+    return qnorm([(c - g) / s, (b + d) / s, s / 4, (f + h) / s]);
+  }
+  const s = Math.sqrt(1 + i - a - e) * 2;
+  return qnorm([(d - b) / s, (c + g) / s, (f + h) / s, s / 4]);
 }
 
 /** Turned by a rotation vector, the inverse of `between`. */
@@ -610,11 +635,98 @@ export const TRI_STICKER = 'M20.78 74.61 50 23.99 79.22 74.61Z';
 
 /* ---- The game ------------------------------------------------------------- */
 
+/**
+ * A turn in words, as seen through the view `m`: the page passes where the
+ * reader is looking, or where the view is on its way to if it is turning to
+ * the method's hold.
+ *
+ * The layer is named by the side of the screen its axis points to: an axis
+ * mostly across the screen makes a left or right side, one mostly up it a
+ * top or bottom layer, and one mostly out of it a front or back face. The
+ * way is where the stickers facing the reader go: up or down for a side,
+ * left or right for a layer, and clockwise or not, as the reader sees it,
+ * for a face. On the pyramid the corners are named the same way, the
+ * highest one top, the furthest back one back, and the other two by which
+ * side they are on.
+ */
+export function describeTurn(shape: Shape, m: Mat, turn: Turn): Move {
+  const axis = apply(m, shape.axes[turn.axis]);
+  const sign = Math.sign(turn.turns);
+  const [ax, ay, az] = axis.map(Math.abs);
+
+  /*
+   * The sticker the reader is watching: of the layer's stickers turned
+   * towards them, the nearest. Its motion on screen is what "up" or "to the
+   * left" has to mean, so the words are worked out from it rather than from
+   * the axis, which only agrees with it while the view is square on.
+   */
+  const slab = shape.slots.filter((slot) => inside(shape, slot, turn));
+  const towards = slab.filter((slot) => apply(m, slot.normal)[2] > 0.2);
+  const watched = (towards.length ? towards : slab).reduce((a, b) =>
+    apply(m, a.centre)[2] > apply(m, b.centre)[2] ? a : b,
+  );
+  const at = apply(m, watched.centre);
+  const motion = scale(apply(m, cross(shape.axes[turn.axis], watched.centre)), sign);
+
+  const facing = az >= ax && az >= ay;
+  const vertical = Math.abs(motion[1]) > Math.abs(motion[0]);
+
+  let way: Move['way'];
+  if (shape.puzzle.kind === 'cube' && Math.abs(turn.turns) === 2) way = 'half';
+  else if (facing) {
+    // Round the point where the axis meets the sticker's depth.
+    const centre = scale(axis, dot(watched.centre, shape.axes[turn.axis]));
+    const spin = (at[0] - centre[0]) * motion[1] - (at[1] - centre[1]) * motion[0];
+    way = spin > 0 ? 'clockwise' : 'anticlockwise';
+  } else if (vertical) way = motion[1] < 0 ? 'up' : 'down';
+  else way = motion[0] > 0 ? 'right' : 'left';
+
+  /* Where the layer is, by the same split as the way: a layer whose
+     stickers go up or down is a side, one whose stickers go across is a top
+     or bottom layer, and one that spins is a front or back face. */
+  const mean = (i: number) => slab.reduce((sum, slot) => sum + apply(m, slot.centre)[i], 0) / slab.length;
+
+  if (shape.puzzle.kind === 'cube') {
+    const middle = (turn.lo + turn.hi) / 2;
+    let layer: Move['layer'];
+    if (Math.abs(middle) < 0.25) layer = 'middle';
+    else if (facing) layer = mean(2) > 0 ? 'front' : 'back';
+    else if (vertical) layer = mean(0) > 0 ? 'right' : 'left';
+    else layer = mean(1) < 0 ? 'top' : 'bottom';
+    return { layer, way };
+  }
+
+  const corners = shape.axes.map((a, i) => ({ i, at: apply(m, a) }));
+  const top = corners.reduce((a, b) => (b.at[1] < a.at[1] ? b : a));
+  const others = corners.filter((c) => c !== top);
+  const back = others.reduce((a, b) => (b.at[2] < a.at[2] ? b : a));
+  const sides = others.filter((c) => c !== back);
+  const left = sides[0].at[0] < sides[1].at[0] ? sides[0] : sides[1];
+
+  const where = turn.axis === top.i ? 'Top' : turn.axis === back.i ? 'Back' : turn.axis === left.i ? 'Left' : 'Right';
+  const tip = turn.lo > shape.cuts[0] + 1e-6;
+  return { layer: `${tip ? 'tip' : 'corner'}${where}` as Move['layer'], way };
+}
+
+
 export type State = 'idle' | 'scrambling' | 'ready' | 'solving' | 'solved';
 
 /** The moments that make a sound. What each one sounds like is in
  *  sounds.ts, and whether it is heard is the page's switch. */
 export type Cue = 'turn' | 'settle' | 'detent' | 'rattle' | 'scramble' | 'undo' | 'solved' | 'arrive';
+
+/**
+ * A move in the words a person uses with the puzzle in their hands: which
+ * layer, by where it is on screen, and which way the stickers facing them go.
+ * The page turns the two into a sentence per language.
+ */
+export interface Move {
+  layer:
+    | 'top' | 'bottom' | 'left' | 'right' | 'front' | 'back' | 'middle'
+    | 'tipTop' | 'tipLeft' | 'tipRight' | 'tipBack'
+    | 'cornerTop' | 'cornerLeft' | 'cornerRight' | 'cornerBack';
+  way: 'up' | 'down' | 'left' | 'right' | 'clockwise' | 'anticlockwise' | 'half';
+}
 
 export interface Options {
   /** The size container, the thing pointer events land on, and the element
@@ -628,9 +740,15 @@ export interface Options {
   onMoves(moves: number): void;
   /** The clock, in hundredths of a second, on every frame it runs. */
   onTime(hundredths: number): void;
-  onSolved(hundredths: number, moves: number): void;
+  /** `assisted` when a hint was shown during the solve, which the page keeps
+   *  out of the record. */
+  onSolved(hundredths: number, moves: number, assisted: boolean): void;
   onUndo(available: boolean): void;
   onCue(cue: Cue, level?: number): void;
+  /** The hint to show and the move in plain words, or null to put it away.
+   *  Called again with the same step when turning the whole puzzle changes
+   *  how the move is described. */
+  onHint(step: Step | null, move?: Move): void;
 }
 
 export interface Controller {
@@ -638,6 +756,12 @@ export interface Controller {
   load(puzzle: Puzzle): void;
   scramble(): void;
   undo(): void;
+  /** Show the next move, and keep showing the one after each turn that lands,
+   *  until closed. Pressed again, closes. */
+  hint(): void;
+  /** Make the move the hint is showing. */
+  playHint(): void;
+  closeHint(): void;
 }
 
 /* The feel, in numbers. */
@@ -696,6 +820,14 @@ const SCRAMBLE_STEP = { min: 26, max: 90 };
 
 /** The lap of honour on a solve. */
 const LAP_MS = 1400;
+
+/**
+ * The layer a hint is about rocks a little way in the direction it should be
+ * turned and back, then rests, over and over: which layer and which way at
+ * once, in the scene itself, with no arrow to draw. About sixteen degrees, and
+ * a beat of rest in every cycle so it reads as a nudge rather than a shiver.
+ */
+const NUDGE = { angle: 0.28, swing: 620, period: 1500 };
 
 type Easing = (t: number) => number;
 
@@ -788,6 +920,19 @@ export function mount(options: Options): Controller {
 
   let press: Press | null = null;
 
+  /* Hints. The module is loaded the first time one is asked for. `guide` is
+     the plan being followed and the state before each of its steps, so a turn
+     that lands where the plan said it would picks up the next step without
+     planning again. */
+  let hints: typeof import('./hint') | null = null;
+  let guide: { steps: Step[]; keys: string[] } | null = null;
+  let shownAt = -1;
+  let guiding = false;
+  let assisted = false;
+  let nudge: { turn: Turn; elements: number[]; plates: Active['plates']; started: number; angle: number } | null = null;
+  let held: Step['hold'] = null;
+  let hinted: { step: Step; key: string } | null = null;
+
   /* The clock. `hidden` is when the tab went away, so the time away can be
      taken back off when it returns. */
   let clockStart = 0;
@@ -815,6 +960,7 @@ export function mount(options: Options): Controller {
     else if (settling) busy = stepRest(dt) || busy;
     else if (coasting) busy = stepCoast(dt) || busy;
     if (active) busy = stepTurn(dt, now) || busy;
+    else if (nudge && !press) busy = stepNudge(now) || busy;
 
     render();
 
@@ -844,7 +990,22 @@ export function mount(options: Options): Controller {
       view.style.transform = matrix3d(m);
     }
 
-    const moving = new Set(active?.elements);
+    const moving = new Set(active?.elements ?? nudge?.elements);
+
+    if (nudge && !active) {
+      const r = rotation(shape.axes[nudge.turn.axis], nudge.angle);
+      const prefix = matrix3d(r);
+
+      for (const e of nudge.elements) {
+        const slot = shape.slots[slotOf[e]];
+        tiles[e].style.transform = `${prefix} ${slot.css}`;
+        relight(e, apply(r, slot.normal), m);
+      }
+
+      for (const p of nudge.plates) {
+        p.node.style.transform = p.moving ? `${prefix} ${p.css}` : p.css;
+      }
+    }
 
     if (active) {
       const r = rotation(shape.axes[active.axis], active.angle);
@@ -866,6 +1027,17 @@ export function mount(options: Options): Controller {
         if (!moving.has(e)) relight(e, shape.slots[slotOf[e]].normal, m);
       }
       viewDirty = false;
+
+      // The words for a move depend on how the puzzle is turned, so they are
+      // said again when the reader turns it far enough to change them.
+      if (hinted && nudge) {
+        const move = describe(nudge.turn);
+        const key = `${move.layer} ${move.way}`;
+        if (key !== hinted.key) {
+          hinted.key = key;
+          options.onHint(hinted.step, move);
+        }
+      }
     }
   }
 
@@ -950,15 +1122,11 @@ export function mount(options: Options): Controller {
 
   /* ---- Turns ----------------------------------------------------------- */
 
-  function begin(turn: Turn, mode: Active['mode'], source: Active['source'], duration = KEY_MS) {
-    const elements: number[] = [];
+  const inTurn = (turn: Turn) => tiles.map((_, e) => e).filter((e) => inside(shape, shape.slots[slotOf[e]], turn));
 
-    for (let e = 0; e < tiles.length; e++) {
-      if (inside(shape, shape.slots[slotOf[e]], turn)) elements.push(e);
-    }
-
-    /* The plates: one pair at every cut the slab's two ends make, unless the
-       end is the outside of the puzzle. */
+  /** The plates: one pair at every cut the slab's two ends make, unless the
+   *  end is the outside of the puzzle. */
+  function openPlates(turn: Turn): Active['plates'] {
     const used: Active['plates'] = [];
     const [bottom, top] = shape.extent;
 
@@ -974,6 +1142,16 @@ export function mount(options: Options): Controller {
         used.push({ node, css, moving });
       }
     }
+
+    return used;
+  }
+
+  function begin(turn: Turn, mode: Active['mode'], source: Active['source'], duration = KEY_MS) {
+    // A real turn takes over from a nudge, whatever layer it is.
+    clearNudge();
+
+    const elements = inTurn(turn);
+    const used = openPlates(turn);
 
     active = {
       ...turn,
@@ -1078,7 +1256,12 @@ export function mount(options: Options): Controller {
 
     for (const p of turn.plates) p.node.classList.remove('is-on');
 
-    if (net === 0 || turn.source === 'scramble') return;
+    if (turn.source === 'scramble') return;
+
+    // Whatever the turn was, the hint follows from where the puzzle is now.
+    if (guiding) void advise();
+
+    if (net === 0) return;
 
     if (turn.source === 'undo') {
       moves = Math.max(0, moves - 1);
@@ -1133,11 +1316,12 @@ export function mount(options: Options): Controller {
 
   function finish() {
     const time = elapsed();
+    closeHint();
     setState('solved');
     options.onTime(time);
     options.onUndo(false);
     options.onCue('solved');
-    options.onSolved(time, moves);
+    options.onSolved(time, moves, assisted);
 
     if (!still) {
       lap = { from: orientation, started: performance.now() + 120 };
@@ -1155,11 +1339,15 @@ export function mount(options: Options): Controller {
   /* ---- Building a puzzle ----------------------------------------------- */
 
   function load(puzzle: Puzzle) {
+    closeHint();
+    nudge = null;
     press = null;
     active = null;
     queue.length = 0;
     history = [];
     moves = 0;
+    guide = null;
+    assisted = false;
 
     shape = build(puzzle);
     const count = shape.slots.length;
@@ -1221,11 +1409,14 @@ export function mount(options: Options): Controller {
 
   function scrambleNow() {
     if (state === 'scrambling') return;
+    closeHint();
     flush();
     press = null;
 
     history = [];
     moves = 0;
+    guide = null;
+    assisted = false;
     options.onMoves(0);
     options.onTime(0);
     options.onUndo(false);
@@ -1266,6 +1457,175 @@ export function mount(options: Options): Controller {
     if (!last) return;
     options.onUndo(history.length > 0);
     play({ ...last, turns: -last.turns }, 'undo');
+  }
+
+  /* ---- Hints ------------------------------------------------------------ */
+
+  const keyOf = (occ: Int16Array) => Array.from(occ, (e) => shape.slots[e].face).join('');
+
+  const turned = (occ: Int16Array, turn: Turn) => {
+    const map = permutation(shape, turn);
+    const next = new Int16Array(occ.length);
+    occ.forEach((e, s) => (next[map[s]] = e));
+    return next;
+  };
+
+  function hint() {
+    if (state === 'scrambling' || state === 'solved') return;
+    if (guiding) {
+      closeHint();
+      return;
+    }
+    guiding = true;
+    void advise();
+  }
+
+  /**
+   * Shows the next move from wherever the puzzle is.
+   *
+   * If the puzzle is where the plan said a step would leave it, the plan goes
+   * on from there. A half turn made as one quarter gets the other quarter.
+   * Anything else - a different turn, an undo, a layer turned by hand - is
+   * planned again from here, so a hint is never about a puzzle that is not
+   * the one on screen. Planning is a millisecond or two on the cubes and a few
+   * tens on the pyramid, so there is nothing to wait for.
+   */
+  async function advise() {
+    if (!guiding) return;
+    if (solved(shape, occupant)) {
+      closeHint();
+      return;
+    }
+
+    hints ??= await import('./hint');
+    if (!guiding || state === 'scrambling' || state === 'solved') return;
+
+    const key = keyOf(occupant);
+    let step: Step | null = null;
+
+    if (guide) {
+      const from = Math.max(0, shownAt);
+      const at = guide.keys.indexOf(key, from);
+      if (at !== -1 && at < guide.steps.length) {
+        shownAt = at;
+        step = guide.steps[at];
+      } else if (shownAt >= 0 && Math.abs(guide.steps[shownAt].turn.turns) === 2) {
+        const expected = guide.keys[shownAt + 1];
+        for (const turns of [1, -1]) {
+          const quarter = { ...guide.steps[shownAt].turn, turns };
+          if (keyOf(turned(occupant, quarter)) === expected) step = { ...guide.steps[shownAt], turn: quarter };
+        }
+      }
+    }
+
+    if (!step) {
+      const steps = hints.plan(shape, occupant);
+      if (!steps?.length) {
+        closeHint();
+        return;
+      }
+
+      let occ = occupant;
+      const keys = [keyOf(occ)];
+      for (const s of steps) {
+        occ = turned(occ, s.turn);
+        keys.push(keyOf(occ));
+      }
+
+      guide = { steps, keys };
+      shownAt = 0;
+      step = steps[0];
+    }
+
+    if (state === 'ready' || state === 'solving') assisted = true;
+    if (step.hold) hold(step.hold);
+    showNudge(step.turn);
+
+    const move = describe(step.turn);
+    hinted = { step, key: `${move.layer} ${move.way}` };
+    options.onHint(step, move);
+  }
+
+  const describe = (turn: Turn) => describeTurn(shape, qmatrix(settling ? rest : orientation), turn);
+
+  /**
+   * Turns the puzzle to the way the method holds it, when that changes: at the
+   * first hint, when the method turns it over, and when a sequence starts from
+   * a new front. Not on every move, since the reader may have turned it to
+   * look at something, and a puzzle that snapped back after every move would
+   * be fighting them.
+   *
+   * The resting view is kept, only with the method's faces in it: its up face
+   * up and, if it names one, its front face in front. With no front named, the
+   * side face nearest the one already in front is used, so the turn is the
+   * smallest that puts the right face on top.
+   */
+  function hold(want: NonNullable<Step['hold']>) {
+    if (held && held.U === want.U && (want.F === null || held.F === want.F)) return;
+    held = { U: want.U, F: want.F ?? held?.F ?? null };
+
+    const normal = (f: number) => shape.slots.find((slot) => slot.face === f)!.normal;
+    const up = normal(want.U);
+    const fronts = want.F !== null ? [want.F] : [0, 1, 2, 3, 4, 5].filter((f) => Math.abs(dot(normal(f), up)) < 0.5);
+
+    let best: Quat | null = null;
+    for (const f of fronts) {
+      const front = normal(f);
+      const right = cross(front, up);
+      const q = qmul(shape.view, fromMatrix([...right, ...scale(up, -1), ...front]));
+      if (!best || Math.abs(qdot(q, orientation)) > Math.abs(qdot(best, orientation))) best = q;
+    }
+
+    if (best && Math.abs(qdot(best, orientation)) < 0.9995) settle(best);
+  }
+
+  function showNudge(turn: Turn) {
+    clearNudge();
+    const elements = inTurn(turn);
+    for (const e of elements) tiles[e].classList.add('is-hint');
+    nudge = { turn, elements, plates: still ? [] : openPlates(turn), started: performance.now(), angle: 0 };
+    wake();
+  }
+
+  function clearNudge() {
+    if (!nudge) return;
+    const m = qmatrix(orientation);
+
+    for (const e of nudge.elements) {
+      const slot = shape.slots[slotOf[e]];
+      tiles[e].classList.remove('is-hint');
+      tiles[e].style.transform = slot.css;
+      relight(e, slot.normal, m);
+    }
+
+    for (const p of nudge.plates) p.node.classList.remove('is-on');
+    nudge = null;
+  }
+
+  function stepNudge(now: number): boolean {
+    if (!nudge || still) return false;
+    const t = (now - nudge.started) % NUDGE.period;
+    const swing = t < NUDGE.swing ? Math.sin((Math.PI * t) / NUDGE.swing) : 0;
+    nudge.angle = Math.sign(nudge.turn.turns) * NUDGE.angle * swing;
+    return true;
+  }
+
+  function playHint() {
+    if (!guiding || !guide || state === 'scrambling' || state === 'solved') return;
+    const step = nudge?.turn;
+    if (!step) return;
+    clearNudge();
+    play(step, 'key');
+  }
+
+  function closeHint() {
+    const was = guiding;
+    guiding = false;
+    shownAt = -1;
+    held = null;
+    hinted = null;
+    clearNudge();
+    if (was) options.onHint(null);
   }
 
   /* ---- Pointer --------------------------------------------------------- */
@@ -1397,6 +1757,10 @@ export function mount(options: Options): Controller {
 
     const target = (event.target as Element | null)?.closest<HTMLElement>('.cube-tile');
     const tile = target && event.button === 0 && !event.shiftKey ? Number(target.dataset.i) : null;
+
+    // The nudge is only ever a picture of a turn, so the layer is put back
+    // before a hand can take hold of it.
+    clearNudge();
 
     press = {
       id: event.pointerId,
@@ -1616,6 +1980,12 @@ export function mount(options: Options): Controller {
       return;
     }
 
+    if (event.code === 'KeyH') {
+      event.preventDefault();
+      hint();
+      return;
+    }
+
     const digit = /^Digit([1-5])$/.exec(event.code);
     if (digit) {
       depthKey = Number(digit[1]) - 1;
@@ -1645,5 +2015,8 @@ export function mount(options: Options): Controller {
     load,
     scramble: scrambleNow,
     undo,
+    hint,
+    playHint,
+    closeHint,
   };
 }

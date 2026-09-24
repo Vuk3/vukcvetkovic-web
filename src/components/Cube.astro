@@ -13,7 +13,7 @@
  * `data-state` and `data-kind` on the frame, so the script never writes a
  * string a reader sees that is not a number or a name.
  */
-import { ArrowLeft, Shuffle, Undo2 } from "@lucide/astro";
+import { ArrowLeft, Lightbulb, Shuffle, Undo2, X } from "@lucide/astro";
 import type { Lang } from "../i18n/types";
 import { getDict, localizePath } from "../i18n/utils";
 import { PUZZLES, TRI_BODY, TRI_STICKER, build } from "../games/cube/game";
@@ -142,6 +142,7 @@ const PYRAMID_ICON = [2, 1, 5, 2, 3, 2, 1, 5, 3];
       data-state="idle"
       data-kind="cube"
       data-msg-scrambled={copy.messages.scrambled}
+      data-advice={JSON.stringify(copy.advice)}
     >
       {/*
         The five puzzles, as real radios for the reasons the minefield's boards
@@ -217,9 +218,16 @@ const PYRAMID_ICON = [2, 1, 5, 2, 3, 2, 1, 5, 3];
         <div class="cube-actions">
           <SoundToggle lang={lang} />
 
+          {/* Only for the puzzles there is a method for: the page sets
+              `data-hint` on the frame for those, and the rest never show it. */}
+          <button type="button" class="cta-ghost" data-action="hint" aria-pressed="false">
+            <Lightbulb class="size-4 shrink-0" aria-hidden="true" />
+            {copy.advice.button}
+          </button>
+
           <button type="button" class="cta-ghost" data-action="undo" disabled>
             <Undo2 class="size-4 shrink-0" aria-hidden="true" />
-            {copy.undo}
+            <span class="cube-action-label">{copy.undo}</span>
           </button>
 
           <button type="button" class="cta cube-scramble" data-action="scramble">
@@ -250,6 +258,30 @@ const PYRAMID_ICON = [2, 1, 5, 2, 3, 2, 1, 5, 3];
           </p>
         </div>
 
+        {/*
+          The hint. Every word in it is written by the script from
+          `data-advice`, because what it says depends on the move - but the
+          frame of it is here, and it sits beside the stage rather than in it
+          so a press on it is never a press on the puzzle.
+        */}
+        <div class="cube-tip" data-tip aria-live="polite">
+          <div class="cube-tip-head">
+            <span class="cube-tip-step" data-tip-step></span>
+            <button type="button" class="cube-tip-close" data-action="hint-close" aria-label={copy.advice.close}>
+              <X class="size-4" aria-hidden="true" />
+            </button>
+          </div>
+          <p class="cube-tip-title" data-tip-title></p>
+          {/* What to do with your hands, and under it why. */}
+          <p class="cube-tip-do" data-tip-do></p>
+          <p class="cube-tip-text" data-tip-text></p>
+          <p class="cube-tip-alg" data-tip-alg></p>
+          <div class="cube-tip-foot">
+            <span class="cube-tip-left">{copy.advice.left} <b data-tip-left>0</b></span>
+            <button type="button" class="cta-ghost cube-tip-play" data-action="hint-play">{copy.advice.play}</button>
+          </div>
+        </div>
+
         <div class="game-burst" aria-hidden="true" data-burst></div>
 
         <div class="cube-panel" data-panel="solved">
@@ -268,7 +300,13 @@ const PYRAMID_ICON = [2, 1, 5, 2, 3, 2, 1, 5, 3];
             </div>
           </div>
 
-          <p class="cube-panel-body" data-panel-body data-record={copy.won.record}></p>
+          <p
+            class="cube-panel-body"
+            data-panel-body
+            data-record={copy.won.record}
+            data-assisted={copy.won.assisted}
+          >
+          </p>
 
           <div class="cube-panel-actions">
             <button type="button" class="cta" data-action="scramble">{copy.won.again}</button>
@@ -330,6 +368,8 @@ const PYRAMID_ICON = [2, 1, 5, 2, 3, 2, 1, 5, 3];
 
 <script>
   import { PUZZLES, mount, type Puzzle } from "../games/cube/game";
+  import type { Move } from "../games/cube/game";
+  import type { Step } from "../games/cube/hint";
   import { voices } from "../games/cube/sounds";
   import { scatter } from "../games/burst";
   import { scoreRecord } from "../games/record";
@@ -363,6 +403,23 @@ const PYRAMID_ICON = [2, 1, 5, 2, 3, 2, 1, 5, 3];
     const panelMoves = root.querySelector<HTMLElement>("[data-panel-moves]");
     const panelBody = root.querySelector<HTMLElement>("[data-panel-body]");
     const panelTitle = root.querySelector<HTMLElement>(".cube-panel-title");
+
+    const hintButton = root.querySelector<HTMLButtonElement>('[data-action="hint"]');
+    const tipStep = root.querySelector<HTMLElement>("[data-tip-step]");
+    const tipTitle = root.querySelector<HTMLElement>("[data-tip-title]");
+    const tipDo = root.querySelector<HTMLElement>("[data-tip-do]");
+    const tipText = root.querySelector<HTMLElement>("[data-tip-text]");
+    const tipAlg = root.querySelector<HTMLElement>("[data-tip-alg]");
+    const tipLeft = root.querySelector<HTMLElement>("[data-tip-left]");
+
+    /** The hint's words, per step of each method and per kind of move in it.
+     *  Read loosely, since the step and the move come from the module. */
+    const advice = JSON.parse(root.dataset.advice ?? "{}") as {
+      step: string;
+      colours: string[];
+      move: { turn: string; half: string; layers: Record<string, string>; ways: Record<string, string> };
+      stages: Record<string, Record<string, string>>;
+    };
 
     const lang = document.documentElement.lang || "en";
     const count = new Intl.NumberFormat(lang);
@@ -423,6 +480,88 @@ const PYRAMID_ICON = [2, 1, 5, 2, 3, 2, 1, 5, 3];
     /* The burst is the six sticker colours. */
     const COLOURS = [0, 1, 2, 3, 4, 5].map((i) => `var(--cube-c${i})`);
 
+    /* The pyramid's four faces wear four of the cube's colours: green, red,
+       blue and yellow. */
+    const PYRAMID = [2, 1, 5, 3];
+
+    /**
+     * The colours of the piece a hint is about, drawn as chips rather than
+     * named: a word per colour would need an adjective agreeing with "edge" or
+     * "corner" in every language, and a chip is quicker to match to the puzzle
+     * anyway. White and yellow come first, the way pieces are spoken of. The
+     * names are there for a screen reader.
+     */
+    const chips = (piece: number[]) => {
+      const colours = piece
+        .map((face) => (current.kind === "pyramid" ? PYRAMID[face] : face))
+        .sort((a, b) => [0, 3, 1, 4, 2, 5].indexOf(a) - [0, 3, 1, 4, 2, 5].indexOf(b));
+
+      const group = document.createElement("span");
+      group.className = "cube-chips";
+
+      for (const c of colours) {
+        const chip = document.createElement("span");
+        chip.className = "cube-chip";
+        chip.style.setProperty("--c", `var(--cube-c${c})`);
+        chip.setAttribute("aria-hidden", "true");
+        group.append(chip);
+      }
+
+      const words = document.createElement("span");
+      words.className = "sr-only";
+      words.textContent = colours.map((c) => advice.colours[c]).join(", ");
+      group.append(words);
+
+      return group;
+    };
+
+    const showTip = (step: Step | null, move?: Move) => {
+      hintButton?.setAttribute("aria-pressed", String(step !== null));
+
+      if (!step) {
+        delete root.dataset.tip;
+        return;
+      }
+
+      root.dataset.tip = "";
+
+      if (tipStep) tipStep.textContent = advice.step.replace("{n}", String(step.number)).replace("{total}", String(step.of));
+
+      const words = advice.stages[step.stage] ?? {};
+      if (tipTitle) tipTitle.textContent = words.title ?? "";
+
+      if (tipDo && move) {
+        const template = move.way === "half" ? advice.move.half : advice.move.turn;
+        tipDo.textContent = template
+          .replace("{layer}", advice.move.layers[move.layer] ?? "")
+          .replace("{way}", advice.move.ways[move.way] ?? "");
+      }
+
+      if (tipText) {
+        const parts = (words[step.say] ?? "").split("{piece}");
+        const nodes: (string | Node)[] = [];
+        parts.forEach((part, i) => {
+          if (i) nodes.push(chips(step.piece));
+          nodes.push(part);
+        });
+        tipText.replaceChildren(...nodes);
+      }
+
+      // The sequence, with the move being shown picked out in it.
+      if (tipAlg) {
+        tipAlg.replaceChildren(
+          ...(step.alg ?? []).map((token, i) => {
+            const move = document.createElement("span");
+            move.textContent = token;
+            if (i === step.at) move.className = "is-now";
+            return move;
+          }),
+        );
+      }
+
+      if (tipLeft) tipLeft.textContent = count.format(step.left);
+    };
+
     const paintBests = () => {
       for (const puzzle of PUZZLES) {
         const best = records[puzzle.id].read();
@@ -460,31 +599,40 @@ const PYRAMID_ICON = [2, 1, 5, 2, 3, 2, 1, 5, 3];
         sound.play(cue, level);
       },
 
+      onHint: showTip,
+
       /**
        * A solve: keep the record, fill the panel, throw the burst.
        *
        * The record line only appears when there was a record to beat. On the
        * first solve of a puzzle every time is a best, and saying so would be a
-       * sentence with nothing in it.
+       * sentence with nothing in it. A solve made with hints is not a record
+       * at all, and the panel says so instead.
        */
-      onSolved(hundredths, moves) {
+      onSolved(hundredths, moves, assisted) {
         const record = records[current.id];
         const best = record.read();
-        const beaten = best !== null && hundredths < best;
+        const beaten = !assisted && best !== null && hundredths < best;
 
-        if (best === null || hundredths < best) record.write(hundredths);
+        if (!assisted && (best === null || hundredths < best)) record.write(hundredths);
 
         if (panelPuzzle) panelPuzzle.textContent = labelOf(current);
         if (panelTime) panelTime.textContent = clock(hundredths);
         if (panelMoves) panelMoves.textContent = count.format(moves);
-        if (panelBody) panelBody.textContent = beaten ? (panelBody.dataset.record ?? "") : "";
+        if (panelBody) {
+          panelBody.textContent = assisted
+            ? (panelBody.dataset.assisted ?? "")
+            : beaten
+              ? (panelBody.dataset.record ?? "")
+              : "";
+        }
 
         paintBests();
         if (burst) scatter(burst, COLOURS);
 
         if (live) {
           const words = `${panelTitle?.textContent ?? ""}. ${live.dataset.labelTime}: ${clock(hundredths)}. ${live.dataset.labelMoves}: ${count.format(moves)}.`;
-          live.textContent = beaten ? `${words} ${panelBody?.dataset.record ?? ""}` : words;
+          live.textContent = panelBody?.textContent ? `${words} ${panelBody.textContent}` : words;
         }
 
         // The panel covers the stage, so a keyboard standing on the bar would
@@ -502,6 +650,7 @@ const PYRAMID_ICON = [2, 1, 5, 2, 3, 2, 1, 5, 3];
       for (const option of options) option.checked = option.value === puzzle.id;
       root.dataset.kind = puzzle.kind;
       root.toggleAttribute("data-last", puzzle === PUZZLES[PUZZLES.length - 1]);
+      root.toggleAttribute("data-hint", puzzle.kind === "pyramid" || puzzle.size <= 3);
 
       paintBests();
       controller.load(puzzle);
@@ -522,6 +671,9 @@ const PYRAMID_ICON = [2, 1, 5, 2, 3, 2, 1, 5, 3];
 
       if (action === "scramble") controller.scramble();
       if (action === "undo") controller.undo();
+      if (action === "hint") controller.hint();
+      if (action === "hint-play") controller.playHint();
+      if (action === "hint-close") controller.closeHint();
 
       if (action === "next") {
         const next = PUZZLES[PUZZLES.indexOf(current) + 1];

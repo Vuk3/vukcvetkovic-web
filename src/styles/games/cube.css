@@ -328,6 +328,17 @@
     font-size: 0.875rem;
   }
 
+  /* The hint button is there only for the puzzles there is a method for,
+     and it stays pressed while the hints are showing. */
+  .cube:not([data-hint]) [data-action='hint'] {
+    display: none;
+  }
+
+  .cube-actions [data-action='hint'][aria-pressed='true'] {
+    border-color: var(--site-accent);
+    color: var(--site-accent);
+  }
+
   .cube-actions .cta-ghost:disabled {
     opacity: 0.45;
     cursor: default;
@@ -350,6 +361,23 @@
     .cube-actions :is(.cta, .cta-ghost) {
       flex: 1;
       justify-content: center;
+    }
+
+    /* Four buttons do not share a phone's width with their words, so undo is
+       its icon here, the way the sound switch is. The word stays for a screen
+       reader. */
+    .cube-actions [data-action='undo'] {
+      flex: 0 0 auto;
+      padding-inline: 0.8rem;
+    }
+
+    .cube-action-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
     }
 
     .cube-meter {
@@ -513,6 +541,12 @@
     .cube-stage:not(.is-held) .cube-tile:hover {
       filter: brightness(calc(var(--lit, 1) * 1.12));
     }
+  }
+
+  /* The layer a hint is about, a shade brighter while it rocks, so the eye
+     finds it before the motion has been read. */
+  .cube-tile.is-hint {
+    filter: brightness(calc(var(--lit, 1) * 1.18));
   }
 
   .cube-tile[data-face='0'] {
@@ -749,6 +783,185 @@
     display: none;
   }
 
+  /*
+   * The hint card, over the top left corner of the stage, narrow enough to sit
+   * beside a puzzle at rest rather than across it.
+   *
+   * ⚠️ **It is a sibling of the stage, not inside it**, so a press on the card
+   * is never a press on the puzzle: the stage takes every pointer that lands on
+   * it as the start of a turn or a spin. It sits under the solved panel and the
+   * burst.
+   */
+  .cube-tip {
+    position: absolute;
+    top: clamp(0.75rem, 2vw, 1.1rem);
+    left: clamp(0.75rem, 2vw, 1.1rem);
+    z-index: 2;
+    display: none;
+    width: min(21rem, calc(100% - 1.5rem));
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-card);
+    background-color: color-mix(in oklab, var(--site-card) 92%, transparent);
+    backdrop-filter: blur(6px);
+    box-shadow: var(--site-lift-hover);
+    padding: 0.85rem 0.95rem 0.8rem;
+  }
+
+  .cube[data-tip] .cube-tip {
+    display: block;
+    animation: cube-tip 360ms var(--cube-spring);
+  }
+
+  /* The cue at the foot of the stage says what the card now says better. */
+  .cube[data-tip] .cube-cue {
+    display: none;
+  }
+
+  /* On a phone there is no room beside the puzzle, so the card goes under
+     the stage instead of over it. */
+  @media (max-width: 40rem) {
+    .cube-tip {
+      position: static;
+      width: auto;
+      margin-top: 0.6rem;
+      padding: 0.7rem 0.8rem 0.65rem;
+      backdrop-filter: none;
+    }
+  }
+
+  .cube-tip-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .cube-tip-step {
+    font-size: 0.6875rem;
+    font-weight: 620;
+    letter-spacing: 0.12em;
+    line-height: 1.3;
+    text-transform: uppercase;
+    color: var(--site-accent);
+  }
+
+  .cube-tip-close {
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    margin: -0.35rem -0.45rem -0.35rem 0;
+    border-radius: 50%;
+    color: var(--site-muted);
+    transition:
+      background-color 160ms var(--site-ease),
+      color 160ms var(--site-ease);
+  }
+
+  .cube-tip-close:hover {
+    background-color: var(--site-inset);
+    color: var(--site-fg);
+  }
+
+  .cube-tip-title {
+    margin-top: 0.15rem;
+    font-weight: 620;
+    font-size: 0.875rem;
+    line-height: 1.3;
+    color: var(--site-muted);
+  }
+
+  /* The move itself, which is the line a reader acts on, so it is the
+     largest thing on the card. */
+  .cube-tip-do {
+    margin-top: 0.3rem;
+    font-stretch: 112%;
+    font-weight: 680;
+    font-size: 1.1875rem;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    color: var(--site-fg);
+  }
+
+  .cube-tip-text {
+    margin-top: 0.35rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--site-muted);
+  }
+
+  /* A piece's colours, as the chips a sticker would show. */
+  .cube-chips {
+    display: inline-flex;
+    gap: 3px;
+    vertical-align: -0.12em;
+    margin-inline: 0.1em;
+    border-radius: 5px;
+    background-color: var(--cube-plastic);
+    padding: 2px;
+  }
+
+  .cube-chip {
+    width: 0.8em;
+    height: 0.8em;
+    border-radius: 3px;
+    background-color: var(--c);
+  }
+
+  /* The sequence, with the move being shown lifted out of it. */
+  .cube-tip-alg {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-top: 0.55rem;
+    font-stretch: 108%;
+    font-weight: 620;
+    font-size: 0.9375rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cube-tip-alg:empty {
+    display: none;
+  }
+
+  .cube-tip-alg span {
+    min-width: 1.9rem;
+    border-radius: 6px;
+    background-color: var(--site-inset);
+    padding: 0.15rem 0.4rem;
+    text-align: center;
+    color: var(--site-muted);
+  }
+
+  .cube-tip-alg .is-now {
+    background-color: var(--site-accent);
+    color: var(--site-bg);
+  }
+
+  .cube-tip-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    margin-top: 0.65rem;
+  }
+
+  .cube-tip-left {
+    font-size: 0.8125rem;
+    color: var(--site-muted);
+  }
+
+  .cube-tip-left b {
+    font-weight: 660;
+    font-variant-numeric: tabular-nums;
+    color: var(--site-fg);
+  }
+
+  .cube-tip-play {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8125rem;
+  }
+
   .cube-hint {
     margin-top: clamp(0.75rem, 2vw, 1.1rem);
     font-size: 0.875rem;
@@ -835,6 +1048,18 @@
 
   50% {
     scale: 1.045;
+  }
+}
+
+@keyframes cube-tip {
+  from {
+    opacity: 0;
+    translate: 0 -0.5rem;
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
   }
 }
 

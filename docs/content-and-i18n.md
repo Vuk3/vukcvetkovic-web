@@ -395,6 +395,19 @@ anybody as protection - see
 
 ## Changelog
 
+- 2026-09-24 - the cube's `advice` gained `move`: a sentence for a turn and one for a half
+  turn, with `{layer}` and `{way}` filled from `layers` and `ways`. ⚠️ The layers are
+  written the way the sentence needs them, with the article in French and German and in
+  the accusative in Serbian and German, since "Okreni {layer} {way}" is the whole
+  sentence. The step sentences were rewritten as reasons, now that the move is said above
+  them, in all four languages.
+- 2026-09-24 - the cube's copy gained `advice`, a sentence for every kind of move in every
+  step of the three methods, keyed by the step and the move as the hint module names them,
+  and `won.assisted`. ⚠️ `{piece}` in those sentences is drawn as chips of the piece's
+  colours, not written: a colour named in words would have to agree with "edge" or
+  "corner" in every language for every combination, and `colours` is only what a screen
+  reader hears. The controls line, the third how-to card and a sixth build paragraph say
+  what the hints are, in all four languages.
 - 2026-09-24 - a sixth game, `cube`, last on the index. Its copy names the puzzles only
   where a name is a word: a cube's tile is its size, which the page composes from the
   module's `size`, and only `pyramid` is prose. `cube` is the word a screen reader hears

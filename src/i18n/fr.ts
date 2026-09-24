@@ -1070,12 +1070,124 @@ const fr: Dict = {
         },
 
         hint: {
-          cube: "Faites glisser une case pour tourner sa couronne, et faites glisser n’importe où autour du cube pour le tourner en entier. Au clavier, U, D, L, R, F et B tournent une face, Maj la tourne dans l’autre sens, un chiffre avant la lettre atteint une couronne plus profonde, et les flèches tournent le cube entier.",
-          pyramid: "Faites glisser une case pour tourner son coin, et faites glisser n’importe où autour de la pyramide pour la tourner en entier. Au clavier, U, L, R et B tournent un coin, Maj le tourne dans l’autre sens, 1 avant la lettre tourne la pointe seule, et les flèches tournent la pyramide entière.",
+          cube: "Faites glisser une case pour tourner sa couronne, et faites glisser n’importe où autour du cube pour le tourner en entier. Au clavier, U, D, L, R, F et B tournent une face, Maj la tourne dans l’autre sens, un chiffre avant la lettre atteint une couronne plus profonde, et les flèches tournent le cube entier. H affiche un indice.",
+          pyramid: "Faites glisser une case pour tourner son coin, et faites glisser n’importe où autour de la pyramide pour la tourner en entier. Au clavier, U, L, R et B tournent un coin, Maj le tourne dans l’autre sens, 1 avant la lettre tourne la pointe seule, et les flèches tournent la pyramide entière. H affiche un indice.",
         },
 
         messages: {
           scrambled: "Mélangé. Le chrono démarre à votre premier mouvement.",
+        },
+
+        /** See the note in en.ts. The layers carry their article, since the
+         *  sentence is "Tournez {layer} {way}", `{piece}` is drawn as colour
+         *  chips, and `left` carries its own colon, with the space French sets
+         *  before it. */
+        advice: {
+          button: "Indice",
+          step: "Étape {n} sur {total}",
+          left: "Coups restants dans cette étape :",
+          play: "Le jouer",
+          close: "Fermer l’indice",
+          colours: ["blanc", "rouge", "vert", "jaune", "orange", "bleu"],
+          move: {
+            turn: "Tournez {layer} {way}.",
+            half: "Tournez {layer} d’un demi-tour.",
+            layers: {
+              top: "la couronne du haut",
+              bottom: "la couronne du bas",
+              left: "la face gauche",
+              right: "la face droite",
+              front: "la face avant",
+              back: "la face arrière",
+              middle: "la couronne du milieu",
+              tipTop: "la pointe du haut",
+              tipLeft: "la pointe de gauche",
+              tipRight: "la pointe de droite",
+              tipBack: "la pointe arrière",
+              cornerTop: "le coin du haut",
+              cornerLeft: "le coin de gauche",
+              cornerRight: "le coin de droite",
+              cornerBack: "le coin arrière",
+            },
+            ways: {
+              up: "vers le haut",
+              down: "vers le bas",
+              left: "vers la gauche",
+              right: "vers la droite",
+              clockwise: "dans le sens des aiguilles d’une montre",
+              anticlockwise: "dans le sens inverse des aiguilles d’une montre",
+            },
+          },
+          stages: {
+            cross: {
+              title: "Croix blanche",
+              place:
+                "Cela amène l’arête {piece} vers la face blanche, entre le centre blanc et le centre de son autre couleur, sans déplacer les arêtes blanches déjà en place.",
+            },
+            corners: {
+              title: "Coins blancs",
+              out: "Le coin {piece} est dans la couronne blanche, mais au mauvais endroit, alors on le remonte d’abord dans la couronne du haut.",
+              align: "Cela place le coin {piece} juste au-dessus de sa place.",
+              insert: "Cette séquence fait descendre le coin {piece} à sa place, face blanche en bas. On la répète jusqu’à ce qu’il y soit.",
+            },
+            middle: {
+              title: "Couronne du milieu",
+              out: "L’arête {piece} est dans la couronne du milieu, mais au mauvais endroit, alors on la remonte d’abord en haut.",
+              align: "Cela place l’arête {piece} au-dessus du centre de sa couleur.",
+              right: "Cette séquence descend l’arête {piece} dans la couronne du milieu, vers la droite.",
+              left: "Cette séquence descend l’arête {piece} dans la couronne du milieu, vers la gauche.",
+            },
+            yellowCross: {
+              title: "Croix jaune",
+              align: "Cela place la forme jaune comme la séquence le demande.",
+              alg: "Cette séquence retourne les arêtes du haut face jaune vers le haut. Il faut parfois la faire deux fois.",
+            },
+            yellowEdges: {
+              title: "Arêtes jaunes",
+              align: "Cela aligne les arêtes du haut sur les centres en dessous.",
+              alg: "Cette séquence échange des arêtes du haut sans toucher aux couronnes du dessous.",
+            },
+            yellowCorners: {
+              title: "Coins jaunes à leur place",
+              alg: "Cette séquence fait tourner trois coins du haut, et celui de devant à droite reste où il est.",
+            },
+            yellowTwist: {
+              title: "Orienter les coins jaunes",
+              twist:
+                "On répète cette séquence jusqu’à ce que le coin du haut, devant à droite, montre le jaune vers le haut. Les couronnes du dessous se défont pendant ce temps et se remettent en place à la fin.",
+              next: "Cela amène le coin suivant devant à droite.",
+              finish: "Le dernier mouvement, et c’est résolu.",
+            },
+            layer: {
+              title: "Première couronne",
+              out: "Le coin {piece} est dans la couronne blanche, mais au mauvais endroit, alors on le remonte d’abord dans la couronne du haut.",
+              align: "Cela place le coin {piece} juste au-dessus de sa place.",
+              insert: "Cette séquence fait descendre le coin {piece} à sa place, face blanche en bas. On la répète jusqu’à ce qu’il y soit.",
+            },
+            orient: {
+              title: "Le jaune en haut",
+              align: "Cela place les coins comme la séquence le demande.",
+              alg: "Cette séquence retourne les coins du haut face jaune vers le haut. Il faut parfois la faire plusieurs fois.",
+            },
+            permute: {
+              title: "Dernière couronne",
+              align: "Cela prépare l’échange.",
+              alg: "Cette séquence échange des coins du haut sans toucher à la couronne du dessous.",
+              finish: "Le dernier mouvement, et c’est résolu.",
+            },
+            tips: {
+              title: "Pointes",
+              place: "Cela tourne la pointe {piece} jusqu’à ce que ses couleurs correspondent au centre en dessous.",
+            },
+            centres: {
+              title: "Centres",
+              place: "Cela tourne un coin avec sa pointe jusqu’à ce que ses trois couleurs de centre correspondent aux faces qui l’entourent.",
+            },
+            edges: {
+              title: "Arêtes",
+              place: "Cela met l’arête {piece} en place, sans déplacer les centres ni les arêtes déjà placées.",
+            },
+          },
         },
 
         won: {
@@ -1083,6 +1195,7 @@ const fr: Dict = {
           record: "Votre meilleur temps sur ce casse-tête.",
           again: "Mélanger à nouveau",
           next: "Casse-tête suivant",
+          assisted: "Résolu avec des indices, donc cela ne compte pas comme record.",
         },
 
         how: {
@@ -1101,7 +1214,7 @@ const fr: Dict = {
             {
               title: "Mélangez, puis battez le chrono",
               description:
-                "Mélanger le brasse avec quelques dizaines de mouvements au hasard. Le chrono démarre à votre premier mouvement et s’arrête dès que chaque face est d’une seule couleur, et votre meilleur temps est gardé pour chaque casse-tête. Annuler reprend le dernier mouvement.",
+                "Mélanger le brasse avec quelques dizaines de mouvements au hasard. Le chrono démarre à votre premier mouvement et s’arrête dès que chaque face est d’une seule couleur, et votre meilleur temps est gardé pour chaque casse-tête. Annuler reprend le dernier mouvement. Bloqué ? Indice montre le prochain mouvement et à quoi il sert, étape par étape, et une résolution avec des indices ne compte pas comme record.",
             },
             {
               title: "Cinq casse-têtes",
@@ -1119,6 +1232,7 @@ const fr: Dict = {
             "Un glissement est mesuré à travers la projection même que le navigateur utilise pour dessiner. Chaque axe autour duquel la case sous votre doigt pourrait tourner est essayé, et celui dont le mouvement à l’écran suit le mieux votre doigt l’emporte : la bonne couronne tourne sous n’importe quel angle, à une vitesse qui garde la case sous votre doigt. Quand vous relâchez, un ressort tire la couronne jusqu’au cran le plus proche. Il est réglé un peu en dessous de l’amortissement critique, si bien que la couronne dépasse d’un degré ou deux et revient, et c’est ce qui donne l’impression d’un plastique qui s’enclenche.",
             "Après un mouvement, une case prend la position de la place où elle est arrivée au lieu de garder la rotation qui l’y a menée. Les deux peuvent différer d’un quart de tour dans le plan de la case, ce qui ne se voit pas puisque chaque case est symétrique autour de son centre, et aucune erreur d’arrondi ne s’accumule, quelle que soit la durée de la partie.",
             "Chaque case est éclairée depuis une seule direction, fixée à vous plutôt qu’au casse-tête, si bien que la face du dessus est la plus claire et celle de droite la plus sombre, quelle que soit la façon dont il est tourné. La luminosité est recalculée pendant que la vue tourne et n’est écrite que lorsqu’elle change de façon visible. Les sons sont eux aussi produits dans le navigateur : chaque mouvement, c’est deux clics à quelques millisecondes d’écart sur un coup bref et grave.",
+            "Les indices suivent la méthode qu’on apprend plutôt que la solution la plus courte, parce qu’une solution la plus courte peut seulement dire qu’un mouvement rapproche d’un coup, ce qui n’apprend rien. Le 3×3 se résout en sept étapes, couronne par couronne, le 2×2 en trois et la pyramide en trois, et chaque mouvement porte son étape, la pièce qu’il concerne et, au sein d’une séquence, la séquence elle-même. Là où une étape relève du jugement plutôt que d’une séquence, comme savoir quelle arête blanche descendre ensuite et comment, une courte recherche trouve le moins de mouvements pour cette seule pièce sans déplacer ce qui est déjà en place. Le plan est recalculé dès que le casse-tête n’est pas là où il devait être, et il a été vérifié en le suivant depuis mille cinq cents mélanges au hasard, qu’il a tous résolus.",
           ],
         },
       },

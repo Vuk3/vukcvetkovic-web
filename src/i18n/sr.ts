@@ -1075,12 +1075,123 @@ const sr: Dict = {
         },
 
         hint: {
-          cube: "Prevuci nalepnicu da okreneš njen sloj, a prevuci bilo gde oko kocke da okreneš celu. Na tastaturi U, D, L, R, F i B okreću stranu, sa Shiftom u suprotnom smeru, broj pre slova okreće dublji sloj, a strelice okreću celu kocku.",
-          pyramid: "Prevuci nalepnicu da okreneš njen ugao, a prevuci bilo gde oko piramide da okreneš celu. Na tastaturi U, L, R i B okreću ugao, sa Shiftom u suprotnom smeru, 1 pre slova okreće samo vrh, a strelice okreću celu piramidu.",
+          cube: "Prevuci nalepnicu da okreneš njen sloj, a prevuci bilo gde oko kocke da okreneš celu. Na tastaturi U, D, L, R, F i B okreću stranu, sa Shiftom u suprotnom smeru, broj pre slova okreće dublji sloj, a strelice okreću celu kocku. H prikazuje savet.",
+          pyramid: "Prevuci nalepnicu da okreneš njen ugao, a prevuci bilo gde oko piramide da okreneš celu. Na tastaturi U, L, R i B okreću ugao, sa Shiftom u suprotnom smeru, 1 pre slova okreće samo vrh, a strelice okreću celu piramidu. H prikazuje savet.",
         },
 
         messages: {
           scrambled: "Promešano. Sat kreće sa prvim okretom.",
+        },
+
+        /** See the note in en.ts. The layers are in the accusative, since the
+         *  sentence is "Okreni {layer} {way}", `{piece}` is drawn as colour
+         *  chips, and `left` carries its own colon. */
+        advice: {
+          button: "Savet",
+          step: "Korak {n} od {total}",
+          left: "Ostalo poteza u ovom koraku:",
+          play: "Odigraj",
+          close: "Zatvori savet",
+          colours: ["bela", "crvena", "zelena", "žuta", "narandžasta", "plava"],
+          move: {
+            turn: "Okreni {layer} {way}.",
+            half: "Okreni {layer} za pola kruga.",
+            layers: {
+              top: "gornji sloj",
+              bottom: "donji sloj",
+              left: "levu stranu",
+              right: "desnu stranu",
+              front: "prednju stranu",
+              back: "zadnju stranu",
+              middle: "srednji sloj",
+              tipTop: "gornji vrh",
+              tipLeft: "levi vrh",
+              tipRight: "desni vrh",
+              tipBack: "zadnji vrh",
+              cornerTop: "gornji ugao",
+              cornerLeft: "levi ugao",
+              cornerRight: "desni ugao",
+              cornerBack: "zadnji ugao",
+            },
+            ways: {
+              up: "nagore",
+              down: "nadole",
+              left: "ulevo",
+              right: "udesno",
+              clockwise: "u smeru kazaljke na satu",
+              anticlockwise: "suprotno od kazaljke na satu",
+            },
+          },
+          stages: {
+            cross: {
+              title: "Beli krst",
+              place:
+                "Ovo vodi ivicu {piece} ka beloj strani, između belog centra i centra njene druge boje, a bele ivice koje su već tu ostaju na mestu.",
+            },
+            corners: {
+              title: "Beli uglovi",
+              out: "Ugao {piece} je u belom sloju, ali na pogrešnom mestu, pa ga prvo izvlačimo u gornji sloj.",
+              align: "Ovo dovodi ugao {piece} tačno iznad njegovog mesta.",
+              insert: "Ovaj niz spušta ugao {piece} na mesto, belom stranom dole. Ponavlja se dok ugao ne legne.",
+            },
+            middle: {
+              title: "Srednji sloj",
+              out: "Ivica {piece} je u srednjem sloju, ali na pogrešnom mestu, pa je prvo izvlačimo gore.",
+              align: "Ovo stavlja ivicu {piece} iznad centra njene boje.",
+              right: "Ovaj niz spušta ivicu {piece} u srednji sloj, udesno.",
+              left: "Ovaj niz spušta ivicu {piece} u srednji sloj, ulevo.",
+            },
+            yellowCross: {
+              title: "Žuti krst",
+              align: "Ovo namešta žuti oblik kako niz traži.",
+              alg: "Ovaj niz okreće gornje ivice žutom stranom nagore. Nekad treba dvaput.",
+            },
+            yellowEdges: {
+              title: "Žute ivice",
+              align: "Ovo poravnava gornje ivice sa centrima ispod njih.",
+              alg: "Ovaj niz menja mesta gornjim ivicama, a donje slojeve ostavlja kakvi su bili.",
+            },
+            yellowCorners: {
+              title: "Žuti uglovi na mesto",
+              alg: "Ovaj niz premešta tri gornja ugla u krug, a onaj napred desno ostaje gde jeste.",
+            },
+            yellowTwist: {
+              title: "Okretanje žutih uglova",
+              twist:
+                "Ovaj niz se ponavlja dok gornji ugao napred desno ne pokaže žutu nagore. Donji slojevi se usput razmeste i na kraju se sami vrate.",
+              next: "Ovo dovodi sledeći ugao napred desno.",
+              finish: "Poslednji okret, i složeno je.",
+            },
+            layer: {
+              title: "Prvi sloj",
+              out: "Ugao {piece} je u belom sloju, ali na pogrešnom mestu, pa ga prvo izvlačimo u gornji sloj.",
+              align: "Ovo dovodi ugao {piece} tačno iznad njegovog mesta.",
+              insert: "Ovaj niz spušta ugao {piece} na mesto, belom stranom dole. Ponavlja se dok ugao ne legne.",
+            },
+            orient: {
+              title: "Žuto gore",
+              align: "Ovo namešta uglove kako niz traži.",
+              alg: "Ovaj niz okreće gornje uglove žutom stranom nagore. Nekad treba više puta.",
+            },
+            permute: {
+              title: "Poslednji sloj",
+              align: "Ovo priprema zamenu.",
+              alg: "Ovaj niz menja mesta gornjim uglovima, a donji sloj ostavlja kakav je bio.",
+              finish: "Poslednji okret, i složeno je.",
+            },
+            tips: {
+              title: "Vrhovi",
+              place: "Ovo okreće vrh {piece} dok se njegove boje ne poklope sa sredinom ispod njega.",
+            },
+            centres: {
+              title: "Sredine",
+              place: "Ovo okreće ugao zajedno sa vrhom dok se njegove tri boje u sredini ne poklope sa stranama oko njega.",
+            },
+            edges: {
+              title: "Ivice",
+              place: "Ovo dovodi ivicu {piece} na mesto, a sredine i ivice koje su već složene ostaju gde jesu.",
+            },
+          },
         },
 
         won: {
@@ -1088,6 +1199,7 @@ const sr: Dict = {
           record: "Tvoje najbolje vreme na ovoj slagalici.",
           again: "Promešaj ponovo",
           next: "Sledeća slagalica",
+          assisted: "Složeno uz savete, pa se ne računa u rekord.",
         },
 
         how: {
@@ -1106,7 +1218,7 @@ const sr: Dict = {
             {
               title: "Promešaj, pa pobedi sat",
               description:
-                "Dugme Promešaj je izmeša sa nekoliko desetina nasumičnih okreta. Sat kreće sa prvim okretom i staje čim je svaka strana jedne boje, a najbolje vreme se čuva za svaku slagalicu posebno. Poništi vraća poslednji okret.",
+                "Dugme Promešaj je izmeša sa nekoliko desetina nasumičnih okreta. Sat kreće sa prvim okretom i staje čim je svaka strana jedne boje, a najbolje vreme se čuva za svaku slagalicu posebno. Poništi vraća poslednji okret. Zapeo si? Savet pokazuje sledeći potez i čemu služi, korak po korak, a slaganje uz savete se ne računa u rekord.",
             },
             {
               title: "Pet slagalica",
@@ -1124,6 +1236,7 @@ const sr: Dict = {
             "Prevlačenje se meri kroz istu projekciju kojom pretraživač crta. Proba se svaka osa oko koje nalepnica ispod prsta može da se okrene, i pobeđuje ona čije kretanje na ekranu najbolje prati prst, tako da se pravi sloj okreće iz bilo kog ugla, i to brzinom koja drži nalepnicu ispod prsta. Kad pustiš, opruga povuče sloj do najbližeg koraka. Podešena je malo ispod kritičnog prigušenja, pa sloj prebaci za stepen ili dva i vrati se, i zato izgleda kao plastika koja uskače na mesto.",
             "Posle okreta nalepnica uzima položaj mesta na koje je stigla, umesto da zadrži rotaciju kojom je tamo došla. Ta dva položaja mogu da se razlikuju za četvrtinu kruga u ravni same nalepnice, što se ne vidi jer je svaka nalepnica simetrična oko svog centra, i zato se greška zaokruživanja ne skuplja koliko god dugo da igraš.",
             "Svaka nalepnica je osvetljena iz jednog pravca koji je vezan za tebe, a ne za slagalicu, pa je gornja strana uvek najsvetlija, a desna najtamnija, kako god da je okreneš. Osvetljenje se preračunava dok se pogled okreće i upisuje se samo kad se promeni toliko da se vidi. I zvuci se prave u pretraživaču: svaki okret su dva klika u razmaku od nekoliko milisekundi preko kratkog, dubokog udarca.",
+            "Saveti prate metod koji se uči, a ne najkraće rešenje, jer najkraće rešenje može samo da kaže da je potez jedan bliže cilju, a iz toga se ništa ne nauči. Kocka 3×3 se slaže u sedam koraka metoda sloj po sloj, 2×2 u tri, a piramida u tri, i uz svaki potez ide korak kom pripada, deo na koji se odnosi i, ako je deo niza, sam niz. Gde je korak stvar procene, a ne niza, kao koju belu ivicu spustiti sledeću i kako, kratka pretraga nađe najmanje poteza za taj jedan deo tako da sve što je već složeno ostane na mestu. Plan se ponovo računa kad god slagalica nije tamo gde je plan rekao da će biti, a proveren je tako što je praćen od hiljadu i petsto nasumičnih mešanja, i svako je složio.",
           ],
         },
       },
