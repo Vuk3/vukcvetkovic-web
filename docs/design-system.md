@@ -687,15 +687,20 @@ phone and in Safari before 26 follows the page. The tags carry `data-scheme` for
 above the inline script in `<head>` because it runs before anything after it is parsed.
 
 **Safari 26 ignores `theme-color`.** It paints the strip under its bottom bar, and the
-bounce past either end of the page, in the canvas - the root's background. That was the
-body's ground, so on an iPhone the ink footer ended on a light band. `html` now runs
-`canvas-ink` on a `scroll(root)` timeline in global.css: the canvas is `--site-bg` for the
-first 98% of the scroll, turns to `--site-panel-bg` by 99% and holds it to the end, so the
-top still meets the ground and the bottom meets the footer. The last 1% is held because a
-phone stops a fraction of a pixel short of 100%. The body keeps its own `background-color`,
-since once the root has one the body's no longer reaches the canvas. Without scroll
-timelines, or on a page too short to scroll, the root has no background and the canvas is
-the ground.
+bounce past either end of the page, in the page's background colour, which WebKit takes as
+the `html` background with the body's laid over it. An opaque body decides it alone, so on
+an iPhone the ink footer ended on a light band of ground. The body runs `canvas-ink` on a
+`scroll(root)` timeline in global.css: `--site-bg` for the first 98% of the scroll, then
+`--site-panel-bg` by 99%, held to the end, so the top still meets the ground and the bottom
+meets the footer. The last 1% is held because a phone stops a fraction of a pixel short of
+100%.
+
+⚠️ **The ground under the sections is painted by `main`, not the body.** Otherwise the gaps
+between the last tiles would turn with it. The body shows only in the header's own slot at
+the top of the document, which is off screen long before the turn.
+
+⚠️ **The animation must stay on `body`.** On `html` it changes the canvas in Chrome and
+nothing in Safari, so a check in Chrome alone passes either way.
 
 ---
 
@@ -2125,6 +2130,8 @@ centred in the space between the capsule and the footer on a tall screen.
 
 ## Changelog
 
+- 2026-09-27 - `canvas-ink` runs on the body, and `main` paints the ground: WebKit takes
+  the page colour from an opaque body, so on `html` it changed nothing on an iPhone (§8).
 - 2026-09-27 - the canvas turns to the footer's ink at the end of the scroll, so Safari 26's
   bottom bar and the bounce past the end match the footer instead of the ground (§8).
 - 2026-09-27 - the browser's `theme-color` follows a theme chosen with the toggle, not only
