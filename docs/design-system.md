@@ -144,7 +144,7 @@ Where they are spent:
 
 | Surface | Used by |
 |---|---|
-| ink | the header capsule, the hero, the close of a page (Contact, a takeaway, a game's build notes), the footer, the core node of a request diagram, one digit of the 404 |
+| ink | the header capsule, the hero, the close of a page (Contact, a takeaway, a game's build notes), the footer, the core node of a request diagram, Backend in Skills, one digit of the 404 |
 | cobalt | the About tile that points at the games, the ask in Contact, one figure per game's HUD, one digit of the 404 |
 
 ⚠️ **Cobalt is at most one or two tiles a page.** It is the loudest surface the site has,
@@ -243,10 +243,11 @@ its grid in its page file instead.
 card per group once, and Backend's five entries set the height, so Data's two came out as
 a box with 200 points of nothing. The fixes used on the site, in order of preference:
 
-1. **Size the tiles by what they hold** - Skills gives Backend two units of five and the
-   other groups one each (§10).
+1. **Size the tiles by what they hold** - Skills gives Backend's column half again the
+   width of Frontend's and Data's (§10).
 2. **Share rows through a subgrid**, so the content inside tiles of different heights
-   starts on one line - Skills does this for its group names, one of which wraps.
+   starts on one line - Skills does this for its group names, one of which wraps, and so
+   stretches Frontend's and Data's two marks to Backend's three rows.
 3. **Rows inside one tile** rather than a tile per item - how to play on every game page.
 4. **Centre a short column on a tall one** - a role's name beside its bullets.
 
@@ -2012,11 +2013,28 @@ Each page has one memorable thing, and everything else is a bento that fills its
 - **About** is the opening statement across the full measure at display size, then the
   other two paragraphs at 7 and 5 columns, labelled Education and Games. The Games tile is
   the whole tile a link, on cobalt.
-- **Skills** gives each group a tile sized by what it holds: Backend two units of five,
-  NestJS across its tile over a two-by-two, the other three one unit each with their two marks
-  stacked. The marks are 2.1rem on 85px tiles, the grid 399px tall at 1440: at 2.6rem it was
-  478 and read as oversized beside the sections round it. The grid stretches the short groups' rows, so every tile is exactly full, and a
-  subgrid shares the label row so "Cloud & DevOps", which wraps, does not push its marks down.
+- **Skills is a diagram of the stack**, drawn with the request diagram's method (§6) but
+  written in home.css, because flow.css is on the project pages alone. Frontend, Backend
+  and Data sit in a row with a line through each gap, and Cloud & DevOps runs across the foot
+  under a line down out of Backend. Backend is the ink tile, NestJS across it over a
+  two-by-two. **Every line has a head at each end**, because the answer comes back the way
+  the request went, and on a 5s loop a packet runs out from Frontend to Data and Cloud and
+  back home, each group lighting with a ring as a packet lands - Frontend and Backend twice,
+  the second ring on `::before`. The marks are 1.875rem on tiles about 75px tall, the stage
+  559px at 1440.
+  - **One markup, two arrangements**, by `@container skills (min-width: 52rem)`, about a
+    960px window. Below it the drawing is a column: Frontend, Backend, then two lines down
+    into Data and Cloud side by side. Every group and line is placed by grid area, so the
+    markup keeps site.ts's order.
+  - ⚠️ **Cloud & DevOps is a subgrid of the stage's columns** in the row. A subgrid's
+    padding lands on the items in its edge tracks, so its label lines up with Frontend's
+    content, its marks start on NestJS's left edge and end on MongoDB's right one. The three
+    in the row share their label and marks rows through a subgrid too, and so do Data and
+    Cloud in the column, where "Cloud & DevOps" wraps.
+  - The gaps are grid tracks rather than `gap`, so each line's area is exactly the gap it
+    crosses. In the row the stage is one named `view()` timeline and the assembly ends by
+    `entry 94%`; in the column every element runs its own `view()`, as the request diagram's
+    spine does.
 - **Experience** is one wide tile per role: the company's initial, the name, the title and
   the period on the left, the bullets on the right at about 85 characters a line, the head
   centred on them. A 2px accent line joins the two initials; the current role's initial and
@@ -2130,6 +2148,9 @@ centred in the space between the capsule and the footer on a tall screen.
 
 ## Changelog
 
+- 2026-09-28 - Skills is a diagram of the stack: Frontend, Backend and Data in a row over
+  Cloud & DevOps, joined by double-headed lines that a packet runs out and back along on a
+  loop, Backend on ink, and the marks a size smaller (§1, §3, §10).
 - 2026-09-27 - `canvas-ink` runs on the body, and `main` paints the ground: WebKit takes
   the page colour from an opaque body, so on `html` it changed nothing on an iPhone (§8).
 - 2026-09-27 - the canvas turns to the footer's ink at the end of the scroll, so Safari 26's

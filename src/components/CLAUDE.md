@@ -64,7 +64,7 @@ the other.
 - ⚠️ **`.stretch` covers everything underneath it.** Any link that has to stay clickable
   inside a stretched tile needs `.above`.
 - ⚠️ **A grid of tiles stretches to the tallest of them.** Where the content per item is
-  uneven, size the tiles by what they hold (Skills), share rows through a subgrid, or put
+  uneven, size the tiles by what they hold, share rows through a subgrid (Skills), or put
   rows inside one tile (how to play). A tile per group left Data showing two chips over 200
   points of nothing.
 - A technology is `.chip` (name and mark, inline) or [MarkTile.astro](./MarkTile.astro) (a
@@ -116,7 +116,7 @@ Decided by one question: is the element in view at first paint?
 | a section heading | nothing to add - Section.astro renders it with `.reveal-line` |
 | a block arriving on scroll | `reveal` |
 | a repeated tile that should stagger within its grid | `reveal-item` |
-| the request diagram | none of them - it assembles against its own stage's `view()` timeline, and a `reveal` on top would fade the block in and then assemble it inside itself |
+| the request diagram, the Skills diagram | none of them - each assembles against its own stage's `view()` timeline, and a `reveal` on top would fade the block in and then assemble it inside itself |
 
 `reveal-item` staggers by `nth-child`, so it goes on the element directly inside the grid.
 Wrapping the items in another element resets the count.

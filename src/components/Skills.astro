@@ -1,15 +1,29 @@
 ---
 /**
- * The stack, grouped, as a bento of tiles with every technology a mark tile.
+ * The stack as a diagram: the layers a request crosses, and what they all run
+ * on underneath.
  *
- * ⚠️ The groups are uneven - Backend has five entries and the other three two
- * each - and that is the trap every earlier version of this section fell into.
- * A grid of equal cards stretches to the tallest, so Data's two chips sat over
- * 200 points of nothing; rows of chips inside one card left 80% of three rows
- * empty. So the widths follow the counts instead: Backend takes two units of
- * five and leads with NestJS at full width over a two-by-two, the other three
- * take one unit each with their two marks stacked, and the grid stretches the
- * rows so every tile is exactly full. See `.skills-grid` in home.css.
+ *   Frontend ◀──▶ Backend ◀──▶ Data
+ *                    ▲
+ *                    ▼
+ *             Cloud & DevOps
+ *
+ * Every line goes both ways, because the answer comes back the way the
+ * request went: a packet runs out from Frontend to Data and Cloud and back
+ * home again, on a loop.
+ *
+ * Backend is the ink tile, the strongest object in the drawing, for the reason
+ * the core of a request diagram is: every line touches it, and it is the work.
+ *
+ * One markup, two arrangements, picked by the stage's own width: the row
+ * above, and below it a column - Frontend over Backend, which forks into Data
+ * and Cloud side by side. Every group and every line is placed by grid area,
+ * so the groups keep site.ts's order in the markup (Backend first, which is
+ * also the order a screen reader gets) whatever the drawing does.
+ *
+ * The lines are the request diagram's: 2px borders with clip-path heads, each
+ * its own size container so a packet crosses it with `100cqi` and nothing is
+ * measured. See the Skills block in home.css.
  */
 import { AppWindow, Cloud, Database, Server } from '@lucide/astro';
 import type { Lang } from '../i18n/types';
@@ -36,30 +50,46 @@ const icons: Record<GroupId, typeof Server> = {
   data: Database,
   cloud: Cloud,
 };
+
+/* The three lines. Each joins Backend to one group, and is named by it. */
+const links: GroupId[] = ['frontend', 'data', 'cloud'];
 ---
 
 <Section id="skills" label={dict.skills.label} tone={tone}>
-  <div class="skills-grid">
-    {
-      site.skillGroups.map((group) => {
-        const Icon = icons[group.id];
-        return (
-          <div class="card skill-group reveal-item" data-group={group.id}>
-            <p class="tile-label">
-              <span class="tile-icon">
-                <Icon aria-hidden="true" />
-              </span>
-              <span class="skill-group-name">{dict.skills.groups[group.id].name}</span>
-            </p>
+  <div class="card skills-stage">
+    <div class="skills-grid">
+      {
+        site.skillGroups.map((group) => {
+          const Icon = icons[group.id];
+          return (
+            <div class:list={['card skill-group', { panel: group.id === 'backend' }]} data-group={group.id}>
+              <p class="tile-label">
+                <span class="tile-icon">
+                  <Icon aria-hidden="true" />
+                </span>
+                <span class="skill-group-name">{dict.skills.groups[group.id].name}</span>
+              </p>
 
-            <ul class="skill-marks">
-              {group.items.map((item) => (
-                <MarkTile as="li" name={item} />
-              ))}
-            </ul>
-          </div>
-        );
-      })
-    }
+              <ul class="skill-marks">
+                {group.items.map((item) => (
+                  <MarkTile as="li" name={item} />
+                ))}
+              </ul>
+            </div>
+          );
+        })
+      }
+
+      {
+        links.map((link) => (
+          <span class="skill-link" data-link={link} aria-hidden="true">
+            <span class="skill-head" />
+            <span class="skill-head skill-head-back" />
+            <span class="skill-pk" />
+            <span class="skill-pk skill-pk-back" />
+          </span>
+        ))
+      }
+    </div>
   </div>
 </Section>

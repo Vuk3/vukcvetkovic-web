@@ -372,9 +372,9 @@
    * `light-dark()`, so without it Express and Expo - near-black marks - would be
    * drawn near-black on the ink in the light theme.
    *
-   * Spent on the header capsule, the hero, the close of a page, the footer and
-   * the core of a request diagram. ⚠️ Never nested, and never inside
-   * `.tile-cobalt`: the tokens would resolve to themselves.
+   * Spent on the header capsule, the hero, the close of a page, the footer, the
+   * core of a request diagram and Backend in Skills. ⚠️ Never nested, and
+   * never inside `.tile-cobalt`: the tokens would resolve to themselves.
    */
   .panel {
     color-scheme: dark;

@@ -208,24 +208,118 @@
   /* ---- Skills ---------------------------------------------------------- */
 
   /*
-   * A group per tile, sized by how many it holds.
+   * The stack as a diagram, drawn the way the request diagram on a project
+   * page is: real tiles, 2px border lines with clip-path heads, and a request
+   * running through it and back on a loop. The rules are written again here
+   * rather than shared, because flow.css is inlined into the project pages
+   * alone and is 1,600 lines - the homepage takes the handful it needs.
    *
-   * Phone: one tile a row, marks two across, and Backend's first mark spans
-   * both. Tablet: Backend across the full width with its five in one row, and
-   * the other three side by side under it. Desktop: 2:1:1:1, Backend's lead
-   * over a two-by-two and the others' two marks stacked - which is three rows
-   * against two, so the grid stretches the short groups' rows until every tile
-   * is exactly as tall as Backend and nothing is empty.
+   * The stage is one large tile on a dot grid in the ink at 13%, which is what
+   * says "a drawing" without a frame of lines round it. Its width, not the
+   * viewport's, picks the arrangement.
+   *
+   * `--sk-ink` captures the accent once, where it is declared, so the lines,
+   * the packets and the rings keep the stage's own blue where they meet
+   * Backend, which is `.panel` and re-declares the accent paler for the ink.
+   *
+   * `.card.` because `.card` sets its own padding in the same layer, and which
+   * of the two files lands later in a page is not promised.
    */
-  .skills-grid {
-    display: grid;
-    gap: var(--site-gap);
+  .card.skills-stage {
+    --sk-ink: var(--site-accent);
+
+    container: skills / inline-size;
+    padding: clamp(0.875rem, 2.4vw, 2.25rem);
+    background-image: radial-gradient(
+      circle,
+      color-mix(in oklab, var(--site-fg) 13%, transparent) 1px,
+      transparent 1.5px
+    );
+    background-size: 1.5rem 1.5rem;
+    background-position: center;
   }
 
-  .skill-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
+  /*
+   * The column, which is the default: Frontend, a line down, Backend, then
+   * two lines down into Data and Cloud side by side. The gaps are tracks of
+   * their own rather than `gap`, so the gap a line crosses *is* its grid
+   * area and the line knows its length without measuring anything.
+   *
+   *   --gy     the height of a gap a line crosses
+   *   --sg     between Data and Cloud: wider than the site's gap, because
+   *            both light up at once and their rings reach 9px out
+   *   --hl/hw  an arrowhead's length and width, for a 2px line
+   *
+   * Data and Cloud each span two rows, the label's and the marks', and share
+   * them through a subgrid, so "Cloud & DevOps" wrapping in a half-width
+   * tile does not push its marks below Data's.
+   */
+  .skills-grid {
+    --gy: 2.75rem;
+    --sg: 1.25rem;
+    --hl: 0.6875rem;
+    --hw: 0.75rem;
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--sg) minmax(0, 1fr);
+    grid-template-rows: auto var(--gy) auto var(--gy) auto auto;
+    grid-template-areas:
+      'frontend frontend frontend'
+      'link-frontend link-frontend link-frontend'
+      'backend backend backend'
+      'link-data . link-cloud'
+      'data . cloud'
+      'data . cloud';
+  }
+
+  .skill-group[data-group='frontend'] {
+    grid-area: frontend;
+  }
+
+  .skill-group[data-group='backend'] {
+    grid-area: backend;
+  }
+
+  .skill-group[data-group='data'] {
+    grid-area: data;
+  }
+
+  .skill-group[data-group='cloud'] {
+    grid-area: cloud;
+  }
+
+  .skill-link[data-link='frontend'] {
+    grid-area: link-frontend;
+  }
+
+  .skill-link[data-link='data'] {
+    grid-area: link-data;
+  }
+
+  .skill-link[data-link='cloud'] {
+    grid-area: link-cloud;
+  }
+
+  /*
+   * A group: its label, then its marks, which take whatever height is left.
+   * The padding is a step tighter than a tile's and follows the stage, since
+   * on a phone Data and Cloud share its width at about 140px each.
+   */
+  .skills-grid > .skill-group {
+    --card-pad: clamp(0.875rem, 2cqi, 1.5rem);
+
+    display: grid;
+    grid-template-rows: auto 1fr;
+    row-gap: 0.85rem;
+  }
+
+  .skill-group[data-group='data'],
+  .skill-group[data-group='cloud'] {
+    grid-template-rows: subgrid;
+  }
+
+  .skill-group > .tile-label {
+    align-self: start;
   }
 
   .skill-group-name {
@@ -236,112 +330,419 @@
     color: var(--site-fg);
   }
 
+  /*
+   * In the dark theme the ink panel is lifted rather than black, and under
+   * its own grey hairline Backend read weaker than the white tiles beside it.
+   * The request diagram's core has the same problem and the same answer: the
+   * brightest edge in the drawing.
+   */
+  .dark .skills-grid > .skill-group.panel {
+    border-color: color-mix(in oklab, var(--sk-ink) 55%, var(--site-hairline));
+  }
+
   .skill-marks {
-    flex: 1;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-auto-rows: 1fr;
-    gap: 0.6rem;
+    gap: 0.5rem;
   }
 
+  /* Data and Cloud stack their two on a phone, where each has half the
+     stage. */
+  .skill-group:is([data-group='data'], [data-group='cloud']) .skill-marks {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /*
+   * Marks at 1.875rem on tiles about 75px tall, a step under the hero's
+   * tray: in the row, Frontend's and Data's two stretch to Backend's three
+   * rows and come out about 116px each at 1440, so tiles any taller made
+   * those two the largest objects in the drawing rather than Backend.
+   */
+  .skill-marks .mark-tile {
+    padding: 0.55rem 0.5rem;
+    gap: 0.45rem;
+  }
+
+  .skill-marks .mark-tile-icon {
+    width: 1.875rem;
+    height: 1.875rem;
+  }
+
+  /* NestJS, leading Backend across the tile: the mark beside its name, a
+     size up from the rest. */
   .skill-group[data-group='backend'] .skill-marks > :first-child {
     grid-column: 1 / -1;
+    flex-direction: row;
+    gap: 0.9rem;
   }
 
-  @media (min-width: 40rem) {
-    .skills-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
+  .skill-group[data-group='backend'] .skill-marks > :first-child .mark-tile-icon {
+    width: 2.375rem;
+    height: 2.375rem;
+  }
 
-    .skill-group[data-group='backend'] {
-      grid-column: 1 / -1;
-    }
+  .skill-group[data-group='backend'] .skill-marks > :first-child .mark-tile-name {
+    font-stretch: 114%;
+    font-weight: 680;
+    font-size: 1.25rem;
+    letter-spacing: -0.03em;
+  }
 
+  /* ---- The lines, heads and packets ----
+   *
+   * ⚠️ A line is a *border*, never a filled box, for the request diagram's
+   * reason: the centre of a 2px border is 1px outside the padding box, so a
+   * 12px packet at -7px sits on the line whichever way it runs. Each line is
+   * its own size container, and a packet crosses it by travelling `100cqb`
+   * or `100cqi` - the length of its own line.
+   *
+   * Every line joins Backend to one group and carries traffic both ways - the
+   * request out, the answer back - so it has a head at each end. Its start is
+   * the end nearer Frontend in both arrangements, which makes "out" always
+   * down or right and "back" always up or left.
+   *
+   * In the column every line runs down, centred on its area, which is the
+   * middle of the tile above it and of the tile below.
+   */
+  .skill-link {
+    position: relative;
+    container-type: size;
+    justify-self: center;
+    width: 0;
+    border: 0 solid var(--sk-ink);
+    border-left-width: 2px;
+    pointer-events: none;
+  }
+
+  /* Pointing down, its tip on the lower tile's edge. */
+  .skill-head {
+    position: absolute;
+    bottom: 0;
+    left: calc(-1px - var(--hw) / 2);
+    width: var(--hw);
+    height: var(--hl);
+    background-color: var(--sk-ink);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+  }
+
+  /* Pointing up, its tip on the upper tile's edge. */
+  .skill-head-back {
+    top: 0;
+    bottom: auto;
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  }
+
+  /* A packet: a solid dot with a soft ring, not a glow. Hidden at rest - only
+     the loop shows it. */
+  .skill-pk {
+    position: absolute;
+    top: -7px;
+    left: -7px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--sk-ink);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--sk-ink) 22%, transparent);
+    opacity: 0;
+  }
+
+  /*
+   * The ring a group lights up with as a packet lands, drawn round the tile
+   * rather than on it so nothing inside moves. Hidden at rest. Frontend and
+   * Backend light twice a cycle, going and coming back, and the second ring
+   * is `::before` so that it can carry its own beat.
+   */
+  .skills-grid > .skill-group::before,
+  .skills-grid > .skill-group::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border: 2px solid var(--sk-ink);
+    border-radius: calc(var(--site-radius-card) + 5px);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--sk-ink) 16%, transparent);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* A tablet's column: Backend's four in one row under NestJS, and Data's
+     and Cloud's two side by side. */
+  @container skills (min-width: 36rem) {
     .skill-group[data-group='backend'] .skill-marks {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
-    .skill-group[data-group='backend'] .skill-marks > :first-child {
-      grid-column: auto;
+    .skill-group:is([data-group='data'], [data-group='cloud']) .skill-marks {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
-  @media (min-width: 64rem) {
+  /*
+   * The row, from 52rem of stage - a window of about 960px. Frontend, Backend
+   * and Data left to right with a line through each gap, and Cloud & DevOps
+   * across the foot, fed by a line down out of Backend.
+   *
+   * The three in the row share two rows through a subgrid, the label's and
+   * the marks', so their marks start on one line and Frontend's and Data's
+   * two stretch to Backend's three rows: every tile is full and the row has
+   * no hole in it. Backend's column is half again as wide, because it holds
+   * a two-by-two where the others hold a stack of two.
+   *
+   * ⚠️ Cloud & DevOps is a subgrid of the stage's *columns*. A subgrid's
+   * padding goes on to the items in its edge tracks, so its label lands on
+   * Frontend's inner edge and its last mark ends on Data's, and the marks
+   * start a tile's padding into Backend's column - on NestJS's left edge.
+   * The whole drawing sits on one set of verticals.
+   */
+  @container skills (min-width: 52rem) {
     .skills-grid {
-      grid-template-columns: 2fr 1fr 1fr 1fr;
+      --gx: clamp(2.75rem, 5.5cqi, 4.5rem);
+      --gy: 3rem;
+
+      grid-template-columns:
+        minmax(0, 1fr) var(--gx) minmax(0, 1.45fr) var(--gx)
+        minmax(0, 1fr);
+      grid-template-rows: auto auto var(--gy) auto;
+      grid-template-areas:
+        'frontend link-frontend backend link-data data'
+        'frontend link-frontend backend link-data data'
+        '. . link-cloud . .'
+        'cloud cloud cloud cloud cloud';
     }
 
-    .skill-group[data-group='backend'] {
-      grid-column: auto;
+    .skill-group:is([data-group='frontend'], [data-group='backend'], [data-group='data']) {
+      grid-template-rows: subgrid;
     }
 
     .skill-group[data-group='backend'] .skill-marks {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .skill-group[data-group='backend'] .skill-marks > :first-child {
-      grid-column: 1 / -1;
-    }
-
-    .skill-group:not([data-group='backend']) .skill-marks {
+    .skill-group:is([data-group='frontend'], [data-group='data']) .skill-marks {
       grid-template-columns: minmax(0, 1fr);
     }
 
-    /*
-     * ⚠️ The four tiles share their two rows through a subgrid, so the marks
-     * start on one line across the row. "Cloud & DevOps" takes two lines in a
-     * one-unit tile in every language, and without this its marks sat a line
-     * lower and shorter than the three beside it.
-     */
-    .skills-grid {
-      grid-template-rows: auto 1fr;
+    .skill-group[data-group='cloud'] {
+      grid-template-rows: none;
+      grid-template-columns: subgrid;
+      align-items: center;
     }
 
-    .skill-group {
-      display: grid;
-      grid-row: span 2;
-      grid-template-rows: subgrid;
-      row-gap: 0.85rem;
+    .skill-group[data-group='cloud'] > .tile-label {
+      grid-column: 1;
+      align-self: center;
     }
 
-    .skill-group > .tile-label {
-      align-self: start;
+    .skill-group[data-group='cloud'] .skill-marks {
+      grid-column: 3 / -1;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-inline-start: var(--card-pad);
     }
-  }
 
-  /*
-   * The marks a little over the tray's size, on a tighter tile. At 2.6rem
-   * with 1.1rem of padding Backend's tiles were 108 pixels tall and the grid
-   * 478 at 1440, which read as oversized beside the sections round it. This
-   * is 85 and 399.
-   */
-  .skill-marks .mark-tile {
-    padding-block: 0.7rem;
-    gap: 0.55rem;
-  }
-
-  .skill-marks .mark-tile-icon {
-    width: 2.1rem;
-    height: 2.1rem;
-  }
-
-  /* NestJS, leading Backend: the mark beside its name, at twice the width. */
-  @media (min-width: 64rem) {
-    .skill-group[data-group='backend'] .skill-marks > :first-child {
+    /* Cloud's two lie down, the mark beside its name, so the strip stays a
+       strip. */
+    .skill-group[data-group='cloud'] .mark-tile {
       flex-direction: row;
-      gap: 1.1rem;
+      gap: 0.75rem;
+      padding-block: 0.7rem;
     }
 
-    .skill-group[data-group='backend'] .skill-marks > :first-child .mark-tile-icon {
-      width: 2.75rem;
-      height: 2.75rem;
+    /*
+     * Frontend's and Data's lines run across their gap, through the middle
+     * of the row - which is the middle of all three tiles, since they are
+     * the row's height. Heads pointing right and left, each tip on a tile's
+     * edge.
+     */
+    .skill-link:is([data-link='frontend'], [data-link='data']) {
+      justify-self: stretch;
+      align-self: center;
+      width: auto;
+      height: 0;
+      border-left-width: 0;
+      border-top-width: 2px;
     }
 
-    .skill-group[data-group='backend'] .skill-marks > :first-child .mark-tile-name {
-      font-stretch: 114%;
-      font-weight: 680;
-      font-size: 1.375rem;
-      letter-spacing: -0.03em;
+    .skill-link:is([data-link='frontend'], [data-link='data']) .skill-head {
+      top: calc(-1px - var(--hw) / 2);
+      right: 0;
+      bottom: auto;
+      left: auto;
+      width: var(--hl);
+      height: var(--hw);
+      clip-path: polygon(0 0, 100% 50%, 0 100%);
+    }
+
+    .skill-link:is([data-link='frontend'], [data-link='data']) .skill-head-back {
+      right: auto;
+      left: 0;
+      clip-path: polygon(0 50%, 100% 0, 100% 100%);
+    }
+  }
+
+  /* ---- The loop ----
+   *
+   * One round trip at a time, on a 5s cycle. Frontend lights and a packet
+   * leaves it; Backend lights as it lands; two packets leave Backend at once
+   * and Data and Cloud light together; their answers come back, Backend
+   * lights again, and the last packet carries the answer home to Frontend,
+   * which lights as it arrives. Then a pause, and the next request.
+   *
+   * Each beat starts at its own fraction of the cycle - `--at` on the way
+   * out, `--back` on the way back - so everything stays in phase however long
+   * the page is open. A packet travels in the first 11% of the cycle after
+   * its beat, and a ring's beat is a moment before its packet lands. ⚠️ Each
+   * beat is the previous one plus that window, so moving one means moving
+   * everything after it.
+   *
+   * Time-based rather than scroll-driven. A packet only shows on a line that
+   * has been drawn, because the line's own clip hides it until then.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    .skills-grid {
+      --cycle: 5s;
+    }
+
+    .skill-group[data-group='frontend'] {
+      --at: 0;
+      --back: 0.525;
+    }
+
+    .skill-link[data-link='frontend'] {
+      --at: 0.01;
+      --back: 0.42;
+    }
+
+    .skill-group[data-group='backend'] {
+      --at: 0.115;
+      --back: 0.385;
+    }
+
+    .skill-link:is([data-link='data'], [data-link='cloud']) {
+      --at: 0.14;
+      --back: 0.28;
+    }
+
+    .skill-group:is([data-group='data'], [data-group='cloud']) {
+      --at: 0.245;
+    }
+
+    .skill-pk {
+      animation: skills-pk-down var(--cycle) var(--site-ease) infinite;
+      animation-delay: calc(var(--at) * var(--cycle));
+    }
+
+    .skill-pk-back {
+      animation-name: skills-pk-up;
+      animation-delay: calc(var(--back) * var(--cycle));
+    }
+
+    .skills-grid > .skill-group::after {
+      animation: skills-ping var(--cycle) var(--site-ease-out) infinite;
+      animation-delay: calc(var(--at) * var(--cycle));
+    }
+
+    .skill-group:is([data-group='frontend'], [data-group='backend'])::before {
+      animation: skills-ping var(--cycle) var(--site-ease-out) infinite;
+      animation-delay: calc(var(--back) * var(--cycle));
+    }
+
+    @container skills (min-width: 52rem) {
+      .skill-link:is([data-link='frontend'], [data-link='data']) .skill-pk {
+        animation-name: skills-pk-right;
+      }
+
+      .skill-link:is([data-link='frontend'], [data-link='data']) .skill-pk-back {
+        animation-name: skills-pk-left;
+      }
+    }
+  }
+
+  /* ---- The assembly ----
+   *
+   * The diagram builds as it scrolls in, in the order the request takes it:
+   * Frontend, its line, Backend, the two lines out, then Data and Cloud.
+   * Tiles rise along the flow and lines draw themselves from where they start
+   * by a clip. Longhands throughout, because the `animation` shorthand resets
+   * the timeline and the range.
+   *
+   * In the column each element runs on its own `view()`, since the stage is
+   * taller than a phone and one timeline would hold the top tiles back until
+   * the foot arrived - the page's own order sequences them.
+   *
+   * ⚠️ In the row the stage is one named timeline and `--step` slices it. The
+   * last range ends at `entry 94%`, and `entry` is measured in the stage's
+   * height, so the drawing is finished the moment its foot is on screen at
+   * any viewport. A `cover` range there would still be drawing with the whole
+   * diagram in view.
+   *
+   * Inside both guards, as everywhere on the site: without scroll-driven
+   * animation, or with reduced motion asked for, nothing is ever hidden.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .skills-stage {
+        view-timeline-name: --skills;
+        view-timeline-axis: block;
+      }
+
+      .skills-grid > .skill-group,
+      .skill-link {
+        --in: 0 24px;
+
+        animation-timing-function: var(--site-ease-out);
+        animation-fill-mode: both;
+        animation-timeline: view();
+        animation-range: cover 20px cover 240px;
+      }
+
+      .skills-grid > .skill-group {
+        animation-name: skills-rise;
+      }
+
+      .skill-link {
+        --clip-from: inset(-16px -16px 100% -16px);
+
+        animation-name: skills-draw;
+      }
+
+      .skill-group[data-group='frontend'] {
+        --step: 0;
+      }
+
+      .skill-link[data-link='frontend'] {
+        --step: 1;
+      }
+
+      .skill-group[data-group='backend'] {
+        --step: 2;
+      }
+
+      .skill-link:is([data-link='data'], [data-link='cloud']) {
+        --step: 3;
+      }
+
+      .skill-group:is([data-group='data'], [data-group='cloud']) {
+        --step: 4;
+      }
+
+      @container skills (min-width: 52rem) {
+        .skills-grid > .skill-group,
+        .skill-link {
+          --in: -24px 0;
+
+          animation-timeline: --skills;
+          animation-range: entry calc(4% + var(--step) * 16%) entry calc(30% + var(--step) * 16%);
+        }
+
+        /* Cloud arrives from Backend, above it. */
+        .skill-group[data-group='cloud'] {
+          --in: 0 -24px;
+        }
+
+        .skill-link:is([data-link='frontend'], [data-link='data']) {
+          --clip-from: inset(-16px 100% -16px -16px);
+        }
+      }
     }
   }
 
@@ -720,6 +1121,136 @@
     opacity: 1;
     translate: none;
     scale: none;
+  }
+}
+
+/*
+ * The Skills diagram's assembly and its loop, the request diagram's keyframes
+ * under names of their own, since flow.css is not on this page.
+ *
+ * A group rising along the flow. `translate` and `scale`, never `transform`,
+ * for the reason in global.css: the mark tiles inside move on hover by
+ * `transform`, and an animation holding it would eat the hover.
+ */
+@keyframes skills-rise {
+  from {
+    opacity: 0;
+    translate: var(--in);
+    scale: 0.96;
+  }
+
+  to {
+    opacity: 1;
+    translate: none;
+    scale: none;
+  }
+}
+
+/* A line drawing itself by uncovering. The clip reaches 16px past the box on
+   every other side, so the head and a packet's ring are never shaved. */
+@keyframes skills-draw {
+  from {
+    clip-path: var(--clip-from);
+  }
+
+  to {
+    clip-path: inset(-16px);
+  }
+}
+
+/* A packet along its line in the first 11% of the cycle, fading in as it
+   leaves and out as it lands, so it reads as arriving rather than
+   vanishing. Out is down or right, back is up or left. */
+@keyframes skills-pk-down {
+  0% {
+    opacity: 0;
+    translate: 0 0;
+  }
+
+  1%,
+  10% {
+    opacity: 1;
+  }
+
+  11%,
+  100% {
+    opacity: 0;
+    translate: 0 100cqb;
+  }
+}
+
+@keyframes skills-pk-up {
+  0% {
+    opacity: 0;
+    translate: 0 100cqb;
+  }
+
+  1%,
+  10% {
+    opacity: 1;
+  }
+
+  11%,
+  100% {
+    opacity: 0;
+    translate: 0 0;
+  }
+}
+
+@keyframes skills-pk-right {
+  0% {
+    opacity: 0;
+    translate: 0 0;
+  }
+
+  1%,
+  10% {
+    opacity: 1;
+  }
+
+  11%,
+  100% {
+    opacity: 0;
+    translate: 100cqi 0;
+  }
+}
+
+@keyframes skills-pk-left {
+  0% {
+    opacity: 0;
+    translate: 100cqi 0;
+  }
+
+  1%,
+  10% {
+    opacity: 1;
+  }
+
+  11%,
+  100% {
+    opacity: 0;
+    translate: 0 0;
+  }
+}
+
+/* A group lighting up: the ring snaps in just outside it, holds about 300ms
+   of the 5s cycle, and fades back. */
+@keyframes skills-ping {
+  0% {
+    opacity: 0;
+    scale: 1.04;
+  }
+
+  2%,
+  8% {
+    opacity: 1;
+    scale: 1;
+  }
+
+  20%,
+  100% {
+    opacity: 0;
+    scale: 1.01;
   }
 }
 
