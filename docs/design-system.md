@@ -682,9 +682,20 @@ with the ground round it, so the browser chrome sits directly above the ground r
 above ink. They duplicate the token in both themes and must be changed with it. By their
 media queries they follow the system's theme, which is right until the visitor chooses one:
 then the inline script (on load, from `localStorage`) and ThemeToggle.astro (on a click) set
-the chosen tag's `media` to `all` and the other's to `not all`, so the bar on a phone and in
-Safari follows the page. The tags carry `data-scheme` for the scripts to find them, and sit
+the chosen tag's `media` to `all` and the other's to `not all`, so the bar in Chrome on a
+phone and in Safari before 26 follows the page. The tags carry `data-scheme` for the scripts to find them, and sit
 above the inline script in `<head>` because it runs before anything after it is parsed.
+
+**Safari 26 ignores `theme-color`.** It paints the strip under its bottom bar, and the
+bounce past either end of the page, in the canvas - the root's background. That was the
+body's ground, so on an iPhone the ink footer ended on a light band. `html` now runs
+`canvas-ink` on a `scroll(root)` timeline in global.css: the canvas is `--site-bg` for the
+first 98% of the scroll, turns to `--site-panel-bg` by 99% and holds it to the end, so the
+top still meets the ground and the bottom meets the footer. The last 1% is held because a
+phone stops a fraction of a pixel short of 100%. The body keeps its own `background-color`,
+since once the root has one the body's no longer reaches the canvas. Without scroll
+timelines, or on a page too short to scroll, the root has no background and the canvas is
+the ground.
 
 ---
 
@@ -2114,6 +2125,8 @@ centred in the space between the capsule and the footer on a tall screen.
 
 ## Changelog
 
+- 2026-09-27 - the canvas turns to the footer's ink at the end of the scroll, so Safari 26's
+  bottom bar and the bounce past the end match the footer instead of the ground (§8).
 - 2026-09-27 - the browser's `theme-color` follows a theme chosen with the toggle, not only
   the system's: the scripts switch the two tags' `media`. That closes the open item it was,
   and the rest are renumbered (§8, §11).

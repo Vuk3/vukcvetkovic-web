@@ -223,6 +223,46 @@
     }
   }
 
+  /*
+   * The canvas, the colour past either end of the page, ends in the footer's
+   * ink. Safari 26 ignores `theme-color` and paints the strip under its bottom
+   * bar, and the bounce past the end, in the root's background - which was the
+   * body's ground, so on an iPhone the ink footer ended on a light band.
+   *
+   * It turns between 98% and 99% of the scroll, and the footer is at least
+   * 480px, so on any page shorter than 24000px of scroll the turn happens with
+   * the footer at the bottom of the screen. The last 1% holds the ink, because
+   * a phone stops a fraction of a pixel short of the end and a turn that ran
+   * to 100% left the colour a shade off. Until then the canvas is the ground,
+   * so the bar at the top and the pull past the top still meet the ground, as
+   * the header's capsule needs them to.
+   *
+   * Once the root has a background the body's no longer reaches the canvas,
+   * which is why the body keeps its own. Without scroll timelines, and on a
+   * page too short to scroll, the root has none and the canvas stays the
+   * ground.
+   */
+  @supports (animation-timeline: scroll()) {
+    html {
+      animation-name: canvas-ink;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(root);
+    }
+  }
+
+  @keyframes canvas-ink {
+    0%,
+    98% {
+      background-color: var(--site-bg);
+    }
+
+    99%,
+    100% {
+      background-color: var(--site-panel-bg);
+    }
+  }
+
   body > main {
     flex: 1 0 auto;
   }
