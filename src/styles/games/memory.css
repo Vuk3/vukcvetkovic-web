@@ -97,8 +97,13 @@
    * board you look at longest - every card starts face down and most of them
    * spend most of the game that way. A back in any colour of its own would
    * put a sixty card slab of somebody else's brand in the middle of the page.
+   *
+   * The table is one of the site's cool greys, a step lighter than the
+   * minefield's tray so the cobalt stays the loudest thing on it. It was a
+   * warm beige, and inside the white stage on the paper ground a beige
+   * block read as a stain - the minefield's finding, the same here.
    */
-  --mem-table: #d9d5cb;
+  --mem-table: #d4dae3;
   --mem-table-inset: inset 0 2px 8px color-mix(in oklab, #14161a 10%, transparent);
   --mem-back: #2733c4;
   --mem-back-ink: #dfe4ff;
@@ -140,9 +145,11 @@
   --mem-spot: color-mix(in oklab, #ffffff 6%, transparent);
   --mem-spot-night: color-mix(in oklab, #ffffff 5%, transparent);
 
-  /* Deeper than the light theme's, because a table of sixty face-down cards
-     at the light value is the brightest block on a dark page by a distance. */
-  --mem-table: #131820;
+  /* Below the stage rather than level with it: the dark stage is #12161f, and
+     a table at that value had no edge at all - the cards floated on the
+     tile. Sunk a step, the way the minefield's tray is, it reads as a
+     surface the cards lie on. */
+  --mem-table: #0a0d13;
   --mem-table-inset: inset 0 2px 9px color-mix(in oklab, #000 38%, transparent);
   --mem-back: #2430a6;
 
@@ -158,6 +165,12 @@
 }
 
 @layer games {
+  /* The table's own flat colour, as on the page. The glow it had behind the
+     cards was the gradient wash the redesign took out of every stage. */
+  .game-art-mem {
+    background-color: var(--mem-table);
+  }
+
   /*
    * The memory still: ten real cards on the table, the same three layers and
    * the same two faces as the game's, so the card on the index is the card on
@@ -165,12 +178,6 @@
    * is not inside a board to be measured against: a fifth of the width less
    * the gaps, on the same 2cqi rhythm the 2048 still uses.
    */
-  .game-art-mem {
-    background:
-      radial-gradient(90% 90% at 50% 30%, color-mix(in oklab, var(--mem-table) 88%, #ffffff), transparent 75%),
-      var(--mem-table);
-  }
-
   .game-art-mem .game-art-board {
     --mem-card: 17cqi;
     --mem-radius: 2.2cqi;
@@ -242,36 +249,71 @@
 
   /* Which half of the page is showing is one attribute on the frame, and the
      markup carries both halves - the free-play label on the button, the stars
-     that only the campaign keeps - rather than the script writing strings. */
+     that only the campaign keeps - rather than the script writing strings.
+     Three classes, so it beats the display that shared.css gives a figure. */
   .mem[data-mode='free'] .mem-for-campaign,
   .mem[data-mode='campaign'] .mem-for-free {
     display: none;
   }
 
-  /* The two modes, as real radios - the same control and the same reasons as
-     the minefield's three boards. */
+  /*
+   * The picker: the mode switch and the level strip, as one block that is
+   * the HUD's first row. A width rather than a flex basis, so it is a full
+   * row in the stacked HUD, which wraps, and a full-width block in the side
+   * one, which is a column - where a basis of 100% would be a height.
+   */
+  .mem-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /*
+   * The two modes, as real radios - the same control and the same reasons as
+   * the minefield's three boards - drawn as one switch of two halves.
+   *
+   * The chosen half takes the accent as an edge and a tint, which is how the
+   * chosen level tile is marked as well: the Moves figure under the picker is
+   * the stage's one cobalt block, and a filled switch over it made two.
+   *
+   * Stacked, it shares the HUD's first row with the level tiles, at the
+   * width of its words; on a phone, where the tiles take a row of their own,
+   * it stretches to the full width, two halves of a real target each.
+   */
   .mem-modes {
     display: flex;
+    flex: 1 1 auto;
     gap: 4px;
-    width: fit-content;
-    margin: 0 auto clamp(0.75rem, 2vw, 1.1rem);
+    min-width: 0;
+    margin: 0;
     border: 1px solid var(--site-hairline);
-    border-radius: var(--site-radius-pill);
+    border-radius: var(--site-radius-inner);
     background-color: var(--site-inset);
     padding: 4px;
   }
 
   .mem-mode {
-    border-radius: var(--site-radius-pill);
-    padding: 0.45rem 1.1rem;
-    font-size: 0.9375rem;
-    font-weight: 560;
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    /* Inside the switch's own corner by its padding, so the two curves run
+       parallel rather than the inner one bulging against the outer. */
+    border-radius: calc(var(--site-radius-inner) - 4px);
+    padding: 0.5rem 1.15rem;
+    font-size: 1rem;
+    font-weight: 580;
     line-height: 1.2;
+    white-space: nowrap;
     color: var(--site-muted);
     cursor: pointer;
     transition:
-      background-color 160ms var(--site-ease),
-      color 160ms var(--site-ease);
+      background-color 200ms var(--site-ease),
+      box-shadow 200ms var(--site-ease),
+      color 200ms var(--site-ease);
   }
 
   .mem-mode:hover {
@@ -279,9 +321,9 @@
   }
 
   .mem-mode:has(:checked) {
-    background-color: var(--site-card);
-    box-shadow: var(--site-lift);
-    color: var(--site-fg);
+    background-color: color-mix(in oklab, var(--site-accent) 9%, var(--site-card));
+    box-shadow: inset 0 0 0 1.5px var(--site-accent);
+    color: var(--site-accent);
   }
 
   .mem-mode:has(:focus-visible) {
@@ -290,15 +332,29 @@
   }
 
   /*
-   * The twelve levels, as a strip of tiles.
+   * The twelve levels, as tiles.
    *
    * Radios again, twelve of them, and `disabled` is what a lock is: a locked
    * level cannot be picked, the arrow keys step over it, and a screen reader
-   * says so without being told. Six across below 60rem and all twelve in one
-   * row above it, which is exactly the shell's width at about 88px a tile.
+   * says so without being told.
+   *
+   * Stacked: six across and two rows on a phone and a small tablet, twelve
+   * in one row from 56rem. Beside the table the strip is the column's
+   * `.game-fill` and the tiles share out whatever height the table leaves -
+   * see the side rules below. A 36rem basis, so it sits beside the mode
+   * switch only where it is twelve across and one tile tall, and wraps to a
+   * row of its own anywhere narrower. At 30rem a tablet held upright kept it
+   * beside the switch at six across, and the switch stretched to the height
+   * of two rows of tiles - two buttons 120 pixels tall.
+   *
+   * ⚠️ A fieldset carries a minimum width of its content and a border, a
+   * margin and a padding of its own, all reset here. Grown in a flex row
+   * without the first, twelve tiles pushed the stage wider than a phone.
    */
   .mem-levels {
-    margin: 0 0 clamp(0.75rem, 2vw, 1.1rem);
+    flex: 1 1 36rem;
+    min-width: 0;
+    margin: 0;
     border: 0;
     padding: 0;
   }
@@ -306,41 +362,61 @@
   .mem-levels-row {
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 0.45rem;
+    gap: 0.4rem;
   }
 
-  @media (min-width: 60rem) {
+  /* Twelve across, and the switch beside them at the width of its words:
+     grown, it took half the free width and stood 74 pixels tall beside a
+     strip that has a use for the room. Beside the table the picker is a
+     grid, so the switch's flex means nothing there. */
+  @media (min-width: 56rem) {
     .mem-levels-row {
       grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 0.5rem;
+    }
+
+    .mem-modes {
+      flex: 0 0 auto;
     }
   }
 
+  /* A tile: the number over the size it deals, and the stars it has earned
+     or the lock where the stars would be. The picker vocabulary every game
+     page shares - a hairline tile that lifts, the accent as an edge and a
+     tint on the chosen one, a ring on the label for the keyboard. */
   .mem-level {
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 0.2rem;
+    min-width: 0;
+    min-height: 3.25rem;
     border: 1px solid var(--site-hairline);
     border-radius: var(--site-radius);
     background-color: var(--site-card);
-    padding: 0.5rem 0.25rem 0.5rem;
+    padding: 0.5rem 0.2rem;
     cursor: pointer;
     transition:
-      border-color 160ms var(--site-ease),
-      background-color 160ms var(--site-ease),
-      transform 160ms var(--site-ease);
+      border-color 200ms var(--site-ease),
+      background-color 200ms var(--site-ease),
+      transform 250ms var(--site-ease-out);
   }
 
   .mem-level:hover {
     border-color: color-mix(in oklab, var(--site-accent) 45%, var(--site-hairline));
-    transform: translateY(-1px);
+    transform: translateY(-2px);
   }
 
   .mem-level:has(:checked) {
     border-color: var(--site-accent);
     background-color: color-mix(in oklab, var(--site-accent) 9%, var(--site-card));
     box-shadow: inset 0 0 0 1px var(--site-accent);
+  }
+
+  .mem-level:has(:checked) .mem-level-n {
+    color: var(--site-accent);
   }
 
   .mem-level:has(:focus-visible) {
@@ -354,33 +430,42 @@
     animation: mem-unlock 1100ms var(--mem-spring) 380ms backwards;
   }
 
-  /* Locked. Faded rather than hidden, because seeing the size of what is
-     still to come is most of what makes a level strip worth having. */
+  /*
+   * Locked: a dashed edge and muted words, the way a button that cannot be
+   * pressed yet is drawn across every game page.
+   *
+   * ⚠️ **Not faded.** At 45% opacity eleven of the twelve tiles looked broken
+   * on a first visit rather than waiting, and the size of what is still to
+   * come - the reason a level strip is worth having - was the part that went
+   * faint.
+   */
   .mem-level:has(:disabled) {
-    background-color: var(--site-inset);
+    border-style: dashed;
+    border-color: color-mix(in oklab, var(--site-muted) 45%, transparent);
+    background-color: transparent;
     cursor: not-allowed;
   }
 
   .mem-level:has(:disabled):hover {
-    border-color: var(--site-hairline);
     transform: none;
   }
 
-  .mem-level:has(:disabled) > :not(.mem-level-lock) {
-    opacity: 0.45;
+  .mem-level:has(:disabled) .mem-level-n {
+    color: var(--site-muted);
   }
 
   .mem-level-n {
-    font-stretch: 112%;
-    font-weight: 660;
-    font-size: 1.125rem;
+    font-stretch: 116%;
+    font-weight: 700;
+    font-size: 1.25rem;
     font-variant-numeric: tabular-nums;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
+    letter-spacing: -0.03em;
+    line-height: 1;
   }
 
   .mem-level-size {
-    font-size: 0.6875rem;
+    font-size: 0.8125rem;
+    font-weight: 540;
     font-variant-numeric: tabular-nums;
     line-height: 1.2;
     white-space: nowrap;
@@ -411,8 +496,8 @@
   }
 
   .mem-level-stars svg {
-    width: 0.75rem;
-    height: 0.75rem;
+    width: 0.8125rem;
+    height: 0.8125rem;
   }
 
   .mem-level-stars .is-on {
@@ -425,8 +510,8 @@
      so the lock takes their line instead. */
   .mem-level-lock {
     display: none;
-    width: 0.75rem;
-    height: 0.75rem;
+    width: 0.875rem;
+    height: 0.875rem;
     color: var(--site-muted);
   }
 
@@ -443,41 +528,91 @@
     display: none;
   }
 
-  .mem-bar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.6rem;
-    margin-bottom: clamp(0.75rem, 2vw, 1.1rem);
+  /*
+   * Beside the table the picker is the column's fill: the switch at its own
+   * height, and the strip under it taking the rest.
+   *
+   * The fill is a size container there (see `.game-fill` in shared.css), so
+   * the picker takes exactly the height the table leaves and the tiles share
+   * it out - six across and two rows, stretched, and laid out to fill the box
+   * they are given rather than to size it. In a column 18 to 21.5rem wide a
+   * tile is 43 to 52 pixels across, room for "10", "10 × 6" and three stars
+   * over each other and nothing more, which is what two rows in a short
+   * column need.
+   *
+   * ⚠️ **The floor is the picker's own, not shared.css's 8rem.** That floor
+   * is for a fill that is all tiles, and this one has the switch in it as
+   * well: at 8rem the two rows under the switch came out 28 pixels tall.
+   * 11rem is the switch, and two rows of tiles at 52 - the least a tile's
+   * number, size and stars fit in.
+   *
+   * Named, because the tiles ask it how tall it is: shared.css sets only the
+   * container's type, so the name survives, the way 2048's ladder keeps its.
+   */
+  @media (min-width: 64rem) {
+    .mem .game-stage-side:not(:has([data-stage-wide]:checked)) .mem-picker {
+      container-name: mem-picker;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 0.5rem;
+      min-height: 11rem;
+    }
+
+    .mem .game-stage-side:not(:has([data-stage-wide]:checked)) .mem-mode {
+      min-height: 2.5rem;
+    }
+
+    .mem .game-stage-side:not(:has([data-stage-wide]:checked)) .mem-levels {
+      min-height: 0;
+    }
+
+    .mem .game-stage-side:not(:has([data-stage-wide]:checked)) .mem-levels-row {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      gap: 0.4rem;
+      height: 100%;
+    }
+
+    .mem .game-stage-side:not(:has([data-stage-wide]:checked)) .mem-level {
+      min-height: 0;
+      gap: 0.125rem;
+      padding-block: 0.25rem;
+    }
+
+    /* Four figures in the narrow column go two and two, the way shared.css
+       means a wrapped row to fill. From the shared basis they went three
+       and one at 1440 - "Fewest moves" broken over two lines in a block 97
+       pixels wide beside "0" and "0:00", and the stars alone on a row the
+       column's width. */
+    .mem .game-stage-side:not(:has([data-stage-wide]:checked)) .game-stat {
+      flex-basis: calc(50% - var(--stage-gap));
+    }
   }
 
-  .mem-meter {
-    min-width: 4.75rem;
-    border: 1px solid var(--site-hairline);
-    border-radius: var(--site-radius);
-    background-color: var(--site-card);
-    padding: 0.45rem 0.7rem 0.5rem;
-    text-align: center;
-  }
+  /*
+   * A tall column - a big screen, where the table's height grows and the
+   * column's contents do not - has room for three rows. Two rows of six there
+   * were tiles 150 pixels tall holding three short lines; four across and
+   * three down is the same twelve at a shape that fills them, and the number
+   * goes up with the room. 17rem is the switch and three rows of the 62
+   * pixels a tile's three lines take at that size.
+   *
+   * ⚠️ The selectors repeat the side rules' in full: a container query adds
+   * nothing to specificity, and one class here lost to the rules above.
+   */
+  @container mem-picker (min-height: 17rem) {
+    .mem .game-stage-side:not(:has([data-stage-wide]:checked)) .mem-levels-row {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-rows: repeat(3, minmax(0, 1fr));
+    }
 
-  .mem-meter-label {
-    display: block;
-    font-size: 0.6875rem;
-    line-height: 1.3;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    color: var(--site-muted);
-  }
+    .mem .game-stage-side:not(:has([data-stage-wide]:checked)) .mem-level {
+      gap: 0.25rem;
+    }
 
-  .mem-meter-value {
-    display: block;
-    font-stretch: 112%;
-    font-weight: 660;
-    font-size: 1.25rem;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.03em;
-    line-height: 1.2;
+    .mem .game-stage-side:not(:has([data-stage-wide]:checked)) .mem-level-n {
+      font-size: 1.5rem;
+    }
   }
 
   /*
@@ -485,18 +620,22 @@
    * each threshold. It is the only thing on the board that says the count
    * matters, so it is a picture rather than a number: three gold stars and
    * the reader already knows what losing one means.
+   *
+   * It sits in a figure's value slot, so it is sized off the value's own
+   * font size: three stars in `em` are as wide as three digits beside them,
+   * at every size the figures are set at.
    */
   .mem-goal {
     display: flex;
-    justify-content: center;
-    gap: 2px;
-    height: 1.5rem;
     align-items: center;
+    gap: 0.08em;
+    height: 1em;
   }
 
   .mem-goal svg {
-    width: 1.15rem;
-    height: 1.15rem;
+    width: 0.74em;
+    height: 0.74em;
+    flex-shrink: 0;
     color: var(--mem-gold);
     transition:
       color 360ms var(--site-ease),
@@ -508,50 +647,40 @@
     scale: 0.78;
   }
 
-  .mem-actions {
-    display: flex;
-    gap: 0.5rem;
-    margin-left: auto;
-  }
+  /*
+   * Two figures a row on a phone, in the campaign.
+   *
+   * ⚠️ Four in a row on a 390 screen is 74 pixels each, and "Fewest moves"
+   * alone runs to about 95 at label size - "Najmanje poteza" and "Minimum de
+   * coups" to more. Squeezed, the label broke over three lines and pushed one
+   * figure's value a line below its neighbours'. Two by two gives every label
+   * the width it needs in all four languages. Free play has two figures and
+   * keeps its one row.
+   */
+  @media (max-width: 36rem) {
+    .mem .game-stats {
+      flex-wrap: wrap;
+    }
 
-  .mem-actions .cta-ghost {
-    padding: 0.55rem 0.9rem;
-    font-size: 0.875rem;
+    .mem .game-stat {
+      flex: 1 1 calc(50% - var(--stage-gap));
+    }
   }
-
 
   /*
-   * Two meters a row on a phone, not four.
+   * The board's slot, and the query container the win panel's type is sized
+   * against, so its title is a share of the table rather than of the screen.
    *
-   * ⚠️ Four in a row on a 390 screen is under 80px each, and "Fewest moves"
-   * alone runs to about 100 at label size - "Najmanje poteza" and "Minimum de
-   * coups" to more. Squeezing them clips the label, and letting it wrap puts
-   * one meter's value a line below its neighbours'. A two by two grid gives
-   * every label the width it needs in all four languages.
+   * ⚠️ **Stretched, not centred like 2048's board.** `.mem-fit` inside is an
+   * inline-size container that measures the table, and a slot that shrinks
+   * to its content leaves it nothing to measure - the minefield's expert
+   * board came out 24 pixels wide that way. Two classes, because shared.css
+   * comes after this file and its `.game-board` would win a tie.
    */
-  @media (max-width: 34rem) {
-    .mem-bar {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .mem-actions {
-      grid-column: 1 / -1;
-      margin-left: 0;
-    }
-
-    .mem-actions .cta-ghost {
-      flex: 1;
-      justify-content: center;
-    }
-
-    .mem-meter {
-      min-width: 0;
-    }
-  }
-
-  .mem-frame {
+  .mem .mem-frame {
+    container: mem-frame / inline-size;
     position: relative;
+    justify-self: stretch;
   }
 
   /*
@@ -559,16 +688,20 @@
    * It is inset from the corners so it reads as a rule on the table rather than
    * as a border round it, and it is a `scale` of one fixed element - so a pair
    * landing is a compositor change and never a layout one.
+   *
+   * ⚠️ **No track under it.** A faint line the full width of the table, there
+   * from the first frame, read in the dark theme as the table's border come
+   * loose. The gold alone grows out from the left as pairs land, and a line
+   * that is only ever progress cannot be mistaken for an edge.
    */
   .mem-progress {
     position: absolute;
     top: 0;
-    left: var(--site-radius-card);
-    right: var(--site-radius-card);
+    left: var(--site-radius-inner);
+    right: var(--site-radius-inner);
     z-index: 1;
-    height: 3px;
-    border-radius: 0 0 3px 3px;
-    background-color: color-mix(in oklab, var(--site-muted) 16%, transparent);
+    height: 4px;
+    border-radius: 0 0 4px 4px;
     overflow: hidden;
     pointer-events: none;
   }
@@ -577,50 +710,64 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, color-mix(in oklab, var(--mem-gold) 70%, #ffffff), var(--mem-gold));
+    background-color: var(--mem-gold);
     transform-origin: 0 50%;
     scale: var(--mem-done, 0) 1;
     transition: scale 520ms var(--mem-spring);
   }
 
   /*
-   * The table.
+   * The table: a flat, sunk surface in the stage, at the radius a block
+   * inside a tile takes. The glow it had behind the cards was a gradient
+   * wash, and it is gone with the others.
    *
-   * ⚠️ **Full width at every level, and the board grows inside it.** Level one
-   * is four cards in the middle of a wide table, and that is the point of the
-   * shape rather than a gap in it: the table stays where it is while the deal
-   * gets bigger, which is what makes a bigger board read as progress. A table
-   * that shrank to fit would make every level the same size on screen.
+   * It runs the full width of its place at every level and the board grows
+   * inside it, which is what makes a bigger board read as progress: the
+   * stage's width stacked, and the board's whole column beside the menu -
+   * see the side rules below.
    *
    * The minimum height is the win panel's, which covers the table and has to
    * fit on the smallest board there is.
    */
+  .mem {
+    --mem-table-pad: clamp(0.75rem, 2.2vw, 1.5rem);
+  }
+
   .mem-table {
     display: grid;
     place-items: center;
     min-height: 24rem;
-    border-radius: var(--site-radius-card);
-    background:
-      radial-gradient(90% 70% at 50% 35%, color-mix(in oklab, var(--mem-table) 88%, #ffffff), transparent 70%),
-      var(--mem-table);
+    border-radius: var(--site-radius-inner);
+    background-color: var(--mem-table);
     box-shadow: var(--mem-table-inset);
-    padding: clamp(0.75rem, 2.2vw, 1.5rem);
+    padding: var(--mem-table-pad);
   }
 
   /*
    * The board's width, and so every card's size.
    *
-   * The smallest of three: the table's width, a card no bigger than 8.5rem,
-   * and whatever lets the whole board fit the height of the screen - because
-   * a memory board you have to scroll is a board you cannot see, and seeing it
-   * is the whole game. The floor is a card of 2.6rem, which is where a picture
-   * stops being one on a short landscape phone.
+   * The smallest of three: the table's width, a card no bigger than
+   * `--mem-cap`, and whatever lets the whole board fit `--mem-room`, the
+   * height the board has - because a memory board you have to scroll is a
+   * board you cannot see, and seeing it is the whole game. The floor is a
+   * card of 2.6rem, which is where a picture stops being one on a short
+   * landscape phone.
    *
-   * `--mem-reserve` is everything on screen with the board that is not the
-   * board: the header, the bar above the table and the table's own padding.
-   * 12rem on a desktop and 17.5rem on a phone, where the bar stacks into two
-   * rows - measured at 390 by 844, where the sixty card board then fills the
-   * screen to within a few pixels with the bar still in view.
+   * Stacked, the room is the screen less `--mem-reserve`: everything on
+   * screen with the board that is not the board once the figures have been
+   * scrolled up under the header - the header, the figures, the buttons
+   * where they have a row of their own, the table's padding and the stage's.
+   * The picker above them is off screen by then: a level is chosen before a
+   * board is played.
+   *
+   * ⚠️ **A budget for a board scrolled to, not for the page as it opens**,
+   * unlike `--game-reserve` beside the column. The stage only stacks under
+   * 64rem, where the head is a title over a lead rather than beside it and
+   * the picker is two rows of tiles over the figures, and no phone or tablet
+   * shows all of that and a table too: sized to open whole, the sixty-card
+   * board on a 768x1024 tablet would be cards of 30 pixels. Measured on that
+   * board turned upright: at 768x1024 the table's foot is at 957 with the
+   * figures under the header, and at 390x844 at 714.
    *
    * ⚠️ **This is the query container and `.mem-board` is what measures in
    * `cqi`** - an element is not its own container, the trap `.game-art`
@@ -629,21 +776,85 @@
   .mem-fit {
     --c: var(--mem-cols, 2);
     --r: var(--mem-rows, 2);
-    --mem-reserve: 12rem;
+    --mem-reserve: 17.5rem;
+    --mem-cap: 8.5rem;
+    --mem-room: calc(100svh - var(--mem-reserve));
 
     container-type: inline-size;
     width: min(
       100%,
       max(
         calc(var(--c) * 2.6rem),
-        min(calc(var(--c) * 8.5rem), calc((100svh - var(--mem-reserve)) * var(--c) / var(--r)))
+        min(calc(var(--c) * var(--mem-cap)), calc(var(--mem-room) * var(--c) / var(--r)))
       )
     );
   }
 
-  @media (max-width: 34rem) {
+  /* On a phone the buttons take a row of their own under the figures, and
+     in the campaign the figures are two rows (see above). */
+  @media (max-width: 40rem) {
     .mem-fit {
-      --mem-reserve: 17.5rem;
+      --mem-reserve: 24rem;
+    }
+  }
+
+  /*
+   * Beside the column, at every level: the table is the board's whole column,
+   * the wide one on the left, and the deal grows inside it.
+   *
+   * ⚠️ **The table is the play surface.** Every other board sits centred on
+   * the surface shared.css draws in the column, and memory's table is itself
+   * a surface - a grey table inset by a band of another grey read as a frame
+   * round a frame. So the slot drops the margin the other boards keep, fills
+   * the column both ways, and the table fills the slot; `--game-surface` is
+   * the table's colour, so the surface under it cannot show at a corner.
+   *
+   * ⚠️ **One size for every level**, so the table and the column beside it
+   * stay put while the deal inside grows - the same progress the full-width
+   * table shows stacked. A table sized to each board changed width on every
+   * level and the whole stage jumped when a board was cleared.
+   *
+   * `--mem-side-h` is the table's height: the room `--game-reserve` leaves
+   * under the head, plus the slot margin it counts and this slot does not
+   * keep, so the table is whole on screen when the page opens and its foot
+   * is where 2048's board's margin ends. 22rem is the floor a short laptop
+   * stops at, since the win panel has to fit on it, and 50rem is where a
+   * tall monitor stops: past it the column's width decides every board but
+   * the first two, and a taller table would only be taller bare grey.
+   *
+   * On a screen where the column needs more height than that, the stage
+   * grows and the table stretches with it; the cards are sized to
+   * `--mem-side-h`, so they stay centred and whole in view.
+   *
+   * The card cap goes up to 17rem, which lets the first board's four cards
+   * take the table's full height at 1440x900 rather than leaving 50 pixels
+   * of table over and under them.
+   *
+   * The selector is shared.css's side selector, repeated for its weight:
+   * the slot's margin and alignment there are four classes deep. Memory has
+   * no board too wide for the column, so it always matches.
+   */
+  @media (min-width: 64rem) {
+    .mem .game-stage-side:not(:has([data-stage-wide]:checked)) {
+      --game-surface: var(--mem-table);
+    }
+
+    .mem .game-stage-side:not(:has([data-stage-wide]:checked)) > .mem-frame {
+      align-self: stretch;
+      justify-self: stretch;
+      margin: 0;
+    }
+
+    .mem .game-stage-side:not(:has([data-stage-wide]:checked)) .mem-table {
+      --mem-side-h: clamp(22rem, 100svh - var(--game-reserve) + 2 * var(--stage-gap), 50rem);
+
+      height: 100%;
+      min-height: var(--mem-side-h);
+    }
+
+    .mem .game-stage-side:not(:has([data-stage-wide]:checked)) .mem-fit {
+      --mem-cap: 17rem;
+      --mem-room: calc(var(--mem-side-h) - 2 * var(--mem-table-pad));
     }
   }
 
@@ -949,6 +1160,12 @@
    * The cleared panel. It covers the table, like every panel on these pages,
    * because it asks the one question that has to be answered before the next
    * board: this again, or the next one.
+   *
+   * Nearly opaque rather than frosted, as on 2048 and the minefield: glass
+   * over the board is a tell, and at 93% a whole table of pictures under it
+   * no longer shows through as a second, blurred board. The type is sized
+   * off the table (`.mem-frame` is its container), so the smallest board's
+   * panel and the largest one's are the same share of what they cover.
    */
   .mem-panel {
     position: absolute;
@@ -958,14 +1175,11 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.55rem;
-    border-radius: var(--site-radius-card);
+    gap: 0.65rem;
+    border-radius: var(--site-radius-inner);
     padding: var(--site-pad);
     text-align: center;
-    /* Denser than the minefield's 84%: under it is a whole table of pictures,
-       and at 84% they showed through as a second, blurred board. */
-    background-color: color-mix(in oklab, var(--mem-table) 92%, transparent);
-    backdrop-filter: blur(6px);
+    background-color: color-mix(in oklab, var(--mem-table) 93%, transparent);
     animation: mem-panel 320ms var(--site-ease);
   }
 
@@ -973,19 +1187,19 @@
     display: flex;
   }
 
+  /* Which board it was - "Level 3", or the size in free play - in the
+     sentence case every label on the site is set in. */
   .mem-panel-level {
-    font-size: 0.75rem;
-    font-weight: 620;
-    letter-spacing: 0.14em;
+    font-size: 1rem;
+    font-weight: 600;
     line-height: 1.3;
-    text-transform: uppercase;
     color: var(--site-muted);
   }
 
   .mem-panel-title {
     font-stretch: 116%;
     font-weight: 680;
-    font-size: clamp(1.625rem, 6vw, 2.5rem);
+    font-size: clamp(2rem, 8cqi, 3.25rem);
     line-height: 1.05;
     letter-spacing: -0.04em;
   }
@@ -998,8 +1212,8 @@
   }
 
   .mem-panel-stars svg {
-    width: clamp(2.25rem, 7vw, 3.25rem);
-    height: clamp(2.25rem, 7vw, 3.25rem);
+    width: clamp(2.5rem, 9cqi, 3.75rem);
+    height: clamp(2.5rem, 9cqi, 3.75rem);
   }
 
   /* The middle one sits higher, which is how a row of three stars has always
@@ -1015,14 +1229,42 @@
     animation: mem-star-in 560ms var(--mem-spring) calc(260ms + var(--n, 0) * 170ms) backwards;
   }
 
+  /* The two figures of the board just played, as the HUD sets its own: the
+     word over the number, in blocks on the table. */
   .mem-panel-meters {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.6rem;
+  }
+
+  .mem-meter {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 7rem;
+    border-radius: var(--site-radius);
+    background-color: color-mix(in oklab, var(--site-card) 72%, transparent);
+    padding: 0.6rem 1rem 0.7rem;
+  }
+
+  .mem-meter-label {
+    font-size: 0.9375rem;
+    font-weight: 560;
+    line-height: 1.25;
+    color: var(--site-muted);
+  }
+
+  .mem-meter-value {
+    font-stretch: 118%;
+    font-weight: 720;
+    font-size: clamp(1.5rem, 5cqi, 2rem);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.035em;
+    line-height: 1;
   }
 
   .mem-panel-body {
     max-width: 28rem;
-    font-size: clamp(0.9375rem, 3vw, 1.0625rem);
+    font-size: clamp(1rem, 3.4cqi, 1.1875rem);
     line-height: 1.5;
     color: var(--site-muted);
   }
@@ -1042,13 +1284,6 @@
   /* Nothing comes after the last board. */
   .mem[data-last] [data-action='next'] {
     display: none;
-  }
-
-  .mem-hint {
-    margin-top: clamp(0.75rem, 2vw, 1.1rem);
-    font-size: 0.875rem;
-    text-align: center;
-    color: var(--site-muted);
   }
 }
 

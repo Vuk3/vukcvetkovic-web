@@ -17,74 +17,74 @@ const dict = getDict(lang);
 /** Profile URLs read better without the scheme. */
 const bare = (url: string) => url.replace(/^https?:\/\//, '').replace(/\/$/, '');
 
-/*
- * Three channels, one shape. Email leads because it is the one he asks people
- * to use, and it is the only value that takes the accent - which is what puts
- * it first without making its card three times the size of the others.
- */
-const channels = [
-  {
-    label: dict.contact.emailLabel,
-    href: `mailto:${site.email}`,
-    text: site.email,
-    external: false,
-  },
+const profiles = [
   {
     label: dict.contact.linkedinLabel,
     href: site.links.linkedin,
     text: bare(site.links.linkedin),
     brand: 'linkedin' as const,
-    external: true,
   },
   {
     label: dict.contact.githubLabel,
     href: site.links.github,
     text: bare(site.links.github),
     brand: 'github' as const,
-    external: true,
   },
 ];
 ---
 
 {/*
-  The close, on the ink panel - the one tone the page keeps for its ending, and
-  the reason it runs into the footer as a single lifted block rather than
-  stopping on one more strip of the ground.
+  The close, on the ink panel, and the one section where the page asks for
+  something - so the ask is the largest tile in it: the intro at display size on
+  cobalt with the one button that matters, beside the three channels. Email
+  leads the channels and is the only address in the accent.
 
-  Nothing in here knows it is on dark: `.panel` re-declares the palette tokens,
-  so `.card`, `.link` and `.mail` come out correct on their own.
+  ⚠️ The address stays at 1.25rem. It has been set at 2.875rem, 2.25rem and
+  1.75rem and every one of them was too big: an address is a thing you read,
+  copy and type, and past this size it stops looking like one. The scale here
+  belongs to the intro and the button.
+
+  Nothing in here knows it is on dark: `.panel` re-declares the palette and
+  `.tile-cobalt` re-declares it again for its own tile.
 */}
-<Section id="contact" label={dict.contact.label} width="contact" tone={tone}>
-  <p class="contact-intro reveal">{dict.contact.intro}</p>
+<Section id="contact" label={dict.contact.label} tone={tone}>
+  <div class="bento contact-bento">
+    <div class="card tile-cobalt contact-call reveal-item sm:col-span-6 lg:col-span-6">
+      <p class="contact-intro">{dict.contact.intro}</p>
 
-  <ul class="channels">
+      <a href={`mailto:${site.email}`} class="cta">
+        <Mail class="size-[1.1rem]" aria-hidden="true" />
+        {dict.hero.cta}
+      </a>
+    </div>
+
+    <div class="card card-hover channel channel-mail reveal-item sm:col-span-6 lg:col-span-6">
+      <span class="tile-icon channel-icon">
+        <Mail aria-hidden="true" />
+      </span>
+
+      <span class="min-w-0">
+        <span class="meta-label block">{dict.contact.emailLabel}</span>
+        {/* The whole tile is the target; the accessible name stays the address. */}
+        <a href={`mailto:${site.email}`} class="mail stretch">{site.email}</a>
+      </span>
+    </div>
+
     {
-      channels.map((channel) => (
-        <li class="card card-hover channel reveal-item">
-          <span class="channel-mark">
-            {channel.brand ? (
-              <BrandIcon name={channel.brand} class="size-[1.05rem]" />
-            ) : (
-              <Mail class="size-[1.05rem]" aria-hidden="true" />
-            )}
+      profiles.map((profile) => (
+        <div class="card card-hover channel reveal-item sm:col-span-3 lg:col-span-3">
+          <span class="tile-icon channel-icon">
+            <BrandIcon name={profile.brand} />
           </span>
 
           <span class="min-w-0">
-            <span class="meta-label block">{channel.label}</span>
-
-            {/* The whole card is the target; the accessible name stays the
-                address or the URL alone. */}
-            <a
-              href={channel.href}
-              target={channel.external ? '_blank' : undefined}
-              rel={channel.external ? 'me noopener' : undefined}
-              class:list={[channel.brand ? 'channel-value entry-link' : 'mail', 'stretch']}
-            >
-              {channel.text}
+            <span class="meta-label block">{profile.label}</span>
+            <a href={profile.href} target="_blank" rel="me noopener" class="channel-value entry-link stretch">
+              {profile.text}
             </a>
           </span>
-        </li>
+        </div>
       ))
     }
-  </ul>
+  </div>
 </Section>

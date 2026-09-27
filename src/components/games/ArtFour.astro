@@ -12,7 +12,15 @@
 import FourFace from "./FourFace.astro";
 import "../../styles/games/four.css";
 
-/** Column, row from the bottom, and whose. */
+/**
+ * Column, row from the bottom, and whose.
+ *
+ * ⚠️ **The index reads this list by position.** On hover the falling disc
+ * drops into the fifth column and the line it completes lights up, and that
+ * line is picked out as the second, seventh and eleventh disc here - the red
+ * diagonal up from the second column - see `.four-discs` in
+ * styles/games/index.css. Reordering these moves the win somewhere else.
+ */
 const discs: [number, number, 1 | 2][] = [
   [0, 0, 2],
   [1, 0, 1],

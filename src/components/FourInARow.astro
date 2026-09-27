@@ -2,9 +2,24 @@
 /**
  * The Four in a Row page, shared by the four locales.
  *
- * The opponents come first, as in Battleship, since who you are playing is
- * the whole of the difficulty. Then the score against whoever that is, the
- * line naming whose move it is, and the board.
+ * The chrome round the board is the family every game page shares, in
+ * styles/games/shared.css, and this page is its side-by-side stage: the board
+ * is taller than it is wide once the space above it for the disc in hand and
+ * the floor under it are counted, so the screen's height decides its size,
+ * and on a desktop the studio it stands in takes the whole of the wide
+ * column. The narrow menu column beside it holds the score against whoever
+ * you are playing, with the line naming whose move it is, the two buttons,
+ * the four opponents as the column's `.game-fill`, and the line on how to
+ * play.
+ *
+ * ⚠️ **The opponents come after the board in the markup**, as the stage's
+ * fill, and not first in the HUD, where they were. First, they stood 380
+ * pixels of picker between a phone's head and its board. After it, a phone
+ * opens on the score and the board, and the four are under it - the choice
+ * is kept between visits, so it is made once and not before every game.
+ *
+ * The board stands in a studio of its own, the stage's board slot: see "Four
+ * in a Row: a toy in a studio" in docs/design-system.md.
  *
  * ⚠️ **The board is three layers and the order is the point**: the discs, the
  * plastic face over them with the holes cut in it, and the seven columns over
@@ -13,11 +28,11 @@
  * the holes, the bars between them, the space above the board - is that
  * column. See styles/games/four.css.
  *
- * Which line is showing over the board is decided in CSS off `data-state` on
+ * Which line is showing in the score is decided in CSS off `data-state` on
  * the game, like Battleship's panels. Every sentence it can say is in the
  * markup, so the script sets one attribute and never writes a string there.
  */
-import { ArrowLeft, RotateCcw } from "@lucide/astro";
+import { ArrowDownToDot, ArrowLeft, ChessKnight, RotateCcw, Swords } from "@lucide/astro";
 import type { Lang } from "../i18n/types";
 import { getDict, localizePath } from "../i18n/utils";
 import { COLUMNS, LEVELS } from "../games/four/game";
@@ -45,10 +60,14 @@ const index = localizePath("/games/", lang);
 
 const columns = Array.from({ length: COLUMNS }, (_, i) => i);
 const first = LEVELS[0];
+
+/* The write-up opens on its first paragraph, set large, and the rest runs in
+   columns under it - see `.game-notes-lead` in styles/games/shared.css. */
+const [notesLead, ...notes] = copy.close.paragraphs;
 ---
 
-<div class="page-head">
-  <div class="shell shell-wide">
+<div class="page-head game-head">
+  <div class="shell">
     <div class="crumb-row">
       <a href={index} class="crumb enter">
         <ArrowLeft class="size-4" aria-hidden="true" />
@@ -58,14 +77,18 @@ const first = LEVELS[0];
       <GameStamp lang={lang} date={site.games.fourInARow.date} />
     </div>
 
-    <h1 class="page-title enter" style="--enter-delay:80ms">{copy.name}</h1>
+    <h1 class="page-title">
+      <span class="line-mask enter-line" style="--enter-delay:80ms"
+        ><span class="line-in">{copy.name}</span></span
+      >
+    </h1>
 
     <p class="page-lead enter" style="--enter-delay:160ms">{copy.lead}</p>
   </div>
 </div>
 
-<div class="sec-lite">
-  <div class="shell shell-wide">
+<div class="game-play">
+  <div class="shell">
     <div
       class="four enter"
       style="--enter-delay:240ms"
@@ -78,108 +101,81 @@ const first = LEVELS[0];
     >
       <FourSprites />
 
-      {/*
-        Four opponents, as real radios for the minefield's reasons: one tab
-        stop for the set, the arrow keys already work, and the label is the
-        control. The same arrangement as Battleship's, down to the line under
-        the set that is written from whichever is chosen.
-      */}
-      <fieldset class="four-levels">
-        <legend class="four-levels-title">{copy.opponents}</legend>
+      <div class="game-stage game-stage-side">
+        <div class="game-hud">
+          {/*
+            The score against whoever is chosen, as the stage's one figure: the
+            line saying whose move it is, and under it you, your wins, theirs,
+            them. The side whose move it is lights up. The two figures carry
+            their names for a screen reader, and the rest is decoration it
+            hears from the live region instead, once.
 
-        <div class="four-levels-row">
-          {
-            LEVELS.map((id, i) => (
-              <label class="four-level" data-note={copy.levels[id].note} data-name={copy.levels[id].name}>
-                <input
-                  type="radio"
-                  name="four-level"
-                  value={id}
-                  checked={i === 0}
-                  class="sr-only"
-                  data-level-option
-                />
-                <svg class="four-rank" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
-                  <use href={`#four-face-${id}`} />
-                </svg>
-                <span class="four-level-name">{copy.levels[id].name}</span>
-
-                {/* How strong each one is, as marks: strength is position in
-                    the list. Decorative, for the reason Battleship's are. */}
-                <span class="four-level-rank" aria-hidden="true">
-                  {LEVELS.map((_, n) => (
-                    <span class={n <= i ? "is-on" : undefined} />
-                  ))}
+            The five sentences share one cell, so the line is always as tall
+            as the longest of them - see `.four-status-says`.
+          */}
+          <div class="game-stats">
+            <div class="game-stat tile-cobalt four-score">
+              <p class="game-stat-label four-status-line" aria-hidden="true">
+                <span class="tile-icon"><Swords aria-hidden="true" /></span>
+                <span class="four-status-says">
+                  <span data-for="you">{copy.status.you}</span>
+                  <span data-for="them">{copy.status.them}<span class="four-dots"><span></span><span></span><span></span></span></span>
+                  <span data-for="won">{copy.status.won}</span>
+                  <span data-for="lost">{copy.status.lost}</span>
+                  <span data-for="draw">{copy.status.draw}</span>
                 </span>
-              </label>
-            ))
-          }
-        </div>
+              </p>
 
-        <p class="four-level-note" data-note-out aria-live="polite">{copy.levels[first].note}</p>
-      </fieldset>
+              <div class="four-scoreline">
+                <div class="four-side" data-side="you" aria-hidden="true">
+                  <span class="four-chip" data-player="1"></span>
+                  <span class="four-side-name">{copy.you}</span>
+                </div>
 
-      {/*
-        The whole game is one scene: the score and whose move it is along the
-        top, the board standing in the middle, and the floor it stands on. The
-        two controls sit in its corner rather than in a bar of their own, so
-        nothing between the choice of opponent and the board competes with it.
-      */}
-      <div class="four-frame" data-frame>
-        {/* The burst over a won game, above the board. */}
-        <div class="game-burst" aria-hidden="true" data-burst></div>
+                <p class="four-tally">
+                  <span class="sr-only">{copy.wins}</span>
+                  <span class="four-tally-n" data-wins>0</span>
+                  <span class="four-tally-colon" aria-hidden="true">:</span>
+                  <span class="sr-only">{copy.losses}</span>
+                  <span class="four-tally-n" data-losses>0</span>
+                </p>
 
-        <div class="four-stage">
-          <div class="four-actions">
+                <div class="four-side" data-side="them" aria-hidden="true">
+                  <span class="four-side-name" data-them-name>{copy.levels[first].name}</span>
+                  <svg class="four-side-face" viewBox="0 0 64 64" focusable="false">
+                    <use href={`#four-face-${first}`} data-them-face />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="game-actions">
             <SoundToggle lang={lang} />
 
             <button type="button" class="cta-ghost" data-action="restart">
-              <RotateCcw class="size-4 shrink-0" aria-hidden="true" />
-              <span class="four-action-label">{copy.newGame}</span>
+              <RotateCcw class="shrink-0" aria-hidden="true" />
+              {copy.newGame}
             </button>
           </div>
+        </div>
 
-          {/*
-            The score against whoever is chosen, as one line: you, your wins,
-            theirs, them. The side whose move it is lights up. The two figures
-            carry their names for a screen reader, and the rest is decoration
-            it hears from the live region instead, once.
-          */}
-          <div class="four-score">
-            <div class="four-side" data-side="you" aria-hidden="true">
-              <span class="four-chip" data-player="1"></span>
-              <span class="four-side-name">{copy.you}</span>
-            </div>
-
-            <p class="four-tally">
-              <span class="sr-only">{copy.wins}</span>
-              <span class="four-tally-n" data-wins>0</span>
-              <span class="four-tally-colon" aria-hidden="true">:</span>
-              <span class="sr-only">{copy.losses}</span>
-              <span class="four-tally-n" data-losses>0</span>
-            </p>
-
-            <div class="four-side" data-side="them" aria-hidden="true">
-              <span class="four-side-name" data-them-name>{copy.levels[first].name}</span>
-              <svg class="four-side-face" viewBox="0 0 64 64" focusable="false">
-                <use href={`#four-face-${first}`} data-them-face />
-              </svg>
-            </div>
-          </div>
-
-          <div class="four-status">
-            <p class="four-status-line" aria-hidden="true">
-              <span data-for="you">{copy.status.you}</span>
-              <span data-for="them">{copy.status.them}<span class="four-dots"><span></span><span></span><span></span></span></span>
-              <span data-for="won">{copy.status.won}</span>
-              <span data-for="lost">{copy.status.lost}</span>
-              <span data-for="draw">{copy.status.draw}</span>
-            </p>
-
-            <button type="button" class="cta four-again" data-action="restart">{copy.again}</button>
-          </div>
+        {/*
+          The studio: the board standing on a floor, lit from high on the left,
+          with the space above it for the disc in hand. The burst is thrown
+          over it when a game is won.
+        */}
+        <div class="game-board four-scene" data-frame>
+          <div class="game-burst" aria-hidden="true" data-burst></div>
 
           <div class="four-well">
+            {/*
+              Play again, in the space above the board where the disc in hand
+              was - see `.four-again` for why it hangs there rather than
+              taking a row of its own.
+            */}
+            <button type="button" class="cta four-again" data-action="restart">{copy.again}</button>
+
             <div class="four-board" data-board>
               <div class="four-back">
                 <span class="four-glow" data-glow></span>
@@ -216,31 +212,86 @@ const first = LEVELS[0];
             </div>
           </div>
         </div>
-      </div>
 
-      <p class="four-hint">{copy.hint}</p>
+        {/*
+          Four opponents, as real radios for the minefield's reasons: one tab
+          stop for the set, the arrow keys already work, and the label is the
+          control. The same arrangement as Battleship's, down to the line under
+          the set that is written from whichever is chosen.
+        */}
+        <fieldset class="game-fill four-levels">
+          <legend class="tile-label four-levels-title">
+            <span class="tile-icon"><ChessKnight aria-hidden="true" /></span>
+            {copy.opponents}
+          </legend>
+
+          <div class="four-levels-row">
+            {
+              LEVELS.map((id, i) => (
+                <label
+                  class="four-level"
+                  data-note={copy.levels[id].note}
+                  data-name={copy.levels[id].name}
+                >
+                  <input
+                    type="radio"
+                    name="four-level"
+                    value={id}
+                    checked={i === 0}
+                    class="sr-only"
+                    data-level-option
+                  />
+                  <svg class="four-rank" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+                    <use href={`#four-face-${id}`} />
+                  </svg>
+                  <span class="four-level-name">{copy.levels[id].name}</span>
+
+                  {/* How strong each one is, as marks: strength is position in
+                      the list. Decorative, for the reason Battleship's are. */}
+                  <span class="four-level-rank" aria-hidden="true">
+                    {LEVELS.map((_, n) => (
+                      <span class={n <= i ? "is-on" : undefined} />
+                    ))}
+                  </span>
+                </label>
+              ))
+            }
+          </div>
+
+          <p class="four-level-note" data-note-out aria-live="polite">{copy.levels[first].note}</p>
+        </fieldset>
+
+        <p class="game-hint">
+          <span class="tile-icon"><ArrowDownToDot aria-hidden="true" /></span>
+          <span>{copy.hint}</span>
+        </p>
+      </div>
 
       <p class="sr-only" aria-live="polite" data-live></p>
     </div>
   </div>
 </div>
 
-<Section id="how" label={copy.how.label} width="wide" tone="band">
-  <ul class="svc-grid">
+<Section id="how" label={copy.how.label} tone="band">
+  {/* `role="list"` because the markers are drawn rather than the browser's,
+      and Safari stops announcing a list whose list-style is gone. */}
+  <ol class="card game-steps" role="list">
     {
-      copy.how.items.map((item) => (
-        <li class="card reveal-item">
-          <h3 class="svc-title">{item.title}</h3>
-          <p class="mt-2.5 text-muted">{item.description}</p>
+      copy.how.items.map((item, i) => (
+        <li class="game-step reveal-item">
+          <span class="game-step-n" aria-hidden="true">{i + 1}</span>
+          <h3 class="game-step-title">{item.title}</h3>
+          <p class="game-step-body">{item.description}</p>
         </li>
       ))
     }
-  </ul>
+  </ol>
 </Section>
 
-<Section id="build" label={copy.close.label} width="wide" tone="panel">
-  <div class="prose-columns text-muted">
-    {copy.close.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+<Section id="build" label={copy.close.label} tone="panel">
+  <p class="game-notes-lead reveal">{notesLead}</p>
+  <div class="prose-columns game-notes-cols reveal">
+    {notes.map((paragraph) => <p>{paragraph}</p>)}
   </div>
 </Section>
 

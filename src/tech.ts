@@ -158,3 +158,21 @@ export type TechName = keyof typeof techIcons;
 export function getTechIcon(name: TechName): TechIcon {
   return techIcons[name];
 }
+
+/**
+ * The mark's colour as a `--brand` declaration, or nothing for an entry with no
+ * brand.
+ *
+ * `light-dark()` reads the `color-scheme` of wherever the element lands, which
+ * `.dark`, `.panel` and `.tile-cobalt` all set - so one declaration picks the
+ * dark-ground colour on a dark page and inside an ink or cobalt tile alike.
+ * Where it is unsupported the property is invalid at computed-value time and
+ * the mark inherits the text colour, which is the right fallback.
+ *
+ * Exported because the element that needs it is not always the icon: a mark
+ * tile or a chip carries it on itself so its hover can take the brand's colour.
+ */
+export function brandStyle(name: TechName): string | undefined {
+  const icon = getTechIcon(name);
+  return icon.hex ? `--brand: light-dark(${icon.hex}, ${icon.darkHex ?? icon.hex})` : undefined;
+}

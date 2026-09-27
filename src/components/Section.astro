@@ -1,49 +1,46 @@
 ---
 /**
- * A section: a heading on a rule, then content.
+ * A section: a heading, then content.
  *
- * The shape is one shape now, and the variety comes from what a section puts
- * inside it. Four head shapes and a sticky label column were tried and thrown
- * out for the same reason: they spent 12rem of every measure on a caption and
- * left the content to spread thinly across what was left, which is what made
- * the page read as a document.
+ * One shape, and the variety comes from what a section puts inside it. Four
+ * head shapes and a sticky label column were tried and thrown out: they spent
+ * 12rem of every measure on a caption and left the content to spread thinly
+ * across what was left, which is what made the page read as a document.
  *
- * So the heading is a real heading at real size, the rule closes the head off
- * from the content, and the content is a grid of cards - which is what carries
+ * So the heading is a real heading at real size, rising into a mask as the
+ * section arrives, and the content is a bento of tiles - which is what carries
  * the page.
  *
- *   width   The measure, from the .shell-* family in global.css.
- *   tone    Ground, the band, or the ink panel. Spent twice on the homepage:
- *           one banded section and the close.
- *   space   `lite` is the quieter rhythm, which Education uses.
+ *   tone    Ground, the band, or the ink panel.
+ *   space   `lite` is the quieter rhythm.
+ *
+ * There is no width: every section sits on the one `.shell` measure, so every
+ * left edge on the site lines up with the header's.
  *
  * The `aside` slot is for what a section wants beside its heading - the link
  * out to the full project index. It is optional and most sections have none.
  */
 export type SectionTone = 'base' | 'band' | 'panel';
 
-/** Keys of the .shell-* width family in global.css. */
-export type SectionWidth = 'text' | 'wide' | 'timeline' | 'projects' | 'contact';
-
 interface Props {
   id: string;
   label: string;
-  width: SectionWidth;
   tone?: SectionTone;
   space?: 'full' | 'lite';
 }
 
-const { id, label, width, tone = 'base', space = 'full' } = Astro.props;
+const { id, label, tone = 'base', space = 'full' } = Astro.props;
 
 const toneClass = { base: '', band: 'section-band', panel: 'panel' }[tone];
 const spaceClass = space === 'lite' ? 'sec-lite' : 'sec';
-const widthClass = `shell-${width}`;
 ---
 
 <section id={id} class:list={[spaceClass, toneClass]}>
-  <div class:list={['shell', widthClass]}>
-    <div class="sec-head reveal">
-      <h2 class="sec-label">{label}</h2>
+  <div class="shell">
+    <div class="sec-head">
+      <h2 class="sec-label reveal-line">
+        <span class="line-mask"><span class="line-in">{label}</span></span>
+      </h2>
       <slot name="aside" />
     </div>
 

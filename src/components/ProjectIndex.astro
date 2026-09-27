@@ -2,14 +2,25 @@
 /**
  * The /projects/ index, shared by the four locales.
  *
- * One card per project, in the same two-up grid the homepage uses for the three
- * it does not feature - so a project looks the same wherever it is listed. The
- * whole card is the link, so the page needs no separate call to action per row.
+ * The same two card shapes as the homepage's Projects section, on purpose, so
+ * a project looks the same wherever it is listed: the first project large and
+ * horizontal with its request drawn beside it, the rest in a row of three,
+ * each with its own flow as the picture. The whole card is the link, so the
+ * page needs no separate call to action per card. Rules in
+ * src/styles/project.css.
+ *
+ * The markup repeats Projects.astro's rather than sharing a component: the
+ * two differ in heading level and in how they arrive (the index's first card
+ * is in view at first paint, so it enters on load rather than on scroll), and
+ * two similar blocks are not worth an abstraction.
  */
 import type { Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
 import { site } from '../site';
+import FlowMini from './FlowMini.astro';
+import MarkTile from './MarkTile.astro';
 import TechIcon from './TechIcon.astro';
+import '../styles/project.css';
 
 interface Props {
   lang: Lang;
@@ -18,47 +29,118 @@ interface Props {
 const { lang } = Astro.props;
 const dict = getDict(lang);
 const index = dict.projects.index;
+
+const [featured, ...rest] = site.projects;
+const featuredCopy = dict.projects.items[featured.id];
+
+/* The spaced hyphen the copy uses as a dash, kept on the line with the word
+   before it - see `keep` in ProjectDetail.astro. */
+const keep = (text: string) => text.replace(/ ([:;!?]|-(?= ))/g, '\u00a0$1');
+
+/** Live and source, dropping whichever has no URL yet. */
+const outboundLinks = (links: { live?: string; source?: string }) =>
+  [
+    { href: links.live, label: dict.projects.liveLabel },
+    { href: links.source, label: dict.projects.sourceLabel },
+  ].filter((link): link is { href: string; label: string } => Boolean(link.href));
+
+const featuredLinks = outboundLinks(featured.links);
+const page = (slug: string) => localizePath(`/projects/${slug}/`, lang);
 ---
 
+{/*
+  The title and the lead side by side from 64rem rather than stacked: the
+  title is one short word in all four languages, and stacked, the lead ran
+  the full measure as one long line under it. The same head as the games
+  index.
+*/}
 <div class="page-head">
-  <div class="shell shell-projects">
-    <h1 class="page-title enter">{index.heading}</h1>
-    <p class="page-lead enter" style="--enter-delay:140ms">{index.intro}</p>
+  <div class="shell work-index-head">
+    <h1 class="page-title">
+      <span class="line-mask enter-line" style="--enter-delay:40ms"
+        ><span class="line-in">{index.heading}</span></span
+      >
+    </h1>
+    <p class="page-lead enter" style="--enter-delay:160ms">{keep(index.intro)}</p>
   </div>
 </div>
 
-<div class="sec-lite">
-  <div class="shell shell-projects">
-    <ol class="svc-grid">
+<div class="sec-lite work-index">
+  <div class="shell">
+    <article class="card card-hover work-feature enter" style="--enter-delay:260ms">
+      <FlowMini lang={lang} project={featured} loop="always" class="work-pic" />
+
+      <div class="work-feature-text">
+        <p class="work-year">{featured.year}</p>
+
+        <h2 class="work-feature-title">
+          <a href={page(featured.slug)} class="entry-link stretch">{featuredCopy.title}</a>
+        </h2>
+
+        <p class="work-tagline">{keep(featuredCopy.tagline)}</p>
+
+        <p class="work-desc">{keep(featuredCopy.description)}</p>
+
+        <p class="work-more">
+          <span class="link">{dict.projects.view}</span>
+          {
+            featuredLinks.map((link) => (
+              <a href={link.href} target="_blank" rel="noopener" class="link above">
+                {link.label}
+              </a>
+            ))
+          }
+        </p>
+      </div>
+
+      <ul class="work-marks">
+        {featured.tech.map((tech) => <MarkTile name={tech} as="li" />)}
+      </ul>
+    </article>
+
+    <ol class="work-row">
       {
-        site.projects.map((project) => {
+        rest.map((project) => {
           const copy = dict.projects.items[project.id];
-          const href = localizePath(`/projects/${project.slug}/`, lang);
+          const links = outboundLinks(project.links);
 
           return (
-            <li class="card card-hover project reveal-item">
-              <div>
-                <p class="tag">{project.year}</p>
+            <li class="card card-hover work-card reveal-item">
+              <FlowMini lang={lang} project={project} />
 
-                <h2 class="project-title">
-                  <a href={href} class="entry-link stretch">
+              <div class="work-card-body">
+                <p class="work-year">{project.year}</p>
+
+                <h2 class="work-card-title">
+                  <a href={page(project.slug)} class="entry-link stretch">
                     {copy.title}
                   </a>
                 </h2>
 
-                <p class="mt-2.5 text-muted">{copy.description}</p>
-              </div>
+                <p class="work-desc">{keep(copy.description)}</p>
 
-              {project.tech.length > 0 && (
-                <ul class="project-tags mt-auto pt-5">
-                  {project.tech.map((tech) => (
-                    <li class="tag">
-                      <TechIcon name={tech} class="tag-icon" />
-                      {tech}
-                    </li>
-                  ))}
-                </ul>
-              )}
+                <div class="work-foot">
+                  {project.tech.length > 0 && (
+                    <ul class="work-tags">
+                      {project.tech.map((tech) => (
+                        <li class="tag">
+                          <TechIcon name={tech} class="tag-icon" />
+                          {tech}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  <p class="work-more">
+                    <span class="link">{dict.projects.view}</span>
+                    {links.map((link) => (
+                      <a href={link.href} target="_blank" rel="noopener" class="link above">
+                        {link.label}
+                      </a>
+                    ))}
+                  </p>
+                </div>
+              </div>
             </li>
           );
         })

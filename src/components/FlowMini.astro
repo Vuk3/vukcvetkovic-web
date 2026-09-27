@@ -1,0 +1,1488 @@
+---
+/**
+ * A project's request, drawn small for its card: the same diagram its page
+ * opens on (ArchitectureDiagram.astro), in the same words, at a card's size.
+ *
+ * Entry, core, the lane of parallel services, then the exit (a pipeline) or
+ * back through the core to the entry (a round trip). Every node carries its
+ * title from the dictionary and its marks from `flowTech` in src/site.ts, and
+ * a round trip writes what travels on its two lines between the entry and the
+ * core - the answer is what a round trip has instead of an exit. A service's
+ * badge is set only in the row, which has the room for it. The captions and
+ * the exit's note stay on the page: a card has room for what each node is,
+ * not for everything known about it.
+ *
+ * It is built the way the page's diagram is and not as a scaled drawing, so
+ * the words wrap natively in four languages and every node is as tall as its
+ * title needs: HTML tiles in a grid, and connectors that are 2px borders drawn
+ * by the boxes they belong to. One markup, two arrangements, chosen by the
+ * width the card gives it (see the container query below) - a vertical spine
+ * in a card of a row, left to right in the featured card.
+ *
+ *   lang     the locale whose words to set
+ *   project  the project to draw
+ *   loop     'hover' (default) runs the packets while the card it sits in is
+ *            hovered or has focus inside it, 'always' runs them from load,
+ *            'off' never does
+ *   class    placed on the root, for the card to size or place it
+ *
+ * ⚠️ It is `aria-hidden` whole: the card's own title and text are what a
+ * screen reader should hear, and the page it links to announces the run.
+ *
+ * ⚠️ It is sized by what is in it, never by a ratio. A card that stretches it
+ * - the featured grid, a row of cards sharing its tracks - gets the drawing
+ * centred on the ground rather than a frame the text has to fit.
+ *
+ * `flowTech.branches` matching `flow.branches` in length is enforced where
+ * the page diagram reads them, at build. Every project page is built, so a
+ * mismatch never reaches a card.
+ */
+import type { Lang } from '../i18n/types';
+import { getDict } from '../i18n/utils';
+import type { Project } from '../site';
+import TechIcon from './TechIcon.astro';
+
+interface Props {
+  lang: Lang;
+  project: Project;
+  loop?: 'hover' | 'always' | 'off';
+  class?: string;
+}
+
+const { lang, project, loop = 'hover', class: className } = Astro.props;
+const copy = getDict(lang).projects.items[project.id].flow;
+const tech = project.flowTech;
+const roundTrip = project.flowShape === 'roundTrip';
+
+/*
+ * The page diagram's `keep`: French sets a space before a colon, and in a
+ * narrow tile a line could start on the colon alone, so that one space is
+ * made non-breaking. A slash also gets a break opportunity after it, used
+ * only when the word does not fit whole: `multipart/form-data` is one
+ * 19-character word, and at 11px it is wider than the payload's column in
+ * the featured card at a 1024 window.
+ */
+const keep = (text: string) => text.replace(/ ([:;!?])/g, '\u00a0$1');
+const payload = (text: string) => keep(text).replace(/\//g, '/\u200b');
+
+const flow = {
+  entry: keep(copy.entry),
+  core: keep(copy.core),
+  exit: keep(copy.exit),
+  entryLabel: payload(copy.entryLabel),
+  exitLabel: payload(copy.exitLabel),
+};
+
+/*
+ * A service's place in the lane, which is all its connectors need to find
+ * the others - the page diagram's scheme exactly. `k` is how many service
+ * pitches the middle of the stack sits below this one's top (n/2 - i), `j`
+ * how many services come after it, and `side` which way its branch turns to
+ * reach the middle.
+ */
+const n = copy.branches.length;
+const middle = (n - 1) / 2;
+
+const services = copy.branches.map((branch, i) => ({
+  title: keep(branch.title),
+  badge: keep(branch.badge),
+  marks: tech.branches[i] ?? [],
+  side: i < middle ? 'above' : i > middle ? 'below' : 'level',
+  vars: `--i:${i};--j:${n - 1 - i};--k:${n / 2 - i}`,
+}));
+
+/*
+ * When each packet leaves, as a fraction of one cycle: the page's own story
+ * table, so a card and its page run the same request at the same pace. The
+ * fractions pair with the travel windows in the keyframes below - 12% of the
+ * cycle for a leg, 6% for a trunk - so each is the previous leg's start plus
+ * its window.
+ *
+ * `wide` is how much later the round trip's answer reaches the entry in the
+ * row, where it comes back the long way: along the channel under the lane
+ * and up into the core, one leg more than the spine draws.
+ */
+const story = roundTrip
+  ? { cycle: '6s', req: 0.02, fan: 0.14, branchIn: 0.2, branchOut: 0.34, out: 0.46, back: 0.58, ans: 0.53 }
+  : { cycle: '4.8s', req: 0.02, fan: 0.14, branchIn: 0.2, branchOut: 0.34, out: 0.46, back: 0, ans: 0 };
+---
+
+<div
+  class:list={['fm', className]}
+  data-shape={project.flowShape}
+  data-loop={loop}
+  aria-hidden="true"
+  style={`--cycle:${story.cycle}`}
+>
+  <div class="fm-grid">
+    <div class="fm-node fm-term fm-entry">
+      <p class="fm-title">{flow.entry}</p>
+      {
+        tech.entry.length > 0 && (
+          <span class="fm-marks">
+            {tech.entry.map((name) => (
+              <TechIcon name={name} class="fm-mark" />
+            ))}
+          </span>
+        )
+      }
+    </div>
+
+    {/*
+      The gap between the entry and the core, a grid item of its own because
+      on a round trip it holds the two payloads: the request going forward
+      over the answer coming back, each written beside its line.
+    */}
+    <div class="fm-gap">
+      {roundTrip && flow.entryLabel && <p class="fm-label fm-label-req">{flow.entryLabel}</p>}
+      <span class="fm-line fm-req" style={`--at:${story.req}`}>
+        <span class="fm-head"></span>
+        <span class="fm-pk"></span>
+      </span>
+      {
+        roundTrip && (
+          <span class="fm-line fm-ans" style={`--at:${story.ans};--wide:0.12`}>
+            <span class="fm-head"></span>
+            <span class="fm-pk"></span>
+          </span>
+        )
+      }
+      {roundTrip && flow.exitLabel && <p class="fm-label fm-label-ans">{flow.exitLabel}</p>}
+    </div>
+
+    {/*
+      A round trip's last leg in the row: from the channel under the lane,
+      along under the core and up into its floor. On the core's grid area,
+      because only the area knows where the channel is, and before the core
+      so the core's tile paints over the half that runs up behind it.
+    */}
+    {
+      roundTrip && (
+        <span class="fm-line fm-back" style={`--at:${story.back}`}>
+          <span class="fm-pk"></span>
+        </span>
+      )
+    }
+
+    <div class="fm-node fm-core panel">
+      <p class="fm-title">{flow.core}</p>
+      {
+        tech.core.length > 0 && (
+          <span class="fm-marks">
+            {tech.core.map((name) => (
+              <TechIcon name={name} class="fm-mark" />
+            ))}
+          </span>
+        )
+      }
+      {/* The head the back leg lands on, the core's own because only the
+          core knows where its floor is. */}
+      {roundTrip && <span class="fm-head fm-head-back"></span>}
+    </div>
+
+    <div class="fm-lane">
+      {/*
+        The stack is the box every connector in and out of the lane is
+        measured from: its middle is where the fan joins and a pipeline
+        gathers, and its edges are where the trunks start.
+      */}
+      <div class="fm-stack">
+        {
+          services.map((service) => (
+            <div class="fm-svc" data-side={service.side} style={service.vars}>
+              <p class="fm-svc-title">{service.title}</p>
+              {service.badge && <p class="fm-badge">{service.badge}</p>}
+              {service.marks.length > 0 && (
+                <span class="fm-marks">
+                  {service.marks.map((name) => (
+                    <TechIcon name={name} class="fm-mark" />
+                  ))}
+                </span>
+              )}
+              <span class="fm-branch fm-branch-in" style={`--at:${story.branchIn}`}>
+                <span class="fm-pk" />
+              </span>
+              <span class="fm-branch fm-branch-out" style={`--at:${story.branchOut}`}>
+                <span class="fm-pk" />
+              </span>
+              <span class="fm-head fm-head-in" />
+            </div>
+          ))
+        }
+
+        <span class="fm-line fm-fan" style={`--at:${story.fan}`}>
+          <span class="fm-pk"></span>
+        </span>
+
+        {/* A pipeline's gathered line to the exit, or a round trip's way
+            back towards the core. */}
+        <span class="fm-line fm-out" style={`--at:${story.out}`}>
+          <span class="fm-head"></span>
+          <span class="fm-pk"></span>
+        </span>
+      </div>
+    </div>
+
+    {
+      !roundTrip && (
+        <div class="fm-node fm-term fm-exit">
+          <p class="fm-title">{flow.exit}</p>
+          {tech.exit.length > 0 && (
+            <span class="fm-marks">
+              {tech.exit.map((name) => (
+                <TechIcon name={name} class="fm-mark" />
+              ))}
+            </span>
+          )}
+        </div>
+      )
+    }
+  </div>
+</div>
+
+<style>
+  @layer properties, theme, base, components, games, utilities;
+
+  @layer components {
+    /*
+     * A framed picture, like a game's thumbnail: its own recessed ground with
+     * the page diagram's dot grid on it. The colour every line, head and
+     * packet is drawn in is captured here, once, so inside the core - which
+     * is `.panel` and re-declares `--site-accent` paler for the ink - the
+     * head it owns stays the drawing's accent.
+     *
+     * The root is the container the arrangement is chosen by. Its own sizes
+     * are in rem for that reason - a container's `cq` units resolve against
+     * the container above it - and the ones that scale are on `.fm-grid`.
+     */
+    .fm {
+      --fm-ink: var(--site-accent);
+      /* The page's second voice (`--flow-mono` in flow.css): the platform's
+         own monospace, which loads nothing. */
+      --fm-mono:
+        ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+      container: fm / inline-size;
+      position: relative;
+      display: grid;
+      align-content: center;
+      overflow: hidden;
+      border-radius: var(--site-radius-inner);
+      background-color: var(--site-inset);
+    }
+
+    .fm::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(
+        circle,
+        color-mix(in oklab, var(--site-fg) 12%, transparent) 1px,
+        transparent 1.5px
+      );
+      background-size: 1rem 1rem;
+      background-position: center;
+    }
+
+    /*
+     * Every length the connectors are built from, in one place - the page
+     * diagram's set (see the note on `.flow-grid` in src/styles/flow.css) at
+     * a card's size. The lane has no caption here, so there is no `--cap`.
+     *
+     *   --t      the title size. 12px is the floor: the narrowest card is
+     *            a 246px spine on a 640 tablet, and 11px is the least any
+     *            word in the picture sets at
+     *   --sg     the gap between two services
+     *   --lp     the lane's block padding (and inline, in the row)
+     *   --pitch  one service's top to the next one's, measured from inside
+     *            a service (100% is its padding box, so its 2px of border go
+     *            back on). Only true because every service is the same
+     *            height - `grid-auto-rows: 1fr` on the stack is load-bearing
+     *   --r      the radius a branch turns its corner on
+     *   --hl/hw  an arrowhead's length and width: 8 by 9 on a 2px line, so
+     *            the head is four and a half lines wide and reads as a head.
+     *            At 7 by 8 it read as a nub on the line at a card's size
+     *   --sx     the spine: how far in from the tiles' edges the lines run,
+     *            past the tiles' 8px corners so a line meets a straight edge
+     *   --lpx    the spine lane's inline padding: the spine plus a stub
+     *            long enough for a corner and a head (6 + 8 in 14)
+     *   --gv     the gap between two tiles in the spine, which a line
+     *            crosses
+     *   --d      half the distance between a round trip's two lines where
+     *            they run side by side. Zero in the spine, where they run
+     *            down opposite edges instead
+     */
+    .fm-grid {
+      --t: clamp(0.75rem, 3.6cqi, 0.875rem);
+      --sg: 0.375rem;
+      --lp: 0.5rem;
+      --pitch: calc(100% + var(--sg) + 2px);
+      --r: 0.375rem;
+      --hl: 0.5rem;
+      --hw: 0.5625rem;
+      --sx: 0.875rem;
+      --lpx: calc(var(--sx) + 0.875rem);
+      --gv: 1.25rem;
+      --d: 0px;
+
+      /* Positioned, so it paints over the dot grid on the root's `::before`. */
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      padding: 0.75rem;
+      font-size: var(--t);
+      line-height: 1.2;
+    }
+
+    /* ---- The tiles ------------------------------------------------------
+     *
+     * The page's three surfaces: the terminals tinted with the accent under
+     * an accent edge, the core the ink panel - the one address everything
+     * passes through, so the strongest object in the drawing - and the
+     * services plain tiles in a lane a step back from the ground.
+     *
+     * In the spine a tile is one row, its title on the left and its marks on
+     * the right, so a short title does not leave a hole beside it.
+     */
+    .fm-node {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      border: 1px solid var(--site-hairline);
+      border-radius: 0.5rem;
+      padding: 0.5rem 0.625rem;
+    }
+
+    .fm-term {
+      border-color: color-mix(in oklab, var(--site-accent) 32%, var(--site-hairline));
+      background-color: color-mix(in oklab, var(--site-accent) 7%, var(--site-card));
+    }
+
+    /* The page's reason: in the dark theme the ink panel is a lifted tile,
+       and under a grey hairline it read weaker than the terminals beside it. */
+    :global(.dark) .fm-core {
+      border-color: color-mix(in oklab, var(--fm-ink) 55%, var(--site-hairline));
+    }
+
+    /*
+     * A title wraps onto as many lines as it needs - two or three for "A
+     * folder, read recursively into bytes" in a narrow column - and only a
+     * word of ten letters or more is ever split, as on the page, for the
+     * German compound that could not otherwise fit.
+     */
+    .fm-title,
+    .fm-svc-title {
+      flex: 1 1 auto;
+      min-width: 0;
+      hyphens: auto;
+      hyphenate-limit-chars: 10 4 4;
+      overflow-wrap: break-word;
+      text-wrap: pretty;
+    }
+
+    .fm-title {
+      font-stretch: 108%;
+      font-weight: 640;
+      letter-spacing: -0.012em;
+    }
+
+    .fm-marks {
+      display: flex;
+      flex: none;
+      gap: 0.3rem;
+    }
+
+    .fm-marks :global(.fm-mark) {
+      width: 1.35em;
+      height: 1.35em;
+      color: var(--brand, var(--site-fg));
+    }
+
+    .fm-lane {
+      display: flex;
+      flex-direction: column;
+      margin-top: var(--gv);
+      border: 1px solid var(--site-hairline);
+      border-radius: 0.625rem;
+      background-color: color-mix(in oklab, var(--site-fg) 4%, var(--site-inset));
+      padding: var(--lp) var(--lpx);
+    }
+
+    .fm[data-shape='pipeline'] .fm-lane {
+      margin-bottom: var(--gv);
+    }
+
+    .fm-stack {
+      position: relative;
+      display: grid;
+      flex: 1;
+      grid-auto-rows: 1fr;
+      gap: var(--sg);
+    }
+
+    /*
+     * `align-content: center` because every service is as tall as the
+     * tallest (see `--pitch`): one with less in it keeps its title in its
+     * middle, where its connectors land.
+     */
+    .fm-svc {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: center;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.3rem 0.5rem;
+      border: 1px solid var(--site-hairline);
+      border-radius: 0.375rem;
+      background-color: var(--site-card);
+      padding: 0.4375rem 0.5625rem;
+    }
+
+    .fm-svc-title {
+      font-size: max(0.6875rem, 0.94em);
+      font-stretch: 106%;
+      font-weight: 600;
+      letter-spacing: -0.008em;
+    }
+
+    /*
+     * The badge - a model, a mode, a protocol list - in the page's monospace,
+     * set apart from what the service is. Only the row has room for it: in a
+     * spine card each service is one line, and a second line under every
+     * title made the lane taller than the rest of the drawing together.
+     */
+    .fm-badge {
+      display: none;
+      font-family: var(--fm-mono);
+      font-size: max(0.6875rem, 0.76em);
+      line-height: 1.35;
+      color: var(--site-muted);
+      overflow-wrap: break-word;
+    }
+
+    /*
+     * A payload, written by the line that carries it and led by a small copy
+     * of the packet, so it reads as what the moving dots carry. It sits on
+     * the ground's own colour, so the dot grid does not run through the
+     * letters. 11px, the least any word in the picture sets at.
+     */
+    .fm-label {
+      width: fit-content;
+      max-width: 100%;
+      border-radius: 0.25rem;
+      background-color: var(--site-inset);
+      padding: 0.0625rem 0.25rem;
+      font-size: max(0.6875rem, 0.8em);
+      font-weight: 560;
+      line-height: 1.3;
+      text-wrap: balance;
+      overflow-wrap: break-word;
+    }
+
+    .fm-label::before {
+      content: '';
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      margin: 0 0.4em 0.12em 2px;
+      border-radius: 50%;
+      background-color: var(--fm-ink);
+      box-shadow: 0 0 0 2px color-mix(in oklab, var(--fm-ink) 22%, transparent);
+      vertical-align: middle;
+    }
+
+    /* ---- Lines, heads and packets -----------------------------------------
+     *
+     * ⚠️ Every line is a border, never a filled box, exactly as on the page:
+     * a straight one is a box with one 2px side, a branch a box with two (or
+     * three) and a rounded corner, so a branch is one element with one turn
+     * in it rather than two lines meeting at a seam. The centre of a top or
+     * left border is 1px outside the padding box, which is where every `1px`
+     * below comes from, and why a packet at `-1px - half` sits on its line.
+     *
+     * Each line is its own size container, which is how a packet crosses
+     * it: it travels `100cqi` or `100cqb`, the length of its own line.
+     */
+    .fm-line,
+    .fm-branch {
+      position: absolute;
+      container-type: size;
+      border: 0 solid var(--fm-ink);
+    }
+
+    .fm-head {
+      position: absolute;
+      background-color: var(--fm-ink);
+    }
+
+    /* A packet: a solid dot with a soft ring, hidden at rest - it is
+       decoration, and only the loop below shows it. */
+    .fm-pk {
+      position: absolute;
+      top: calc(-1px - 0.25rem);
+      left: calc(-1px - 0.25rem);
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 50%;
+      background-color: var(--fm-ink);
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--fm-ink) 22%, transparent);
+      opacity: 0;
+    }
+
+    /* Only the row takes the answer under the core. */
+    .fm-back,
+    .fm-head-back {
+      display: none;
+    }
+
+    /* ---- The spine, which is the default -----------------------------------
+     *
+     * The page's phone arrangement: everything stacks. The request runs down
+     * the left spine and into every service off a rail; a pipeline's output
+     * leaves each service on the right and runs down the right spine to the
+     * exit, and a round trip's answer runs back up it - left is always the
+     * way in and right the way out.
+     */
+    .fm-gap {
+      position: relative;
+      min-height: var(--gv);
+    }
+
+    /* A gap with payloads in it grows to hold them, set between the spines. */
+    .fm-gap:has(.fm-label) {
+      display: grid;
+      align-content: center;
+      gap: 0.375rem;
+      padding: 0.625rem calc(var(--sx) + 0.625rem);
+    }
+
+    .fm-label-ans {
+      justify-self: end;
+      text-align: right;
+    }
+
+    .fm-req,
+    .fm-ans {
+      top: 0;
+      bottom: 0;
+      width: 0;
+      border-left-width: 2px;
+    }
+
+    .fm-req {
+      left: calc(var(--sx) - 1px);
+    }
+
+    .fm-ans {
+      right: calc(var(--sx) - 1px);
+    }
+
+    /* Heads on a vertical line: centred on it, 1px left of its zero-width
+       padding box, with the tip on the tile's outer edge. */
+    .fm-req .fm-head,
+    .fm-ans .fm-head,
+    .fm-out .fm-head {
+      left: calc(-1px - var(--hw) / 2);
+      width: var(--hw);
+      height: var(--hl);
+    }
+
+    .fm-req .fm-head,
+    .fm[data-shape='pipeline'] .fm-out .fm-head {
+      bottom: 0;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+    }
+
+    .fm-ans .fm-head,
+    .fm[data-shape='roundTrip'] .fm-out .fm-head {
+      top: 0;
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+    }
+
+    /*
+     * From the core's floor to the lane's top edge, on the left spine. The
+     * stack sits `1px + --lp` below that edge and `1px + --lpx` in from the
+     * lane's side, which is where both offsets come from.
+     */
+    .fm-fan {
+      top: calc(-1 * (var(--gv) + var(--lp) + 1px));
+      left: calc(var(--sx) - var(--lpx) - 2px);
+      width: 0;
+      height: var(--gv);
+      border-left-width: 2px;
+    }
+
+    /* A branch into a service: down the rail from the lane's top edge, then
+       along a stub into its left side. Each service draws its own from its
+       own box, and the rail is the overlap of all of them. */
+    .fm-branch-in {
+      top: calc(-1 * (var(--lp) + 2px + var(--i) * var(--pitch)));
+      right: calc(100% + 1px);
+      bottom: calc(50% - 1px);
+      left: calc(var(--sx) - var(--lpx) - 3px);
+      border-width: 0 0 2px 2px;
+      border-bottom-left-radius: var(--r);
+    }
+
+    .fm-head-in {
+      top: calc(50% - var(--hw) / 2);
+      right: calc(100% + 1px);
+      width: var(--hl);
+      height: var(--hw);
+      clip-path: polygon(0 0, 100% 50%, 0 100%);
+    }
+
+    /* A pipeline's output: out of the right side, down the right spine to
+       the lane's floor, then on down to the exit. */
+    .fm[data-shape='pipeline'] .fm-branch-out {
+      top: calc(50% - 1px);
+      right: calc(var(--sx) - var(--lpx) - 3px);
+      bottom: calc(-1 * (var(--j) * var(--pitch) + var(--lp) + 2px));
+      left: calc(100% + 1px);
+      border-width: 2px 2px 0 0;
+      border-top-right-radius: var(--r);
+    }
+
+    .fm[data-shape='pipeline'] .fm-out {
+      top: calc(100% + var(--lp) + 1px);
+      right: calc(var(--sx) - var(--lpx) - 2px);
+      width: 0;
+      height: var(--gv);
+      border-left-width: 2px;
+    }
+
+    /* A round trip's answer: out of the right side and back up the right
+       spine, past the lane's top edge and into the core. */
+    .fm[data-shape='roundTrip'] .fm-branch-out {
+      top: calc(-1 * (var(--lp) + 2px + var(--i) * var(--pitch)));
+      right: calc(var(--sx) - var(--lpx) - 3px);
+      bottom: calc(50% - 1px);
+      left: calc(100% + 1px);
+      border-width: 0 2px 2px 0;
+      border-bottom-right-radius: var(--r);
+    }
+
+    .fm[data-shape='roundTrip'] .fm-out {
+      top: calc(-1 * (var(--gv) + var(--lp) + 1px));
+      right: calc(var(--sx) - var(--lpx) - 2px);
+      width: 0;
+      height: var(--gv);
+      border-left-width: 2px;
+    }
+
+    /* ---- The row -----------------------------------------------------------
+     *
+     * From 30rem of picture, which only the featured card reaches - 501px
+     * beside its text at a 1024 window - and the odd card out that spans a
+     * tablet's row. A card of a row of three is 246 to 366px, where four
+     * columns would leave a 60px entry and "recursively" wider than it.
+     *
+     * One row, left to right, with the gaps as real columns so every line
+     * knows exactly how long it is. The row is as tall as the lane, and the
+     * entry, the core and the exit sit in it at their own height, centred on
+     * the axis everything leaves and lands on: the middle of the stack. The
+     * node tiles span their whole column, so their side edges are the
+     * column's, which is what lets a line in a gap column end exactly on a
+     * tile without knowing how tall it is.
+     */
+    @container fm (min-width: 30rem) {
+      /*
+       * `--gut` is the one gutter, and the three gaps are named from it
+       * rather than from each other: a custom property resolves where it is
+       * declared, so `--g2: var(--g1)` took the round trip's payload column
+       * as its own width once the rule below widened `--g1`.
+       */
+      .fm-grid {
+        --t: clamp(0.8125rem, 2.35cqi, 1.0625rem);
+        --gut: clamp(1.5rem, 4.4cqi, 2.25rem);
+        --g1: var(--gut);
+        --g2: var(--gut);
+        --g3: var(--gut);
+        /* The spacing grows with the picture as the type does: compact in the
+           501px row of a 1024 window, and at 681px (1440) roomy enough that
+           the drawing fills the frame the text beside it makes. */
+        --lp: clamp(0.5rem, 1.6cqi, 0.875rem);
+        --sg: clamp(0.4375rem, 1.3cqi, 0.75rem);
+        --r: 0.5rem;
+        --axis: 50%;
+
+        grid-template-columns:
+          [entry] minmax(0, 1fr) [gap] var(--g1) [core] minmax(0, 1.15fr) [fan] var(--g2)
+          [lane] minmax(0, 1.5fr) [out] var(--g3) [exit] minmax(0, 1.2fr);
+        padding: clamp(0.75rem, 2.4cqi, 1.25rem);
+      }
+
+      /*
+       * A round trip spends the exit's column on the gap instead, which has
+       * two payloads to hold, and keeps a channel of `--ch` under its lane
+       * for the way back. The lane lifts off the floor by it, so the axis -
+       * the middle of the stack - is half a channel above the row's middle,
+       * and the node tiles take the same margin to centre on it.
+       */
+      .fm[data-shape='roundTrip'] .fm-grid {
+        --g1: clamp(6rem, 19cqi, 10rem);
+        --g3: clamp(1.25rem, 3cqi, 1.75rem);
+        --ch: clamp(1.25rem, 3.6cqi, 1.75rem);
+        --axis: calc(50% - var(--ch) / 2);
+        --d: 0.4375rem;
+
+        grid-template-columns:
+          [entry] minmax(0, 1fr) [gap] var(--g1) [core] minmax(0, 1.15fr) [fan] var(--g2)
+          [lane] minmax(0, 1.8fr) [out] var(--g3);
+      }
+
+      /*
+       * ⚠️ Both lines, not `grid-row: 1`. For an absolutely positioned grid
+       * item - the round trip's back leg - an `auto` end line is the grid's
+       * padding edge rather than the next line, and this grid has padding:
+       * the leg's corner landed a padding's depth under the channel it joins.
+       */
+      .fm-grid > * {
+        grid-row: 1 / 2;
+      }
+
+      .fm-entry {
+        grid-column: entry;
+      }
+
+      .fm-gap {
+        grid-column: gap;
+      }
+
+      .fm-core {
+        grid-column: core;
+      }
+
+      .fm-exit {
+        grid-column: exit;
+      }
+
+      .fm-lane,
+      .fm[data-shape='pipeline'] .fm-lane {
+        grid-column: lane;
+        margin: 0;
+        padding: var(--lp);
+      }
+
+      .fm[data-shape='roundTrip'] .fm-lane {
+        margin-bottom: var(--ch);
+      }
+
+      /*
+       * A node at its own height on the axis, its title over its marks.
+       * `z-index` so the round trip's back leg, which runs up behind the
+       * core, is drawn under the tile rather than across it.
+       */
+      .fm-node {
+        z-index: 1;
+        flex-direction: column;
+        align-self: center;
+        align-items: flex-start;
+        justify-content: center;
+        gap: clamp(0.5rem, 1.4cqi, 0.75rem);
+        padding: clamp(0.625rem, 1.9cqi, 1rem);
+      }
+
+      .fm[data-shape='roundTrip'] .fm-node {
+        margin-bottom: var(--ch);
+      }
+
+      .fm-title,
+      .fm-svc-title {
+        flex: none;
+        max-width: 100%;
+      }
+
+      /*
+       * No hyphenation for a node's title in the row, the page's rule and for
+       * its reason: a browser hyphenates greedily, and set "One dedupli- /
+       * cated" in a 547px row when "deduplicated" fits the column whole on
+       * the next line. A service keeps it, for a German compound in a lane.
+       */
+      .fm-title {
+        hyphens: manual;
+      }
+
+      /* A service stacks the same way, title, badge, then marks, so every
+         service in the lane is read in one order. Side by side, a short
+         title kept its marks beside it and a long one dropped them under. */
+      .fm-svc {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 0.3rem;
+        padding: clamp(0.5rem, 1.6cqi, 0.875rem) clamp(0.625rem, 1.7cqi, 0.9375rem);
+      }
+
+      .fm-badge {
+        display: block;
+      }
+
+      .fm-svc > .fm-marks {
+        margin-top: 0.15rem;
+      }
+
+      /* The payloads ride above and below their lines instead of stacking,
+         so they leave the gap's height to the tiles. */
+      .fm-gap,
+      .fm-gap:has(.fm-label) {
+        display: block;
+        min-height: 0;
+        padding: 0;
+      }
+
+      .fm-label {
+        position: absolute;
+        right: 0.375rem;
+        left: 0.375rem;
+        margin-inline: auto;
+        text-align: center;
+      }
+
+      .fm-label-req {
+        bottom: calc(100% - var(--axis) + var(--d) + 0.375rem);
+      }
+
+      .fm-label-ans {
+        top: calc(var(--axis) + var(--d) + 0.375rem);
+        text-align: center;
+      }
+
+      .fm-req,
+      .fm-ans {
+        bottom: auto;
+        right: 0;
+        left: 0;
+        width: auto;
+        height: 0;
+        border-width: 2px 0 0;
+      }
+
+      .fm-req {
+        top: calc(var(--axis) - var(--d) - 1px);
+      }
+
+      .fm-ans {
+        top: calc(var(--axis) + var(--d) - 1px);
+      }
+
+      /* Heads on a horizontal line: centred on it, 1px above its
+         zero-height padding box, with the tip on the tile's outer edge. */
+      .fm-req .fm-head,
+      .fm-ans .fm-head,
+      .fm-out .fm-head {
+        top: calc(-1px - var(--hw) / 2);
+        bottom: auto;
+        width: var(--hl);
+        height: var(--hw);
+      }
+
+      .fm-req .fm-head,
+      .fm[data-shape='pipeline'] .fm-out .fm-head {
+        right: 0;
+        left: auto;
+        clip-path: polygon(0 0, 100% 50%, 0 100%);
+      }
+
+      .fm-ans .fm-head {
+        left: 0;
+        clip-path: polygon(100% 0, 0 50%, 100% 100%);
+      }
+
+      /*
+       * The trunk from the core's right edge to the rail, which runs down
+       * the middle of the gutter. The stack is `1px + --lp` inside the lane,
+       * so the core's edge is that plus the whole gutter to its left.
+       */
+      .fm-fan {
+        top: calc(50% - 1px);
+        left: calc(-1 * (var(--g2) + var(--lp) + 1px));
+        width: calc(var(--g2) / 2 + 1px);
+        height: 0;
+        border-width: 2px 0 0;
+      }
+
+      /*
+       * A branch from the rail to one service. `--k * --pitch - --sg / 2 -
+       * 1px` is the middle of the stack measured from inside this service,
+       * so each branch turns its one corner between that and its own
+       * middle: down from above, up from below, or - the middle one of
+       * three - straight across.
+       */
+      .fm-branch-in {
+        left: calc(-1 * (var(--lp) + var(--g2) / 2 + 3px));
+      }
+
+      .fm-svc[data-side='above'] > .fm-branch-in {
+        top: calc(50% - 1px);
+        bottom: calc(100% - var(--k) * var(--pitch) + var(--sg) / 2);
+        border-width: 2px 0 0 2px;
+        border-radius: var(--r) 0 0 0;
+      }
+
+      .fm-svc[data-side='below'] > .fm-branch-in {
+        top: calc(var(--k) * var(--pitch) - var(--sg) / 2 - 2px);
+        bottom: calc(50% - 1px);
+        border-width: 0 0 2px 2px;
+        border-radius: 0 0 0 var(--r);
+      }
+
+      .fm-svc[data-side='level'] > .fm-branch-in,
+      .fm[data-shape='pipeline'] .fm-svc[data-side='level'] > .fm-branch-out {
+        top: calc(50% - 1px);
+        bottom: auto;
+        height: 0;
+        border-width: 2px 0 0;
+        border-radius: 0;
+      }
+
+      /* A pipeline gathers the lane back the same way, mirrored, onto a
+         trunk into the exit. */
+      .fm[data-shape='pipeline'] .fm-branch-out {
+        right: calc(-1 * (var(--lp) + var(--g3) / 2 + 3px));
+      }
+
+      .fm[data-shape='pipeline'] .fm-svc[data-side='above'] > .fm-branch-out {
+        top: calc(50% - 1px);
+        bottom: calc(100% - var(--k) * var(--pitch) + var(--sg) / 2);
+        border-width: 2px 2px 0 0;
+        border-radius: 0 var(--r) 0 0;
+      }
+
+      .fm[data-shape='pipeline'] .fm-svc[data-side='below'] > .fm-branch-out {
+        top: calc(var(--k) * var(--pitch) - var(--sg) / 2 - 2px);
+        bottom: calc(50% - 1px);
+        border-width: 0 2px 2px 0;
+        border-radius: 0 0 var(--r) 0;
+      }
+
+      .fm[data-shape='pipeline'] .fm-out {
+        top: calc(50% - 1px);
+        right: calc(-1 * (var(--lp) + 1px + var(--g3)));
+        left: calc(100% + var(--lp) + var(--g3) / 2);
+        width: auto;
+        height: 0;
+        border-width: 2px 0 0;
+      }
+
+      /*
+       * A round trip's answers leave each service on the right, run down
+       * the answer rail into the channel under the lane, and turn back along
+       * it - a loop with no crossing in it. Each branch is three sides of a
+       * box: the stub, the rail, and the channel back to its own right edge,
+       * where the channel line below takes over.
+       */
+      .fm[data-shape='roundTrip'] .fm-branch-out {
+        top: calc(50% - 1px);
+        right: calc(-1 * (var(--lp) + var(--g3) / 2 + 3px));
+        bottom: calc(-1 * (var(--j) * var(--pitch) + var(--lp) + var(--ch) / 2 + 3px));
+        border-width: 2px 2px 2px 0;
+        border-radius: 0 var(--r) var(--r) 0;
+      }
+
+      /* The channel, from under the rail back across the lane's floor to
+         the core's column, where the back leg takes it on. The corner the
+         two make is the back leg's, so this one carries no head. */
+      .fm[data-shape='roundTrip'] .fm-out {
+        top: calc(100% + var(--lp) + var(--ch) / 2);
+        right: 0;
+        left: calc(-1 * (var(--g2) + var(--lp) + 1px));
+        width: auto;
+        height: 0;
+        border-width: 2px 0 0;
+      }
+
+      .fm[data-shape='roundTrip'] .fm-out .fm-head {
+        display: none;
+      }
+
+      /*
+       * The back leg, on the core's grid area, which is as tall as the row:
+       * `bottom` finds the channel's line half a channel above the floor, and
+       * its top is the core's middle - the half above the core's floor is
+       * behind the tile. `right: -1px` laps the channel line by a pixel so
+       * the join has no seam; the line runs up the core's centre. Its
+       * column names both lines for the reason its row does (see
+       * `.fm-grid > *`).
+       */
+      .fm-back {
+        display: block;
+        grid-column: core / fan;
+        top: var(--axis);
+        right: -1px;
+        bottom: calc(var(--ch) / 2 - 1px);
+        left: calc(50% - 1px);
+        border-width: 0 0 2px 2px;
+        border-bottom-left-radius: var(--r);
+      }
+
+      /* Point up, tip on the core's outer edge, on the line's centre. */
+      .fm-head-back {
+        display: block;
+        top: calc(100% + 1px);
+        left: calc(50% - var(--hw) / 2);
+        width: var(--hw);
+        height: var(--hl);
+        clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      }
+    }
+
+    /* ---- The packets --------------------------------------------------------
+     *
+     * One request at a time, in the page's order: the entry's line, the fan
+     * into every service at once, then on to the exit or back through the
+     * core to the entry. One cycle for all of it and each line's packet
+     * leaving at its own `--at` fraction of it, so every packet stays in
+     * phase with every other however long the page is open.
+     *
+     * It runs while the card is hovered or holds focus - `.card-hover` is
+     * the site's whole-tile link - or always, if asked. Only the duration is
+     * gated: the animation itself starts at load either way, so a card
+     * picked up mid-cycle joins the run in step rather than restarting it.
+     * Behind reduced motion like everything else.
+     */
+    @media (prefers-reduced-motion: no-preference) {
+      .fm-pk {
+        animation-timing-function: var(--site-ease);
+        animation-delay: calc(var(--at) * var(--cycle));
+      }
+
+      .fm[data-loop='always'] .fm-pk,
+      :global(.card-hover:hover) .fm[data-loop='hover'] .fm-pk,
+      :global(.card-hover:focus-within) .fm[data-loop='hover'] .fm-pk,
+      .fm[data-loop='hover']:hover .fm-pk {
+        animation-duration: var(--cycle);
+        animation-iteration-count: infinite;
+      }
+
+      .fm-req .fm-pk {
+        animation-name: fm-pk-down;
+      }
+
+      .fm-ans .fm-pk {
+        animation-name: fm-pk-up;
+      }
+
+      .fm-fan .fm-pk,
+      .fm[data-shape='pipeline'] .fm-out .fm-pk {
+        animation-name: fm-pk-down-short;
+      }
+
+      .fm[data-shape='roundTrip'] .fm-out .fm-pk {
+        animation-name: fm-pk-up-short;
+      }
+
+      .fm-branch-in .fm-pk {
+        animation-name: fm-pk-rail-in;
+      }
+
+      .fm[data-shape='pipeline'] .fm-branch-out .fm-pk {
+        animation-name: fm-pk-rail-down;
+      }
+
+      .fm[data-shape='roundTrip'] .fm-branch-out .fm-pk {
+        animation-name: fm-pk-rail-up;
+      }
+
+      @container fm (min-width: 30rem) {
+        .fm-pk {
+          animation-delay: calc((var(--at) + var(--wide, 0)) * var(--cycle));
+        }
+
+        .fm-back .fm-pk {
+          animation-name: fm-pk-back;
+        }
+
+        .fm-req .fm-pk,
+        .fm-svc[data-side='level'] > .fm-branch-in .fm-pk,
+        .fm[data-shape='pipeline'] .fm-svc[data-side='level'] > .fm-branch-out .fm-pk {
+          animation-name: fm-pk-right;
+        }
+
+        .fm-ans .fm-pk,
+        .fm[data-shape='roundTrip'] .fm-out .fm-pk {
+          animation-name: fm-pk-left;
+        }
+
+        .fm-fan .fm-pk,
+        .fm[data-shape='pipeline'] .fm-out .fm-pk {
+          animation-name: fm-pk-right-short;
+        }
+
+        .fm-svc[data-side='above'] > .fm-branch-in .fm-pk {
+          animation-name: fm-pk-up-right;
+        }
+
+        .fm-svc[data-side='below'] > .fm-branch-in .fm-pk {
+          animation-name: fm-pk-down-right;
+        }
+
+        .fm[data-shape='pipeline'] .fm-svc[data-side='above'] > .fm-branch-out .fm-pk {
+          animation-name: fm-pk-right-down;
+        }
+
+        .fm[data-shape='pipeline'] .fm-svc[data-side='below'] > .fm-branch-out .fm-pk {
+          animation-name: fm-pk-right-up;
+        }
+
+        .fm[data-shape='roundTrip'] .fm-branch-out .fm-pk {
+          animation-name: fm-pk-loop;
+        }
+      }
+    }
+  }
+
+  /*
+   * A packet's journey along one line, inside the first 12% of the cycle (6%
+   * for a trunk) and invisible for the rest, fading in as it leaves and out
+   * as it lands so it reads as arriving rather than vanishing. `translate`,
+   * never `transform`, the site's rule for keyframes.
+   *
+   * Along a bottom or a right border the path is 2px further out than the
+   * padding box, which is where the `+ 2px` comes from.
+   */
+  @keyframes fm-pk-right {
+    0% {
+      opacity: 0;
+      translate: 0 0;
+    }
+
+    1.5%,
+    10.5% {
+      opacity: 1;
+    }
+
+    12%,
+    100% {
+      opacity: 0;
+      translate: 100cqi 0;
+    }
+  }
+
+  @keyframes fm-pk-right-short {
+    0% {
+      opacity: 0;
+      translate: 0 0;
+    }
+
+    1%,
+    5% {
+      opacity: 1;
+    }
+
+    6%,
+    100% {
+      opacity: 0;
+      translate: 100cqi 0;
+    }
+  }
+
+  @keyframes fm-pk-left {
+    0% {
+      opacity: 0;
+      translate: 100cqi 0;
+    }
+
+    1.5%,
+    10.5% {
+      opacity: 1;
+    }
+
+    12%,
+    100% {
+      opacity: 0;
+      translate: 0 0;
+    }
+  }
+
+  @keyframes fm-pk-down {
+    0% {
+      opacity: 0;
+      translate: 0 0;
+    }
+
+    1.5%,
+    10.5% {
+      opacity: 1;
+    }
+
+    12%,
+    100% {
+      opacity: 0;
+      translate: 0 100cqb;
+    }
+  }
+
+  @keyframes fm-pk-down-short {
+    0% {
+      opacity: 0;
+      translate: 0 0;
+    }
+
+    1%,
+    5% {
+      opacity: 1;
+    }
+
+    6%,
+    100% {
+      opacity: 0;
+      translate: 0 100cqb;
+    }
+  }
+
+  @keyframes fm-pk-up {
+    0% {
+      opacity: 0;
+      translate: 0 100cqb;
+    }
+
+    1.5%,
+    10.5% {
+      opacity: 1;
+    }
+
+    12%,
+    100% {
+      opacity: 0;
+      translate: 0 0;
+    }
+  }
+
+  @keyframes fm-pk-up-short {
+    0% {
+      opacity: 0;
+      translate: 0 100cqb;
+    }
+
+    1%,
+    5% {
+      opacity: 1;
+    }
+
+    6%,
+    100% {
+      opacity: 0;
+      translate: 0 0;
+    }
+  }
+
+  /* The spine's rails. Down the long rail from the lane's top edge, then
+     the short stub into the service. */
+  @keyframes fm-pk-rail-in {
+    0% {
+      opacity: 0;
+      translate: 0 0;
+    }
+
+    1.5%,
+    10.5% {
+      opacity: 1;
+    }
+
+    9% {
+      translate: 0 calc(100cqb + 2px);
+    }
+
+    12%,
+    100% {
+      opacity: 0;
+      translate: 100cqi calc(100cqb + 2px);
+    }
+  }
+
+  /* Out along the stub, then down the long right rail to the lane's floor. */
+  @keyframes fm-pk-rail-down {
+    0% {
+      opacity: 0;
+      translate: 0 0;
+    }
+
+    1.5%,
+    10.5% {
+      opacity: 1;
+    }
+
+    3% {
+      translate: calc(100cqi + 2px) 0;
+    }
+
+    12%,
+    100% {
+      opacity: 0;
+      translate: calc(100cqi + 2px) 100cqb;
+    }
+  }
+
+  /* Out along the stub, then up the long right rail to the lane's top edge. */
+  @keyframes fm-pk-rail-up {
+    0% {
+      opacity: 0;
+      translate: 0 calc(100cqb + 2px);
+    }
+
+    1.5%,
+    10.5% {
+      opacity: 1;
+    }
+
+    3% {
+      translate: calc(100cqi + 2px) calc(100cqb + 2px);
+    }
+
+    12%,
+    100% {
+      opacity: 0;
+      translate: calc(100cqi + 2px) 0;
+    }
+  }
+
+  /* The row's fan: from the middle of the stack along the rail, round the
+     corner and into the service. */
+  @keyframes fm-pk-up-right {
+    0% {
+      opacity: 0;
+      translate: 0 100cqb;
+    }
+
+    1.5%,
+    10.5% {
+      opacity: 1;
+    }
+
+    6% {
+      translate: 0 0;
+    }
+
+    12%,
+    100% {
+      opacity: 0;
+      translate: 100cqi 0;
+    }
+  }
+
+  @keyframes fm-pk-down-right {
+    0% {
+      opacity: 0;
+      translate: 0 0;
+    }
+
+    1.5%,
+    10.5% {
+      opacity: 1;
+    }
+
+    6% {
+      translate: 0 calc(100cqb + 2px);
+    }
+
+    12%,
+    100% {
+      opacity: 0;
+      translate: 100cqi calc(100cqb + 2px);
+    }
+  }
+
+  /* The row's gather: out of the service, round the corner, along the rail
+     to the middle of the stack. */
+  @keyframes fm-pk-right-down {
+    0% {
+      opacity: 0;
+      translate: 0 0;
+    }
+
+    1.5%,
+    10.5% {
+      opacity: 1;
+    }
+
+    6% {
+      translate: calc(100cqi + 2px) 0;
+    }
+
+    12%,
+    100% {
+      opacity: 0;
+      translate: calc(100cqi + 2px) 100cqb;
+    }
+  }
+
+  @keyframes fm-pk-right-up {
+    0% {
+      opacity: 0;
+      translate: 0 calc(100cqb + 2px);
+    }
+
+    1.5%,
+    10.5% {
+      opacity: 1;
+    }
+
+    6% {
+      translate: calc(100cqi + 2px) calc(100cqb + 2px);
+    }
+
+    12%,
+    100% {
+      opacity: 0;
+      translate: calc(100cqi + 2px) 0;
+    }
+  }
+
+  /* A round trip's answer in the row: out, down the answer rail, and back
+     along the channel to where the channel line takes it on. */
+  @keyframes fm-pk-loop {
+    0% {
+      opacity: 0;
+      translate: 0 0;
+    }
+
+    1.5%,
+    10.5% {
+      opacity: 1;
+    }
+
+    3.5% {
+      translate: calc(100cqi + 2px) 0;
+    }
+
+    8.5% {
+      translate: calc(100cqi + 2px) calc(100cqb + 2px);
+    }
+
+    12%,
+    100% {
+      opacity: 0;
+      translate: 0 calc(100cqb + 2px);
+    }
+  }
+
+  /* The back leg: along the channel under the core, then up into its floor -
+     the last stretch runs on behind the tile, which is what makes the packet
+     read as arriving. A trunk's 6%. */
+  @keyframes fm-pk-back {
+    0% {
+      opacity: 0;
+      translate: 100cqi calc(100cqb + 2px);
+    }
+
+    1%,
+    5% {
+      opacity: 1;
+    }
+
+    3.5% {
+      translate: 0 calc(100cqb + 2px);
+    }
+
+    6%,
+    100% {
+      opacity: 0;
+      translate: 0 0;
+    }
+  }
+</style>

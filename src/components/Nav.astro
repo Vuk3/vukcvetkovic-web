@@ -1,10 +1,19 @@
 ---
 import { Gamepad2, Menu, X } from '@lucide/astro';
+import { Image } from 'astro:assets';
 import type { Lang } from '../i18n/types';
+import { locales } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
-import { site } from '../site';
+import { languageNames, site } from '../site';
 import LangSwitcher from './LangSwitcher.astro';
 import ThemeToggle from './ThemeToggle.astro';
+/*
+ * Vuk's V mark, the file the favicon set already ships, imported rather than
+ * linked so the build emits it at the size it is shown: 36px and its 2x, as
+ * webp, about 1 KB each against the 7.6 KB of the 180px PNG a phone was sent
+ * for a 36px mark. The file in public/ is untouched and still the touch icon.
+ */
+import vMark from '../../public/apple-touch-icon.png';
 
 interface Props {
   lang: Lang;
@@ -33,115 +42,144 @@ const sections = [
   { id: 'services', label: dict.nav.services },
   { id: 'contact', label: dict.nav.contact },
 ];
+
+/* The same page in each language, for the phone menu - see below. */
+const languages = locales.map((locale) => ({
+  locale,
+  name: languageNames[locale],
+  href: localizePath(Astro.url.pathname, locale),
+  current: locale === lang,
+}));
 ---
 
 {/*
-  The header takes the ink panel, which is the one device on this site that
-  re-declares the palette rather than styling its own contents - so the bar is a
-  different surface from the page in both themes, and the wordmark, the rail,
-  the two controls and the phone menu inside it all come out correct without a
-  single header-specific colour. It is the same block that closes the page, so
-  the two ends are bracketed in ink.
+  A floating ink capsule on the shell's measure. The header element is only the
+  sticky strip it rides in; the capsule takes `.panel`, the one device on this
+  site that re-declares the palette rather than styling its own contents, so the
+  wordmark, the rail, the controls and the phone menu inside it all come out
+  correct without a single header-specific colour.
 
-  Translucent with a blur, so the page still runs under it. The hairline and the
-  padding are driven by scroll position - see .site-head and the head-settle
-  keyframes in global.css - which is pure CSS on a scroll() timeline. Where that
-  is unsupported it simply stays at the settled height with its hairline
-  showing.
-
-  It sits on the hero's measure, so the wordmark shares a left edge with the
-  name underneath it, and the seven labels sit in a pill rail of their own -
-  which is what keeps them reading as one control rather than as seven links
-  loose in the header.
+  Its padding settles as the page scrolls - see .head-capsule and the
+  head-settle keyframes in global.css - which is CSS on a scroll() timeline.
 
   `data-section-link` is the hook the layout's observer uses to mark which
   section is on screen. Both lists carry it, so the desktop row and the phone
   menu are marked together and the state is set once.
 */}
-<header class="site-head panel">
-  <div class="shell shell-hero head-inner">
-    <a href={home} class="brand">{site.name}</a>
-
-    {/* Seven labels need more room than md gives, especially in German. */}
-    <nav aria-label={dict.nav.sections} class="ml-auto hidden lg:block">
-      <ul class="nav-rail">
-        {
-          sections.map((section) => (
-            <li>
-              <a href={`${home}#${section.id}`} class="nav-link" data-section-link={section.id}>
-                {section.label}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </nav>
-
-    <div class="ml-auto flex items-center gap-2 lg:ml-6">
+<header class="site-head">
+  <div class="shell">
+    <div class="head-capsule panel">
       {/*
-        Desktop only. Below lg the rail collapses into the disclosure and this
-        goes with it - the wordmark plus four round controls does not fit
-        beside a 320px viewport, and the menu is where a phone looks anyway.
-        The row inside the disclosure is the same link.
+        Vuk's own V mark, the file the favicon set already ships, shown at the
+        size of the controls beside it. Decorative: the name next to it is the
+        link's accessible name.
       */}
-      <a href={games} class="head-btn head-game hidden lg:inline-flex" aria-label={dict.nav.games}>
-        <Gamepad2 class="size-4 shrink-0" aria-hidden="true" />
-        {/*
-          The word waits for xl. At lg the seven labels in the rail are already
-          at the width they need - in German especially - and a pill with a word
-          in it beside them is what pushes the row over. The icon alone still
-          marks the spot, and `aria-label` carries the name either way.
-        */}
-        <span class="hidden xl:inline">{dict.nav.games}</span>
+      <a href={home} class="brand">
+        <Image src={vMark} alt="" width={36} height={36} densities={[1, 2]} loading="eager" class="brand-mark" />
+        <span>{site.name}</span>
       </a>
 
-      <ThemeToggle lang={lang} />
-      <LangSwitcher lang={lang} />
-
-      {/*
-        The same list again, behind a disclosure, for everything below lg. It is
-        a native <details>, so it opens and closes with no script of its own, and
-        the panel is absolutely positioned against the sticky header rather than
-        against the <details>, which is what lets it span the full width.
-
-        No landmark around this list: the desktop <nav> above already carries one
-        named "Sections", and a second landmark with the same name only gives a
-        screen reader two identical entries to choose between.
-      */}
-      <details class="group static lg:hidden" data-menu>
-        <summary
-          aria-label={dict.nav.sections}
-          class="head-btn size-9 cursor-pointer list-none [&::-webkit-details-marker]:hidden"
-        >
-          <Menu class="size-5 group-open:hidden" aria-hidden="true" />
-          <X class="hidden size-5 group-open:block" aria-hidden="true" />
-        </summary>
-
-        <ul class="absolute inset-x-0 top-full border-b border-hairline bg-bg py-2">
+      {/* Seven labels need more room than md gives, especially in German. */}
+      <nav aria-label={dict.nav.sections} class="ml-auto hidden lg:block">
+        <ul class="nav-rail">
           {
             sections.map((section) => (
               <li>
-                <a
-                  href={`${home}#${section.id}`}
-                  class="shell shell-hero nav-row py-2.5"
-                  data-section-link={section.id}
-                >
+                <a href={`${home}#${section.id}`} class="nav-link" data-section-link={section.id}>
                   {section.label}
                 </a>
               </li>
             ))
           }
-
-          {/* Ruled off from the seven above it, because those jump within the
-              current page and this one leaves it. */}
-          <li class="head-game-row">
-            <a href={games} class="shell shell-hero nav-row flex items-center gap-2 py-2.5">
-              <Gamepad2 class="size-4 shrink-0" aria-hidden="true" />
-              {dict.nav.games}
-            </a>
-          </li>
         </ul>
-      </details>
+      </nav>
+
+      <div class="ml-auto flex items-center gap-1.5 lg:ml-2">
+        {/*
+          Desktop only. Below lg the rail collapses into the disclosure and this
+          goes with it, since a phone looks in the menu anyway; the row inside
+          the disclosure is the same link.
+        */}
+        <a href={games} class="head-btn head-game hidden lg:inline-flex" aria-label={dict.nav.games}>
+          <Gamepad2 class="size-[1.05rem] shrink-0" aria-hidden="true" />
+          {/*
+            The word waits for xl. At lg the seven labels in the rail are already
+            at the width they need - in German especially - and a pill with a
+            word in it beside them is what pushes the row over. The icon alone
+            still marks the spot, and `aria-label` carries the name either way.
+          */}
+          <span class="hidden xl:inline">{dict.nav.games}</span>
+        </a>
+
+        <ThemeToggle lang={lang} />
+
+        {/*
+          The switcher is a desktop control. Below lg the capsule holds the
+          wordmark, the theme and the menu, and nothing else fits beside "Vuk
+          Cvetković" at 360px, so the four languages move into the menu as a row
+          of plain links.
+        */}
+        <div class="hidden lg:block">
+          <LangSwitcher lang={lang} />
+        </div>
+
+        {/*
+          The same list again, behind a disclosure, for everything below lg. It
+          is a native <details>, so it opens and closes with no script of its
+          own, and the menu is absolutely positioned against the capsule rather
+          than against the <details>, which is what lets it span the capsule's
+          width.
+
+          No landmark around this list: the desktop <nav> above already carries
+          one named "Sections", and a second landmark with the same name only
+          gives a screen reader two identical entries to choose between.
+        */}
+        <details class="group static lg:hidden" data-menu>
+          <summary
+            aria-label={dict.nav.sections}
+            class="head-btn cursor-pointer list-none [&::-webkit-details-marker]:hidden"
+          >
+            <Menu class="size-5 group-open:hidden" aria-hidden="true" />
+            <X class="hidden size-5 group-open:block" aria-hidden="true" />
+          </summary>
+
+          <ul class="head-menu">
+            {
+              sections.map((section) => (
+                <li>
+                  <a href={`${home}#${section.id}`} class="nav-row" data-section-link={section.id}>
+                    {section.label}
+                  </a>
+                </li>
+              ))
+            }
+
+            <li class="head-menu-game">
+              <a href={games} class="nav-row">
+                <Gamepad2 class="size-5 shrink-0" aria-hidden="true" />
+                {dict.nav.games}
+              </a>
+            </li>
+
+            <li class="head-menu-langs">
+              <ul class="foot-langs" aria-label={dict.nav.language}>
+                {languages.map((language) => (
+                  <li>
+                    <a
+                      href={language.href}
+                      hreflang={language.locale}
+                      lang={language.locale}
+                      aria-current={language.current ? 'page' : undefined}
+                    >
+                      {language.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          </ul>
+        </details>
+      </div>
     </div>
   </div>
 </header>

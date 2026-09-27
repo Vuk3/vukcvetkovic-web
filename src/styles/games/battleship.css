@@ -34,6 +34,7 @@
    * read as something solid sitting on it.
    */
   --bs-tray: #b7c3cf;
+  --bs-tray-edge: #a9b7c5;
   --bs-sea: #dbe4ec;
   --bs-sea-hover: #edf2f7;
   --bs-grid: #a9b7c5;
@@ -108,6 +109,9 @@
    * hold against a dark square instead of against paper.
    */
   --bs-tray: #0c131c;
+  /* The tray is a shade under the stage it sits in here, so its outline is
+     drawn rather than left to the step between the two. */
+  --bs-tray-edge: #34465e;
   --bs-sea: #1d2937;
   --bs-sea-hover: #2a3a4d;
   --bs-grid: #33455e;
@@ -147,7 +151,7 @@
    * own rules, so the card cannot drift away from what it is advertising.
    *
    * ⚠️ The one thing given here is `--bs-size`, which on the page comes from
-   * the plot's container query and out here has to be the card's own track.
+   * the side's container query and out here has to be the card's own track.
    * Five squares across a 5:2 box, less the padding on both sides. Everything
    * the hull is drawn from is a multiple of it, so one number is the whole
    * translation.
@@ -213,8 +217,8 @@
     /* The rank numbers down the left of each board. The square size is
        measured against what is left after this rather than over it, which is
        why it is a token and not a padding. */
-    --bs-rail: 1.25rem;
-    --bs-pad: clamp(0.4rem, 1.2vw, 0.7rem);
+    --bs-rail: 1.5rem;
+    --bs-pad: clamp(0.45rem, 1.1vw, 0.75rem);
   }
 
   /*
@@ -224,51 +228,159 @@
    * boards are - see `.ms-levels`. What is different is that the label carries
    * a portrait: what is being chosen here is who you are up against, and a rank
    * is an abstraction until there is a face under the cap.
+   *
+   * The HUD's first row, the full width of it: a width rather than a flex
+   * basis, the minefield's reason. Its UA margin, border and padding go, or
+   * the fieldset draws a box round the tiles.
    */
   .bs-levels {
     width: 100%;
-    max-width: 34rem;
-    margin: 0 auto clamp(0.9rem, 2.2vw, 1.3rem);
+    min-width: 0;
+    margin: 0;
+    border: 0;
+    padding: 0;
   }
 
-  /* A real `<legend>`, shown rather than clipped: picking an opponent is the
-     first thing this page asks for and it used to ask silently. */
+  /* A real `<legend>`, shown rather than clipped, as the site's tile label -
+     the icon in its square and the words in sentence case, where it was 11px
+     of tracked capitals. Four in a Row's and the Cube's pickers carry the
+     same label. The rendered legend, over the four, until a desktop floats it
+     into their row (below). */
   .bs-levels-title {
-    display: block;
+    display: flex;
     width: 100%;
-    margin-bottom: 0.55rem;
-    font-size: 0.6875rem;
-    font-weight: 620;
-    letter-spacing: 0.08em;
-    line-height: 1.3;
-    text-align: center;
-    text-transform: uppercase;
-    color: var(--site-muted);
+    margin-bottom: 0.75rem;
+    padding: 0;
   }
 
   .bs-levels-row {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    display: flex;
     gap: 0.5rem;
+    min-width: 0;
+  }
+
+  /*
+   * One opponent: the minefield's tile, with the portrait at its head.
+   *
+   * The chosen one takes the accent as an edge and a tint rather than a fill -
+   * the Shots figure under the set is the stage's cobalt block, and two of
+   * them stacked read as one shout.
+   *
+   * Portrait over name over marks, centred, until a tile is wide enough to
+   * carry them side by side (below).
+   */
+  .bs-level {
+    display: grid;
+    flex: 1 1 auto;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'rank'
+      'name'
+      'marks';
+    justify-items: center;
+    align-content: center;
+    row-gap: 0.3rem;
+    min-width: min-content;
+    min-height: 3.25rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-inner);
+    background-color: var(--site-card);
+    padding: 0.5rem 0.45rem 0.55rem;
+    text-align: center;
+    cursor: pointer;
+    transition:
+      border-color 200ms var(--site-ease),
+      background-color 200ms var(--site-ease),
+      transform 250ms var(--site-ease-out);
+  }
+
+  .bs-level:hover {
+    border-color: color-mix(in oklab, var(--site-accent) 45%, var(--site-hairline));
+    transform: translateY(-2px);
+  }
+
+  .bs-level:has(:checked) {
+    border-color: var(--site-accent);
+    background-color: color-mix(in oklab, var(--site-accent) 9%, var(--site-card));
+    box-shadow: inset 0 0 0 1px var(--site-accent);
+  }
+
+  .bs-level:has(:focus-visible) {
+    outline: 2px solid var(--site-accent);
+    outline-offset: 2px;
+  }
+
+  .bs-level-name {
+    grid-area: name;
+    font-size: 0.9375rem;
+    font-weight: 640;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+
+  .bs-level:has(:checked) .bs-level-name {
+    color: var(--site-accent);
+  }
+
+  /* The portrait is clipped to a disc and the uniform runs off the bottom of
+     it, so four busts read as four badges rather than four stickers. 2.5rem
+     on every screen: at 3.25rem on a desktop it made each tile 76 pixels
+     tall, and the row of four is the first thing between the head and the
+     waters. */
+  .bs-rank {
+    grid-area: rank;
+    display: block;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background-color: var(--bs-badge);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--bs-cap-dark) 25%, transparent);
+    /* Unpicked opponents step back without stepping out. The cap and the
+       insignia are the whole of how you tell one from another, so they are
+       dimmed and never drained - a grey admiral is a grey captain. */
+    opacity: 0.82;
+    transition:
+      opacity 200ms var(--site-ease),
+      rotate 420ms var(--site-spring),
+      scale 420ms var(--site-spring);
+  }
+
+  .bs-level:has(:checked) .bs-rank,
+  .bs-level:hover .bs-rank {
+    opacity: 1;
+  }
+
+  /* The portrait hops when the pointer reaches it, the way every mark on
+     the site does. */
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .bs-level:hover .bs-rank {
+      rotate: -6deg;
+      scale: 1.06;
+    }
   }
 
   /*
    * How hard each one is, as four marks under its name.
    *
-   * On every card rather than only on the chosen one, because the question a
+   * On every tile rather than only on the chosen one, because the question a
    * reader has is not "how good is this one" but "which of these four should I
    * pick" - and that is a comparison, which needs all four answers at once. The
-   * sentence below the set then says it in words for whichever is chosen.
+   * sentence beside the set then says it in words for whichever is chosen.
+   * Dots at 8 pixels, the marks Four in a Row's opponents wear, so the two
+   * pages rank their four the same way: they were hairline bars here and
+   * dots there.
    */
   .bs-level-rank {
+    grid-area: marks;
     display: flex;
-    gap: 2px;
+    gap: 4px;
   }
 
   .bs-level-rank > span {
-    width: 9px;
-    height: 3px;
-    border-radius: 1.5px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
     background-color: var(--site-hairline);
   }
 
@@ -281,186 +393,171 @@
   }
 
   .bs-level-note {
-    /* Reserved whether there is a line or not, so choosing an opponent never
-       moves the board under the pointer. */
-    min-height: 2.6rem;
-    margin-top: 0.6rem;
-    font-size: 0.8125rem;
+    /* Two lines reserved whether there is a line or not, so choosing an
+       opponent never moves the board under the pointer. */
+    min-height: 3em;
+    margin-top: 0.5rem;
+    font-size: 1rem;
     line-height: 1.5;
-    text-align: center;
-    text-wrap: balance;
     color: var(--site-muted);
+    text-wrap: pretty;
   }
 
-  .bs-level {
-    display: grid;
-    justify-items: center;
-    gap: 0.35rem;
-    border: 1px solid var(--site-hairline);
-    border-radius: var(--site-radius);
-    background-color: var(--site-card);
-    padding: 0.6rem 0.4rem 0.55rem;
-    font-size: 0.8125rem;
-    font-weight: 560;
-    line-height: 1.2;
-    text-align: center;
-    color: var(--site-muted);
-    cursor: pointer;
-    transition:
-      border-color 160ms var(--site-ease),
-      background-color 160ms var(--site-ease),
-      color 160ms var(--site-ease),
-      transform 160ms var(--site-ease);
-  }
+  /* Portrait beside the name, once four tiles have the width for it: the
+     tile is half the height and the set reads as a row of people rather than
+     a row of stamps - 56 pixels, a pill a little taller than the buttons. */
+  @media (min-width: 52rem) {
+    .bs-level {
+      flex: 1 1 0;
+      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-areas:
+        'rank name'
+        'rank marks';
+      justify-items: start;
+      column-gap: 0.7rem;
+      padding: 0.45rem 1.1rem 0.45rem 0.45rem;
+      text-align: left;
+    }
 
-  .bs-level:hover {
-    border-color: var(--site-muted);
-    color: var(--site-fg);
-    transform: translateY(-1px);
-  }
+    .bs-level-name {
+      align-self: end;
+      font-stretch: 108%;
+      font-size: 1rem;
+    }
 
-  /* The portrait is clipped to a disc and the uniform runs off the bottom of
-     it, so four busts read as four badges rather than four stickers. */
-  .bs-rank {
-    display: block;
-    width: clamp(2.5rem, 7vw, 3.4rem);
-    height: clamp(2.5rem, 7vw, 3.4rem);
-    border-radius: 50%;
-    background-color: var(--bs-badge);
-    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--bs-cap-dark) 25%, transparent);
-    /* Unpicked opponents step back without stepping out. The cap and the
-       insignia are the whole of how you tell one from another, so they are
-       dimmed and never drained - a grey admiral is a grey captain. */
-    opacity: 0.82;
-    transition: opacity 200ms var(--site-ease);
-  }
-
-  .bs-level:has(:checked) {
-    border-color: var(--site-accent);
-    background-color: color-mix(in oklab, var(--site-accent) 10%, var(--site-card));
-    color: var(--site-fg);
-  }
-
-  .bs-level:has(:checked) .bs-rank {
-    opacity: 1;
-  }
-
-  .bs-level:hover .bs-rank {
-    opacity: 0.95;
-  }
-
-  .bs-level:has(:checked):hover .bs-rank {
-    opacity: 1;
-  }
-
-  .bs-level:has(:focus-visible) {
-    outline: 2px solid var(--site-accent);
-    outline-offset: 2px;
-  }
-
-  .bs-bar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.6rem;
-    margin-bottom: clamp(0.75rem, 2vw, 1.1rem);
+    .bs-level-rank {
+      align-self: start;
+    }
   }
 
   /*
-   * ⚠️ **The meters stretch to each other, the buttons beside them do not.**
-   * One label here is two words and the other is one, so on a narrow bar one
-   * wraps and the other does not - and two readouts of different heights beside
-   * each other is the sort of thing you notice without being able to say why.
-   * `align-self` on the meters rather than `align-items` on the bar, because
-   * stretching the bar would stretch the buttons with it.
-   */
-  .bs-meter {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-self: stretch;
-    gap: 0.15rem;
-    min-width: 4.75rem;
-    border: 1px solid var(--site-hairline);
-    border-radius: var(--site-radius);
-    background-color: var(--site-card);
-    padding: 0.45rem 0.7rem 0.5rem;
-    text-align: center;
-  }
-
-  .bs-meter-label {
-    display: block;
-    font-size: 0.6875rem;
-    line-height: 1.3;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--site-muted);
-  }
-
-  .bs-meter-value {
-    display: block;
-    font-stretch: 112%;
-    font-weight: 660;
-    font-size: 1.25rem;
-    /* The shot count changes every turn. Without tabular figures it twitches
-       sideways as the digits change width. */
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.03em;
-    line-height: 1.2;
-  }
-
-  .bs-actions {
-    display: flex;
-    gap: 0.5rem;
-    margin-left: auto;
-  }
-
-  .bs-actions .cta-ghost {
-    padding: 0.55rem 0.9rem;
-    font-size: 0.875rem;
-  }
-
-  /*
-   * The placing bar, which exists only while a fleet is being put down.
+   * One row on a desktop: the name of the set, the four, and the sentence
+   * about whoever is picked, in that order across the stage. The name of the
+   * set had a row of its own over the four and the sentence took a column
+   * beside them - 120 pixels over the waters for a choice made once a game.
+   * Now it is the height of one tile, 56 pixels.
    *
-   * ⚠️ Taken away by the state on the frame rather than by `hidden` on the
-   * element, so there is one thing deciding what the page is showing and the
-   * script never has to keep two of them agreeing.
+   * The fieldset is a wrapping flex row - current browsers lay out a
+   * fieldset's content box with `display: flex` - and the legend is floated,
+   * which makes it an ordinary child of that box rather than the rendered
+   * legend in its border, the thing Four in a Row's and the Cube's pickers do
+   * for their grids. Its words wrap under 10.5rem, "Choose your opponent" on
+   * two lines beside the four.
+   *
+   * The four are as wide as their names and the sentence takes the rest from
+   * a 20rem basis: at 1280 and wider that is beside them, two lines, inside
+   * the tile's height. On a 1024 screen it is 150 pixels, so it wraps onto a
+   * line of its own under the four, the width of the stage, where every
+   * opponent's sentence is a single line and the two-line reserve is not
+   * needed.
    */
-  .bs-setup {
+  @media (min-width: 64rem) {
+    .bs-levels {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.6rem var(--stage-gap);
+    }
+
+    .bs-levels-title {
+      float: left;
+      flex: 0 0 auto;
+      width: auto;
+      max-width: 10.5rem;
+      margin: 0;
+    }
+
+    .bs-levels-row {
+      flex: 0 1 auto;
+    }
+
+    .bs-level {
+      flex: 1 1 auto;
+    }
+
+    /* A step smaller beside the four: at 1rem the sailor's sentence ran to
+       a third line at 1280 in French, German and Serbian, and a third line
+       is a taller row - the waters moving when the choice changes. */
+    .bs-level-note {
+      flex: 1 1 20rem;
+      min-height: 0;
+      margin-top: 0;
+      font-size: 0.9375rem;
+    }
+  }
+
+  /*
+   * On a phone the tiles size to their words - never under them - so
+   * "Nišandžija" gets the room it needs, and the four still share one row at
+   * 360. Normal width rather than expanded for the same reason. The sentence
+   * under them is a step smaller so the sailor's stays inside its two
+   * reserved lines at 390 in every language; at 360 in German it still takes
+   * a third.
+   */
+  @media (max-width: 30rem) {
+    .bs-level-note {
+      font-size: 0.875rem;
+    }
+
+    .bs-levels-row {
+      gap: 0.4rem;
+    }
+
+    .bs-level {
+      padding-inline: 0.35rem;
+    }
+
+    .bs-level-name {
+      font-size: 0.875rem;
+    }
+  }
+
+  /*
+   * The ship count, and the placing controls, exist only while a fleet is
+   * being put down.
+   *
+   * ⚠️ Taken away by the state on the root rather than by `hidden` on the
+   * element, so there is one thing deciding what the page is showing and the
+   * script never has to keep two of them agreeing. The two groups of buttons
+   * are separate so that the ones every state has keep their place when these
+   * go, and the figures beside them simply widen.
+   */
+  .bs:not([data-state='placing']) :is(.bs-stat-left, .bs-setup, .bs-for-placing) {
     display: none;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.6rem;
-    margin-bottom: clamp(0.75rem, 2vw, 1.1rem);
-    border: 1px solid var(--site-hairline);
-    border-radius: var(--site-radius);
-    background-color: var(--site-inset);
-    padding: 0.6rem;
   }
 
-  .bs[data-state='placing'] .bs-setup {
-    display: flex;
+  /* Start: the one filled button in the stage, at the size shared.css gives
+     every ghost button beside it, so the row is one height. */
+  .bs-setup .cta {
+    flex: 1 1 auto;
+    min-height: 3rem;
+    padding: 0.65rem 1.3rem;
+    font-size: 1rem;
+    white-space: nowrap;
   }
 
-  .bs-setup-hint {
-    flex: 1;
-    min-width: 12rem;
-    font-size: 0.8125rem;
-    line-height: 1.45;
+  .bs-setup .cta svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  /* The only control on the page that is ever unavailable. It is genuinely
+     disabled and not merely dimmed, so it takes the dashed edge every disabled
+     button in a game stage has - including on hover, which `.cta:hover` would
+     otherwise still lift and deepen. */
+  .bs-setup .cta:disabled,
+  .bs-setup .cta:disabled:hover {
+    border-style: dashed;
+    border-color: color-mix(in oklab, var(--site-muted) 55%, transparent);
+    background-color: var(--site-card);
+    box-shadow: none;
     color: var(--site-muted);
+    transform: none;
+    cursor: not-allowed;
   }
 
-  .bs-setup-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .bs-setup-actions .cta,
-  .bs-setup-actions .cta-ghost {
-    padding: 0.55rem 0.9rem;
-    font-size: 0.875rem;
+  .bs-setup .cta:disabled:hover svg {
+    transform: none;
   }
 
   /* The icon on the turn button points the way the next ship will lie, so the
@@ -473,51 +570,145 @@
     rotate: 90deg;
   }
 
-  /* The only control on the page that is ever unavailable. It is genuinely
-     disabled and not merely dimmed, so it has to stop looking pressable -
-     including on hover, which `.cta:hover` would otherwise still lift. */
-  .bs-setup-actions .cta:disabled,
-  .bs-setup-actions .cta:disabled:hover {
-    border-color: var(--site-hairline);
-    background-color: var(--site-card);
-    color: var(--site-muted);
-    transform: none;
-    cursor: not-allowed;
+  /*
+   * The figures on one line each from a tablet up: the name on the left and
+   * the count on the right, the height of a button. Over its count, each was
+   * a block 99 pixels tall, and the row they share with the buttons is the
+   * second thing between the head and the waters - one line each, it is 48.
+   * The count at the size the figures beside a board have (shared.css), and
+   * the icons go, as they do on a phone: the words are the labels, and at the
+   * icons' width "Wenigste Schüsse" and "Minimum de tirs" pushed the buttons
+   * onto a row of their own at 1440.
+   *
+   * On a phone three figures side by side have a third of 330 pixels each,
+   * too little for a name and a count on one line, so they keep the family's
+   * shape - the name over the count - a step smaller.
+   */
+  @media (min-width: 40rem) {
+    /* From what the three hold rather than shared.css's 18rem, which is
+       narrower than three figures on one line each: the row then breaks
+       before a figure has to give up its words (see the next rule for what
+       that takes). */
+    .bs .game-stats {
+      flex-basis: auto;
+    }
+
+    /* ⚠️ Not a container, for the same reason: shared.css makes every figure
+       an inline-size container, whose width owes nothing to its words, and
+       the three came out as their padding - one row with the buttons at
+       1024 and "Fewest shots" broken over two lines inside it. The icons are
+       taken away here rather than by shared.css's query. */
+    .bs .game-stat {
+      flex: 1 1 auto;
+      container-type: normal;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.75rem;
+      min-height: 3rem;
+      padding: 0.35rem 0.85rem;
+    }
+
+    .bs .game-stat-label .tile-icon {
+      display: none;
+    }
+
+    .bs .game-stat-value {
+      font-size: clamp(1.5rem, 1.9vw, 2rem);
+    }
+
+    /*
+     * The buttons a little narrower than shared.css draws them, and the sound
+     * switch its icon, as it is in every menu column beside a board: the
+     * figures and all five buttons are one row from 1280 up only if they fit
+     * 1136 pixels, and in German they needed 1200 - "Wenigste Schüsse", "Neues
+     * Spiel" and "Neu verteilen" - so Start and its two went onto a row of
+     * their own and the waters 64 pixels further down. The word is clipped,
+     * not removed, so a screen reader still hears it.
+     */
+    .bs .game-actions .cta-ghost {
+      padding-inline: 1rem;
+    }
+
+    .bs .bs-setup .cta {
+      padding-inline: 1.1rem;
+    }
+
+    .bs .game-actions .game-sound {
+      flex: 0 0 auto;
+      padding-inline: 0.9rem;
+    }
+
+    .bs .game-sound .game-sound-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
   }
 
-  @media (max-width: 34rem) {
-    .bs-actions {
-      width: 100%;
-      margin-left: 0;
+  @media (max-width: 40rem) {
+    .bs .game-stat {
+      gap: 0.35rem;
+      padding-block: 0.6rem 0.65rem;
     }
 
-    .bs-actions .cta-ghost,
-    .bs-setup-actions .cta,
-    .bs-setup-actions .cta-ghost {
-      flex: 1;
-      justify-content: center;
-      padding: 0.55rem 0.7rem;
+    .bs .game-stat-label {
+      font-size: 0.875rem;
     }
 
-    .bs-setup-actions {
-      width: 100%;
-    }
-
-    .bs-meter {
-      flex: 1;
-      min-width: 0;
+    .bs .game-stat-value {
+      font-size: 1.5rem;
     }
   }
 
-  /* The panels cover both boards at once, so they are positioned against the
-     frame that holds the pair. */
-  .bs-frame {
+  /*
+   * On a phone Turn and Rearrange are their icons and Start takes the rest of
+   * their row with its word, the step that starts the game. With their words
+   * the three did not share 330 pixels in German or French, and Start had a
+   * row of its own: 56 more pixels between the head and the waters. The
+   * words are clipped rather than removed, as the sound switch's are in
+   * shared.css, so a screen reader still hears them, and the arrow that turns
+   * with the axis already says what Turn does. Three classes, because
+   * shared.css comes after this file and sets every ghost button in a bar at
+   * two.
+   */
+  @media (max-width: 40rem) {
+    .bs .bs-setup .cta-ghost {
+      flex: 0 0 auto;
+      padding-inline: 0.75rem;
+    }
+
+    .bs-action-word {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+
+  /*
+   * The frame: the panels cover both boards at once and a round in flight
+   * crosses from one to the other, so both are positioned against the frame
+   * that holds the pair.
+   *
+   * ⚠️ Stretched, not centred like the stage's other boards: each side inside
+   * is an inline-size container its squares measure against, and a container
+   * in a box that shrinks to fit has no width to give them. Two classes,
+   * because shared.css comes after this file and its `.game-board` would win
+   * a tie.
+   */
+  .bs .bs-frame {
     position: relative;
+    justify-self: stretch;
   }
 
   .bs-boards {
     display: grid;
-    gap: clamp(1.1rem, 2.4vw, 1.8rem);
+    gap: clamp(1.5rem, 3vw, 2.5rem);
   }
 
   /*
@@ -562,6 +753,16 @@
     .bs-plot {
       transform: rotateX(22deg);
       transform-style: preserve-3d;
+      /*
+       * The seven per cent the tilt takes off the chart's height, given back
+       * to the page. A transform does not change the box it is laid out in,
+       * so the unshortened chart kept its full height in the column and the
+       * shortening showed as twenty pixels of nothing over the chart and
+       * twenty under it. Half the difference off each end: the chart's
+       * height, from the square size, the padding, the letters and the two
+       * edges, times half of one minus cos 22 degrees.
+       */
+      margin-block: calc((10 * var(--bs-size) + 2 * var(--bs-pad) + 1.4rem) * -0.0364);
     }
 
     .bs-board,
@@ -570,25 +771,114 @@
     }
   }
 
-  /* The query container. The `cqi` lengths are on `.bs-plot` below, never
-     here - an element is not its own container. */
+  /*
+   * One side: the name of the water with what the last shot at it did, the
+   * chart, and the fleet under it - all three the width of the chart, so the
+   * side is one column with straight edges rather than a chart centred under
+   * a heading the width of the screen.
+   *
+   * ⚠️ **The query container, and the one place the square size is
+   * declared.** `--bs-size` is written here and resolved on each child that
+   * uses it: an unregistered custom property is carried as its tokens, so the
+   * `cqi` in it is measured against the nearest container of the element that
+   * *uses* it, which for the chart, the head and every hull is this. Nothing
+   * may use it on `.bs-side` itself - an element is not its own container.
+   *
+   * A square is as large as the side allows and as the screen's height
+   * allows, between two bounds. The height term is the screen less
+   * `--bs-reserve`: everything else on screen with the boards once the stage
+   * is scrolled up to the figures - the header, the row of figures and
+   * buttons, the board's head row, the letters, the tray's padding and the
+   * fleet under it, 18rem with the HUD's rows one line each - so a table
+   * scrolled to is a table seen whole, with the shot count still in view. It
+   * is its own number and not shared.css's `--game-reserve`, which is the
+   * head over a board on load: 1440 by 900 has 556 pixels for a board under
+   * that, and two waters, their heads and their fleets under the picker and
+   * the figures would get squares of 39 pixels in it - a third of the width
+   * two waters have, given up to save a scroll of a hundred.
+   *
+   * So the width decides on every screen 800 pixels or taller: at 1440 by
+   * 900 a square is 54 pixels and the waters run from 456 to 1002, the
+   * picker and the figures two rows of 56 and 48 over them. What the height
+   * term still does is stop a short wide screen - 1366 by 768, 1440 by 800 -
+   * from drawing a table taller than it can show at once.
+   *
+   * The ceiling is 3.5rem because the side's own width stops it first on
+   * every screen this shell fits: 80rem across two boards is 55px a square.
+   */
   .bs-side {
+    --bs-reserve: 18rem;
+    --bs-size: clamp(
+      1.5rem,
+      min(
+        (100cqi - var(--bs-rail) - 2 * var(--bs-pad) - 4px) / 10,
+        (100svh - var(--bs-reserve)) / 10
+      ),
+      3.5rem
+    );
+    /* The tray's outer width - ten squares, the rail, the padding, and the
+       board's and the tray's own 1px edges - which the head and the fleet
+       are set to. */
+    --bs-chart: calc(10 * var(--bs-size) + var(--bs-rail) + 2 * var(--bs-pad) + 4px);
+
     container-type: inline-size;
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    gap: 0.75rem;
   }
 
+  .bs-side-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: min(100%, var(--bs-chart));
+    min-height: 2.25rem;
+  }
+
+  /* The side's name as the site's tile label, a step larger: the icon says
+     which water is which before the words are read. It was 11px of tracked
+     capitals centred over the chart. */
   .bs-side-title {
-    margin-bottom: 0.5rem;
-    font-size: 0.6875rem;
-    font-weight: 620;
-    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-width: 0;
+    font-stretch: 108%;
+    font-size: 1.0625rem;
+    font-weight: 640;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  /*
+   * What the last shot at this board did, as a status beside its name rather
+   * than a caption under the chart: said about the board it belongs to, and
+   * the same line never pushes the fleet down when it arrives. Hidden while
+   * there is nothing to say, and the head keeps its height either way.
+   */
+  .bs-log {
+    min-width: 0;
+    border-radius: var(--site-radius-pill);
+    background-color: var(--site-inset);
+    padding: 0.35rem 0.85rem;
+    font-size: 0.9375rem;
+    font-weight: 580;
     line-height: 1.3;
-    text-align: center;
-    text-transform: uppercase;
-    color: var(--site-muted);
+    text-align: right;
+    color: var(--site-fg);
+    text-wrap: balance;
+  }
+
+  .bs-log:empty {
+    display: none;
   }
 
   /* Their water is not yet a thing you can do anything with, so it steps back
-     while your own fleet is what the page is asking for. */
+     while your own fleet is what the page is asking for. Safe on the chart
+     only because there is no hull on their side yet to flatten - see the tilt
+     above. */
   .bs[data-state='placing'] .bs-side[data-side='enemy'] .bs-plot {
     opacity: 0.55;
   }
@@ -601,34 +891,32 @@
    * The strips repeat the board's own track size, which is what keeps a letter
    * over its column at every width and is why `--bs-size` is a variable rather
    * than a length written three times.
+   *
+   * The tray has an edge of its own. In the dark theme it is a shade under the
+   * stage it sits in, and without one its outline was lost into the page.
    */
   .bs-plot {
-    --bs-size: clamp(
-      1.5rem,
-      calc((100cqi - var(--bs-rail) - 2 * var(--bs-pad)) / 10),
-      2.7rem
-    );
-
     display: grid;
     grid-template-columns: var(--bs-rail) auto;
     grid-template-rows: auto auto;
     width: fit-content;
-    margin-inline: auto;
-    border-radius: var(--site-radius-card);
+    border: 1px solid var(--bs-tray-edge);
+    border-radius: var(--site-radius-inner);
     background-color: var(--bs-tray);
     padding: var(--bs-pad);
     transition: opacity 240ms var(--site-ease);
   }
 
+  /* Read, not decoded: 12px and most of the way to the ink, where they were
+     9px at under half of it and all but vanished on the dark tray. */
   .bs-files,
   .bs-ranks {
     display: grid;
-    font-size: 0.5625rem;
+    font-size: 0.75rem;
     font-weight: 620;
     font-variant-numeric: tabular-nums;
-    letter-spacing: 0.04em;
     line-height: 1;
-    color: color-mix(in oklab, var(--site-fg) 45%, var(--bs-tray));
+    color: color-mix(in oklab, var(--site-fg) 68%, var(--bs-tray));
   }
 
   .bs-files > span,
@@ -641,14 +929,14 @@
     grid-column: 2;
     grid-row: 1;
     grid-template-columns: repeat(10, var(--bs-size));
-    padding-bottom: 4px;
+    padding-bottom: 0.4rem;
   }
 
   .bs-ranks {
     grid-column: 1;
     grid-row: 2;
     grid-template-rows: repeat(10, var(--bs-size));
-    padding-right: 4px;
+    padding-right: 0.4rem;
   }
 
   /*
@@ -794,21 +1082,26 @@
    * The four numbers come from the game. The arithmetic below is the only
    * geometry the two files share.
    */
-  .bs-hull {
-    --bs-run: calc(var(--len) * var(--bs-size));
-    /*
-     * The deck catches the light and the superstructure is lighter still, both
-     * mixed off the one colour the class carries - so a ship, a wreck and a
-     * preview each set one value and the whole drawing follows.
-     *
-     * ⚠️ **Not much white in the deck.** The deck is the largest surface on a
-     * plan view, so whatever it is mixed to is what the ship reads as from
-     * across the page. At a third white every hull came out the same pale grey
-     * whatever colour it was painted, which is most of why the fleet looked
-     * monochrome.
-     */
+  /*
+   * The deck catches the light and the superstructure is lighter still, both
+   * mixed off the one colour the class carries - so a ship, a wreck and a
+   * preview each set one value and the whole drawing follows. On the chips
+   * under the charts as well as on the board, since both draw the same symbol.
+   *
+   * ⚠️ **Not much white in the deck.** The deck is the largest surface on a
+   * plan view, so whatever it is mixed to is what the ship reads as from
+   * across the page. At a third white every hull came out the same pale grey
+   * whatever colour it was painted, which is most of why the fleet looked
+   * monochrome.
+   */
+  .bs-hull,
+  .bs-ship {
     --bs-hull-edge: color-mix(in oklab, var(--bs-hull) 88%, #fff);
     --bs-hull-deck: color-mix(in oklab, var(--bs-hull) 54%, #fff);
+  }
+
+  .bs-hull {
+    --bs-run: calc(var(--len) * var(--bs-size));
     /*
      * How far off the water it floats, in the board's own 3D space.
      *
@@ -840,24 +1133,25 @@
     transform-style: preserve-3d;
   }
 
-  /* One base colour per class - see the note on the tokens. */
-  .bs-hull[data-ship='0'] {
+  /* One base colour per class - see the note on the tokens - on the board
+     and on the fleet's chips alike. */
+  :is(.bs-hull, .bs-ship)[data-ship='0'] {
     --bs-hull: var(--bs-s0);
   }
 
-  .bs-hull[data-ship='1'] {
+  :is(.bs-hull, .bs-ship)[data-ship='1'] {
     --bs-hull: var(--bs-s1);
   }
 
-  .bs-hull[data-ship='2'] {
+  :is(.bs-hull, .bs-ship)[data-ship='2'] {
     --bs-hull: var(--bs-s2);
   }
 
-  .bs-hull[data-ship='3'] {
+  :is(.bs-hull, .bs-ship)[data-ship='3'] {
     --bs-hull: var(--bs-s3);
   }
 
-  .bs-hull[data-ship='4'] {
+  :is(.bs-hull, .bs-ship)[data-ship='4'] {
     --bs-hull: var(--bs-s4);
   }
 
@@ -923,8 +1217,9 @@
   }
 
   /* Down. Every shape in every symbol is drawn from these three, so redefining
-     them is the whole of what a wreck is. */
-  .bs-hull.is-sunk {
+     them is the whole of what a wreck is - on the board, and on the chip that
+     names the ship under it. */
+  :is(.bs-hull, .bs-ship).is-sunk {
     --bs-hull: var(--bs-sunk);
     --bs-hull-edge: color-mix(in oklab, var(--bs-sunk) 78%, var(--bs-miss));
     --bs-hull-deck: color-mix(in oklab, var(--bs-sunk) 45%, var(--bs-miss));
@@ -933,6 +1228,9 @@
        a sunk hull that would still look alive. */
     --bs-boot: color-mix(in oklab, var(--bs-sunk) 72%, var(--bs-boot));
     --bs-mark: var(--bs-miss);
+  }
+
+  .bs-hull.is-sunk {
     /* Settled onto the bottom: no lift, and the shadow goes with it. */
     --bs-lift: 0px;
 
@@ -1149,58 +1447,79 @@
     --bs-ring: var(--bs-trace);
   }
 
-  /* What the last shot at this board did. The height is reserved whether there
-     is a line or not, so the boards do not step down the page every time
-     something is said about them. */
-  .bs-log {
-    min-height: 1.5rem;
-    margin-top: 0.55rem;
+  /*
+   * The fleet under each chart: five tiles in one row the width of the
+   * chart. Wrapped as pills they took two rows of different lengths under a
+   * straight-edged board, and a row of five is the shape a fleet is.
+   */
+  .bs-fleet {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.5rem;
+    width: min(100%, var(--bs-chart));
+  }
+
+  .bs-fleet > li {
+    display: grid;
+    min-width: 0;
+  }
+
+  /*
+   * One ship: its own drawing on a strip of water five squares long, and its
+   * name under it. The strip is the same length for all five and ruled like
+   * the board, so the ship's length is read off it the way it is read off the
+   * chart - as how much of the water it covers - and the chip and the board
+   * say the same thing in the same shape. The drawing is the board's own
+   * symbol, painted by the same rules, so a wreck goes dark here when it goes
+   * down there.
+   */
+  .bs-ship {
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 0.4rem;
+    min-width: 0;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius);
+    background-color: var(--site-card);
+    padding: 0.55rem 0.45rem 0.5rem;
     font-size: 0.875rem;
-    font-weight: 560;
-    line-height: 1.5;
+    font-weight: 580;
+    line-height: 1.2;
     text-align: center;
     color: var(--site-fg);
-  }
-
-  .bs-fleet {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 4px;
-    margin-top: 0.5rem;
-  }
-
-  .bs-ship {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    border: 1px solid var(--site-hairline);
-    border-radius: var(--site-radius-pill);
-    background-color: var(--site-card);
-    padding: 0.28rem 0.6rem;
-    font-size: 0.75rem;
-    font-weight: 560;
-    line-height: 1.3;
-    color: var(--site-muted);
     transition:
       border-color 160ms var(--site-ease),
       background-color 160ms var(--site-ease),
       color 160ms var(--site-ease),
-      opacity 200ms var(--site-ease);
+      transform 250ms var(--site-ease-out);
   }
 
-  /* The ship's length as its own hull segments, so the chip and the board say
-     the same thing in the same shape. */
-  .bs-ship-pips {
+  /* Five squares of water, the ruling at the step of one of them, and the
+     ship laid on it from the left at its own length in squares. */
+  .bs-ship-sea {
     display: flex;
-    gap: 2px;
+    width: 100%;
+    aspect-ratio: 5;
+    border-radius: 4px;
+    background-color: var(--bs-sea);
+    background-image: linear-gradient(to left, var(--bs-grid) 1px, transparent 1px);
+    background-size: 20% 100%;
+    box-shadow: 0 0 0 1px var(--bs-grid);
   }
 
-  .bs-ship-pips > span {
-    width: 5px;
-    height: 10px;
-    border-radius: 1px;
-    background-color: var(--bs-hull);
+  .bs-ship-art {
+    display: block;
+    width: calc(var(--len) * 20%);
+    height: 100%;
+    overflow: visible;
+  }
+
+  /* Whole words or a break where the language already has one - a space, or
+     the hyphen in "Contre-torpilleur" - and never inside a word. */
+  .bs-ship-name {
+    max-width: 100%;
+    overflow-wrap: normal;
   }
 
   button.bs-ship {
@@ -1208,8 +1527,8 @@
   }
 
   button.bs-ship:hover {
-    border-color: var(--site-muted);
-    color: var(--site-fg);
+    border-color: color-mix(in oklab, var(--site-accent) 45%, var(--site-hairline));
+    transform: translateY(-2px);
   }
 
   button.bs-ship:focus-visible {
@@ -1221,26 +1540,60 @@
      chip is the outline of something that is not there yet. */
   .bs-ship.is-waiting {
     border-style: dashed;
+    border-color: color-mix(in oklab, var(--site-muted) 60%, transparent);
   }
 
   .bs-ship.is-picked {
     border-color: var(--site-accent);
     border-style: solid;
-    background-color: color-mix(in oklab, var(--site-accent) 12%, transparent);
-    color: var(--site-fg);
+    background-color: color-mix(in oklab, var(--site-accent) 9%, var(--site-card));
+    box-shadow: inset 0 0 0 1px var(--site-accent);
+    color: var(--site-accent);
   }
 
+  /* Down: the name struck through and quiet, and the drawing takes the wreck's
+     paint from the rule that repaints a hull on the board. */
   .bs-ship.is-sunk {
     border-color: transparent;
     background-color: var(--site-inset);
-    opacity: 0.5;
+    color: var(--site-muted);
     text-decoration: line-through;
   }
 
-  .bs-ship.is-sunk .bs-ship-pips > span {
-    background-color: var(--site-muted);
+  /*
+   * A side too narrow for five names across it - a phone, or two boards on a
+   * tablet - shows the five ships alone. "Flugzeugträger" does not fit a
+   * fifth of 330 pixels at any size worth reading, and a name broken inside a
+   * word is worse than none. The name is clipped rather than removed, so it
+   * is still what a screen reader hears and still what a button is called;
+   * the ship it names is drawn right above it, and "Sunk" in the line over
+   * the chart names it too.
+   */
+  @container (max-width: 34rem) {
+    .bs-fleet {
+      gap: 0.4rem;
+    }
+
+    .bs-ship {
+      padding: 0.5rem 0.35rem;
+    }
+
+    .bs-ship-name {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
   }
 
+  /*
+   * The end of a game, over both boards at once.
+   *
+   * Nearly opaque rather than frosted, for 2048's reason: glass over the board
+   * is a tell, and the answer needs no board showing through it.
+   */
   .bs-panel {
     position: absolute;
     inset: 0;
@@ -1249,12 +1602,11 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.6rem;
-    border-radius: var(--site-radius-card);
+    gap: 0.7rem;
+    border-radius: var(--site-radius-inner);
     padding: var(--site-pad);
     text-align: center;
-    background-color: color-mix(in oklab, var(--site-bg) 82%, transparent);
-    backdrop-filter: blur(4px);
+    background-color: color-mix(in oklab, var(--site-card) 93%, transparent);
     animation: bs-panel 240ms var(--site-ease);
   }
 
@@ -1266,27 +1618,20 @@
   .bs-panel-title {
     font-stretch: 116%;
     font-weight: 680;
-    font-size: clamp(1.5rem, 5.5vw, 2.25rem);
-    letter-spacing: -0.03em;
-    line-height: 1.1;
+    font-size: clamp(2rem, 4.4vw, 3.25rem);
+    letter-spacing: -0.04em;
+    line-height: 1.05;
   }
 
   .bs-panel-body {
     max-width: 34rem;
-    font-size: 0.9375rem;
-    line-height: 1.6;
+    font-size: clamp(1rem, 1.5vw, 1.1875rem);
+    line-height: 1.5;
     color: var(--site-muted);
   }
 
   .bs-panel-actions {
-    margin-top: 0.4rem;
-  }
-
-  .bs-hint {
-    margin-top: clamp(0.75rem, 2vw, 1.1rem);
-    font-size: 0.875rem;
-    text-align: center;
-    color: var(--site-muted);
+    margin-top: 0.5rem;
   }
 }
 

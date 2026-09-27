@@ -11,8 +11,14 @@
  * ⚠️ Which panel is up is decided in CSS off `data-state` on the frame, see the
  * .g2048-* rules in styles/games/2048.css. The script sets one attribute and
  * never touches `hidden`, so the two panels can never both be showing.
+ *
+ * The chrome round the board - the head, the stage, the HUD, the hint, the
+ * numbered rules and the write-up - is the family every game page shares, in
+ * styles/games/shared.css. This page is the side-by-side stage: the board is
+ * square and sized off the screen's height, so on a desktop the HUD and the
+ * ladder of tiles take the column beside it.
  */
-import { ArrowLeft, RotateCcw, Undo2 } from "@lucide/astro";
+import { ArrowLeft, Keyboard, RotateCcw, Sparkles, TrendingUp, Trophy, Undo2 } from "@lucide/astro";
 import type { Lang } from "../i18n/types";
 import { getDict, localizePath } from "../i18n/utils";
 import { site } from "../site";
@@ -45,10 +51,19 @@ const index = localizePath("/games/", lang);
 /* Sixteen empty slots behind the tiles. They are the only thing that draws the
    grid, so a tile never has to paint a border to sit in one. */
 const cells = Array.from({ length: 16 });
+
+/* The rungs of the ladder beside the board: one per tile the game is played
+   towards, 2 to 2048, by the same tier the module writes on a tile. The
+   tiers past 2048 are left off - the ladder ends where the aim does. */
+const rungs = Array.from({ length: 11 }, (_, i) => i + 1);
+
+/* The write-up opens on its first paragraph, set large, and the rest runs in
+   columns under it - see `.game-notes-lead` in styles/games/shared.css. */
+const [notesLead, ...notes] = copy.close.paragraphs;
 ---
 
-<div class="page-head">
-  <div class="shell shell-wide">
+<div class="page-head game-head">
+  <div class="shell">
     <div class="crumb-row">
       <a href={index} class="crumb enter">
         <ArrowLeft class="size-4" aria-hidden="true" />
@@ -58,97 +73,141 @@ const cells = Array.from({ length: 16 });
       <GameStamp lang={lang} date={site.games.twentyFortyEight.date} />
     </div>
 
-    <h1 class="page-title enter" style="--enter-delay:80ms">{copy.name}</h1>
+    <h1 class="page-title">
+      <span class="line-mask enter-line" style="--enter-delay:80ms"
+        ><span class="line-in">{copy.name}</span></span
+      >
+    </h1>
 
     <p class="page-lead enter" style="--enter-delay:160ms">{copy.lead}</p>
   </div>
 </div>
 
-<div class="sec-lite">
-  <div class="shell shell-wide">
+<div class="game-play">
+  <div class="shell">
     <div
       class="g2048 enter"
       style="--enter-delay:240ms"
       data-game
       data-state="playing"
     >
-      <div class="g2048-bar">
-        <div class="g2048-meter">
-          <span class="g2048-meter-label">{copy.score}</span>
-          <span class="g2048-meter-value" data-score>0</span>
-        </div>
+      <div class="game-stage game-stage-side">
+        <div class="game-hud">
+          <div class="game-stats">
+            <div class="game-stat tile-cobalt">
+              <span class="game-stat-label">
+                <span class="tile-icon"><Sparkles aria-hidden="true" /></span>
+                {copy.score}
+              </span>
+              <span class="game-stat-value" data-score>0</span>
+            </div>
 
-        <div class="g2048-meter">
-          <span class="g2048-meter-label">{copy.best}</span>
-          <span class="g2048-meter-value" data-best>0</span>
-        </div>
+            <div class="game-stat">
+              <span class="game-stat-label">
+                <span class="tile-icon"><Trophy aria-hidden="true" /></span>
+                {copy.best}
+              </span>
+              <span class="game-stat-value" data-best>0</span>
+            </div>
+          </div>
 
-        <div class="g2048-actions">
-          <SoundToggle lang={lang} />
+          <div class="game-actions">
+            <SoundToggle lang={lang} />
 
-          <button type="button" class="cta-ghost" data-action="undo" disabled>
-            <Undo2 class="size-4 shrink-0" aria-hidden="true" />
-            {copy.undo}
-          </button>
+            <button type="button" class="cta-ghost" data-action="undo" disabled>
+              <Undo2 class="shrink-0" aria-hidden="true" />
+              {copy.undo}
+            </button>
 
-          <button type="button" class="cta-ghost" data-action="restart">
-            <RotateCcw class="size-4 shrink-0" aria-hidden="true" />
-            {copy.newGame}
-          </button>
-        </div>
-      </div>
-
-      {
-        /*
-        The board is hidden from the accessibility tree and the live region
-        below reports it instead. Sixteen cells that rewrite themselves on
-        every keypress would otherwise be read out as a wall of numbers with
-        no order a listener could hold on to.
-      */
-      }
-      <div class="g2048-board" data-board aria-hidden="true">
-        <div class="g2048-cells">
-          {cells.map(() => <div class="g2048-cell" />)}
+            <button type="button" class="cta-ghost" data-action="restart">
+              <RotateCcw class="shrink-0" aria-hidden="true" />
+              {copy.newGame}
+            </button>
+          </div>
         </div>
 
         {
-          /* Tiles are inserted here and never removed except when they merge. */
+          /*
+          The board is hidden from the accessibility tree and the live region
+          below reports it instead. Sixteen cells that rewrite themselves on
+          every keypress would otherwise be read out as a wall of numbers with
+          no order a listener could hold on to.
+        */
         }
-        <div class="g2048-layer" data-layer></div>
+        <div class="game-board g2048-board" data-board aria-hidden="true">
+          <div class="g2048-cells">
+            {cells.map(() => <div class="g2048-cell" />)}
+          </div>
 
-        {/* The burst over a 2048, above the panel that asks what next. */}
-        <div class="game-burst" data-burst></div>
+          {
+            /* Tiles are inserted here and never removed except when they merge. */
+          }
+          <div class="g2048-layer" data-layer></div>
 
-        <div class="g2048-panel" data-panel="won">
-          <p class="g2048-panel-title">{copy.won.title}</p>
-          <p class="g2048-panel-body">{copy.won.body}</p>
+          {/* The burst over a 2048, above the panel that asks what next. */}
+          <div class="game-burst" data-burst></div>
 
-          <div class="g2048-panel-actions">
-            <button type="button" class="cta" data-action="keep-going"
-              >{copy.won.keepGoing}</button
-            >
-            <button type="button" class="cta-ghost" data-action="restart"
-              >{copy.newGame}</button
-            >
+          <div class="g2048-panel" data-panel="won">
+            <p class="g2048-panel-title">{copy.won.title}</p>
+            <p class="g2048-panel-body">{copy.won.body}</p>
+
+            <div class="g2048-panel-actions">
+              <button type="button" class="cta" data-action="keep-going"
+                >{copy.won.keepGoing}</button
+              >
+              <button type="button" class="cta-ghost" data-action="restart"
+                >{copy.newGame}</button
+              >
+            </div>
+          </div>
+
+          <div class="g2048-panel" data-panel="over">
+            <p class="g2048-panel-title">{copy.over.title}</p>
+            <p class="g2048-panel-body">{copy.over.body}</p>
+
+            <div class="g2048-panel-actions">
+              <button type="button" class="cta" data-action="restart"
+                >{copy.over.restart}</button
+              >
+              <button type="button" class="cta-ghost" data-action="undo"
+                >{copy.undo}</button
+              >
+            </div>
           </div>
         </div>
 
-        <div class="g2048-panel" data-panel="over">
-          <p class="g2048-panel-title">{copy.over.title}</p>
-          <p class="g2048-panel-body">{copy.over.body}</p>
+        {
+          /*
+          Every tile the game is played towards, in the ramp's colours, lit as
+          far as the biggest tile on the board - so "the aim is a single tile
+          worth 2048" is a distance you can see closing. Hidden from the
+          accessibility tree because the live region already says the highest
+          tile after every move, and twelve rungs read out would say it again
+          less clearly.
+        */
+        }
+        <div class="game-fill g2048-ladder" aria-hidden="true">
+          <p class="tile-label">
+            <span class="tile-icon"><TrendingUp /></span>
+            {copy.highest}
+          </p>
 
-          <div class="g2048-panel-actions">
-            <button type="button" class="cta" data-action="restart"
-              >{copy.over.restart}</button
-            >
-            <button type="button" class="cta-ghost" data-action="undo"
-              >{copy.undo}</button
-            >
-          </div>
+          <ol class="g2048-rungs">
+            {
+              rungs.map((tier) => (
+                <li class="g2048-rung g2048-tier" data-tier={tier} data-rung>
+                  <span>{2 ** tier}</span>
+                </li>
+              ))
+            }
+          </ol>
         </div>
+
+        <p class="game-hint">
+          <span class="tile-icon"><Keyboard aria-hidden="true" /></span>
+          <span>{copy.hint}</span>
+        </p>
       </div>
-
-      <p class="g2048-hint">{copy.hint}</p>
 
       {
         /* The two words the announcement is built from ride on the element, so
@@ -166,22 +225,26 @@ const cells = Array.from({ length: 16 });
   </div>
 </div>
 
-<Section id="how" label={copy.how.label} width="wide" tone="band">
-  <ul class="svc-grid">
+<Section id="how" label={copy.how.label} tone="band">
+  {/* `role="list"` because the markers are drawn rather than the browser's,
+      and Safari stops announcing a list whose list-style is gone. */}
+  <ol class="card game-steps" role="list">
     {
-      copy.how.items.map((item) => (
-        <li class="card reveal-item">
-          <h3 class="svc-title">{item.title}</h3>
-          <p class="mt-2.5 text-muted">{item.description}</p>
+      copy.how.items.map((item, i) => (
+        <li class="game-step reveal-item">
+          <span class="game-step-n" aria-hidden="true">{i + 1}</span>
+          <h3 class="game-step-title">{item.title}</h3>
+          <p class="game-step-body">{item.description}</p>
         </li>
       ))
     }
-  </ul>
+  </ol>
 </Section>
 
-<Section id="build" label={copy.close.label} width="wide" tone="panel">
-  <div class="prose-columns text-muted">
-    {copy.close.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+<Section id="build" label={copy.close.label} tone="panel">
+  <p class="game-notes-lead reveal">{notesLead}</p>
+  <div class="prose-columns game-notes-cols reveal">
+    {notes.map((paragraph) => <p>{paragraph}</p>)}
   </div>
 </Section>
 
@@ -193,7 +256,8 @@ const cells = Array.from({ length: 16 });
   import { createSound } from "../games/sound";
 
   /*
-   * The page's side of the game: the two figures, the record, and the buttons.
+   * The page's side of the game: the two figures, the ladder, the record, and
+   * the buttons.
    *
    * Everything about the board itself is in the module. This holds the things
    * that are the page's business rather than the game's - what a number is
@@ -210,6 +274,7 @@ const cells = Array.from({ length: 16 });
     const undoButtons = root.querySelectorAll<HTMLButtonElement>(
       '[data-action="undo"]'
     );
+    const rungs = root.querySelectorAll<HTMLElement>("[data-rung]");
 
     const lang = document.documentElement.lang || "en";
     const format = new Intl.NumberFormat(lang);
@@ -278,6 +343,16 @@ const cells = Array.from({ length: 16 });
       },
 
       onAnnounce(score, highest) {
+        // The ladder, off the same figure the announcement carries: every
+        // rung up to the biggest tile lit, and that one marked as the top,
+        // which is what sets off its pop. Past 2048 the ladder is simply full.
+        const top = Math.min(Math.log2(highest), rungs.length);
+        for (const rung of rungs) {
+          const tier = Number(rung.dataset.tier);
+          rung.toggleAttribute("data-reached", tier <= top);
+          rung.toggleAttribute("data-top", tier === top);
+        }
+
         if (!live) return;
 
         // Two figures rather than the board: a listener can hold on to where

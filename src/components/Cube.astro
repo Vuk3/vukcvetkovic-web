@@ -10,10 +10,19 @@
  * What *is* in the markup is everything around the scene: the five puzzles as
  * real radios, the figures, both halves of every line that depends on the
  * state or the puzzle, and the panel at the end. CSS shows one of each off
- * `data-state` and `data-kind` on the frame, so the script never writes a
+ * `data-state` and `data-kind` on the root, so the script never writes a
  * string a reader sees that is not a number or a name.
+ *
+ * The chrome round the scene is the family every game page shares, in
+ * styles/games/shared.css, and from 64rem it is the side-by-side stage: the
+ * scene is the whole wide column, the height of the screen, and the narrow
+ * menu column beside it holds the figures, the buttons, the five puzzles and
+ * the line on how to play - see `.cube .game-stage-side` in
+ * styles/games/cube.css. Stacked, on a phone or a tablet, the figures and the
+ * buttons are one short block over the scene and the five puzzles come after
+ * it, so the puzzle is the first thing under the head.
  */
-import { ArrowLeft, Lightbulb, Shuffle, Undo2, X } from "@lucide/astro";
+import { ArrowLeft, Box, HandGrab, Lightbulb, Rotate3d, Shuffle, Timer, Trophy, Undo2, X } from "@lucide/astro";
 import type { Lang } from "../i18n/types";
 import { getDict, localizePath } from "../i18n/utils";
 import { PUZZLES, TRI_BODY, TRI_STICKER, build } from "../games/cube/game";
@@ -111,10 +120,14 @@ for (let i = 0; i < 3; i++) {
 
 /* Pyramid colours by the cube's index: green, red, blue and yellow. */
 const PYRAMID_ICON = [2, 1, 5, 2, 3, 2, 1, 5, 3];
+
+/* The write-up opens on its first paragraph, set large, and the rest runs in
+   columns under it - see `.game-notes-lead` in styles/games/shared.css. */
+const [notesLead, ...notes] = copy.close.paragraphs;
 ---
 
-<div class="page-head">
-  <div class="shell shell-wide">
+<div class="page-head game-head">
+  <div class="shell">
     <div class="crumb-row">
       <a href={index} class="crumb enter">
         <ArrowLeft class="size-4" aria-hidden="true" />
@@ -124,17 +137,20 @@ const PYRAMID_ICON = [2, 1, 5, 2, 3, 2, 1, 5, 3];
       <GameStamp lang={lang} date={date} />
     </div>
 
-    <h1 class="page-title enter" style="--enter-delay:80ms">
-      {copy.name}
-      {status !== "live" && <span class="page-status">{dict.games.status[status]}</span>}
+    <h1 class="page-title">
+      <span class="line-mask enter-line" style="--enter-delay:80ms"
+        ><span class="line-in"
+          >{copy.name}{status !== "live" && <span class="page-status">{dict.games.status[status]}</span>}</span
+        ></span
+      >
     </h1>
 
     <p class="page-lead enter" style="--enter-delay:160ms">{copy.lead}</p>
   </div>
 </div>
 
-<div class="sec-lite">
-  <div class="shell shell-wide">
+<div class="game-play">
+  <div class="shell">
     <div
       class="cube enter"
       style="--enter-delay:240ms"
@@ -144,181 +160,242 @@ const PYRAMID_ICON = [2, 1, 5, 2, 3, 2, 1, 5, 3];
       data-msg-scrambled={copy.messages.scrambled}
       data-advice={JSON.stringify(copy.advice)}
     >
-      {/*
-        The five puzzles, as real radios for the reasons the minefield's boards
-        are: one tab stop for the set, the arrow keys already work, and the
-        label is the control. Nothing is locked - a puzzle is not a level.
-      */}
-      <fieldset class="cube-puzzles">
-        <legend class="sr-only">{copy.puzzles}</legend>
+      <div class="game-stage game-stage-side">
+        <div class="game-hud">
+          <div class="game-stats">
+            <div class="game-stat tile-cobalt cube-stat-time">
+              <span class="game-stat-label">
+                <span class="tile-icon"><Timer aria-hidden="true" /></span>
+                {copy.time}
+              </span>
+              <span class="game-stat-value" data-time>0.00</span>
+            </div>
 
-        <div class="cube-puzzles-row">
-          {
-            named.map((puzzle) => (
-              <label class="cube-puzzle">
-                <input
-                  type="radio"
-                  name="cube-puzzle"
-                  value={puzzle.id}
-                  checked={puzzle.id === first}
-                  class="sr-only"
-                  data-puzzle-option
-                  data-label={puzzle.label}
-                />
+            <div class="game-stat">
+              <span class="game-stat-label">
+                <span class="tile-icon"><Rotate3d aria-hidden="true" /></span>
+                {copy.moves}
+              </span>
+              <span class="game-stat-value" data-moves>0</span>
+            </div>
 
-                {puzzle.kind === "cube" ? (
-                  <span class="cube-icon" style={`--n:${puzzle.size}`} aria-hidden="true">
-                    {face(puzzle.size).map((colour) => (
-                      <span style={`--c:var(--cube-c${colour})`} />
-                    ))}
-                  </span>
-                ) : (
-                  <span class="cube-icon is-tri" aria-hidden="true">
-                    <svg viewBox="-6 -8 112 100" focusable="false">
-                      <path class="cube-icon-body" d="M50 0 100 86.603 0 86.603Z" />
-                      {triangles.map((points, i) => (
-                        <polygon points={points} style={`--c:var(--cube-c${PYRAMID_ICON[i]})`} />
-                      ))}
-                    </svg>
-                  </span>
-                )}
-
-                <span class="cube-puzzle-name" aria-hidden="true">
-                  {puzzle.label}
-                </span>
-                <span class="sr-only">{puzzle.spoken}</span>
-
-                {/* The best time for each, which is what makes the strip a
-                    record of how far along a reader is. */}
-                <span class="cube-puzzle-best" data-best-of={puzzle.id}>
-                  -
-                </span>
-              </label>
-            ))
-          }
-        </div>
-      </fieldset>
-
-      <div class="cube-bar">
-        <div class="cube-meter">
-          <span class="cube-meter-label">{copy.time}</span>
-          <span class="cube-meter-value" data-time>0.00</span>
-        </div>
-
-        <div class="cube-meter">
-          <span class="cube-meter-label">{copy.moves}</span>
-          <span class="cube-meter-value" data-moves>0</span>
-        </div>
-
-        <div class="cube-meter">
-          <span class="cube-meter-label">{copy.best}</span>
-          <span class="cube-meter-value" data-best>-</span>
-        </div>
-
-        <div class="cube-actions">
-          <SoundToggle lang={lang} />
-
-          {/* Only for the puzzles there is a method for: the page sets
-              `data-hint` on the frame for those, and the rest never show it. */}
-          <button type="button" class="cta-ghost" data-action="hint" aria-pressed="false">
-            <Lightbulb class="size-4 shrink-0" aria-hidden="true" />
-            {copy.advice.button}
-          </button>
-
-          <button type="button" class="cta-ghost" data-action="undo" disabled>
-            <Undo2 class="size-4 shrink-0" aria-hidden="true" />
-            <span class="cube-action-label">{copy.undo}</span>
-          </button>
-
-          <button type="button" class="cta cube-scramble" data-action="scramble">
-            <Shuffle class="size-4 shrink-0" aria-hidden="true" />
-            {copy.scramble}
-          </button>
-        </div>
-      </div>
-
-      <div class="cube-frame">
-        {/*
-          The stage is the size container every length in the scene is taken
-          from, and the element pointer events land on. The scene itself is
-          hidden from a screen reader: a hundred and fifty coloured squares in
-          three dimensions do not read, so the live region below says what
-          happened instead.
-        */}
-        <div class="cube-stage" style={`--cube-span:${span}`} data-stage>
-          <div class="cube-shadow" aria-hidden="true"></div>
-
-          <div class="cube-camera" aria-hidden="true" data-camera>
-            <div class="cube-view" data-kind="cube" data-view></div>
+            <div class="game-stat">
+              <span class="game-stat-label">
+                <span class="tile-icon"><Trophy aria-hidden="true" /></span>
+                {copy.best}
+              </span>
+              <span class="game-stat-value" data-best>-</span>
+            </div>
           </div>
 
-          <p class="cube-cue" aria-hidden="true">
-            <span class="cube-for-idle">{copy.cue.idle}</span>
-            <span class="cube-for-ready">{copy.cue.ready}</span>
-          </p>
-        </div>
+          <div class="game-actions">
+            <SoundToggle lang={lang} />
 
-        {/*
-          The hint. Every word in it is written by the script from
-          `data-advice`, because what it says depends on the move - but the
-          frame of it is here, and it sits beside the stage rather than in it
-          so a press on it is never a press on the puzzle.
-        */}
-        <div class="cube-tip" data-tip aria-live="polite">
-          <div class="cube-tip-head">
-            <span class="cube-tip-step" data-tip-step></span>
-            <button type="button" class="cube-tip-close" data-action="hint-close" aria-label={copy.advice.close}>
-              <X class="size-4" aria-hidden="true" />
+            {/* Only for the puzzles there is a method for: the page sets
+                `data-hint` on the root for those, and the rest never show it.
+                The words here and on Undo are a span of their own so a phone
+                can clip them and keep the icon, as it does the sound switch's -
+                see `.cube-action-word` in styles/games/cube.css. */}
+            <button type="button" class="cta-ghost" data-action="hint" aria-pressed="false">
+              <Lightbulb class="shrink-0" aria-hidden="true" />
+              <span class="cube-action-word">{copy.advice.button}</span>
+            </button>
+
+            <button type="button" class="cta-ghost" data-action="undo" disabled>
+              <Undo2 class="shrink-0" aria-hidden="true" />
+              <span class="cube-action-word">{copy.undo}</span>
+            </button>
+
+            {/* The one filled button in the stage: nothing happens on this page
+                until it is pressed. */}
+            <button type="button" class="cta cube-scramble" data-action="scramble">
+              <Shuffle class="shrink-0" aria-hidden="true" />
+              {copy.scramble}
             </button>
           </div>
-          <p class="cube-tip-title" data-tip-title></p>
-          {/* What to do with your hands, and under it why. */}
-          <p class="cube-tip-do" data-tip-do></p>
-          <p class="cube-tip-text" data-tip-text></p>
-          <p class="cube-tip-alg" data-tip-alg></p>
-          <div class="cube-tip-foot">
-            <span class="cube-tip-left">{copy.advice.left} <b data-tip-left>0</b></span>
-            <button type="button" class="cta-ghost cube-tip-play" data-action="hint-play">{copy.advice.play}</button>
+        </div>
+
+        <div class="game-board cube-frame">
+          {/*
+            The stage is the size container every length in the scene is taken
+            from, and the element pointer events land on. The scene itself is
+            hidden from a screen reader: a hundred and fifty coloured squares in
+            three dimensions do not read, so the live region below says what
+            happened instead.
+          */}
+          <div class="cube-stage" style={`--cube-span:${span}`} data-stage>
+            <div class="cube-shadow" aria-hidden="true"></div>
+
+            <div class="cube-camera" aria-hidden="true" data-camera>
+              <div class="cube-view" data-kind="cube" data-view></div>
+            </div>
+
+            <p class="cube-cue" aria-hidden="true">
+              <span class="cube-for-idle">{copy.cue.idle}</span>
+              <span class="cube-for-ready">{copy.cue.ready}</span>
+            </p>
+          </div>
+
+          {/*
+            The hint. Every word in it is written by the script from
+            `data-advice`, because what it says depends on the move - but the
+            frame of it is here, and it is a sibling of the stage rather than
+            inside it so a press on it is never a press on the puzzle. Beside
+            the scene it is laid over the five puzzles in the column, and on a
+            stacked stage it sits under the scene.
+          */}
+          <div class="cube-tip" data-tip aria-live="polite">
+            <div class="cube-tip-head">
+              <span class="cube-tip-step" data-tip-step></span>
+              <button type="button" class="cube-tip-close" data-action="hint-close" aria-label={copy.advice.close}>
+                <X class="shrink-0" aria-hidden="true" />
+              </button>
+            </div>
+            <p class="cube-tip-title" data-tip-title></p>
+            {/* What to do with your hands, and under it why. */}
+            <p class="cube-tip-do" data-tip-do></p>
+            <p class="cube-tip-text" data-tip-text></p>
+            <p class="cube-tip-alg" data-tip-alg></p>
+            <div class="cube-tip-foot">
+              <span class="cube-tip-left">{copy.advice.left} <b data-tip-left>0</b></span>
+              <button type="button" class="cta-ghost cube-tip-play" data-action="hint-play">{copy.advice.play}</button>
+            </div>
+          </div>
+
+          <div class="game-burst" aria-hidden="true" data-burst></div>
+
+          <div class="cube-panel" data-panel="solved">
+            <p class="cube-panel-puzzle" data-panel-puzzle></p>
+            <p class="cube-panel-title">{copy.won.title}</p>
+
+            {/* The solve's two figures, in the stage's own figure blocks. */}
+            <div class="cube-panel-meters">
+              <div class="game-stat">
+                <span class="game-stat-label">
+                  <span class="tile-icon"><Timer aria-hidden="true" /></span>
+                  {copy.time}
+                </span>
+                <span class="game-stat-value" data-panel-time>0.00</span>
+              </div>
+
+              <div class="game-stat">
+                <span class="game-stat-label">
+                  <span class="tile-icon"><Rotate3d aria-hidden="true" /></span>
+                  {copy.moves}
+                </span>
+                <span class="game-stat-value" data-panel-moves>0</span>
+              </div>
+            </div>
+
+            <p
+              class="cube-panel-body"
+              data-panel-body
+              data-record={copy.won.record}
+              data-assisted={copy.won.assisted}
+            >
+            </p>
+
+            <div class="cube-panel-actions">
+              <button type="button" class="cta" data-action="scramble">{copy.won.again}</button>
+              <button type="button" class="cta-ghost" data-action="next">{copy.won.next}</button>
+            </div>
           </div>
         </div>
 
-        <div class="game-burst" aria-hidden="true" data-burst></div>
+        {/*
+          The five puzzles, as real radios for the reasons the minefield's
+          boards are: one tab stop for the set, the arrow keys already work,
+          and the label is the control. Nothing is locked - a puzzle is not a
+          level.
 
-        <div class="cube-panel" data-panel="solved">
-          <p class="cube-panel-puzzle" data-panel-puzzle></p>
-          <p class="cube-panel-title">{copy.won.title}</p>
+          ⚠️ **A child of the stage rather than of the HUD.** It is the
+          stage's `.game-fill`, a sibling of the HUD so that beside the scene
+          it has a grid cell of its own - the cell the hint card is laid over
+          while hints are showing (see `.cube-tip` in styles/games/cube.css).
+          Inside the HUD it would share the HUD's cell and there would be
+          nothing for the card to cover.
 
-          <div class="cube-panel-meters">
-            <div class="cube-meter">
-              <span class="cube-meter-label">{copy.time}</span>
-              <span class="cube-meter-value" data-panel-time>0.00</span>
-            </div>
+          ⚠️ **After the scene in the markup, and that is its place stacked.**
+          A stacked stage lays its children out in markup order, so on a phone
+          or a tablet the scene comes straight after the figures and the
+          buttons and the five puzzles follow it: the page opens on the 3 × 3
+          and most readers never change it, so the choice does not get to push
+          the puzzle down. Beside the scene the named areas place it in the
+          column under the HUD whatever its order, and no `order` anywhere
+          reshuffles the tab sequence.
 
-            <div class="cube-meter">
-              <span class="cube-meter-label">{copy.moves}</span>
-              <span class="cube-meter-value" data-panel-moves>0</span>
-            </div>
+          The name of the set is shown, as the tile label every picker on the
+          game pages carries.
+        */}
+        <fieldset class="game-fill cube-puzzles">
+          <legend class="tile-label cube-puzzles-title">
+            <span class="tile-icon"><Box aria-hidden="true" /></span>
+            {copy.puzzles}
+          </legend>
+
+          <div class="cube-puzzles-row">
+            {
+              named.map((puzzle) => (
+                <label class="cube-puzzle">
+                  <input
+                    type="radio"
+                    name="cube-puzzle"
+                    value={puzzle.id}
+                    checked={puzzle.id === first}
+                    class="sr-only"
+                    data-puzzle-option
+                    data-label={puzzle.label}
+                  />
+
+                  {puzzle.kind === "cube" ? (
+                    <span class="cube-icon" style={`--n:${puzzle.size}`} aria-hidden="true">
+                      {face(puzzle.size).map((colour) => (
+                        <span style={`--c:var(--cube-c${colour})`} />
+                      ))}
+                    </span>
+                  ) : (
+                    <span class="cube-icon is-tri" aria-hidden="true">
+                      <svg viewBox="-6 -8 112 100" focusable="false">
+                        {/* The edge the plastic catches on a dark page, drawn
+                            under the body and a little wider than it - the
+                            square icons get the same from a ring. */}
+                        <path class="cube-icon-rim" d="M50 0 100 86.603 0 86.603Z" />
+                        <path class="cube-icon-body" d="M50 0 100 86.603 0 86.603Z" />
+                        {triangles.map((points, i) => (
+                          <polygon points={points} style={`--c:var(--cube-c${PYRAMID_ICON[i]})`} />
+                        ))}
+                      </svg>
+                    </span>
+                  )}
+
+                  <span class="cube-puzzle-name" aria-hidden="true">
+                    {puzzle.label}
+                  </span>
+                  <span class="sr-only">{puzzle.spoken}</span>
+
+                  {/* The best time for each, which is what makes the strip a
+                      record of how far along a reader is. The cup says what
+                      the figure is; the figure is written by the script. */}
+                  <span class="cube-puzzle-best">
+                    <Trophy class="shrink-0" aria-hidden="true" />
+                    <span data-best-of={puzzle.id}>-</span>
+                  </span>
+                </label>
+              ))
+            }
           </div>
+        </fieldset>
 
-          <p
-            class="cube-panel-body"
-            data-panel-body
-            data-record={copy.won.record}
-            data-assisted={copy.won.assisted}
-          >
-          </p>
-
-          <div class="cube-panel-actions">
-            <button type="button" class="cta" data-action="scramble">{copy.won.again}</button>
-            <button type="button" class="cta-ghost" data-action="next">{copy.won.next}</button>
-          </div>
-        </div>
+        {/* Both hints are in the markup and the puzzle picks one, so the line
+            is one span with the two inside it. */}
+        <p class="game-hint">
+          <span class="tile-icon"><HandGrab aria-hidden="true" /></span>
+          <span>
+            <span class="cube-for-cube">{copy.hint.cube}</span>
+            <span class="cube-for-pyramid">{copy.hint.pyramid}</span>
+          </span>
+        </p>
       </div>
-
-      <p class="cube-hint">
-        <span class="cube-for-cube">{copy.hint.cube}</span>
-        <span class="cube-for-pyramid">{copy.hint.pyramid}</span>
-      </p>
 
       <p
         class="sr-only"
@@ -347,22 +424,26 @@ const PYRAMID_ICON = [2, 1, 5, 2, 3, 2, 1, 5, 3];
   </defs>
 </svg>
 
-<Section id="how" label={copy.how.label} width="wide" tone="band">
-  <ul class="svc-grid">
+<Section id="how" label={copy.how.label} tone="band">
+  {/* `role="list"` because the markers are drawn rather than the browser's,
+      and Safari stops announcing a list whose list-style is gone. */}
+  <ol class="card game-steps" role="list">
     {
-      copy.how.items.map((item) => (
-        <li class="card reveal-item">
-          <h3 class="svc-title">{item.title}</h3>
-          <p class="mt-2.5 text-muted">{item.description}</p>
+      copy.how.items.map((item, i) => (
+        <li class="game-step reveal-item">
+          <span class="game-step-n" aria-hidden="true">{i + 1}</span>
+          <h3 class="game-step-title">{item.title}</h3>
+          <p class="game-step-body">{item.description}</p>
         </li>
       ))
     }
-  </ul>
+  </ol>
 </Section>
 
-<Section id="build" label={copy.close.label} width="wide" tone="panel">
-  <div class="prose-columns text-muted">
-    {copy.close.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+<Section id="build" label={copy.close.label} tone="panel">
+  <p class="game-notes-lead reveal">{notesLead}</p>
+  <div class="prose-columns game-notes-cols reveal">
+    {notes.map((paragraph) => <p>{paragraph}</p>)}
   </div>
 </Section>
 

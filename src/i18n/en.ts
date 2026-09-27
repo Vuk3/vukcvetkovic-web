@@ -630,8 +630,8 @@ const en = {
     sound: "Sound",
 
     /**
-     * The two words a game's status can carry: on the ribbon across the corner
-     * of its card, and on the badge beside its title. Which one a game gets is
+     * The two words a game's status can carry: on the pill in its card's
+     * title row on the index, and on the badge beside its title. Which one a game gets is
      * `status` in src/site.ts, and a status with no word here is a type error
      * there.
      *

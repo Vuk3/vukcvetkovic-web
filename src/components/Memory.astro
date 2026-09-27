@@ -14,8 +14,23 @@
  *
  * ⚠️ Which panel is up is decided in CSS off `data-state`, as on every game
  * page here. The script sets attributes and never touches `hidden`.
+ *
+ * The chrome round the table is the family every game page shares, in
+ * styles/games/shared.css. On a wide screen the stage is side by side at
+ * every level: the table fills the wide column on the left at the height of
+ * the screen, and the picker, the figures and the buttons are the narrow
+ * column on the right, with the twelve level tiles taking whatever height
+ * the table leaves.
+ *
+ * No level is marked `data-stage-wide`, the minefield's way of stacking a
+ * board too wide for the column. The two widest here, nine and ten across,
+ * used to stack, and measured at 1440x900 they deal cards of 85 and 77
+ * pixels beside the column with the whole table on screen, where stacked
+ * under the picker and the figures the table opened with its last three
+ * rows under the fold - and the stage no longer changes shape between level
+ * ten and eleven.
  */
-import { ArrowLeft, Lock, RotateCcw } from "@lucide/astro";
+import { ArrowLeft, Footprints, Lock, Pointer, RotateCcw, Star, Timer, Trophy } from "@lucide/astro";
 import type { Lang } from "../i18n/types";
 import { getDict, localizePath } from "../i18n/utils";
 import { LEVELS, PICTURES } from "../games/memory/game";
@@ -54,10 +69,12 @@ const modes = ["campaign", "free"] as const satisfies readonly (keyof typeof cop
 const names = Object.fromEntries(PICTURES.map(({ id }) => [id, copy.pictures[id]]));
 
 const three = [0, 1, 2];
+
+const [notesLead, ...notes] = copy.close.paragraphs;
 ---
 
-<div class="page-head">
-  <div class="shell shell-wide">
+<div class="page-head game-head">
+  <div class="shell">
     <div class="crumb-row">
       <a href={index} class="crumb enter">
         <ArrowLeft class="size-4" aria-hidden="true" />
@@ -67,14 +84,18 @@ const three = [0, 1, 2];
       <GameStamp lang={lang} date={site.games.memory.date} />
     </div>
 
-    <h1 class="page-title enter" style="--enter-delay:80ms">{copy.name}</h1>
+    <h1 class="page-title">
+      <span class="line-mask enter-line" style="--enter-delay:80ms"
+        ><span class="line-in">{copy.name}</span></span
+      >
+    </h1>
 
     <p class="page-lead enter" style="--enter-delay:160ms">{copy.lead}</p>
   </div>
 </div>
 
-<div class="sec-lite">
-  <div class="shell shell-wide">
+<div class="game-play">
+  <div class="shell">
     <div
       class="mem enter"
       style="--enter-delay:240ms"
@@ -82,191 +103,219 @@ const three = [0, 1, 2];
       data-state="ready"
       data-mode="campaign"
     >
-      <fieldset class="mem-modes">
-        <legend class="sr-only">{copy.modes}</legend>
+      <div class="game-stage game-stage-side">
+        <div class="game-hud">
+          {/*
+            The picker: the two modes and the twelve boards. Beside the table
+            it is the column's fill and the tiles share out the height the
+            table leaves; stacked, it is the HUD's first row.
+          */}
+          <div class="game-fill mem-picker">
+            <fieldset class="mem-modes">
+              <legend class="sr-only">{copy.modes}</legend>
 
-        {
-          modes.map((id, i) => (
-            <label class="mem-mode">
-              <input
-                type="radio"
-                name="mem-mode"
-                value={id}
-                checked={i === 0}
-                class="sr-only"
-                data-mode-option
-              />
-              <span>{copy.modeNames[id]}</span>
-            </label>
-          ))
-        }
-      </fieldset>
+              {
+                modes.map((id, i) => (
+                  <label class="mem-mode">
+                    <input
+                      type="radio"
+                      name="mem-mode"
+                      value={id}
+                      checked={i === 0}
+                      class="sr-only"
+                      data-mode-option
+                    />
+                    <span>{copy.modeNames[id]}</span>
+                  </label>
+                ))
+              }
+            </fieldset>
 
-      {/*
-        The twelve boards. The words a tile says about its state ride on the
-        fieldset, so the script picks one of them rather than carrying its own.
-      */}
-      <fieldset
-        class="mem-levels"
-        data-levels
-        data-word-level={copy.level}
-        data-word-locked={copy.locked}
-        data-word-open={copy.open}
-        data-word-stars={JSON.stringify(copy.stars)}
-      >
-        <legend class="sr-only">{copy.boards}</legend>
-
-        <div class="mem-levels-row">
-          {
-            LEVELS.map((level, i) => (
-              <label class="mem-level">
-                <input
-                  type="radio"
-                  name="mem-level"
-                  value={i}
-                  checked={i === 0}
-                  class="sr-only"
-                  data-level-option
-                />
-                <span class="sr-only">{`${copy.level} `}</span>
-                <span class="mem-level-n">{i + 1}</span>
-
-                {/* Both ways round, because a phone held upright deals the
-                    board turned a quarter and the tile should say what it
-                    will show. The stylesheet picks one. */}
-                <span class="mem-level-size is-wide" aria-hidden="true">
-                  {level.columns} × {level.rows}
-                </span>
-                <span class="mem-level-size is-tall" aria-hidden="true">
-                  {level.rows} × {level.columns}
-                </span>
-
-                <span class="mem-level-stars" aria-hidden="true">
-                  {three.map(() => (
-                    <svg viewBox="0 0 100 100" focusable="false">
-                      <use href="#mem-rating" />
-                    </svg>
-                  ))}
-                </span>
-
-                <Lock class="mem-level-lock" aria-hidden="true" />
-                <span class="sr-only" data-level-state />
-              </label>
-            ))
-          }
-        </div>
-      </fieldset>
-
-      <div class="mem-bar">
-        <div class="mem-meter">
-          <span class="mem-meter-label">{copy.moves}</span>
-          <span class="mem-meter-value" data-moves>0</span>
-        </div>
-
-        <div class="mem-meter">
-          <span class="mem-meter-label">{copy.time}</span>
-          <span class="mem-meter-value" data-time>0:00</span>
-        </div>
-
-        <div class="mem-meter mem-for-campaign">
-          <span class="mem-meter-label">{copy.best}</span>
-          <span class="mem-meter-value" data-best>-</span>
-        </div>
-
-        {/* Decorative: the panel at the end says how many were earned, in
-            words, and a screen reader should hear it once. */}
-        <div class="mem-meter mem-for-campaign" aria-hidden="true">
-          <span class="mem-meter-label">{copy.goal}</span>
-          <span class="mem-goal" data-goal>
-            {three.map(() => (
-              <svg viewBox="0 0 100 100" focusable="false">
-                <use href="#mem-rating" />
-              </svg>
-            ))}
-          </span>
-        </div>
-
-        <div class="mem-actions">
-          <SoundToggle lang={lang} />
-
-          <button type="button" class="cta-ghost" data-action="restart">
-            <RotateCcw class="size-4 shrink-0" aria-hidden="true" />
-            {copy.newGame}
-          </button>
-        </div>
-      </div>
-
-      <div class="mem-frame">
-        <div class="mem-table">
-          <div class="mem-fit">
-            <div
-              class="mem-board"
-              role="grid"
-              aria-label={copy.gridLabel}
-              data-board
-              data-names={JSON.stringify(names)}
-              data-label-hidden={copy.cells.hidden}
-              data-label-matched={copy.cells.matched}
-              data-msg-pair={copy.messages.pair}
-              data-msg-miss={copy.messages.miss}
+            {/*
+              The twelve boards. The words a tile says about its state ride on the
+              fieldset, so the script picks one of them rather than carrying its own.
+            */}
+            <fieldset
+              class="mem-levels"
+              data-levels
+              data-word-level={copy.level}
+              data-word-locked={copy.locked}
+              data-word-open={copy.open}
+              data-word-stars={JSON.stringify(copy.stars)}
             >
+              <legend class="sr-only">{copy.boards}</legend>
+
+              <div class="mem-levels-row">
+                {
+                  LEVELS.map((level, i) => (
+                    <label class="mem-level">
+                      <input
+                        type="radio"
+                        name="mem-level"
+                        value={i}
+                        checked={i === 0}
+                        class="sr-only"
+                        data-level-option
+                      />
+                      <span class="sr-only">{`${copy.level} `}</span>
+                      <span class="mem-level-n">{i + 1}</span>
+
+                      {/* Both ways round, because a phone held upright deals the
+                          board turned a quarter and the tile should say what it
+                          will show. The stylesheet picks one. */}
+                      <span class="mem-level-size is-wide" aria-hidden="true">
+                        {level.columns} × {level.rows}
+                      </span>
+                      <span class="mem-level-size is-tall" aria-hidden="true">
+                        {level.rows} × {level.columns}
+                      </span>
+
+                      <span class="mem-level-stars" aria-hidden="true">
+                        {three.map(() => (
+                          <svg viewBox="0 0 100 100" focusable="false">
+                            <use href="#mem-rating" />
+                          </svg>
+                        ))}
+                      </span>
+
+                      <Lock class="mem-level-lock" aria-hidden="true" />
+                      <span class="sr-only" data-level-state />
+                    </label>
+                  ))
+                }
+              </div>
+            </fieldset>
+          </div>
+
+          {/* The first figure is the one the game is scored on: the stars and
+              the record are both counted in moves. */}
+          <div class="game-stats">
+            <div class="game-stat tile-cobalt">
+              <span class="game-stat-label">
+                <span class="tile-icon"><Footprints aria-hidden="true" /></span>
+                {copy.moves}
+              </span>
+              <span class="game-stat-value" data-moves>0</span>
+            </div>
+
+            <div class="game-stat">
+              <span class="game-stat-label">
+                <span class="tile-icon"><Timer aria-hidden="true" /></span>
+                {copy.time}
+              </span>
+              <span class="game-stat-value" data-time>0:00</span>
+            </div>
+
+            <div class="game-stat mem-for-campaign">
+              <span class="game-stat-label">
+                <span class="tile-icon"><Trophy aria-hidden="true" /></span>
+                {copy.best}
+              </span>
+              <span class="game-stat-value" data-best>-</span>
+            </div>
+
+            {/* Decorative: the panel at the end says how many were earned, in
+                words, and a screen reader should hear it once. */}
+            <div class="game-stat mem-for-campaign" aria-hidden="true">
+              <span class="game-stat-label">
+                <span class="tile-icon"><Star /></span>
+                {copy.goal}
+              </span>
+              <span class="game-stat-value mem-goal" data-goal>
+                {three.map(() => (
+                  <svg viewBox="0 0 100 100" focusable="false">
+                    <use href="#mem-rating" />
+                  </svg>
+                ))}
+              </span>
             </div>
           </div>
-        </div>
 
-        {/* How much of the board is found, as a line along the top of the
-            table. Decorative: the live region says each pair as it lands. */}
-        <div class="mem-progress" aria-hidden="true"></div>
+          <div class="game-actions">
+            <SoundToggle lang={lang} />
 
-        <div class="game-burst" aria-hidden="true" data-burst></div>
-
-        <div class="mem-panel" data-panel="won">
-          <p class="mem-panel-level" data-panel-level></p>
-          <p class="mem-panel-title">{copy.won.title}</p>
-
-          <div class="mem-panel-stars mem-for-campaign" aria-hidden="true" data-panel-stars>
-            {three.map(() => (
-              <svg viewBox="0 0 100 100" focusable="false">
-                <use href="#mem-rating" />
-              </svg>
-            ))}
-          </div>
-
-          <div class="mem-panel-meters">
-            <div class="mem-meter">
-              <span class="mem-meter-label">{copy.moves}</span>
-              <span class="mem-meter-value" data-panel-moves>0</span>
-            </div>
-
-            <div class="mem-meter">
-              <span class="mem-meter-label">{copy.time}</span>
-              <span class="mem-meter-value" data-panel-time>0:00</span>
-            </div>
-          </div>
-
-          {/* Both sentences ride on the element, the way the minefield's
-              record line does, and the script joins whichever apply. */}
-          <p
-            class="mem-panel-body"
-            data-panel-body
-            data-record={copy.won.record}
-            data-final={copy.won.final}
-          >
-          </p>
-
-          <div class="mem-panel-actions">
-            <button type="button" class="cta" data-action="next">
-              <span class="mem-for-campaign">{copy.won.next}</span>
-              <span class="mem-for-free">{copy.won.bigger}</span>
-            </button>
             <button type="button" class="cta-ghost" data-action="restart">
-              {copy.won.again}
+              <RotateCcw class="shrink-0" aria-hidden="true" />
+              {copy.newGame}
             </button>
           </div>
         </div>
-      </div>
 
-      <p class="mem-hint">{copy.hint}</p>
+        <div class="game-board mem-frame">
+          <div class="mem-table">
+            <div class="mem-fit">
+              <div
+                class="mem-board"
+                role="grid"
+                aria-label={copy.gridLabel}
+                data-board
+                data-names={JSON.stringify(names)}
+                data-label-hidden={copy.cells.hidden}
+                data-label-matched={copy.cells.matched}
+                data-msg-pair={copy.messages.pair}
+                data-msg-miss={copy.messages.miss}
+              >
+              </div>
+            </div>
+          </div>
+
+          {/* How much of the board is found, as a line along the top of the
+              table. Decorative: the live region says each pair as it lands. */}
+          <div class="mem-progress" aria-hidden="true"></div>
+
+          <div class="game-burst" aria-hidden="true" data-burst></div>
+
+          <div class="mem-panel" data-panel="won">
+            <p class="mem-panel-level" data-panel-level></p>
+            <p class="mem-panel-title">{copy.won.title}</p>
+
+            <div class="mem-panel-stars mem-for-campaign" aria-hidden="true" data-panel-stars>
+              {three.map(() => (
+                <svg viewBox="0 0 100 100" focusable="false">
+                  <use href="#mem-rating" />
+                </svg>
+              ))}
+            </div>
+
+            <div class="mem-panel-meters">
+              <div class="mem-meter">
+                <span class="mem-meter-label">{copy.moves}</span>
+                <span class="mem-meter-value" data-panel-moves>0</span>
+              </div>
+
+              <div class="mem-meter">
+                <span class="mem-meter-label">{copy.time}</span>
+                <span class="mem-meter-value" data-panel-time>0:00</span>
+              </div>
+            </div>
+
+            {/* Both sentences ride on the element, the way the minefield's
+                record line does, and the script joins whichever apply. */}
+            <p
+              class="mem-panel-body"
+              data-panel-body
+              data-record={copy.won.record}
+              data-final={copy.won.final}
+            >
+            </p>
+
+            <div class="mem-panel-actions">
+              <button type="button" class="cta" data-action="next">
+                <span class="mem-for-campaign">{copy.won.next}</span>
+                <span class="mem-for-free">{copy.won.bigger}</span>
+              </button>
+              <button type="button" class="cta-ghost" data-action="restart">
+                {copy.won.again}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <p class="game-hint">
+          <span class="tile-icon"><Pointer aria-hidden="true" /></span>
+          <span>{copy.hint}</span>
+        </p>
+      </div>
 
       {/* The table announces its cards through the grid roles. This carries
           what a turn did and how a board ended, which the grid cannot. */}
@@ -284,22 +333,26 @@ const three = [0, 1, 2];
 
 <MemorySprites />
 
-<Section id="how" label={copy.how.label} width="wide" tone="band">
-  <ul class="svc-grid">
+<Section id="how" label={copy.how.label} tone="band">
+  {/* `role="list"` because the markers are drawn rather than the browser's,
+      and Safari stops announcing a list whose list-style is gone. */}
+  <ol class="card game-steps" role="list">
     {
-      copy.how.items.map((item) => (
-        <li class="card reveal-item">
-          <h3 class="svc-title">{item.title}</h3>
-          <p class="mt-2.5 text-muted">{item.description}</p>
+      copy.how.items.map((item, i) => (
+        <li class="game-step reveal-item">
+          <span class="game-step-n" aria-hidden="true">{i + 1}</span>
+          <h3 class="game-step-title">{item.title}</h3>
+          <p class="game-step-body">{item.description}</p>
         </li>
       ))
     }
-  </ul>
+  </ol>
 </Section>
 
-<Section id="build" label={copy.close.label} width="wide" tone="panel">
-  <div class="prose-columns text-muted">
-    {copy.close.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+<Section id="build" label={copy.close.label} tone="panel">
+  <p class="game-notes-lead reveal">{notesLead}</p>
+  <div class="prose-columns game-notes-cols reveal">
+    {notes.map((paragraph) => <p>{paragraph}</p>)}
   </div>
 </Section>
 

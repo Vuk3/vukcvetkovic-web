@@ -2,7 +2,7 @@
 /**
  * The thumbnail for 2048 on the games index.
  *
- * A still of a board rather than an icon or a screenshot. It is eight cells of
+ * A still of a board rather than an icon or a screenshot. It is ten cells of
  * the real thing - the same tray, the same cells, the same `--g2048-tier`
  * ramp - so it costs no image, stays sharp at any size, and answers the theme
  * toggle along with everything else. A screenshot would do none of those and
@@ -14,7 +14,8 @@
  */
 import '../../styles/games/2048.css';
 
-/** Row-major, 5 across and 2 down. `null` is an empty cell. */
+/** Row-major, 5 across and 2 down. `null` is an empty cell, and the one the
+    index lands a new two in on hover - see styles/games/index.css. */
 const cells = [
   [2, 8, null, 64, 256],
   [4, 32, 128, 1024, 2048],

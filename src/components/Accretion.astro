@@ -4,7 +4,7 @@
  *
  * The well is empty in the markup and filled by the module, because every body
  * in it is created by play. What the markup does own is the frame, the sky, the
- * panel at the end, the readouts and the sequence beside the board - and the
+ * panel at the end, the figures and the sequence beside the well - and the
  * sequence is worth having: a merge game is unreadable until you know what
  * turns into what, and the answer here is ten objects everyone already knows
  * the order of.
@@ -13,11 +13,17 @@
  * carries a `scale()` that maps the simulation onto whatever width the page
  * gave it, and anything inside it is scaled with it - which is right for a
  * planet and wrong for a sentence.
+ *
+ * The chrome round the well is the family every game page shares, in
+ * styles/games/shared.css. On a wide screen the stage is side by side: the
+ * well on the left at the height of the screen, standing in a column of the
+ * same night, and the figures, the buttons, the sequence and the hint in the
+ * narrow menu column on the right.
  */
-import { ArrowLeft, RotateCcw } from "@lucide/astro";
+import { ArrowLeft, ArrowUpNarrowWide, MoveHorizontal, Orbit, RotateCcw, Sparkles, Trophy } from "@lucide/astro";
 import type { Lang } from "../i18n/types";
 import { getDict, localizePath } from "../i18n/utils";
-import { LOSS_Y, TIERS, WORLD_H, WORLD_W } from "../games/accretion/game";
+import { LOSS_Y, RADII, TIERS, WORLD_H, WORLD_W } from "../games/accretion/game";
 import { site } from "../site";
 import GameStamp from "./GameStamp.astro";
 import Section from "./Section.astro";
@@ -57,6 +63,16 @@ const { status, date } = site.games.accretion;
  * behind it is a type error on the line below rather than a blank in the list.
  */
 const sequence = Array.from({ length: TIERS }, (_, tier) => tier);
+
+/*
+ * How big each body is drawn in the sequence, as a share of the Sun: the
+ * radius table's own ratio, under a square root. Straight, the Moon is a
+ * tenth of the Sun and comes out a six pixel dot beside it; rooted it is a
+ * third, still plainly a Moon. The stylesheet flattens it further, since the
+ * steps are a grid of equal cells - see `--acc-scale` in
+ * styles/games/accretion.css.
+ */
+const grow = (tier: number) => Math.round(Math.sqrt(RADII[tier] / RADII[TIERS - 1]) * 1000) / 1000;
 
 /* The box the well is drawn into, so the markup and the simulation cannot
    disagree about its shape or about where the line sits. */
@@ -147,10 +163,14 @@ const near = (() => {
     spikes: i % 3 === 0,
   }));
 })();
+
+/* The write-up opens on its first paragraph, set large, and the rest runs in
+   columns under it - see `.game-notes-lead` in styles/games/shared.css. */
+const [notesLead, ...notes] = copy.close.paragraphs;
 ---
 
-<div class="page-head">
-  <div class="shell shell-wide">
+<div class="page-head game-head">
+  <div class="shell">
     <div class="crumb-row">
       <a href={index} class="crumb enter">
         <ArrowLeft class="size-4" aria-hidden="true" />
@@ -160,191 +180,236 @@ const near = (() => {
       <GameStamp lang={lang} date={date} />
     </div>
 
-    <h1 class="page-title enter" style="--enter-delay:80ms">
-      {copy.name}
-      {status !== "live" && <span class="page-status">{dict.games.status[status]}</span>}
+    {/* The badge inside the rising line, so it arrives with the name and a
+        screen reader hears "Accretion, Beta" as one heading. */}
+    <h1 class="page-title">
+      <span class="line-mask enter-line" style="--enter-delay:80ms"
+        ><span class="line-in"
+          >{copy.name}{status !== "live" && <span class="page-status">{dict.games.status[status]}</span>}</span
+        ></span
+      >
     </h1>
 
     <p class="page-lead enter" style="--enter-delay:160ms">{copy.lead}</p>
   </div>
 </div>
 
-<div class="sec-lite">
-  <div class="shell shell-wide">
+<div class="game-play">
+  <div class="shell">
     <div class="acc enter" style="--enter-delay:240ms" data-game data-state="playing" data-ready>
-      <div class="acc-bar">
-        <div class="acc-meter">
-          <span class="acc-meter-label">{copy.score}</span>
-          <span class="acc-meter-value" data-score>0</span>
+      <div class="game-stage game-stage-side">
+        <div class="game-hud">
+          <div class="game-stats">
+            <div class="game-stat tile-cobalt">
+              <span class="game-stat-label">
+                <span class="tile-icon"><Sparkles aria-hidden="true" /></span>
+                {copy.score}
+              </span>
+              <span class="game-stat-value" data-score>0</span>
+            </div>
+
+            <div class="game-stat">
+              <span class="game-stat-label">
+                <span class="tile-icon"><Trophy aria-hidden="true" /></span>
+                {copy.best}
+              </span>
+              <span class="game-stat-value" data-best>0</span>
+            </div>
+
+            {/* What is coming, which is the only information a player plans
+                with - and the one figure that is a picture rather than a
+                number, because the answer is an object. */}
+            <div class="game-stat acc-next">
+              <span class="game-stat-label">
+                <span class="tile-icon"><Orbit aria-hidden="true" /></span>
+                {copy.next}
+              </span>
+              <span class="game-stat-value acc-next-value">
+                <span class="acc-next-body acc-body" data-tier="0" data-next aria-hidden="true"></span>
+                <span class="acc-next-name" data-next-name>{copy.planets[0]}</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="game-actions">
+            <SoundToggle lang={lang} />
+
+            <button type="button" class="cta-ghost" data-action="restart">
+              <RotateCcw class="shrink-0" aria-hidden="true" />
+              {copy.newGame}
+            </button>
+          </div>
         </div>
 
-        <div class="acc-meter">
-          <span class="acc-meter-label">{copy.best}</span>
-          <span class="acc-meter-value" data-best>0</span>
-        </div>
+        <div class="game-board acc-field" style={shape} data-field>
+          {/*
+            The sky, back to front, each layer at its depth. See the note in the
+            frontmatter. The nebulae are fractal noise, each confined to its own
+            region by the filter and faded out towards the edge of it by a mask,
+            so the noise is only ever computed where it is seen.
+          */}
+          <div class="acc-sky" aria-hidden="true">
+            <svg class="acc-sky-layer" data-depth="0.15" viewBox={`0 0 ${WORLD_W} ${WORLD_H}`} preserveAspectRatio="xMidYMid slice">
+              {far.map((group) => <path class={`acc-dust acc-dust-${group.tone}`} d={group.d} stroke-width={group.size} opacity={group.alpha} />)}
+            </svg>
 
-        {/* What is coming, which is the only information a player plans with. */}
-        <div class="acc-next">
-          <span class="acc-meter-label">{copy.next}</span>
-          <span class="acc-next-body acc-body" data-tier="0" data-next aria-hidden="true"></span>
-          <span class="acc-next-name" data-next-name>{copy.planets[0]}</span>
-        </div>
-
-        <div class="acc-actions">
-          <SoundToggle lang={lang} />
-
-          <button type="button" class="cta-ghost" data-action="restart">
-            <RotateCcw class="size-4 shrink-0" aria-hidden="true" />
-            {copy.newGame}
-          </button>
-        </div>
-      </div>
-
-      <div class="acc-field" style={shape} data-field>
-        {/*
-          The sky, back to front, each layer at its depth. See the note in the
-          frontmatter. The nebulae are fractal noise, each confined to its own
-          region by the filter and faded out towards the edge of it by a mask,
-          so the noise is only ever computed where it is seen.
-        */}
-        <div class="acc-sky" aria-hidden="true">
-          <svg class="acc-sky-layer" data-depth="0.15" viewBox={`0 0 ${WORLD_W} ${WORLD_H}`} preserveAspectRatio="xMidYMid slice">
-            {far.map((group) => <path class={`acc-dust acc-dust-${group.tone}`} d={group.d} stroke-width={group.size} opacity={group.alpha} />)}
-          </svg>
-
-          <svg class="acc-sky-layer acc-nebulae" data-depth="0.3" viewBox={`0 0 ${WORLD_W} ${WORLD_H}`} preserveAspectRatio="xMidYMid slice">
-            <defs>
-              <radialGradient id="acc-fade">
-                <stop offset="0" stop-color="white" />
-                <stop offset="0.5" stop-color="white" stop-opacity="0.5" />
-                <stop offset="1" stop-color="white" stop-opacity="0" />
-              </radialGradient>
+            <svg class="acc-sky-layer acc-nebulae" data-depth="0.3" viewBox={`0 0 ${WORLD_W} ${WORLD_H}`} preserveAspectRatio="xMidYMid slice">
+              <defs>
+                <radialGradient id="acc-fade">
+                  <stop offset="0" stop-color="white" />
+                  <stop offset="0.5" stop-color="white" stop-opacity="0.5" />
+                  <stop offset="1" stop-color="white" stop-opacity="0" />
+                </radialGradient>
+                {
+                  clouds.map((cloud) => (
+                    <>
+                      <filter
+                        id={`acc-cloud-${cloud.id}`}
+                        filterUnits="userSpaceOnUse"
+                        x={cloud.x}
+                        y={cloud.y}
+                        width={cloud.w}
+                        height={cloud.h}
+                        color-interpolation-filters="sRGB"
+                      >
+                        <feTurbulence type="fractalNoise" baseFrequency={cloud.frequency} numOctaves="4" seed={cloud.seed} result="noise" />
+                        <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2.6 0 0 0 -0.95" result="wisps" />
+                        <feFlood class={`acc-nebula-${cloud.id}`} />
+                        <feComposite in2="wisps" operator="in" />
+                      </filter>
+                      <mask id={`acc-mask-${cloud.id}`} maskUnits="userSpaceOnUse" x={cloud.x} y={cloud.y} width={cloud.w} height={cloud.h}>
+                        <rect x={cloud.x} y={cloud.y} width={cloud.w} height={cloud.h} fill="url(#acc-fade)" />
+                      </mask>
+                    </>
+                  ))
+                }
+              </defs>
               {
                 clouds.map((cloud) => (
-                  <>
-                    <filter
-                      id={`acc-cloud-${cloud.id}`}
-                      filterUnits="userSpaceOnUse"
-                      x={cloud.x}
-                      y={cloud.y}
-                      width={cloud.w}
-                      height={cloud.h}
-                      color-interpolation-filters="sRGB"
-                    >
-                      <feTurbulence type="fractalNoise" baseFrequency={cloud.frequency} numOctaves="4" seed={cloud.seed} result="noise" />
-                      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2.6 0 0 0 -0.95" result="wisps" />
-                      <feFlood class={`acc-nebula-${cloud.id}`} />
-                      <feComposite in2="wisps" operator="in" />
-                    </filter>
-                    <mask id={`acc-mask-${cloud.id}`} maskUnits="userSpaceOnUse" x={cloud.x} y={cloud.y} width={cloud.w} height={cloud.h}>
-                      <rect x={cloud.x} y={cloud.y} width={cloud.w} height={cloud.h} fill="url(#acc-fade)" />
-                    </mask>
-                  </>
+                  <rect
+                    x={cloud.x}
+                    y={cloud.y}
+                    width={cloud.w}
+                    height={cloud.h}
+                    filter={`url(#acc-cloud-${cloud.id})`}
+                    mask={`url(#acc-mask-${cloud.id})`}
+                  />
                 ))
               }
-            </defs>
-            {
-              clouds.map((cloud) => (
-                <rect
-                  x={cloud.x}
-                  y={cloud.y}
-                  width={cloud.w}
-                  height={cloud.h}
-                  filter={`url(#acc-cloud-${cloud.id})`}
-                  mask={`url(#acc-mask-${cloud.id})`}
-                />
-              ))
-            }
-          </svg>
+            </svg>
 
-          <svg class="acc-sky-layer" data-depth="0.5" viewBox={`0 0 ${WORLD_W} ${WORLD_H}`} preserveAspectRatio="xMidYMid slice">
-            {mid.map((group) => <path class={`acc-dust acc-dust-${group.tone}`} d={group.d} stroke-width={group.size} opacity={group.alpha} />)}
-          </svg>
+            <svg class="acc-sky-layer" data-depth="0.5" viewBox={`0 0 ${WORLD_W} ${WORLD_H}`} preserveAspectRatio="xMidYMid slice">
+              {mid.map((group) => <path class={`acc-dust acc-dust-${group.tone}`} d={group.d} stroke-width={group.size} opacity={group.alpha} />)}
+            </svg>
 
-          <div class="acc-sky-layer" data-depth="1">
-            <span class="acc-galaxy"></span>
-            {
-              near.map((star) => (
-                <span
-                  class="acc-star"
-                  data-tone={star.tone}
-                  data-spikes={star.spikes ? "" : undefined}
-                  style={`left:${star.x}%;top:${star.y}%;--acc-star-size:${star.size}px;--acc-twinkle:${star.twinkle}s;--acc-delay:${star.delay}s`}
-                />
-              ))
-            }
-            <span class="acc-meteor" style="left:92%;top:7%;--acc-every:17s;--acc-delay:-5s"></span>
-            <span class="acc-meteor" style="left:58%;top:34%;--acc-every:29s;--acc-delay:-19s"></span>
+            <div class="acc-sky-layer" data-depth="1">
+              <span class="acc-galaxy"></span>
+              {
+                near.map((star) => (
+                  <span
+                    class="acc-star"
+                    data-tone={star.tone}
+                    data-spikes={star.spikes ? "" : undefined}
+                    style={`left:${star.x}%;top:${star.y}%;--acc-star-size:${star.size}px;--acc-twinkle:${star.twinkle}s;--acc-delay:${star.delay}s`}
+                  />
+                ))
+              }
+              <span class="acc-meteor" style="left:92%;top:7%;--acc-every:17s;--acc-delay:-5s"></span>
+              <span class="acc-meteor" style="left:58%;top:34%;--acc-every:29s;--acc-delay:-19s"></span>
+            </div>
+          </div>
+
+          {/* Everything in here is in world units and scaled as one. */}
+          <div class="acc-world" data-world></div>
+
+          {/*
+            ⚠️ The line is a sibling of the world, not a child of it. Inside, it
+            was drawn in world units and then scaled with everything else, so any
+            rounding in the scale left it stopping short of the right-hand wall.
+            Out here it is a percentage of the field and always spans it exactly.
+          */}
+          <div class="acc-line" aria-hidden="true"></div>
+
+          {/*
+            The burst over the first Sun, and the only thing on screen that marks it. There
+            is no panel and no pause: the Sun is a body like the others, and the
+            game goes on around it.
+          */}
+          <div class="game-burst" aria-hidden="true" data-burst></div>
+
+          <div class="acc-panel" data-panel="over">
+            <p class="acc-panel-title">{copy.over.title}</p>
+            <p class="acc-panel-body">{copy.over.body}</p>
+
+            <div class="acc-panel-actions">
+              <button type="button" class="cta" data-action="restart">{copy.over.restart}</button>
+            </div>
           </div>
         </div>
 
-        {/* Everything in here is in world units and scaled as one. */}
-        <div class="acc-world" data-world></div>
-
         {/*
-          ⚠️ The line is a sibling of the world, not a child of it. Inside, it
-          was drawn in world units and then scaled with everything else, so any
-          rounding in the scale left it stopping short of the right-hand wall.
-          Out here it is a percentage of the field and always spans it exactly.
+          The sequence, as the menu column's fill beside the well and a strip
+          under it on a phone. It is the legend and it is also the drawing:
+          the same `.acc-body` the well is full of, so the page cannot show
+          one thing and the game another, each drawn bigger than the last, so
+          "from smallest to largest" is something you see rather than read. It
+          lights up as far as the well has got, the only progress a merge game
+          has.
         */}
-        <div class="acc-line" aria-hidden="true"></div>
+        <div class="game-fill acc-chain">
+          {/* Hidden from the accessibility tree and named by the list
+              instead, so a screen reader hears the words once, as the name
+              of the ten items, rather than as a line and then the list. */}
+          <p class="tile-label" id="acc-sequence" aria-hidden="true">
+            <span class="tile-icon"><ArrowUpNarrowWide aria-hidden="true" /></span>
+            {copy.sequence}
+          </p>
 
-        {/*
-          The burst over the first Sun, and the only thing on screen that marks it. There
-          is no panel and no pause: the Sun is a body like the others, and the
-          game goes on around it.
-        */}
-        <div class="game-burst" aria-hidden="true" data-burst></div>
-
-        <div class="acc-panel" data-panel="over">
-          <p class="acc-panel-title">{copy.over.title}</p>
-          <p class="acc-panel-body">{copy.over.body}</p>
-
-          <div class="acc-panel-actions">
-            <button type="button" class="cta" data-action="restart">{copy.over.restart}</button>
-          </div>
+          <ol class="acc-links" aria-labelledby="acc-sequence">
+            {
+              sequence.map((tier) => (
+                <li class="acc-link" data-reached={tier === 0 ? "" : undefined} style={`--acc-grow:${grow(tier)}`}>
+                  <span class="acc-chain-slot" aria-hidden="true">
+                    <span class="acc-chain-body acc-body" data-tier={tier} />
+                  </span>
+                  <span class="acc-chain-name">{copy.planets[tier]}</span>
+                </li>
+              ))
+            }
+          </ol>
         </div>
+
+        <p class="game-hint">
+          <span class="tile-icon"><MoveHorizontal aria-hidden="true" /></span>
+          <span>{copy.hint}</span>
+        </p>
       </div>
-
-      <p class="acc-hint">{copy.hint}</p>
-
-      {/*
-        The sequence. It is the legend and it is also the drawing: the same
-        `.acc-body` the well is full of, at a size that fits a line of text, so
-        the card cannot show one thing and the game another.
-      */}
-      <ol class="acc-chain" aria-label={copy.sequence}>
-        {
-          sequence.map((tier) => (
-            <li class="acc-link" data-reached={tier === 0 ? "" : undefined}>
-              <span class="acc-chain-body acc-body" data-tier={tier} aria-hidden="true" />
-              <span class="acc-chain-name">{copy.planets[tier]}</span>
-            </li>
-          ))
-        }
-      </ol>
 
       <p class="sr-only" aria-live="polite" data-live></p>
     </div>
   </div>
 </div>
 
-<Section id="how" label={copy.how.label} width="wide" tone="band">
-  <ul class="svc-grid">
+<Section id="how" label={copy.how.label} tone="band">
+  {/* `role="list"` because the markers are drawn rather than the browser's,
+      and Safari stops announcing a list whose list-style is gone. */}
+  <ol class="card game-steps" role="list">
     {
-      copy.how.items.map((item) => (
-        <li class="card reveal-item">
-          <h3 class="svc-title">{item.title}</h3>
-          <p class="mt-2.5 text-muted">{item.description}</p>
+      copy.how.items.map((item, i) => (
+        <li class="game-step reveal-item">
+          <span class="game-step-n" aria-hidden="true">{i + 1}</span>
+          <h3 class="game-step-title">{item.title}</h3>
+          <p class="game-step-body">{item.description}</p>
         </li>
       ))
     }
-  </ul>
+  </ol>
 </Section>
 
-<Section id="build" label={copy.close.label} width="wide" tone="panel">
-  <div class="prose-columns text-muted">
-    {copy.close.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+<Section id="build" label={copy.close.label} tone="panel">
+  <p class="game-notes-lead reveal">{notesLead}</p>
+  <div class="prose-columns game-notes-cols reveal">
+    {notes.map((paragraph) => <p>{paragraph}</p>)}
   </div>
 </Section>
 
@@ -385,7 +450,7 @@ const near = (() => {
     /* The first Sun bursts in the planets' own colours, Mars to the Sun. */
     const COLOURS = [2, 3, 4, 5, 6, 7, 8, 9].map((tier) => `var(--acc-p${tier})`);
 
-    // The names are in the markup already, in the sequence under the board, so
+    // The names are in the markup already, in the sequence beside the well, so
     // the script reads them back rather than being handed a second copy.
     const names = [...links].map((link) => link.querySelector(".acc-chain-name")?.textContent ?? "");
 

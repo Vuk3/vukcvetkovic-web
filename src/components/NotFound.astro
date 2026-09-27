@@ -2,10 +2,17 @@
 /**
  * The 404 body, shared by /404 and /[lang]/404 so the two cannot drift - the
  * same arrangement as Home.astro.
+ *
+ * The status is the picture: its three characters as three tiles that drop
+ * onto the page one after another and bounce as they land, like discs going
+ * into a Four in a Row board, with the heading, the line of explanation and
+ * the way home in a tile beside them. The styles, the reasoning behind the
+ * sizes and the motion are in styles/notfound.css.
  */
 import { ArrowLeft } from '@lucide/astro';
 import type { Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
+import '../styles/notfound.css';
 
 interface Props {
   lang: Lang;
@@ -16,24 +23,59 @@ const dict = getDict(lang);
 
 // Locale-aware, so a German 404 sends the reader to the German homepage.
 const home = localizePath('/', lang);
+
+/*
+ * The digits come from the dictionary rather than being written here, so the
+ * status stays one string in one place. Each takes one of the site's three
+ * surfaces in turn - paper, cobalt, ink - which is the whole palette said in
+ * three tiles. `.panel` and `.tile-cobalt` re-declare every token, so the
+ * numeral inside simply reads `--site-fg` and comes out right on each.
+ */
+const digits = Array.from(dict.notFound.status);
+const surfaces = ['notfound-paper', 'tile-cobalt', 'panel'] as const;
 ---
 
-{/* In view at first paint, so it uses the load sequence rather than a scroll reveal. */}
+{/*
+  In view at first paint, so it uses the load sequence rather than a scroll
+  reveal: the digits drop at 0, 130 and 260ms, and the tile beside them rises
+  while the last one is still bouncing.
+*/}
 <section class="notfound">
-  <div class="shell shell-hero">
-    <p class="notfound-status enter">{dict.notFound.status}</p>
+  <div class="shell notfound-grid">
+    {/*
+      Decorative: three tiles of numerals would be read out as three separate
+      words. The status is announced once, as text, from the tile beside them.
+    */}
+    <div class="notfound-digits" aria-hidden="true">
+      {
+        digits.map((digit, index) => (
+          <span
+            class:list={['card notfound-digit', surfaces[index % surfaces.length]]}
+            style={`--enter-delay:${index * 130}ms`}
+          >
+            <span class="notfound-glyph">{digit}</span>
+          </span>
+        ))
+      }
+    </div>
 
-    <h1 class="notfound-heading enter" style="--enter-delay:80ms">{dict.notFound.heading}</h1>
+    <div class="card notfound-copy enter" style="--enter-delay:300ms">
+      <p class="sr-only">{dict.notFound.status}</p>
 
-    <div class="enter" style="--enter-delay:180ms">
-      <p class="notfound-body">{dict.notFound.body}</p>
+      <h1 class="notfound-heading">
+        <span class="line-mask enter-line" style="--enter-delay:420ms"
+          ><span class="line-in">{dict.notFound.heading}</span></span
+        >
+      </h1>
 
-      <p class="mt-8">
+      <div class="notfound-foot">
+        <p class="notfound-body">{dict.notFound.body}</p>
+
         <a href={home} class="cta">
           <ArrowLeft class="size-[1.05rem]" aria-hidden="true" />
           {dict.notFound.cta}
         </a>
-      </p>
+      </div>
     </div>
   </div>
 </section>

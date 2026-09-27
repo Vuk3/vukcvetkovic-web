@@ -1,12 +1,14 @@
 /*
- * What every game page has and no other page does: the sound switch, the burst
- * over a board that has just been won, and the jolt a board takes when
- * something goes off on it.
+ * What every game page has and no other page does: the chrome round a board,
+ * and the three things every game throws in - the sound switch, the burst over
+ * a board that has just been won, and the jolt a board takes when something
+ * goes off on it.
  *
  * Imported by each of the seven game components, after that game's own file,
- * and nowhere else. ⚠️ **After, because order decides a tie here**: the sound
- * switch has to win over each game's `-actions .cta-ghost` rule on a phone, at
- * the same specificity. See docs/design-system.md §9.
+ * and nowhere else - the games index does not carry it. ⚠️ **After, because
+ * order decides a tie here**: the sound switch has to win over each game's
+ * `-actions .cta-ghost` rule on a phone, at the same specificity. See
+ * docs/design-system.md §9.
  */
 
 /*
@@ -17,13 +19,675 @@
 @layer properties, theme, base, components, games, utilities;
 
 @layer games {
-  /* ---- Shared by the game pages -------------------------------------------
+  /* ---- The head --------------------------------------------------------
    *
-   * The three things every game has now: the sound switch, the burst over a
-   * board that has just been won, and the jolt a board takes when something
-   * goes off on it. Last in the layer on purpose - the sound switch has to win
-   * over each game's `-actions .cta-ghost` rule on a phone, at the same
-   * specificity, and order is what decides that.
+   * The page head every other page uses, made compact, because a game page
+   * is for the game. At full size the head and the air under it took 330
+   * pixels at 1440x900, which left the board a third of the screen and the
+   * menu beside it looking like the page's subject.
+   *
+   * From 64rem the title and the lead share a row: the title's column sizes to
+   * the title up to half the measure (`fit-content`), so "2048" leaves the lead
+   * almost the whole line and "Vier in einer Reihe" wraps to two lines rather
+   * than squeezing the lead into a column of five. The crumb and the stamp
+   * keep the row above.
+   */
+  .game-head {
+    padding-block: clamp(1rem, 2vw, 1.5rem) clamp(0.9rem, 1.6vw, 1.25rem);
+  }
+
+  .game-head .page-title {
+    margin-top: clamp(0.6rem, 1.2vw, 1rem);
+    font-size: clamp(2.5rem, 4.6vw, 3.75rem);
+  }
+
+  .game-head .page-lead {
+    margin-top: clamp(0.5rem, 1vw, 0.75rem);
+    font-size: clamp(1.0625rem, 1.3vw, 1.1875rem);
+  }
+
+  @media (min-width: 64rem) {
+    .game-head > .shell {
+      display: grid;
+      grid-template-columns: fit-content(50%) minmax(0, 1fr);
+      column-gap: clamp(2rem, 4vw, 3.5rem);
+      align-items: end;
+    }
+
+    .game-head .crumb-row {
+      grid-column: 1 / -1;
+    }
+
+    /* The lead's last line sits on the title's baseline rather than under it. */
+    .game-head .page-lead {
+      margin-top: 0;
+      padding-bottom: 0.3em;
+    }
+  }
+
+  /*
+   * Everything on the screen that is not the board, at 1440x900: the header
+   * strip, the compact head at its tallest (a two-line title beside a
+   * four-line lead, German), the stage's padding and a little air under it.
+   * Every game sizes its board as `100svh - var(--game-reserve)` so the board
+   * is whole on load, and this is the one number to move if the head changes.
+   */
+  :root {
+    --game-reserve: 21.5rem;
+  }
+
+  /* A tighter gap between the crumb and the stamp, so the two share one line
+     on a 390 phone in English rather than the stamp dropping under the crumb
+     and pushing the board 50 pixels further down. */
+  .game-head .crumb-row {
+    column-gap: 0.75rem;
+  }
+
+  /* The day it was written, as tall as the crumb it shares a line with, so
+     the row reads as one strip rather than a button and a caption. */
+  .game-stamp {
+    gap: 0.5rem;
+    border-color: var(--site-hairline);
+    background-color: var(--site-card);
+    padding: 0.4rem 1rem 0.4rem 0.8rem;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+
+  .game-stamp svg {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    color: var(--site-accent);
+  }
+
+  @media (max-width: 30rem) {
+    .game-stamp {
+      gap: 0.4rem;
+      padding-inline: 0.65rem 0.8rem;
+      font-size: 0.875rem;
+    }
+  }
+
+  /* The section the stage sits in. No top padding: the head's own bottom
+     padding is the gap, and every pixel above the board is one the board
+     does not get. */
+  .game-play {
+    padding-bottom: clamp(2.5rem, 4.5vw, 4rem);
+  }
+
+  /* ---- The stage -------------------------------------------------------
+   *
+   * One big tile that holds the board and everything that operates it: the
+   * picker, the figures, the buttons and the line on how to play. Before it,
+   * every game had its own chrome - no frame round 2048, a tinted panel round
+   * the minefield, a wash behind memory - and the figures and buttons sat in
+   * bars outside the board as often as in them.
+   *
+   * The ground is the tile's white by default. A game with a scene of its
+   * own sets `--game-ground` (a colour) or its own `background` on
+   * `.<slug>-stage`, and everything inside is still placed by these rules.
+   *
+   * The areas, in the order they are in the markup: the HUD, the board, an
+   * optional `.game-fill`, and the hint. Stacked by default - the HUD over the
+   * board, the fill and the hint under it - and side by side with
+   * `.game-stage-side` on a wide screen, for a board narrower than the shell
+   * (see below).
+   */
+  .game-stage {
+    --stage-pad: clamp(0.75rem, 1.8vw, 1.5rem);
+    --stage-gap: clamp(0.75rem, 1.4vw, 1.25rem);
+
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--stage-gap);
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-card);
+    background-color: var(--game-ground, var(--site-card));
+    box-shadow: var(--site-rim);
+    padding: var(--stage-pad);
+  }
+
+  /* The board's slot. Centred in the stacked stage, where it is usually
+     narrower than the tile on anything wider than a phone. ⚠️ A board that
+     is an inline-size container measuring the stage has to be stretched
+     instead, or it shrinks to its own padding - see `.ms .ms-frame`. */
+  .game-board {
+    justify-self: center;
+    min-width: 0;
+  }
+
+  /*
+   * The HUD: the figures, then the buttons, and a game's picker ahead of both
+   * where it has one. One row on a wide screen when it fits, and it wraps
+   * rather than squeezes when it does not - the figures keep their row and
+   * the buttons take the next.
+   */
+  .game-hud {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: var(--stage-gap);
+  }
+
+  .game-stats {
+    display: flex;
+    flex: 999 1 18rem;
+    gap: var(--stage-gap);
+    min-width: 0;
+  }
+
+  /*
+   * A figure: its name over its value, as a block inside the stage. The name
+   * is the site's tile label - an icon in a rounded square and a word in
+   * sentence case - and never the tracked-out capitals every game had here,
+   * eleven pixels of shouting over a number a third the size it wanted to be.
+   *
+   * The value is set the way a scoreboard is, at the page's width and a heavy
+   * weight, and tabular so a count that changes every second never shifts
+   * sideways as its digits change width.
+   *
+   * ⚠️ **Compact on purpose, in both layouts.** Grown to fill the column
+   * beside a board, each figure became a block 200 pixels tall holding a
+   * single "0" - a lot of cobalt saying nothing. The spare height beside a
+   * board goes to `.game-fill` instead, which has something to show.
+   *
+   * `position: relative` because 2048 floats the points of a move off its
+   * score, from inside this box.
+   */
+  .game-stat {
+    position: relative;
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.5rem;
+    min-width: 0;
+    border-radius: var(--site-radius-inner);
+    background-color: var(--site-inset);
+    padding: 0.75rem 1rem 0.85rem;
+  }
+
+  /* On cobalt, the first figure: the one the game is played for. The stage
+     is white and the board is the game's own colour, so this is the one loud
+     block in the chrome - and the reason there is only one. */
+  .game-stat.tile-cobalt {
+    background-color: var(--site-bg);
+  }
+
+  .game-stat-label {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-width: 0;
+    font-size: 0.9375rem;
+    font-weight: 560;
+    line-height: 1.25;
+    color: var(--site-muted);
+  }
+
+  .game-stat-label .tile-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  /*
+   * A figure is a container, so it can drop its icon when it is too narrow
+   * for the icon and its word: in the menu column at 18rem, three figures
+   * share 97 pixels each and "Bestzeit" beside a 1.75rem square ran out of its
+   * block. The icon is decoration; the word is the label.
+   */
+  .game-stat {
+    container-type: inline-size;
+  }
+
+  @container (max-width: 7.5rem) {
+    .game-stat-label .tile-icon {
+      display: none;
+    }
+  }
+
+  .game-stat-label .tile-icon svg {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+
+  /* Three figures share 330 pixels on a phone, and "Bestzeit" or "Record"
+     beside an icon ran out of its block. The icon is decoration; the word is
+     the label. */
+  @media (max-width: 30rem) {
+    .game-stat {
+      padding-inline: 0.85rem;
+    }
+
+    .game-stat-label .tile-icon {
+      display: none;
+    }
+  }
+
+  .game-stat-value {
+    font-stretch: 118%;
+    font-weight: 720;
+    font-size: clamp(1.625rem, 2.6vw, 2.5rem);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  /*
+   * The buttons: one size for every one of them, on every game. A 48px pill
+   * is a real target on a phone and reads as a control on a desktop, where
+   * the 36px pills with 14px words it replaces read as a toolbar.
+   */
+  .game-actions {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    align-content: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  /* `flex: 1 1 auto` so that when the buttons wrap onto a row of their own
+     they fill it rather than huddling at its right end; beside the figures,
+     whose grow factor is 999, they stay the size of their words. */
+  .game-actions .cta-ghost {
+    flex: 1 1 auto;
+    min-height: 3rem;
+    padding: 0.65rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 580;
+    white-space: nowrap;
+  }
+
+  .game-actions .cta-ghost svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  /* Out of reach rather than out of sight: a dashed edge says "not now"
+     where a faded one read as a rendering fault. */
+  .game-actions .cta-ghost:disabled {
+    border-style: dashed;
+    border-color: color-mix(in oklab, var(--site-muted) 55%, transparent);
+    cursor: not-allowed;
+  }
+
+  .game-actions .cta-ghost:disabled:hover {
+    border-color: color-mix(in oklab, var(--site-muted) 55%, transparent);
+    color: inherit;
+    transform: none;
+  }
+
+  .game-actions .cta-ghost:disabled:hover svg {
+    transform: none;
+  }
+
+  /*
+   * How to play it, in one line: an icon in a rounded square and the
+   * sentence beside it, left-aligned. It was centred grey text at 14px, at a
+   * different width on every page, and wrapped to five ragged centred lines
+   * on a phone.
+   */
+  .game-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1rem;
+    line-height: 1.45;
+    color: var(--site-muted);
+    text-wrap: pretty;
+  }
+
+  .game-hint .tile-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .game-hint .tile-icon svg {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+
+  /*
+   * On a phone the buttons take a row of their own and share it. The words
+   * stay on every button but the sound switch, which is its icon - see
+   * `.game-sound` below.
+   */
+  @media (max-width: 40rem) {
+    .game-actions {
+      flex-basis: 100%;
+    }
+
+    .game-actions .cta-ghost {
+      padding-inline: 0.75rem;
+    }
+  }
+
+  /*
+   * Side by side on a wide screen: the game first, the menu beside it.
+   *
+   * ⚠️ **The board's column is the wide one.** The menu used to take `1fr` and
+   * the board `auto`, and since a board is sized by the screen's height, the
+   * menu grew with the window and the game shrank into a third of the stage -
+   * "the menu in the foreground and the game in the background" was the
+   * verdict. Now the menu is a narrow column of its own width
+   * (`--hud-w`, about 21rem) on the right, and the board's column takes the
+   * rest, with the board centred in it on a play surface drawn by the stage's
+   * `::before`, which is a grid item on the board's area. A game whose board
+   * is a whole scene (the cube's studio, Four in a Row's) fills the column
+   * with it instead.
+   *
+   * ⚠️ **A board slot must not be an inline-size container here** unless it is
+   * given an explicit width: a container whose width comes from its content
+   * collapses to nothing.
+   *
+   * ⚠️ **The fill is a size container, and that is what makes it "what is
+   * left".** Its content then counts for nothing towards the row's height, so
+   * the board alone decides how tall the stage is and the fill gets the
+   * difference, down to its own `min-height` floor on a short screen.
+   *
+   * The fill is either a child of the stage, after the board (2048's ladder),
+   * or a child of the HUD (the minefield's picker). In the second case the HUD
+   * takes the fill's row as well and the fill grows inside it.
+   *
+   * ⚠️ **A picker can switch it off.** A radio carrying `data-stage-wide` is a
+   * board too wide to share the stage with a column - the minefield's expert,
+   * 30 by 16 - and while it is checked the stage stays stacked. `:has()` reads
+   * the state the page already keeps, so no script decides the layout, and
+   * the one selector is repeated on every rule below because a rule that
+   * missed it would leave half of the side layout on a stacked stage.
+   */
+  @media (min-width: 64rem) {
+    .game-stage-side:not(:has([data-stage-wide]:checked)) {
+      --hud-w: clamp(18rem, 23vw, 21.5rem);
+
+      grid-template-columns: minmax(0, 1fr) var(--hud-w);
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      grid-template-areas:
+        'board hud'
+        'board fill'
+        'board hint';
+      column-gap: clamp(1rem, 1.6vw, 1.5rem);
+    }
+
+    /* The play surface: the board's whole column, in the game's own tone,
+       so the width the board does not use still belongs to the game. */
+    .game-stage-side:not(:has([data-stage-wide]:checked))::before {
+      content: '';
+      grid-area: board;
+      border-radius: var(--site-radius-inner);
+      background-color: var(--game-surface, var(--site-inset));
+    }
+
+    /* The menu is a container, so the figures and the buttons can tighten in
+       the narrowest column (18rem, from 1024 to about 1250 wide) - see the
+       query after these rules. */
+    .game-stage-side:not(:has([data-stage-wide]:checked)) > .game-hud {
+      grid-area: hud;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      container: game-hud / inline-size;
+    }
+
+    /* No fill of its own beside the HUD: the HUD takes that row too, and the
+       fill inside it - if there is one - grows into it. */
+    .game-stage-side:not(:has([data-stage-wide]:checked)):not(:has(> .game-fill)) > .game-hud {
+      grid-row: hud-start / fill-end;
+    }
+
+    /* ⚠️ `start`, not `center`, in the block axis. A board is sized to be whole
+       on load, and the row is the board's height unless the menu column is
+       taller - on a short laptop, with a long hint - where centring pushed a
+       board that fitted down by half the difference and under the fold. */
+    .game-stage-side:not(:has([data-stage-wide]:checked)) > .game-board {
+      grid-area: board;
+      align-self: start;
+      justify-self: center;
+      margin: var(--stage-gap);
+    }
+
+    .game-stage-side:not(:has([data-stage-wide]:checked)) .game-fill {
+      container-type: size;
+      min-height: 8rem;
+    }
+
+    .game-stage-side:not(:has([data-stage-wide]:checked)) > .game-fill {
+      grid-area: fill;
+    }
+
+    .game-stage-side:not(:has([data-stage-wide]:checked)) > .game-hud > .game-fill {
+      flex: 1 1 0;
+    }
+
+    .game-stage-side:not(:has([data-stage-wide]:checked)) > .game-hint {
+      grid-area: hint;
+      align-self: end;
+      font-size: 0.9375rem;
+    }
+
+    /* The figures share the narrow column and wrap rather than squeeze, and
+       every one grows, so a row that wraps is filled by what is on it: three
+       figures sit three across, four go two and two, and none is left alone
+       beside a hole. The menu is a readout beside the game, not a scoreboard
+       over it. */
+    .game-stage-side:not(:has([data-stage-wide]:checked)) .game-stats {
+      flex: none;
+      flex-wrap: wrap;
+    }
+
+    .game-stage-side:not(:has([data-stage-wide]:checked)) .game-stat {
+      flex: 1 1 5.5rem;
+      padding: 0.65rem 0.8rem 0.7rem;
+    }
+
+    .game-stage-side:not(:has([data-stage-wide]:checked)) .game-stat-value {
+      font-size: clamp(1.5rem, 1.9vw, 2rem);
+    }
+
+    /* Equal widths from a zero basis, and still free to wrap: a button's
+       words set its minimum. The sound switch is its icon here, as on a
+       phone, so the two buttons with words have the column between them. */
+    .game-stage-side:not(:has([data-stage-wide]:checked)) .game-actions {
+      flex: none;
+    }
+
+    .game-stage-side:not(:has([data-stage-wide]:checked)) .game-actions .cta-ghost {
+      flex: 1 1 0;
+      padding-inline: 0.8rem;
+    }
+
+    .game-stage-side:not(:has([data-stage-wide]:checked)) .game-actions .game-sound {
+      flex: 0 0 auto;
+      padding-inline: 0.9rem;
+    }
+
+    .game-stage-side:not(:has([data-stage-wide]:checked)) .game-actions .game-sound .game-sound-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    /* The narrowest menu column: two worded buttons beside the sound switch
+       wrapped to a second row at 294 pixels ("Nouvelle partie" at 331), and
+       every row the menu adds is height the board's column has to match. */
+    @container game-hud (max-width: 20rem) {
+      .game-stage-side:not(:has([data-stage-wide]:checked)) .game-actions .cta-ghost {
+        padding-inline: 0.6rem;
+        font-size: 0.9375rem;
+      }
+
+      /* 5rem rather than 5.5 so three figures still share one row there; they
+         have dropped their icons at that width (see `.game-stat` above). */
+      .game-stage-side:not(:has([data-stage-wide]:checked)) .game-stat {
+        flex-basis: 5rem;
+        padding-inline: 0.65rem;
+      }
+    }
+  }
+
+  /* ---- How to play -----------------------------------------------------
+   *
+   * Numbered rows inside one tile rather than a card per rule. A grid of
+   * cards stretches every card in a row to the tallest one, and the rules are
+   * one line or five, so the short ones ended on 70 pixels of empty card.
+   * Rows are as tall as their own text, and the number says what the order
+   * already meant.
+   *
+   * On a phone the number and the title share a line and the description
+   * runs the full width under both - beside the number it was a column 250
+   * pixels wide with a strip of nothing under the badge. From 52rem it is
+   * three columns: the number, the rule, what it means.
+   */
+  .game-steps {
+    display: grid;
+  }
+
+  .game-step {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'n title'
+      'body body';
+    align-items: center;
+    column-gap: clamp(0.9rem, 2vw, 1.75rem);
+    row-gap: 0.65rem;
+    border-top: 1px solid var(--site-hairline);
+    padding-block: clamp(1.1rem, 2vw, 1.6rem);
+  }
+
+  .game-step:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .game-step:last-child {
+    padding-bottom: 0;
+  }
+
+  /* The number, heavy and wide in the site's icon square: the accent on its
+     own tint rather than a filled block, since the stage's first figure is
+     already the page's cobalt and four more squares of it would make five.
+     Decorative - the list is an `<ol>` and a screen reader counts it. */
+  .game-step-n {
+    grid-area: n;
+    display: grid;
+    place-items: center;
+    width: clamp(2.75rem, 4vw, 3.5rem);
+    height: clamp(2.75rem, 4vw, 3.5rem);
+    border-radius: var(--site-radius-inner);
+    background-color: color-mix(in oklab, var(--site-accent) 12%, var(--site-card));
+    color: var(--site-accent);
+    font-stretch: 122%;
+    font-weight: 780;
+    font-size: clamp(1.375rem, 2.2vw, 1.75rem);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    transition: transform 420ms var(--site-spring);
+  }
+
+  .game-step:hover .game-step-n {
+    transform: rotate(-8deg) scale(1.08);
+  }
+
+  .game-step-title {
+    grid-area: title;
+    font-stretch: 112%;
+    font-weight: 640;
+    font-size: clamp(1.25rem, 1.6vw, 1.4rem);
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+  }
+
+  .game-step-body {
+    grid-area: body;
+    color: var(--site-muted);
+  }
+
+  @media (min-width: 52rem) {
+    .game-step {
+      grid-template-columns: auto minmax(0, 17rem) minmax(0, 1fr);
+      grid-template-areas: 'n title body';
+    }
+  }
+
+  /* ---- How it is built -------------------------------------------------
+   *
+   * The write-up on the ink panel, set as an article: the first paragraph
+   * large and in full colour across the measure, and the rest in balanced
+   * columns under it. On a phone it was one grey wall of 17px text 800 to
+   * 2000 pixels tall with nothing to enter it by.
+   */
+  .game-notes-lead {
+    font-size: clamp(1.3125rem, 2.2vw, 1.75rem);
+    line-height: 1.42;
+    letter-spacing: -0.015em;
+    color: var(--site-fg);
+  }
+
+  .game-notes-cols {
+    margin-top: clamp(1.5rem, 3vw, 2.5rem);
+    border-top: 1px solid var(--site-hairline);
+    padding-top: clamp(1.5rem, 3vw, 2.5rem);
+    font-size: clamp(1.0625rem, 1.3vw, 1.1875rem);
+    line-height: 1.68;
+    color: var(--site-muted);
+  }
+
+  /*
+   * ⚠️ **In columns the paragraphs are set the way a book sets them: no gap
+   * between them, an indent on every one but the first, and free to run on
+   * across the break.** Kept whole with a gap, three to five paragraphs of
+   * 250 to 770 characters never balance - the right column ended 100 to 300
+   * pixels short on every game page, a ragged hole in the ink. Allowed to
+   * run on with the gaps kept, the break sometimes left one line alone at
+   * the top of the right column with a gap under it, and Chrome ignores
+   * `widows` in a balanced column, so nothing prevents that. With no gaps
+   * the two columns end on the same line, and a line carried over is just
+   * the next line of the text.
+   *
+   * 60rem is where `.prose-columns` goes to two columns. Under it the text
+   * is one column and keeps the gaps, which is how a phone reads best.
+   */
+  @media (min-width: 60rem) {
+    .game-notes-cols > p {
+      break-inside: auto;
+      margin-bottom: 0;
+    }
+
+    .game-notes-cols > p + p {
+      text-indent: 1.75em;
+    }
+  }
+
+  /*
+   * ⚠️ **No floating Back to top on a phone or a tablet, on a game page.**
+   * The button is fixed to the bottom right corner, and on a screen this
+   * narrow the board runs edge to edge under it: it sat over 2048's corner
+   * tile, the minefield's last column and a column of holes on Four in a Row,
+   * and a tap meant for the board went up the page instead. The footer's own
+   * links and the header are still there. A workaround here rather than a
+   * change to global.css, which is not a game file - see the report.
+   */
+  @media (max-width: 64rem) {
+    .to-top {
+      display: none;
+    }
+  }
+
+  /* ---- Shared by every game -------------------------------------------
+   *
+   * The sound switch, the burst over a board that has just been won, and the
+   * jolt a board takes when something goes off on it. Last in the layer on
+   * purpose - the sound switch has to win over each game's `-actions
+   * .cta-ghost` rule on a phone, at the same specificity, and order is what
+   * decides that.
    */
 
   /* The icon is the state: a speaker with its waves when the sound is on, and
@@ -38,19 +702,28 @@
     color: var(--site-muted);
   }
 
+  /* The size the old bars drew it at; inside `.game-actions` the icons of
+     every button there are a step larger, and that rule wins on specificity. */
+  .game-sound svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
   /*
    * On a phone the switch is its icon. Every bar there stacks its buttons into
    * one full-width row, and "Zastavice", "Nova igra" and "Zvuk" do not share
    * 350 pixels. The word stays in the accessible name - it is clipped, not
    * removed - so a screen reader still hears what the button is.
+   *
+   * 40rem is where `.game-actions` gives its buttons a row of their own.
    */
-  @media (max-width: 34rem) {
-    :is(.g2048-actions, .ms-actions, .mem-actions, .acc-actions, .bs-actions, .cube-actions, .four-actions) .game-sound {
+  @media (max-width: 40rem) {
+    .game-actions .game-sound {
       flex: 0 0 auto;
-      padding-inline: 0.8rem;
+      padding-inline: 0.9rem;
     }
 
-    .game-sound .game-sound-label {
+    .game-actions .game-sound .game-sound-label {
       position: absolute;
       width: 1px;
       height: 1px;
@@ -58,22 +731,6 @@
       clip-path: inset(50%);
       white-space: nowrap;
     }
-  }
-
-  /* In the well's narrow bar the switch is its icon at every width, beside a
-     New game that takes the rest of the row - see `.acc-actions`. */
-  .acc-actions .game-sound {
-    flex: 0 0 auto;
-    padding-inline: 0.8rem;
-  }
-
-  .acc-actions .game-sound .game-sound-label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
   }
 
   /* The burst, which is a container so its pieces can be thrown a fraction

@@ -9,8 +9,10 @@
  * - the moment this game is about, and the one a still of any other game could
  * not show - and the pyramid.
  *
- * ⚠️ **The bottom-right corner is spoken for**, by the status ribbon every card
- * carries, so the pyramid sits up and in from it rather than filling it.
+ * On the index each of the three turns once round on hover, a beat apart, by
+ * a `rotate` on its `.cube-view` - see styles/games/index.css. That composes
+ * with the view's inline `transform`, so the resting view below has to stay a
+ * `transform`: written as a `rotate`, the hover's would replace it.
  *
  * The sprite comes with it, for Memory's reason: a `<use>` only resolves
  * against a symbol in the same document, and the index is a different one.

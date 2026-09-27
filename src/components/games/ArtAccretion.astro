@@ -12,7 +12,7 @@
  * strip, which reads as a diagram rather than as the game.
  *
  * ⚠️ **Nothing here may touch anything else**, and it is easy to get wrong by
- * eye. The layout is checked rather than judged, against four things at once:
+ * eye. The layout is checked rather than judged, against three things at once:
  *
  * - Every pair of bodies, by centres and radii.
  * - Saturn's ring, as the ellipse it actually is - 1.7 diameters wide, 0.48
@@ -20,14 +20,13 @@
  *   that covers the ring has more than twice Saturn's own radius and would eat
  *   a fifth of the field for room nothing needs.
  * - The Sun's glow, which reads about 2.4 units past the disc, and which the
- *   edges now cut: `.game-shot` clips, so a glow hanging off the top is a soft
+ *   edges cut: `.game-shot` clips, so a glow hanging off the top is a soft
  *   edge with a hard line through it.
- * - The status ribbon across the bottom-right corner. On the narrowest card a
- *   game gets - one column on a phone - its outer edge is about 20 units in
- *   along each edge, and that corner is the ribbon's.
  *
  * The tightest gap in what is below is 2.96 units, which is about ten pixels
- * on that phone.
+ * on a phone. The drift the index plays on hover moves each body under a
+ * unit, on its own heading - see `.game-art-orb` in styles/games/index.css -
+ * so that gap is also the budget for it.
  *
  * ⚠️ The sizes are not the game's radius table. Real ratios put the Sun at nine
  * and a half Moons, which in a box this shape leaves the Moon at four pixels

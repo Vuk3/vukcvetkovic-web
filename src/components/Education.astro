@@ -15,27 +15,21 @@ const { lang, tone } = Astro.props;
 const dict = getDict(lang);
 
 // Displayed size in CSS pixels. 1x, 2x and 3x are emitted from the 597px source.
-const crestSize = 44;
+const crestSize = 64;
 ---
 
 {/*
-  Two cards side by side, and deliberately the quietest block on the page: no
-  connector between them, no bullets, and the shorter vertical rhythm. It is a
-  fact about him that belongs here and should not compete with Projects.
+  Two tiles side by side: the crest large, the degree in the display voice, the
+  school, and the years. The shorter rhythm keeps it the quietest block on the
+  page, so it does not compete with Projects.
 */}
-<Section
-  id="education"
-  label={dict.education.label}
-  width="timeline"
-  tone={tone}
-  space="lite"
->
+<Section id="education" label={dict.education.label} tone={tone} space="lite">
   <ol class="edu-grid">
     {
       site.education.map((degree) => {
         const copy = dict.education.degrees[degree.id];
         return (
-          <li class="card reveal-item flex items-start gap-4">
+          <li class="card edu reveal-item">
             {/*
               Decorative, so the alt is empty: the school is named in the line
               directly beside it and a screen reader announcing the crest as
@@ -52,13 +46,13 @@ const crestSize = 44;
               width={crestSize}
               densities={[1, 2, 3]}
               loading="lazy"
-              class="mt-0.5 w-11 shrink-0 rounded-full bg-white"
+              class="edu-crest"
             />
 
-            <div>
+            <div class="min-w-0">
               <h3 class="edu-degree">{copy.degree}</h3>
-              <p class="mt-1 text-[15px] text-muted">{copy.school}</p>
-              <p class="tag mt-3">{degree.period}</p>
+              <p class="edu-school">{copy.school}</p>
+              <p class="tag mt-4">{degree.period}</p>
             </div>
           </li>
         );

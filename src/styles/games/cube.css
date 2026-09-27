@@ -25,7 +25,7 @@
    * apart, they are the puzzle: a white face is white on every cube in the
    * world, and a cube solved in one theme has to be the same cube in the other.
    * So the stickers and the plastic are the same in both themes, and only the
-   * stage they stand on follows the page.
+   * studio they stand in follows the page.
    *
    * The order is the faces' in game.ts: up, right, front, down, left and back,
    * which on a cube held the standard way is white, red, green, yellow, orange
@@ -45,21 +45,41 @@
   --cube-plastic: #16181c;
   --cube-core: #0b0c0f;
 
-  --cube-stage: #dedbd3;
-  --cube-stage-light: #f8f7f4;
-  --cube-stage-inset: inset 0 2px 9px color-mix(in oklab, #14161a 10%, transparent);
+  /*
+   * The studio: a wall and the floor it meets, the family's scene (Four in a
+   * Row stands its board in the same one), in place of the pool of light the
+   * puzzle used to float in - a radial wash behind an object is a vignette,
+   * not a place. Cool rather than the warm beige it was, so it belongs to the
+   * paper it sits on.
+   */
+  --cube-wall: #eef1f5;
+  --cube-floor: #d3dae4;
+  --cube-edge: #d9dde5;
   --cube-shadow: color-mix(in oklab, #14161a 34%, transparent);
+
+  /* The edge a puzzle icon's plastic catches. Nothing on a light page: black
+     plastic on a white tile is its own outline. */
+  --cube-rim: transparent;
 }
 
 .dark {
-  /* The stage only: the stickers are the puzzle and do not change. A black
-     cube on a near-black ground disappears, so the pool of light it stands in
-     is brighter here than in the light theme, where the ground does that
-     work. */
-  --cube-stage: #10141b;
-  --cube-stage-light: #2a313d;
-  --cube-stage-inset: inset 0 2px 9px color-mix(in oklab, #000 40%, transparent);
-  --cube-shadow: color-mix(in oklab, #000 62%, transparent);
+  /*
+   * ⚠️ **A mid slate, well above the page, and that is the whole of the
+   * reason.** The plastic is the same near-black in both themes, and on the
+   * near-black studio this used to be the puzzle's body vanished: the
+   * stickers hung in the air with nothing holding them together. The wall is
+   * light enough for a black silhouette to read against it, and the studio is
+   * lifted off the stage tile by its own fill, with an edge on top so its
+   * outline is drawn rather than left to the step.
+   */
+  --cube-wall: #323b4d;
+  --cube-floor: #232a37;
+  --cube-edge: #414b60;
+  --cube-shadow: color-mix(in oklab, #000 60%, transparent);
+
+  /* A dark tile swallowed every icon but the chosen one's (the tint behind
+     it was the only thing lighter than the plastic), so each is ringed. */
+  --cube-rim: #5a6378;
 }
 
 @layer games {
@@ -67,7 +87,8 @@
    * The cube still: three real puzzles, each a scene of its own, placed by
    * the centre of the sphere it turns in and sized by that sphere's diameter,
    * in hundredths of the card's width - so the three keep their places and
-   * their sizes however wide the card is.
+   * their sizes however wide the card is. In the game's own studio, so the
+   * card shows the page it opens.
    *
    * ⚠️ **`--u` and the perspective are given again here**, because the stage
    * that sizes them on the game's page is a size container and this card is
@@ -76,9 +97,7 @@
    */
   .game-art-cube {
     position: relative;
-    background:
-      radial-gradient(60% 90% at 50% 45%, var(--cube-stage-light), transparent 80%),
-      var(--cube-stage);
+    background: linear-gradient(var(--cube-wall) 0 40%, var(--cube-floor) 100%);
   }
 
   .cube-art-scene {
@@ -103,8 +122,8 @@
    * A solid in a scene rather than a board on a page, and four layers deep,
    * each for one job:
    *
-   *   .cube-stage    the size container every length comes from, the pool of
-   *                  light, and the surface a press lands on.
+   *   .cube-stage    the size container every length comes from, the studio,
+   *                  and the surface a press lands on.
    *   .cube-camera   the perspective, and the scale and fade a new puzzle
    *                  arrives with.
    *   .cube-view     the `preserve-3d` root: the reader's view of the puzzle,
@@ -127,18 +146,43 @@
     overflow: hidden;
   }
 
-  .cube {
-    --cube-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
   /*
-   * The five puzzles, as a strip of tiles: the memory strip's shape, five
-   * across at every width. Five fit a 390 phone at about 66px a tile, and a
-   * strip that wrapped to two rows would put the pyramid on a row by itself.
+   * The five puzzles: the family's picker, a tile per puzzle with a face of
+   * it drawn in its own plastic, its name, and its best time.
+   *
+   * A grid of two rows - the name of the set, then the tiles - so that beside
+   * the scene, where the picker is the column's `.game-fill` and is given a
+   * box to fill, the tiles can be exactly the height the name leaves.
+   * Stacked, under the scene, the tiles are one strip of five: five fit a
+   * 360 phone, and a strip that wrapped would put the pyramid on a row by
+   * itself. Beside the scene they are three across and two down - see the
+   * side rules.
+   *
+   * A width rather than a flex basis, the minefield's reason, and the UA
+   * margin, border and padding a fieldset carries go.
    */
   .cube-puzzles {
-    margin: 0 0 clamp(0.75rem, 2vw, 1.1rem);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    row-gap: 0.75rem;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
     border: 0;
+    padding: 0;
+    /* Named for the queries beside the scene. shared.css makes it a size
+       container there and sets only the type, so the name survives. */
+    container-name: cube-puzzles;
+  }
+
+  /* ⚠️ Floated, so that it is an ordinary child and one of the grid's rows
+     rather than the fieldset's rendered legend, which sits in the border and
+     is never a row - Four in a Row's picker does the same. It still names
+     the group for a screen reader. */
+  .cube-puzzles-title {
+    float: left;
+    width: 100%;
     padding: 0;
   }
 
@@ -146,23 +190,36 @@
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: clamp(0.35rem, 1.2vw, 0.6rem);
+    min-height: 0;
   }
 
+  /*
+   * One puzzle: the minefield's tile. The chosen one takes the accent as an
+   * edge and a tint rather than a fill - the Time figure beside the set is
+   * the stage's cobalt block, and two of them together read as one shout.
+   */
   .cube-puzzle {
     position: relative;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      'icon'
+      'name'
+      'best';
+    justify-items: center;
     align-items: center;
-    gap: 0.3rem;
+    row-gap: 0.35rem;
+    min-width: 0;
     border: 1px solid var(--site-hairline);
-    border-radius: var(--site-radius-card);
+    border-radius: var(--site-radius-inner);
     background-color: var(--site-card);
-    padding: clamp(0.55rem, 1.6vw, 0.9rem) 0.25rem clamp(0.5rem, 1.4vw, 0.75rem);
+    padding: clamp(0.55rem, 1.4vw, 0.8rem) 0.25rem clamp(0.5rem, 1.2vw, 0.7rem);
     cursor: pointer;
     transition:
-      border-color 160ms var(--site-ease),
-      background-color 160ms var(--site-ease),
-      translate 200ms var(--site-ease);
+      border-color 200ms var(--site-ease),
+      background-color 200ms var(--site-ease),
+      translate 250ms var(--site-ease-out);
   }
 
   .cube-puzzle:hover {
@@ -189,10 +246,14 @@
    * ⚠️ **The padding and the gap are fractions of `--s`, not percentages.** A
    * percentage of padding is taken from the *parent's* width, which here is
    * the whole tile, and it left the colours a quarter of the icon wide.
+   *
+   * No shadow under it: the plastic on a white tile is its own edge, and on
+   * a dark one the ring is.
    */
   .cube-icon {
-    --s: clamp(2.5rem, 9vw, 4rem);
+    --s: clamp(2.5rem, 8.5vw, 4rem);
 
+    grid-area: icon;
     display: grid;
     grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr));
     grid-template-rows: repeat(var(--n, 3), minmax(0, 1fr));
@@ -201,11 +262,8 @@
     height: var(--s);
     border-radius: 20%;
     background-color: var(--cube-plastic);
+    box-shadow: 0 0 0 1px var(--cube-rim);
     padding: calc(var(--s) * 0.09);
-    box-shadow: 0 3px 10px color-mix(in oklab, #14161a 22%, transparent);
-    transition:
-      rotate 420ms var(--cube-spring),
-      scale 420ms var(--cube-spring);
   }
 
   .cube-icon > span {
@@ -217,15 +275,23 @@
     display: block;
     border-radius: 0;
     background: none;
-    padding: 0;
     box-shadow: none;
-    filter: drop-shadow(0 3px 5px color-mix(in oklab, #14161a 24%, transparent));
+    padding: 0;
   }
 
   .cube-icon.is-tri svg {
     display: block;
     width: 100%;
     height: 100%;
+  }
+
+  /* Two units wider than the body on each side: a hairline at the icon's
+     size, the same weight as the square icons' ring. */
+  .cube-icon-rim {
+    fill: none;
+    stroke: var(--cube-rim);
+    stroke-width: 14;
+    stroke-linejoin: round;
   }
 
   .cube-icon-body {
@@ -242,136 +308,143 @@
     stroke-linejoin: round;
   }
 
-  @media (hover: hover) {
-    .cube-puzzle:hover .cube-icon {
-      rotate: -7deg;
-      scale: 1.07;
-    }
-  }
-
-  /* Picked: the icon gives a turn and a bounce, the way a cube does when it
-     is picked up off a table. `:has(:checked)` starting to match is what
-     starts it, so it plays once per choice. */
-  .cube-puzzle:has(:checked) .cube-icon {
-    animation: cube-pick 620ms var(--cube-spring);
-  }
-
   .cube-puzzle-name {
-    font-stretch: 110%;
+    grid-area: name;
+    max-width: 100%;
+    font-stretch: 108%;
     font-weight: 660;
-    font-size: clamp(0.75rem, 2.5vw, 1rem);
+    font-size: clamp(0.8125rem, 2.4vw, 1.0625rem);
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.01em;
     line-height: 1.15;
     white-space: nowrap;
   }
 
-  .cube-puzzle-best {
-    font-size: 0.6875rem;
-    font-variant-numeric: tabular-nums;
-    line-height: 1.2;
-    white-space: nowrap;
-    color: var(--site-muted);
-  }
-
-  .cube-bar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.6rem;
-    margin-bottom: clamp(0.75rem, 2vw, 1.1rem);
-  }
-
-  .cube-meter {
-    min-width: 5.5rem;
-    border: 1px solid var(--site-hairline);
-    border-radius: var(--site-radius);
-    background-color: var(--site-card);
-    padding: 0.45rem 0.7rem 0.5rem;
-    text-align: center;
-  }
-
-  .cube-meter-label {
-    display: block;
-    font-size: 0.6875rem;
-    line-height: 1.3;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    color: var(--site-muted);
-  }
-
-  /* Tabular, so a running clock ticks in place instead of shuffling its
-     digits sideways a hundred times a second. */
-  .cube-meter-value {
-    display: block;
-    font-stretch: 112%;
-    font-weight: 660;
-    font-size: 1.25rem;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.02em;
-    line-height: 1.2;
-  }
-
-  .cube[data-state='solving'] [data-time] {
+  .cube-puzzle:has(:checked) .cube-puzzle-name {
     color: var(--site-accent);
   }
 
-  .cube-actions {
-    display: flex;
-    gap: 0.5rem;
-    margin-left: auto;
-  }
-
-  .cube-actions :is(.cta, .cta-ghost) {
-    padding: 0.55rem 0.95rem;
+  /* The cup and the time, as a figure: at a size that reads, where it was an
+     11px dash alone in the bottom third of every tile. */
+  .cube-puzzle-best {
+    grid-area: best;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
     font-size: 0.875rem;
+    font-weight: 560;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+    white-space: nowrap;
+    color: var(--site-muted);
   }
 
-  /* The hint button is there only for the puzzles there is a method for,
-     and it stays pressed while the hints are showing. */
+  .cube-puzzle-best svg {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+
+  /*
+   * On a phone five tiles share 300 pixels. The names give up their width
+   * axis, the best times a step of size, and the tiles their side padding -
+   * "Pyramide" is the longest name and measured at 360 it still fits its
+   * fifth.
+   */
+  @media (max-width: 40rem) {
+    .cube-puzzle {
+      padding-inline: 0.15rem;
+    }
+
+    .cube-puzzle-name {
+      font-stretch: 100%;
+    }
+
+    .cube-puzzle-best {
+      gap: 0.2rem;
+      font-size: 0.75rem;
+    }
+
+    .cube-puzzle-best svg {
+      width: 0.75rem;
+      height: 0.75rem;
+    }
+  }
+
+  /*
+   * The figures and the buttons are the family's, from shared.css. What is
+   * the cube's is the clock's tick while it runs, the one filled button, and
+   * the hint button that exists only for the puzzles there is a method for.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    .cube[data-state='solving'] .cube-stat-time .tile-icon {
+      animation: cube-tick 1s var(--site-ease-out) infinite;
+    }
+  }
+
+  /* Three figures want more than the 18rem shared.css starts them at when
+     four buttons share their row: on a tablet the three came out 88 pixels
+     wide with "Time" cut off. At 26rem the buttons take the next row
+     instead, as they do on a phone. Beside the scene shared.css sets the
+     figures' flex again, more specifically. */
+  .cube .game-stats {
+    flex-basis: 26rem;
+  }
+
+  /* Scramble: the one filled button in the stage, at the size shared.css
+     gives every ghost button beside it, so the row is one height. */
+  .cube-scramble {
+    flex: 1 1 auto;
+    min-height: 3rem;
+    padding: 0.65rem 1.3rem;
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+
+  .cube-scramble svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
   .cube:not([data-hint]) [data-action='hint'] {
     display: none;
   }
 
-  .cube-actions [data-action='hint'][aria-pressed='true'] {
+  /* Pressed while the hints are showing. By its action, never by the pressed
+     state alone - the sound switch is pressed whenever sound is on. */
+  .cube .game-actions [data-action='hint'][aria-pressed='true'] {
     border-color: var(--site-accent);
+    background-color: color-mix(in oklab, var(--site-accent) 9%, var(--site-card));
     color: var(--site-accent);
   }
 
-  .cube-actions .cta-ghost:disabled {
-    opacity: 0.45;
-    cursor: default;
-    pointer-events: none;
-  }
-
-  /* Three meters a row on a phone and the buttons under them. Three fit: the
-     longest label is "Najbolje", eight letters. */
-  @media (max-width: 34rem) {
-    .cube-bar {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .cube-actions {
-      grid-column: 1 / -1;
-      margin-left: 0;
-    }
-
-    .cube-actions :is(.cta, .cta-ghost) {
-      flex: 1;
-      justify-content: center;
-    }
-
-    /* Four buttons do not share a phone's width with their words, so undo is
-       its icon here, the way the sound switch is. The word stays for a screen
-       reader. */
-    .cube-actions [data-action='undo'] {
+  /*
+   * On a phone the four buttons are one row: the sound switch, Hint and Undo
+   * are their icons, and Scramble takes the rest of the row with its word,
+   * the step every solve starts with. Scramble on a row of its own under the
+   * other three was 56 pixels more between the head and the scene, and at
+   * 390 by 844 that was the difference between the puzzle whole on load and
+   * its bottom under the fold.
+   *
+   * The words are clipped rather than removed, as the sound switch's are in
+   * shared.css, so a screen reader still hears what each button is. A
+   * lightbulb and an arrow turning back are the two icons every app uses for
+   * exactly these. The three are 44 pixels, 0.75rem either side, which
+   * leaves Scramble 146 on a 360 phone, where "Scramble" needs 132 at the
+   * 0.8rem either side every button in the menu column has - at its own
+   * 1.3rem it needed 148 and took a row of its own again. Four classes on
+   * the three, because shared.css comes after this file.
+   */
+  @media (max-width: 40rem) {
+    .cube .game-actions .cta-ghost:is(.game-sound, [data-action='hint'], [data-action='undo']) {
       flex: 0 0 auto;
+      padding-inline: 0.75rem;
+    }
+
+    .cube-scramble {
       padding-inline: 0.8rem;
     }
 
-    .cube-action-label {
+    .cube-action-word {
       position: absolute;
       width: 1px;
       height: 1px;
@@ -379,20 +452,24 @@
       clip-path: inset(50%);
       white-space: nowrap;
     }
-
-    .cube-meter {
-      min-width: 0;
-    }
   }
 
-  /* The container the stage's height is measured against. See below. */
-  .cube-frame {
+  /*
+   * The frame: the stage, the hint card, the burst and the panel, positioned
+   * against it together. It is the inline-size container the stage takes its
+   * height from, and so it is stretched rather than centred like the stage's
+   * other boards - a container in a box that shrinks to fit has no width to
+   * give. Two classes, because shared.css comes after this file and its
+   * `.game-board` would win a tie.
+   */
+  .cube .cube-frame {
     position: relative;
+    justify-self: stretch;
     container-type: inline-size;
   }
 
   /*
-   * The stage.
+   * The stage, and the studio the puzzle floats in.
    *
    * ⚠️ **A size container, and `--u` is declared here but resolved on every
    * sticker.** An unregistered custom property is carried as its tokens, so
@@ -405,30 +482,33 @@
    * The share is 0.74 of the smaller side for the sphere the puzzle turns in.
    * With the perspective below, the nearest corner at any angle lands at 0.43
    * of the side from the middle, so nothing is ever cut by the stage's edge
-   * however it is dragged round. `--cube-span` is written from the module per puzzle, and the page sets
-   * the three by three's so the first frame is already the right size.
-   *
-   * Wide on a desktop and square on a phone, and never taller than the screen
-   * less the bar above it - a puzzle whose bottom face is below the fold is
-   * one you cannot turn.
+   * however it is dragged round. `--cube-span` is written from the module per
+   * puzzle, and the page sets the three by three's so the first frame is
+   * already the right size.
    *
    * ⚠️ **The shape is a height off the frame's width, not an `aspect-ratio`.**
    * A `max-height` on an element with a ratio is carried across the ratio to
-   * its width, so on a short screen the stage narrowed to keep 16:10 and sat
-   * in the left two thirds of the shell with nothing beside it.
+   * its width, so on a short screen the stage narrowed to keep its shape and
+   * sat in the left two thirds of the shell with nothing beside it.
+   *
+   * Stacked - a tablet - it is wide and never taller than the screen less
+   * the header and the row of figures and buttons over it, so a puzzle
+   * scrolled to is seen whole with its clock. Beside the column it is sized
+   * off the screen's height instead; see the side rules below.
    */
   .cube-stage {
-    --u: calc(min(100cqw, 100cqh) * 0.74 / var(--cube-span, 5.2));
+    --cube-share: 0.74;
+    --u: calc(min(100cqw, 100cqh) * var(--cube-share) / var(--cube-span, 5.2));
 
     position: relative;
     container-type: size;
-    height: clamp(21rem, 62.5cqi, 100svh - 12rem);
+    height: clamp(20rem, 62.5cqi, 100svh - 14rem);
     overflow: clip;
-    border-radius: var(--site-radius-card);
-    background:
-      radial-gradient(52% 58% at 50% 44%, var(--cube-stage-light), transparent 78%),
-      var(--cube-stage);
-    box-shadow: var(--cube-stage-inset);
+    border: 1px solid var(--cube-edge);
+    border-radius: var(--site-radius-inner);
+    /* The wall to a little under the middle, where the puzzle hangs, and the
+       floor from there down to the front edge, where its shadow falls. */
+    background: linear-gradient(var(--cube-wall) 0 44%, var(--cube-floor) 100%);
     cursor: grab;
     /* The stage is the puzzle's to drag. A page that scrolled under a finger
        turning a layer would make the layer impossible to turn. */
@@ -439,6 +519,8 @@
     user-select: none;
   }
 
+  /* A phone: square and a little over, since the width is what runs out
+     first, and the reserve is the header and the figures over it. */
   @media (max-width: 40rem) {
     .cube-stage {
       height: clamp(19rem, 108cqi, 100svh - 17rem);
@@ -462,7 +544,6 @@
     background: radial-gradient(closest-side, var(--cube-shadow), transparent);
     translate: -50% calc(var(--u) * var(--cube-span, 5.2) * 0.4);
     pointer-events: none;
-    animation: cube-shadow 6s ease-in-out infinite;
   }
 
   .cube-camera {
@@ -473,19 +554,33 @@
     perspective: calc(min(100cqw, 100cqh) * 2.6);
   }
 
-  .cube-camera.is-arriving {
-    animation: cube-arrive 700ms var(--cube-spring);
-  }
-
   .cube-view {
     position: absolute;
     top: 50%;
     left: 50%;
     transform-style: preserve-3d;
-    /* `translate`, which applies after the module's `transform`, so the float
-       moves the whole puzzle up the screen rather than along whichever axis
-       it happens to be turned to. */
-    animation: cube-float 6s ease-in-out infinite;
+  }
+
+  /*
+   * The float, the shadow breathing with it, and a new puzzle arriving.
+   *
+   * The float is `translate`, which applies after the module's `transform`,
+   * so it moves the whole puzzle up the screen rather than along whichever
+   * axis it happens to be turned to. The arrival scales and fades the
+   * camera, which is outside the 3D context.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    .cube-shadow {
+      animation: cube-shadow 6s ease-in-out infinite;
+    }
+
+    .cube-view {
+      animation: cube-float 6s ease-in-out infinite;
+    }
+
+    .cube-camera.is-arriving {
+      animation: cube-arrive 700ms var(--site-spring);
+    }
   }
 
   /* Held still while a hand is on it, and while it scrambles: a layer that
@@ -663,20 +758,29 @@
     clip-path: polygon(50% 0, 100% 100%, 0 100%);
   }
 
-  /* One line along the foot of the stage, for the two states that are waiting
-     on the reader. The markup carries both and the state picks one. */
+  /*
+   * One line along the foot of the stage, for the two states that are waiting
+   * on the reader. The markup carries both and the state picks one.
+   *
+   * "Scramble it to start" is the first thing the page asks for, so it is set
+   * at the size of the buttons rather than as a 14px caption, on the tile's
+   * own white with its edge rather than frosted over the floor.
+   */
   .cube-cue {
     position: absolute;
-    bottom: clamp(0.75rem, 3.5cqh, 1.4rem);
+    bottom: clamp(0.75rem, 4cqh, 1.5rem);
     left: 50%;
     display: none;
+    /* Its own width, not the half of the stage right of `left: 50%` that a
+       shrink-to-fit box gets - which broke it onto two lines on a phone. */
+    width: max-content;
     max-width: calc(100% - 2rem);
+    border: 1px solid var(--site-hairline);
     border-radius: var(--site-radius-pill);
-    background-color: color-mix(in oklab, var(--site-card) 88%, transparent);
-    box-shadow: var(--site-lift-hover);
-    padding: 0.45rem 1rem;
-    font-size: 0.875rem;
-    font-weight: 560;
+    background-color: var(--site-card);
+    padding: 0.6rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 600;
     line-height: 1.3;
     text-align: center;
     color: var(--site-fg);
@@ -687,15 +791,20 @@
   .cube[data-state='idle'] .cube-cue,
   .cube[data-state='ready'] .cube-cue {
     display: block;
-    animation: cube-cue 520ms var(--cube-spring) backwards;
   }
 
-  /* Waiting on a first turn, with a clock about to start: it breathes, so it
-     reads as live rather than as a caption. */
-  .cube[data-state='ready'] .cube-cue {
-    animation:
-      cube-cue 520ms var(--cube-spring) backwards,
-      cube-breathe 1800ms ease-in-out 520ms infinite;
+  /* Rising in, and waiting on a first turn with a clock about to start: it
+     breathes, so it reads as live rather than as a caption. */
+  @media (prefers-reduced-motion: no-preference) {
+    .cube[data-state='idle'] .cube-cue {
+      animation: cube-cue 520ms var(--site-spring) backwards;
+    }
+
+    .cube[data-state='ready'] .cube-cue {
+      animation:
+        cube-cue 520ms var(--site-spring) backwards,
+        cube-breathe 1800ms ease-in-out 520ms infinite;
+    }
   }
 
   .cube-for-idle,
@@ -715,6 +824,9 @@
    * first thing a solve gets is the puzzle spinning round once in its own
    * colours under the burst, and the figures a beat after. `backwards` holds it
    * invisible through the delay.
+   *
+   * Nearly opaque rather than frosted, the reference games' panel: glass over
+   * the scene is a tell, and the answer needs nothing showing through it.
    */
   .cube-panel {
     position: absolute;
@@ -724,12 +836,11 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.55rem;
-    border-radius: var(--site-radius-card);
+    gap: 0.65rem;
+    border-radius: var(--site-radius-inner);
     padding: var(--site-pad);
     text-align: center;
-    background-color: color-mix(in oklab, var(--cube-stage) 84%, transparent);
-    backdrop-filter: blur(5px);
+    background-color: color-mix(in oklab, var(--cube-wall) 94%, transparent);
   }
 
   .cube[data-state='solved'] .cube-panel {
@@ -737,31 +848,43 @@
     animation: cube-panel 420ms var(--site-ease) 1350ms backwards;
   }
 
+  /* Which puzzle it was, as the tile label rather than the tracked capitals
+     it was: "3 × 3" and "Pyramid" need no shouting. */
   .cube-panel-puzzle {
-    font-size: 0.75rem;
+    font-stretch: 108%;
+    font-size: 1.0625rem;
     font-weight: 620;
-    letter-spacing: 0.14em;
     line-height: 1.3;
-    text-transform: uppercase;
     color: var(--site-muted);
   }
 
   .cube-panel-title {
     font-stretch: 116%;
     font-weight: 680;
-    font-size: clamp(2rem, 8vw, 3.25rem);
+    font-size: clamp(2rem, 4.4vw, 3.25rem);
     line-height: 1.05;
     letter-spacing: -0.04em;
   }
 
+  /* Wide enough for a time over a minute: "1:02.34" at the figure's size ran
+     out of a half of 22rem. */
   .cube-panel-meters {
     display: flex;
     gap: 0.5rem;
+    width: min(100%, 28rem);
+    margin-top: 0.25rem;
+  }
+
+  /* The figures sit on the studio here rather than on the stage's white, so
+     they take the tile's own colour to stand off it. */
+  .cube-panel .game-stat {
+    background-color: var(--site-card);
+    text-align: left;
   }
 
   .cube-panel-body {
-    max-width: 28rem;
-    font-size: clamp(0.9375rem, 3vw, 1.0625rem);
+    max-width: 30rem;
+    font-size: clamp(1rem, 1.5vw, 1.1875rem);
     line-height: 1.5;
     color: var(--site-muted);
   }
@@ -784,32 +907,38 @@
   }
 
   /*
-   * The hint card, over the top left corner of the stage, narrow enough to sit
-   * beside a puzzle at rest rather than across it.
+   * The hint card.
    *
    * ⚠️ **It is a sibling of the stage, not inside it**, so a press on the card
    * is never a press on the puzzle: the stage takes every pointer that lands on
    * it as the start of a turn or a spin. It sits under the solved panel and the
    * burst.
+   *
+   * Stacked - a phone or a tablet - it is a block under the stage, so what it
+   * pushes down is the five puzzles and the line on how to play, and never
+   * the puzzle. It used to sit over the stage's top left corner on a tablet,
+   * and with the puzzle as large as the stage now draws it the card covered
+   * a third of the cube. Beside the scene it is laid over the five puzzles
+   * in the menu column (see the side rules below).
    */
   .cube-tip {
-    position: absolute;
-    top: clamp(0.75rem, 2vw, 1.1rem);
-    left: clamp(0.75rem, 2vw, 1.1rem);
     z-index: 2;
     display: none;
-    width: min(21rem, calc(100% - 1.5rem));
+    margin-top: 0.75rem;
     border: 1px solid var(--site-hairline);
-    border-radius: var(--site-radius-card);
-    background-color: color-mix(in oklab, var(--site-card) 92%, transparent);
-    backdrop-filter: blur(6px);
-    box-shadow: var(--site-lift-hover);
-    padding: 0.85rem 0.95rem 0.8rem;
+    border-radius: var(--site-radius-inner);
+    background-color: var(--site-card);
+    padding: 0.85rem 1rem 0.8rem;
   }
 
   .cube[data-tip] .cube-tip {
     display: block;
-    animation: cube-tip 360ms var(--cube-spring);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .cube[data-tip] .cube-tip {
+      animation: cube-tip 360ms var(--site-spring);
+    }
   }
 
   /* The cue at the foot of the stage says what the card now says better. */
@@ -817,40 +946,29 @@
     display: none;
   }
 
-  /* On a phone there is no room beside the puzzle, so the card goes under
-     the stage instead of over it. */
-  @media (max-width: 40rem) {
-    .cube-tip {
-      position: static;
-      width: auto;
-      margin-top: 0.6rem;
-      padding: 0.7rem 0.8rem 0.65rem;
-      backdrop-filter: none;
-    }
-  }
-
   .cube-tip-head {
+    grid-area: head;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
   }
 
+  /* Where in the method the move is, in the accent and sentence case - it
+     was tracked capitals at 11px. */
   .cube-tip-step {
-    font-size: 0.6875rem;
-    font-weight: 620;
-    letter-spacing: 0.12em;
+    font-size: 0.9375rem;
+    font-weight: 640;
     line-height: 1.3;
-    text-transform: uppercase;
     color: var(--site-accent);
   }
 
   .cube-tip-close {
     display: grid;
     place-items: center;
-    width: 1.75rem;
-    height: 1.75rem;
-    margin: -0.35rem -0.45rem -0.35rem 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    margin: -0.45rem -0.5rem -0.45rem 0;
     border-radius: 50%;
     color: var(--site-muted);
     transition:
@@ -858,15 +976,26 @@
       color 160ms var(--site-ease);
   }
 
+  .cube-tip-close svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
   .cube-tip-close:hover {
     background-color: var(--site-inset);
     color: var(--site-fg);
   }
 
+  .cube-tip-close:focus-visible {
+    outline: 2px solid var(--site-accent);
+    outline-offset: 1px;
+  }
+
   .cube-tip-title {
-    margin-top: 0.15rem;
+    grid-area: title;
+    margin-top: 0.2rem;
     font-weight: 620;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     line-height: 1.3;
     color: var(--site-muted);
   }
@@ -874,18 +1003,20 @@
   /* The move itself, which is the line a reader acts on, so it is the
      largest thing on the card. */
   .cube-tip-do {
+    grid-area: do;
     margin-top: 0.3rem;
     font-stretch: 112%;
     font-weight: 680;
-    font-size: 1.1875rem;
-    letter-spacing: -0.01em;
+    font-size: 1.25rem;
+    letter-spacing: -0.015em;
     line-height: 1.25;
     color: var(--site-fg);
   }
 
   .cube-tip-text {
+    grid-area: text;
     margin-top: 0.35rem;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     line-height: 1.5;
     color: var(--site-muted);
   }
@@ -908,15 +1039,18 @@
     background-color: var(--c);
   }
 
-  /* The sequence, with the move being shown lifted out of it. */
+  /* The sequence, with the move being shown lifted out of it: an edge and a
+     tint, since the stage's one filled accent block is the clock. */
   .cube-tip-alg {
+    grid-area: alg;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.25rem;
-    margin-top: 0.55rem;
+    align-content: flex-start;
+    gap: 0.3rem;
+    margin-top: 0.6rem;
     font-stretch: 108%;
-    font-weight: 620;
-    font-size: 0.9375rem;
+    font-weight: 640;
+    font-size: 1rem;
     font-variant-numeric: tabular-nums;
   }
 
@@ -925,48 +1059,442 @@
   }
 
   .cube-tip-alg span {
-    min-width: 1.9rem;
-    border-radius: 6px;
+    min-width: 2.1rem;
+    border-radius: 8px;
     background-color: var(--site-inset);
-    padding: 0.15rem 0.4rem;
+    padding: 0.2rem 0.45rem;
     text-align: center;
     color: var(--site-muted);
   }
 
   .cube-tip-alg .is-now {
-    background-color: var(--site-accent);
-    color: var(--site-bg);
+    background-color: color-mix(in oklab, var(--site-accent) 12%, var(--site-card));
+    box-shadow: inset 0 0 0 1.5px var(--site-accent);
+    color: var(--site-accent);
   }
 
   .cube-tip-foot {
+    grid-area: foot;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 0.6rem;
-    margin-top: 0.65rem;
+    margin-top: 0.7rem;
   }
 
   .cube-tip-left {
-    font-size: 0.8125rem;
+    font-size: 0.9375rem;
     color: var(--site-muted);
   }
 
   .cube-tip-left b {
-    font-weight: 660;
+    font-weight: 680;
     font-variant-numeric: tabular-nums;
     color: var(--site-fg);
   }
 
+  /* Held to the right end of the foot, and to the right end of a line of its
+     own where a long count in German pushes it off the first. */
   .cube-tip-play {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.8125rem;
+    min-height: 2.5rem;
+    margin-left: auto;
+    padding: 0.45rem 1rem;
+    font-size: 0.9375rem;
   }
 
-  .cube-hint {
-    margin-top: clamp(0.75rem, 2vw, 1.1rem);
-    font-size: 0.875rem;
-    text-align: center;
-    color: var(--site-muted);
+  /*
+   * Beside the scene, from 64rem: shared.css's side-by-side stage, the game
+   * in the wide column on the left and the menu in the narrow one on the
+   * right.
+   *
+   * ⚠️ **The scene is the whole of the board's column.** Every other board is
+   * centred on a play surface shared.css draws behind it; here the studio is
+   * that surface, so the surface is not drawn and the scene takes its place,
+   * edge to edge. The column is wider than it is tall and a puzzle has a
+   * square footprint, which is what a studio is for: the floor runs out
+   * either side of the shadow, and the puzzle is as large as the height
+   * allows - at 1440 by 900 the sphere it turns in is 465 pixels across,
+   * where it was 371 in a square scene beside a menu column twice the width.
+   *
+   * `--cube-h` is 2048's board with its bounds - `--game-reserve` under the
+   * screen's height, the 22rem floor a short laptop stops at and the 44rem
+   * ceiling - plus the margin 2048's board keeps round itself on its
+   * surface, which here is studio too. So the two stages are one height, and
+   * the scene is whole on load wherever 2048's board is: at 1440 by 900 it
+   * runs from 250 to 846.
+   *
+   * The column runs in shared.css's order: the figures and the buttons at the
+   * top, level with the top of the scene, the five puzzles taking the height
+   * they leave, and the line on how to play at the foot. That order is also
+   * what gives the hint card its room - see below.
+   */
+  @media (min-width: 64rem) {
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) {
+      --cube-h: calc(min(44rem, max(22rem, 100svh - var(--game-reserve))) + 2 * var(--stage-gap));
+    }
+
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked))::before {
+      content: none;
+    }
+
+    /*
+     * ⚠️ **The frame steps out of the layout** - `display: contents` - so the
+     * stage, the hint card, the burst and the panel are placed in the stage's
+     * own grid. That is what lets the card cover the picker's cell, which is
+     * in the other column; the frame's box would have held it in this one.
+     * Nothing is lost: the frame was only the stacked stage's container and
+     * positioning box, and here the scene has a size of its own.
+     */
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) > .cube-frame {
+      display: contents;
+    }
+
+    /*
+     * The scene, the column's width and an explicit height, so it is the
+     * board that decides the stage's height and the column that fits into it.
+     *
+     * ⚠️ **A height, not a stretch to the area.** A stretched size container
+     * in this grid - or one at `height: 100%` - is laid out with its `cqh`
+     * resolved against the size-contained height, nought, so every sticker
+     * and the perspective come out at zero and the puzzle draws as nothing.
+     * Checked again in Chrome with this layout: 0px stickers stretched,
+     * 89px at the same height written out.
+     *
+     * At the top of its area rather than centred: where a long hint makes the
+     * column taller than the scene, a short laptop in French, the scene stays
+     * level with the figures and whole on load, and the column runs on.
+     *
+     * A larger share of the smaller side than stacked - 0.78 rather than
+     * 0.74. The nearest corner then lands at 0.45 of the side from the
+     * middle and the float adds 0.024, still inside the edge at any angle,
+     * and the puzzle is the size the scene has room for.
+     */
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) .cube-stage {
+      --cube-share: 0.78;
+
+      grid-area: board;
+      align-self: start;
+      height: var(--cube-h);
+    }
+
+    /*
+     * A child of the grid now, so an absolute box placed in an area is sized
+     * to that area: the burst is thrown over the scene's cell and the panel
+     * covers the scene - at the scene's own height from the top, since the
+     * cell runs on under it where the column is the taller of the two.
+     */
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) :is(.cube-panel, .game-burst) {
+      grid-area: board;
+      bottom: auto;
+      height: var(--cube-h);
+    }
+
+    /*
+     * The hint card, over the five puzzles and the line under them.
+     *
+     * While hints are showing the puzzle is being followed, not changed, and
+     * the card says better than the line how to turn it - so the picker's
+     * cell and the hint's are the room beside the scene that nothing needs.
+     * They are the two rows under the HUD, so the card covers both from the
+     * picker's top to the hint's foot and the figures and the buttons stay
+     * exactly where they were: the Hint button that closes it does not move
+     * under the pointer that opened it. What is under the card is taken out
+     * of reach - `visibility`, so the radios leave the tab order with it.
+     *
+     * The area is written as four lines because it is two areas: the rows
+     * from the start of `fill` to the end of `hint`, in `fill`'s column.
+     *
+     * One column, as narrow as the menu: the step, the stage of the method,
+     * the move, why, and at the foot the sequence over the count and the
+     * button that plays it - held to the foot, so on a tall column the card
+     * reads top and bottom rather than as a block with a hole under it.
+     * Scrolls rather than spilling if a short laptop makes the room smaller
+     * than the card.
+     */
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) .cube-tip {
+      position: absolute;
+      grid-area: fill / fill / hint / fill;
+      inset: 0;
+      margin: 0;
+      overflow-y: auto;
+      padding: 1rem 1.1rem 1rem;
+    }
+
+    .cube[data-tip] .game-stage-side:not(:has([data-stage-wide]:checked)) .cube-tip {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      /* `1fr` and not `minmax(0, 1fr)` for the words: a row allowed to be
+         smaller than them let the last lines run under the count on a 768
+         screen, where the card is the one that scrolls instead. */
+      grid-template-rows: auto auto auto 1fr auto auto;
+      grid-template-areas:
+        'head'
+        'title'
+        'do'
+        'text'
+        'alg'
+        'foot';
+    }
+
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) .cube-tip-text {
+      align-self: start;
+    }
+
+    .cube[data-tip] .game-stage-side:not(:has([data-stage-wide]:checked)) > :is(.cube-puzzles, .game-hint) {
+      visibility: hidden;
+    }
+
+    /*
+     * The four buttons, one row: the sound switch, Hint and Undo as their
+     * icons, and Scramble taking the rest with its word, as on a phone. With
+     * their words Hint and Undo shared a row with the switch and Scramble
+     * took a second one under them - 56 pixels of the column that the five
+     * puzzles get instead. The words are clipped rather than removed, so a
+     * screen reader still hears them.
+     *
+     * 0.65rem either side makes each icon button 41 pixels, and leaves
+     * Scramble 142 of the column at its narrowest, 18rem, where "Scramble"
+     * needs 132 - the longest of the four words. At the phone's 44 it had
+     * 132 exactly and wrapped onto a row of its own on the fraction of a
+     * pixel, and at the 49 shared.css gives the sound switch here it had no
+     * chance.
+     */
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) .game-actions .cta-ghost:is(.game-sound, [data-action='hint'], [data-action='undo']) {
+      flex: 0 0 auto;
+      padding-inline: 0.65rem;
+    }
+
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) .cube-action-word {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) .cube-scramble {
+      flex: 1 1 auto;
+      padding-inline: 0.8rem;
+    }
+
+    /*
+     * The three figures as wide as what they hold, and free to wrap. shared.css
+     * starts each at 5.5rem, and in the column at its narrowest, 18rem on a
+     * 1024 or 1280 screen, that put them two and one: a second row of figures
+     * the five puzzles did not get. From their own widths they share one row
+     * at every width the column has, until a time runs past a minute - then
+     * "1:02.34" is wider than a third of the column, and the figure beside it
+     * wraps and fills the row under them rather than the time running out of
+     * its block.
+     *
+     * ⚠️ **Not a container here.** shared.css makes every figure an
+     * inline-size container so it can drop its icon when narrow, and a
+     * container's width owes nothing to what is in it: sized from their own
+     * widths, the three came out as their padding and shared the row
+     * equally, with a time past a minute running out of its block. So the
+     * figures here are ordinary boxes and the icons go by this rule instead,
+     * as they go on a phone - beside an icon "Moves" ran into its block's
+     * padding even at 1440, and the words are the labels. The clock's beat
+     * goes with its square.
+     */
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) .game-stat {
+      flex: 1 1 auto;
+      container-type: normal;
+    }
+
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) .game-stat-label .tile-icon {
+      display: none;
+    }
+
+    /*
+     * The line on how to play, with its icon floated into the first two
+     * lines rather than standing beside the whole block. The cube's line is
+     * the longest on any game page - every key the puzzle answers to - and in
+     * a column 21rem wide it ran to six lines in English and eight in French
+     * beside a 36 pixel icon centred on nothing. Floated, the icon marks the
+     * start of it and every line after the second has the column's full
+     * width: a line or two shorter, which is a line or two the five puzzles
+     * get.
+     */
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) > .game-hint {
+      display: block;
+    }
+
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) > .game-hint .tile-icon {
+      float: left;
+      margin: 0.15rem 0.75rem 0 0;
+    }
+
+    /*
+     * The five puzzles beside the scene: three across and two down, the
+     * pyramid taking two cells of the second row - 2048's ladder does the same
+     * with its 2048, and it is what makes five tiles a full grid in a column
+     * 21rem wide. Five across there were tiles 60 pixels wide with "Pyramid"
+     * running out of the last one; the pyramid is the one puzzle that is not
+     * a cube, and the wider tile says so.
+     *
+     * The picker is given the column's spare height to fill (it is a size
+     * container here, see shared.css), and the icon is the part that grows:
+     * as large as the tile's height leaves, and as its third of the width
+     * allows. A tile is half of what is left under the name of the set, its
+     * gap and the gap between the rows - the 3.35rem - and 4.25rem of it is
+     * everything but the icon: the tile's padding and edges, the name, the
+     * time and the two gaps between them. The time shows only on a tall
+     * column, a big screen, and the chosen puzzle's is in the figure above
+     * the set on every screen.
+     *
+     * ⚠️ **The floor is 6.5rem here, under the 8rem shared.css gives a fill**,
+     * so that on a short laptop the column still fits beside the scene; the
+     * queries below step the tiles down as the height goes - the times, then
+     * the names, then the second row.
+     */
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) .cube-puzzles {
+      min-height: 6.5rem;
+    }
+
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) .cube-puzzles-row {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+    }
+
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) .cube-puzzle {
+      padding: 0.6rem 0.25rem 0.55rem;
+    }
+
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) .cube-puzzle:has([value='pyramid']) {
+      grid-column: span 2;
+    }
+
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) .cube-icon {
+      --s: clamp(2rem, min((100cqb - 3.35rem) / 2 - 4.25rem, (100cqi - 1.2rem) / 3 - 1.5rem), 5.5rem);
+    }
+
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) .cube-puzzle-name {
+      font-size: 1.0625rem;
+    }
+
+    /*
+     * Under 20rem - a laptop, or 1440 by 900 - the times go and the face has
+     * the tile's height to share with the name alone, 2.85rem of it: at 1440
+     * by 900 that is a face 70 pixels across where with the time under it it
+     * was 45. The rows are redrawn without the time's, or its empty row would
+     * still keep a gap.
+     */
+    @container cube-puzzles (max-height: 20rem) {
+      .cube-puzzle {
+        grid-template-rows: minmax(0, 1fr) auto;
+        grid-template-areas:
+          'icon'
+          'name';
+      }
+
+      .cube-puzzle-best {
+        display: none;
+      }
+
+      .cube .game-stage-side:not(:has([data-stage-wide]:checked)) .cube-icon {
+        --s: clamp(1.75rem, min((100cqb - 3.35rem) / 2 - 2.85rem, (100cqi - 1.2rem) / 3 - 1.5rem), 5.5rem);
+      }
+    }
+
+    /*
+     * Under 12.5rem - a laptop 800 pixels tall - two rows cannot hold a face
+     * over its name, and the names go: a face is its puzzle's size drawn,
+     * the name is hidden from a screen reader in favour of the spoken label
+     * anyway, and the chosen one keeps its accent edge. The face then has
+     * the whole tile but its padding and edges, 1.3rem: at 1280 by 800 a
+     * face 51 pixels across in the same three and two.
+     */
+    @container cube-puzzles (max-height: 12.5rem) {
+      .cube-puzzle {
+        grid-template-rows: minmax(0, 1fr);
+        grid-template-areas: 'icon';
+      }
+
+      .cube-puzzle-name {
+        display: none;
+      }
+
+      .cube .game-stage-side:not(:has([data-stage-wide]:checked)) .cube-icon {
+        --s: clamp(1.75rem, min((100cqb - 3.35rem) / 2 - 1.3rem, (100cqi - 1.2rem) / 3 - 1.5rem), 5.5rem);
+      }
+    }
+
+    /*
+     * Under 10.75rem - a 768 screen in French or German, where the line on
+     * how to play is eight lines - two rows of faces would be smaller than
+     * one: the five go back to the stacked strip, one row of faces as large
+     * as a fifth of the column allows. 4.1rem is the name of the set, its
+     * gap, and the tile's padding and edges.
+     */
+    @container cube-puzzles (max-height: 10.75rem) {
+      .cube .game-stage-side:not(:has([data-stage-wide]:checked)) .cube-puzzles-row {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        grid-template-rows: minmax(0, 1fr);
+      }
+
+      .cube .game-stage-side:not(:has([data-stage-wide]:checked)) .cube-puzzle:has([value='pyramid']) {
+        grid-column: auto;
+      }
+
+      .cube .game-stage-side:not(:has([data-stage-wide]:checked)) .cube-icon {
+        --s: clamp(1.5rem, min(100cqb - 4.1rem, (100cqi - 2.4rem) / 5 - 0.75rem), 3.5rem);
+      }
+    }
+  }
+
+  /*
+   * A short laptop - 832 pixels or less, 1280 by 800 and every 768 - where
+   * the scene is under 31rem tall and the column beside it has to fit in
+   * that. The line on how to play steps down a size, and in French or German
+   * at 1024 by 768 that is what keeps the column inside the scene rather
+   * than 32 pixels past its foot.
+   */
+  @media (min-width: 64rem) and (max-height: 52rem) {
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) > .game-hint {
+      font-size: 0.875rem;
+    }
+
+    /* The hint card has the same room to work in, and the move and the
+       reason for it step down with the line it covers, so the whole card
+       fits it in English and nearly in German, where it scrolls the last
+       line rather than spilling. */
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) .cube-tip {
+      padding: 0.85rem 1rem 0.9rem;
+    }
+
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) .cube-tip-do {
+      font-size: 1.125rem;
+    }
+
+    .cube .game-stage-side:not(:has([data-stage-wide]:checked)) .cube-tip-text {
+      font-size: 0.875rem;
+    }
+  }
+
+  /* The icon hops when the pointer reaches it, the way every mark on the
+     site does, and gives a turn and a bounce when it is picked, the way a
+     cube does when it is picked up off a table - `:has(:checked)` starting to
+     match is what starts it, so it plays once per choice. */
+  @media (prefers-reduced-motion: no-preference) {
+    .cube-icon {
+      transition:
+        rotate 420ms var(--site-spring),
+        scale 420ms var(--site-spring);
+    }
+
+    @media (hover: hover) {
+      .cube-puzzle:hover .cube-icon {
+        rotate: -7deg;
+        scale: 1.07;
+      }
+    }
+
+    .cube-puzzle:has(:checked) .cube-icon {
+      animation: cube-pick 620ms var(--site-spring);
+    }
   }
 }
 
@@ -977,7 +1505,7 @@
  * all moved by the module writing a transform, because each of them has to
  * answer a finger, a spring or a queue of turns that a keyframe cannot know
  * about. What is here is everything around them: the float, the arrival of a
- * new puzzle, the pick on the strip and the panel.
+ * new puzzle, the pick on the strip, the running clock and the panel.
  */
 @keyframes cube-float {
   0%,
@@ -1025,6 +1553,18 @@
   35% {
     rotate: -14deg;
     scale: 1.16;
+  }
+}
+
+/* The stopwatch's square beating once a second while the clock runs. */
+@keyframes cube-tick {
+  0%,
+  100% {
+    scale: 1;
+  }
+
+  18% {
+    scale: 1.14;
   }
 }
 

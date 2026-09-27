@@ -8,18 +8,20 @@
  * `projects.items` in the dictionaries carries the same keys for exactly this
  * reason: one component, any project.
  *
- * Widths and tone come from the same family the homepage uses (see
- * Section.astro), and the page is built out of the same cards: the diagram is a
- * chain of them, the numbered steps a grid of them, the stack one per service.
+ * Every section is a bento of tiles on the one shell, and the tiles in a row
+ * are sized by what they hold rather than given fixed spans - see `split`
+ * below, which is what keeps a short paragraph from sitting in a tile half
+ * its height. The rules are src/styles/project.css; the request diagram
+ * brings its own (src/styles/flow.css).
  */
-import { ArrowLeft, ArrowUpRight } from '@lucide/astro';
-import type { DiagramEdge, DiagramSpec, DiagramStage } from '../diagram-layout';
+import { ArrowLeft, CalendarDays, CodeXml, Globe, GraduationCap, Target } from '@lucide/astro';
 import type { Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
 import type { Project, ResultFormat } from '../site';
 import ArchitectureDiagram from './ArchitectureDiagram.astro';
+import MarkTile from './MarkTile.astro';
 import Section from './Section.astro';
-import TechIcon from './TechIcon.astro';
+import '../styles/project.css';
 
 interface Props {
   lang: Lang;
@@ -32,6 +34,15 @@ const copy = dict.projects.items[project.id];
 const labels = dict.projects.detail;
 
 const projectsPath = localizePath('/projects/', lang);
+
+/*
+ * The copy uses a spaced hyphen as its dash, and French sets a space before
+ * a colon - both break badly: a line that opens on "- which is what picks
+ * up" or on a lone ":". The words stay exactly as written and only the space
+ * in front of the mark becomes a no-break space, so the mark stays on the line
+ * with the word before it. The same fix as ArchitectureDiagram's `keep`.
+ */
+const keep = (text: string) => text.replace(/ ([:;!?]|-(?= ))/g, '\u00a0$1');
 
 /*
  * Numbers are stored raw in src/site.ts and formatted here, so 17942 prints as
@@ -50,151 +61,431 @@ const formatters: Record<ResultFormat, Intl.NumberFormat> = {
 };
 
 const links = [
-  { href: project.links.live, label: dict.projects.liveLabel },
-  { href: project.links.source, label: dict.projects.sourceLabel },
-].filter((link): link is { href: string; label: string } => Boolean(link.href));
-
-const meta = [
-  { label: labels.year, value: project.year },
-  { label: labels.context, value: copy.context },
-  { label: labels.domain, value: copy.domain },
-];
+  { href: project.links.live, label: dict.projects.liveLabel, Icon: Globe },
+  { href: project.links.source, label: dict.projects.sourceLabel, Icon: CodeXml },
+].filter((link): link is { href: string; label: string; Icon: typeof Globe } => Boolean(link.href));
 
 /*
- * The request diagram's spec: the copy from the dictionary, the topology from
- * src/site.ts, joined here because this is the one place that has both.
+ * ---- Tiles sized to what they hold ----------------------------------------
  *
- * ArchitectureDiagram takes stages and edges and knows nothing about projects,
- * so everything project-shaped is decided in these thirty lines - which is also
- * where to look when a fifth project does not fit the shape.
+ * A grid row is as tall as its tallest tile, so fixed spans put a short
+ * paragraph beside a long one and leave the short one's tile half empty -
+ * the one thing this site will not have. So every row of tiles is split by
+ * its contents instead: each way of dividing the row's columns is scored by
+ * how tall each tile would set, and the split whose shortest and tallest
+ * tiles come closest wins. It runs at build, per locale, so German gets its
+ * own split rather than inheriting the English one.
+ *
+ * ⚠️ The tile rows run on **24 columns** on a desktop and 12 on a tablet,
+ * twice the bento's count. The even spans land exactly on the bento's twelve,
+ * so every outer edge still lines up with the rest of the site; the odd ones
+ * are what let a split come out at 7 : 9 : 8 rather than being forced to the
+ * nearest twelfth, which on the dataset's three paragraphs was the difference
+ * between four lines of hole under two of them and none.
+ *
+ * The widths are the page where each breakpoint spends most of its time: the
+ * 80rem shell with a 1rem gap and a 2rem card padding, and a 50rem one with
+ * 0.75rem and 1.25rem. The rest is measured off the rendered page: Archivo's
+ * average advance is 0.43em in body text, 0.45em in the lead and 0.52em in the
+ * expanded titles, and a line loses about six characters to where the words
+ * happen to break, which matters most in the narrowest tiles. An estimate,
+ * but it only ever has to choose between splits a column apart, and brute
+ * force is cheap at this size: a few hundred candidates for a row of three.
  */
-const flow = copy.flow;
-const captions = dict.projects.flowCaptions;
-const roundTrip = project.flowShape === 'roundTrip';
-
-const services = flow.branches.map((branch, index) => ({
-  id: `service-${index}`,
-  tier: 3 as const,
-  title: branch.title,
-  badges: branch.badge ? [branch.badge] : undefined,
-}));
-
-const stages: DiagramStage[] = [
-  { id: 'entry', caption: captions.entry, nodes: [{ id: 'entry', tier: 1, title: flow.entry }] },
-  { id: 'core', caption: captions.core, nodes: [{ id: 'core', tier: 2, title: flow.core }] },
-  { id: 'lane', caption: captions.lane, lane: true, nodes: services },
-];
-
-const edges: DiagramEdge[] = [
-  { from: 'entry', to: 'core', label: flow.entryLabel || undefined },
-  ...services.map((service) => ({ from: 'core', to: service.id })),
-];
-
-if (roundTrip) {
-  /* Back to the core, then back out to the terminal it came from. */
-  edges.push(...services.map((service) => ({ from: service.id, to: 'core', return: true })));
-  edges.push({ from: 'core', to: 'entry', label: flow.exitLabel || undefined });
-} else {
-  stages.push({
-    id: 'exit',
-    caption: captions.exit,
-    nodes: [{ id: 'exit', tier: 1, title: flow.exit, note: flow.exitNote || undefined }],
-  });
-  edges.push(...services.map((service) => ({ from: service.id, to: 'exit' })));
+interface Grid {
+  width: number;
+  columns: number;
+  gap: number;
+  pad: number;
 }
 
-const flowSpec: DiagramSpec = { id: project.id, stages, edges };
+const TILES = {
+  lg: { width: 1280, columns: 24, gap: 16, pad: 32 },
+  sm: { width: 800, columns: 12, gap: 12, pad: 20 },
+} satisfies Record<string, Grid>;
+
+/* The takeaway: two columns of text straight on the ink, no padding, a 3rem
+   gutter, on the bento's own twelve. Only `lg` is ever split - below 64rem
+   the takeaway is one to a row and its grid is a single column - but `place`
+   takes both breakpoints. */
+const COLUMNS = {
+  lg: { width: 1280, columns: 12, gap: 48, pad: 0 },
+  sm: { width: 800, columns: 12, gap: 48, pad: 0 },
+} satisfies Record<string, Grid>;
+
+/** The text width inside a tile spanning `span` columns. */
+const inner = (grid: Grid, span: number, pad = grid.pad) => {
+  const column = (grid.width - (grid.columns - 1) * grid.gap) / grid.columns;
+  return span * column + (span - 1) * grid.gap - 2 * pad;
+};
+
+/**
+ * The best split of one row's columns, where `cost(i, span)` is how tall tile
+ * `i` would be at that span - or anything else that should come out equal
+ * across the row. No tile gets fewer than `min` columns.
+ */
+function split(count: number, grid: Grid, min: number, cost: (i: number, span: number) => number): number[] {
+  if (count === 1) return [grid.columns];
+
+  let best: number[] = [];
+  let bestScore = Infinity;
+
+  const walk = (spans: number[], left: number) => {
+    if (spans.length === count - 1) {
+      if (left < min) return;
+      const all = [...spans, left];
+      const heights = all.map((span, i) => cost(i, span));
+      const score = Math.max(...heights) / Math.min(...heights);
+      if (score < bestScore) {
+        bestScore = score;
+        best = all;
+      }
+      return;
+    }
+    const still = count - spans.length - 1;
+    for (let span = min; span <= left - min * still; span++) walk([...spans, span], left - span);
+  };
+
+  walk([], grid.columns);
+  return best;
+}
+
+/** `n` items in rows of at most `per`, as evenly as they go, fuller rows first:
+    five in threes is 3 + 2, never 3 + 1 + 1. */
+function rows(n: number, per: number): number[][] {
+  const count = Math.ceil(n / per);
+  const out: number[][] = [];
+  let next = 0;
+  for (let r = 0; r < count; r++) {
+    const size = Math.floor(n / count) + (r < n % count ? 1 : 0);
+    out.push(Array.from({ length: size }, () => next++));
+  }
+  return out;
+}
+
+/** A run of text: characters, font size and line height in px, advance in em. */
+interface Run {
+  chars: number;
+  size: number;
+  line: number;
+  advance: number;
+}
+
+const body = (text: string): Run => ({ chars: text.length, size: 18, line: 28.8, advance: 0.43 });
+const title = (text: string): Run => ({ chars: text.length, size: 22.4, line: 27, advance: 0.52 });
+
+/* Lines as a fraction rather than rounded up, so two splits a line apart
+   still score differently. A run that fits on one line loses nothing to
+   wrapping, which is most titles. */
+const linesOf = (run: Run, width: number) => {
+  const em = run.size * run.advance;
+  const length = run.chars * em;
+  return length <= width ? 1 : length / (width - 6 * em) + 0.5;
+};
+
+/** A tile's text: its runs top to bottom, and whatever sits above them at a
+    height no width changes - the step's number row. */
+interface Tile {
+  runs: Run[];
+  fixed?: number;
+}
+
+const heightOf = (tile: Tile, width: number) =>
+  (tile.fixed ?? 0) + tile.runs.reduce((sum, run) => sum + linesOf(run, width) * run.line + 10, 0);
+
+interface Placed {
+  lg: number;
+  sm: number;
+  /** The last tile of its row at each breakpoint - where a connector stops. */
+  endLg: boolean;
+  endSm: boolean;
+}
+
+/** Spans for a run of tiles: rows of at most `perLg` on a desktop and
+    `perSm` on a tablet, and on a phone one to a row. */
+function place(tiles: Tile[], perLg: number, perSm: number, grids: { lg: Grid; sm: Grid } = TILES): Placed[] {
+  const out: Placed[] = tiles.map(() => ({ lg: grids.lg.columns, sm: grids.sm.columns, endLg: true, endSm: true }));
+
+  for (const [key, end, per] of [
+    ['lg', 'endLg', perLg],
+    ['sm', 'endSm', perSm],
+  ] as const) {
+    const grid = grids[key];
+    /* A tile never narrower than about 30% of the row on a desktop (seven of
+       24, some 300px of text) and a third on a tablet: narrower than that a
+       paragraph sets four or five words to the line, and the estimate is at
+       its least reliable exactly there. */
+    const min = key === 'lg' ? Math.floor(grid.columns * 0.3) : grid.columns / 3;
+    for (const row of rows(tiles.length, per)) {
+      const spans = split(row.length, grid, min, (i, span) => heightOf(tiles[row[i]], inner(grid, span)));
+      row.forEach((index, i) => {
+        out[index][key] = spans[i];
+        out[index][end] = i === row.length - 1;
+      });
+    }
+  }
+
+  return out;
+}
+
+const spanStyle = (placed: Placed) => `--lg:${placed.lg};--sm:${placed.sm}`;
+
+/* The overview's first paragraph is set as a lead - 26px on 35 at a desktop's
+   width, see `.proj-lead`. */
+const overview = place(
+  copy.overview.map((p, i) => ({
+    runs: [i === 0 ? { chars: p.length, size: 26, line: 35, advance: 0.45 } : body(p)],
+  })),
+  2,
+  1,
+);
+
+/* A step is its number row (a 2.75rem disc and the gap under it), its title
+   and its body at 17px. */
+const steps = place(
+  copy.steps.map((step) => ({
+    fixed: 64,
+    runs: [title(step.title), { ...body(step.body), size: 17, line: 27.2 }],
+  })),
+  3,
+  2,
+);
+
+const features = place(
+  copy.features.map((f) => ({ runs: [title(f.title), body(f.body)] })),
+  3,
+  2,
+);
+
+const dataset = place(copy.dataset.map((p) => ({ runs: [body(p)] })), 3, 1);
+const notes = place(copy.results.notes.map((p) => ({ runs: [body(p)] })), 3, 1);
+
+const takeaway = place(
+  copy.takeaway.map((p) => ({ runs: [{ chars: p.length, size: 20, line: 31, advance: 0.43 }] })),
+  2,
+  1,
+  COLUMNS,
+);
+
+/*
+ * The stack, a tile per service, each holding its marks.
+ *
+ * The groups are packed into rows of at most so many marks - eight on a
+ * desktop, four on a tablet, two on a phone - in order, and each row's
+ * columns are split so every mark comes out about the same width. Object
+ * detection's five groups (1, 1, 6, 3 and 1 marks) land as 2 + 2 + 8 and
+ * 9 + 3 on a desktop: two full rows and no mark tile stretched across a
+ * third of the page next to a crowded one.
+ */
+const counts = project.stack.map((group) => group.items.length);
+
+function pack(cap: number): number[][] {
+  const out: number[][] = [];
+  let row: number[] = [];
+  let used = 0;
+  counts.forEach((count, index) => {
+    if (row.length > 0 && used + count > cap) {
+      out.push(row);
+      row = [];
+      used = 0;
+    }
+    row.push(index);
+    used += count;
+  });
+  if (row.length > 0) out.push(row);
+  return out;
+}
+
+/*
+ * The stack's own grid is the bento's twelve, six and - unlike the text rows
+ * - two on a phone, where two single-mark groups can share a row. The group
+ * tile's padding is the 18px of `.proj-group`, and 10px is the gap between
+ * two marks, which a mark's width loses once per neighbour.
+ */
+const STACK = {
+  lg: { width: 1280, columns: 12, gap: 16, pad: 18 },
+  sm: { width: 800, columns: 6, gap: 12, pad: 18 },
+  xs: { width: 358, columns: 2, gap: 12, pad: 18 },
+} satisfies Record<string, Grid>;
+
+const markGap = 10;
+const stackSpans = counts.map(() => ({ xs: 2, sm: 6, lg: 12 }));
+
+for (const [key, cap] of [
+  ['lg', 8],
+  ['sm', 4],
+  ['xs', 2],
+] as const) {
+  const grid = STACK[key];
+  for (const row of pack(cap)) {
+    /* The cost is one over a mark's width, so the split that evens it out
+       is the one where every mark in the row comes out alike. */
+    const spans = split(row.length, grid, key === 'xs' ? 1 : 2, (i, span) => {
+      const n = counts[row[i]];
+      return n / (inner(grid, span) - (n - 1) * markGap);
+    });
+    row.forEach((index, i) => (stackSpans[index][key] = spans[i]));
+  }
+}
+
+/*
+ * The results: which figure in each column is the best one, so it can be
+ * marked. Higher is better for a metric and lower for a stopwatch; a count is
+ * the condition a run was made under - 8,813 or 17,942 annotations, 150 files
+ * - rather than an outcome, so it is never marked and draws no bar.
+ */
+const results = project.results;
+
+const best = results
+  ? results.formats.map((format, column) => {
+      if (format === 'count') return null;
+      const values = results.rows.map((row) => row.values[column]).filter((v): v is number => v !== null);
+      if (values.length < 2 || values.every((v) => v === values[0])) return null;
+      return format === 'seconds' ? Math.min(...values) : Math.max(...values);
+    })
+  : [];
+
+/* A ratio's bar is the value itself, out of 1. A time's is the share of the
+   slowest run in its column. */
+const columnMax = results
+  ? results.formats.map((_, column) =>
+      Math.max(...results.rows.map((row) => row.values[column] ?? 0)),
+    )
+  : [];
+
+const barFor = (format: ResultFormat, value: number, column: number) =>
+  format === 'ratio' ? value : value / columnMax[column];
+
+/* Rows that repeat a label - YOLOv8m twice, ML.NET twice - are a group, and
+   the rule above each new group is drawn heavier so the pairs read as pairs. */
+const grouped = results ? new Set(copy.results.rows).size < copy.results.rows.length : false;
+
+const tableLabel = `${copy.title} - ${labels.results}`;
+
+const meta = [
+  { label: labels.context, value: copy.context, Icon: GraduationCap, span: 'proj-meta-context' },
+  { label: labels.domain, value: copy.domain, Icon: Target, span: 'proj-meta-domain' },
+];
 ---
 
 <article>
   {/*
     The page head. In view at first paint, so it runs the load sequence rather
-    than a scroll reveal, and the beats are the same ones the hero uses: title,
-    then the line under it, then the metadata.
+    than a scroll reveal: the crumb, the title rising out of its mask, the
+    tagline, then the three facts as tiles.
   */}
   <header class="page-head">
-    <div class="shell shell-projects">
+    <div class="shell">
       <a href={projectsPath} class="crumb enter">
         <ArrowLeft class="size-[0.95rem]" aria-hidden="true" />
         {dict.projects.back}
       </a>
 
-      <h1 class="page-title enter" style="--enter-delay:60ms">{copy.title}</h1>
+      <h1 class="page-title">
+        <span class="line-mask enter-line" style="--enter-delay:80ms"
+          ><span class="line-in">{copy.title}</span></span
+        >
+      </h1>
 
-      <p class="page-lead enter" style="--enter-delay:160ms">{copy.tagline}</p>
+      <p class="page-lead enter" style="--enter-delay:180ms">{keep(copy.tagline)}</p>
 
-      <div class="enter" style="--enter-delay:260ms">
-        <dl class="page-meta">
-          {
-            meta.map((item) => (
-              <div class="card page-meta-cell">
-                <dt class="meta-label">{item.label}</dt>
-                <dd class="meta-value">{item.value}</dd>
-              </div>
-            ))
-          }
-        </dl>
+      {/*
+        Three labelled tiles rather than one line of values joined by dots:
+        the label is doing work, and a dotted string makes the reader guess
+        which value is which. The year is four characters, so it is set as a
+        figure on the cobalt rather than as a value lost in a white tile.
+      */}
+      <dl class="bento proj-meta">
+        <div class="card tile-cobalt proj-meta-year enter" style="--enter-delay:260ms">
+          <dt class="tile-label">
+            <span class="tile-icon"><CalendarDays aria-hidden="true" /></span>
+            {labels.year}
+          </dt>
+          <dd class="proj-meta-figure">{project.year}</dd>
+        </div>
 
         {
-          links.length > 0 && (
-            <ul class="mt-6 flex flex-wrap gap-3">
-              {links.map((link) => (
-                <li>
-                  <a href={link.href} target="_blank" rel="noopener" class="cta-ghost">
-                    {link.label}
-                    <ArrowUpRight class="size-[0.9rem] shrink-0" aria-hidden="true" />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          )
+          meta.map((item, i) => (
+            <div class:list={['card enter', item.span]} style={`--enter-delay:${340 + i * 80}ms`}>
+              <dt class="tile-label">
+                <span class="tile-icon">
+                  <item.Icon aria-hidden="true" />
+                </span>
+                {item.label}
+              </dt>
+              <dd class="proj-meta-value">{keep(item.value)}</dd>
+            </div>
+          ))
         }
-      </div>
+      </dl>
+
+      {
+        links.length > 0 && (
+          <ul class="proj-links enter" style="--enter-delay:500ms">
+            {links.map((link) => (
+              <li>
+                <a href={link.href} target="_blank" rel="noopener" class="cta-ghost">
+                  <link.Icon class="size-[1rem] shrink-0" aria-hidden="true" />
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
     </div>
   </header>
 
   {/*
     The diagram runs its own reveal, in the order the request does, so it does
-    not also take the section's `.reveal` - the two together would fade the
-    whole block in and then assemble it inside itself.
+    not also take a `.reveal` - the two together would fade the whole block in
+    and then assemble it inside itself. It reads the project's flow copy and
+    its `flowShape` and `flowTech` itself.
   */}
-  <Section id="flow" label={labels.flow} width="projects" tone="band">
-    <ArchitectureDiagram spec={flowSpec} />
+  <Section id="flow" label={labels.flow} tone="band">
+    <ArchitectureDiagram lang={lang} project={project} />
   </Section>
 
   {
     copy.overview.length > 0 && (
-      <Section id="overview" label={labels.overview} width="text">
-        <p class="about-lead reveal">{copy.overview[0]}</p>
-
-        {copy.overview.length > 1 && (
-          <div class="about-grid reveal mt-8">
-            {copy.overview.slice(1).map((paragraph) => (
-              <p class="text-muted">{paragraph}</p>
-            ))}
-          </div>
-        )}
+      <Section id="overview" label={labels.overview}>
+        {/* The opening paragraph as a lead, the second beside it. */}
+        <div class="proj-fit">
+          {copy.overview.map((paragraph, i) => (
+            <div class="card reveal-item" style={spanStyle(overview[i])}>
+              <p class={i === 0 ? 'proj-lead' : 'proj-text'}>{keep(paragraph)}</p>
+            </div>
+          ))}
+        </div>
       </Section>
     )
   }
 
   {
     copy.steps.length > 0 && (
-      <Section id="architecture" label={labels.architecture} width="projects">
+      <Section id="architecture" label={labels.architecture}>
         {/*
-          Numbered, which nothing else on this site is: a request genuinely
-          runs in this order, and the number is the only thing that can carry
-          it. Two digits so the disc does not resize at the tenth step.
+          Numbered, because a request genuinely runs in this order and the
+          number is the only thing that can carry it; the `<ol>` says it to a
+          screen reader, so the drawn figure is hidden. Two digits so the disc
+          does not resize at the tenth step. The line after each number runs
+          on across the gap into the next tile, which is what makes a row of
+          them read as a sequence rather than a set.
         */}
-        <ol class="step-list">
+        <ol class="proj-fit">
           {copy.steps.map((step, index) => (
-            <li class="card step reveal-item">
-              <span class="step-n">{String(index + 1).padStart(2, '0')}</span>
-
-              <div>
-                <h3 class="step-title">{step.title}</h3>
-                <p class="mt-2 text-[15px] text-muted">{step.body}</p>
+            <li
+              class="card proj-step reveal-item"
+              style={spanStyle(steps[index])}
+              data-end-lg={steps[index].endLg ? '' : undefined}
+              data-end-sm={steps[index].endSm ? '' : undefined}
+            >
+              <div class="proj-step-head" aria-hidden="true">
+                <span class="proj-step-n">{String(index + 1).padStart(2, '0')}</span>
+                <span class="proj-step-line" />
               </div>
+              <h3 class="proj-step-title">{step.title}</h3>
+              <p class="proj-step-body">{keep(step.body)}</p>
             </li>
           ))}
         </ol>
@@ -204,12 +495,12 @@ const flowSpec: DiagramSpec = { id: project.id, stages, edges };
 
   {
     copy.features.length > 0 && (
-      <Section id="features" label={labels.features} width="wide" tone="band">
-        <ul class="svc-grid">
-          {copy.features.map((feature) => (
-            <li class="card reveal-item">
-              <h3 class="svc-title">{feature.title}</h3>
-              <p class="mt-2.5 text-muted">{feature.body}</p>
+      <Section id="features" label={labels.features} tone="band">
+        <ul class="proj-fit">
+          {copy.features.map((feature, index) => (
+            <li class="card proj-trait reveal-item" style={spanStyle(features[index])}>
+              <h3 class="proj-trait-title">{feature.title}</h3>
+              <p class="proj-text">{keep(feature.body)}</p>
             </li>
           ))}
         </ul>
@@ -219,10 +510,12 @@ const flowSpec: DiagramSpec = { id: project.id, stages, edges };
 
   {
     copy.dataset.length > 0 && (
-      <Section id="dataset" label={labels.dataset} width="text">
-        <div class="about-grid reveal">
-          {copy.dataset.map((paragraph) => (
-            <p class="text-muted">{paragraph}</p>
+      <Section id="dataset" label={labels.dataset}>
+        <div class="proj-fit">
+          {copy.dataset.map((paragraph, index) => (
+            <div class="card reveal-item" style={spanStyle(dataset[index])}>
+              <p class="proj-text">{keep(paragraph)}</p>
+            </div>
           ))}
         </div>
       </Section>
@@ -230,45 +523,71 @@ const flowSpec: DiagramSpec = { id: project.id, stages, edges };
   }
 
   {
-    project.results && (
-      <Section id="results" label={labels.results} width="timeline">
+    results && (
+      <Section id="results" label={labels.results}>
         {/*
           A real table, because this is real tabular data and any other shape
-          would be decoration over it. It scrolls inside its own card rather
-          than pushing the page sideways on a phone.
+          would be decoration over it. Each measured figure carries a bar
+          under it, and the best figure in each column is marked, so the
+          answer can be read before the numbers are.
+
+          It scrolls inside its own tile rather than pushing the page
+          sideways on a phone - focusable and named, so the scroll can be
+          reached from a keyboard and is announced as the table it holds.
         */}
-        <div class="card metrics-wrap reveal">
-          <table class="metrics">
-            <caption class="sr-only">{`${copy.title} - ${labels.results}`}</caption>
-            <thead>
-              <tr>
-                {/* The first head names the row-label column, the rest the figures. */}
-                {copy.results.columns.map((name) => (
-                  <th scope="col">{name}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {project.results.rows.map((row, rowIndex) => (
+        <div class="card proj-results reveal">
+          <div class="proj-table-scroll" tabindex="0" role="region" aria-label={tableLabel}>
+            <table class="proj-table">
+              <caption class="sr-only">{tableLabel}</caption>
+              <thead>
                 <tr>
-                  <th scope="row">{copy.results.rows[rowIndex]}</th>
-                  {row.values.map((value, columnIndex) => (
-                    <td>
-                      {value === null
-                        ? '-'
-                        : formatters[project.results!.formats[columnIndex]].format(value)}
-                    </td>
+                  {/* The first head names the row-label column, the rest the
+                      figures - `formats` has no entry for the first, hence the
+                      index - 1. A count's head is marked like its cells. */}
+                  {copy.results.columns.map((name, i) => (
+                    <th scope="col" data-count={i > 0 && results.formats[i - 1] === 'count' ? '' : undefined}>
+                      {name}
+                    </th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {results.rows.map((row, rowIndex) => (
+                  <tr
+                    data-group={
+                      grouped && rowIndex > 0 && copy.results.rows[rowIndex] !== copy.results.rows[rowIndex - 1]
+                        ? ''
+                        : undefined
+                    }
+                  >
+                    <th scope="row">{copy.results.rows[rowIndex]}</th>
+                    {row.values.map((value, columnIndex) => {
+                      const format = results.formats[columnIndex];
+                      const bar = value !== null && format !== 'count';
+                      return (
+                        <td
+                          data-count={format === 'count' ? '' : undefined}
+                          data-best={value !== null && value === best[columnIndex] ? '' : undefined}
+                          style={bar ? `--v:${barFor(format, value, columnIndex).toFixed(3)}` : undefined}
+                        >
+                          <span class="proj-num">{value === null ? '-' : formatters[format].format(value)}</span>
+                          {bar && <span class="proj-bar" aria-hidden="true" />}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {copy.results.notes.length > 0 && (
-          <div class="about-grid reveal mt-7">
-            {copy.results.notes.map((paragraph) => (
-              <p class="text-muted">{paragraph}</p>
+          <div class="proj-fit proj-notes">
+            {copy.results.notes.map((paragraph, index) => (
+              <div class="card reveal-item" style={spanStyle(notes[index])}>
+                <p class="proj-text">{keep(paragraph)}</p>
+              </div>
             ))}
           </div>
         )}
@@ -278,20 +597,23 @@ const flowSpec: DiagramSpec = { id: project.id, stages, edges };
 
   {/*
     The stack, grouped by service rather than by category, so the list doubles
-    as a map of what runs where. Same rows as the homepage's Skills section.
+    as a map of what runs where - a tile per service holding its marks, sized
+    by `stackSpans` above so every row is full.
   */}
-  <Section id="stack" label={labels.stack} width="wide">
-    <dl class="card stack-card reveal">
+  <Section id="stack" label={labels.stack}>
+    <dl class="proj-stack">
       {
-        project.stack.map((group) => (
-          <div class="stack-row">
-            <dt class="stack-name">{dict.projects.stackGroups[group.id]}</dt>
-            <dd class="stack-chips">
+        project.stack.map((group, index) => (
+          <div
+            class="card proj-group reveal-item"
+            style={`--xs:${stackSpans[index].xs};--sm:${stackSpans[index].sm};--lg:${stackSpans[index].lg}`}
+          >
+            <dt class="proj-group-name">{dict.projects.stackGroups[group.id]}</dt>
+            <dd class="proj-marks">
               {group.items.map((item) => (
-                <span class="chip">
-                  <TechIcon name={item} class="chip-icon" />
-                  {item}
-                </span>
+                <div class="proj-mark">
+                  <MarkTile name={item} />
+                </div>
               ))}
             </dd>
           </div>
@@ -302,14 +624,16 @@ const flowSpec: DiagramSpec = { id: project.id, stages, edges };
 
   {
     copy.takeaway.length > 0 && (
-      <Section id="takeaway" label={labels.takeaway} width="text" tone="panel">
-        <div class="about-grid reveal">
-          {copy.takeaway.map((paragraph) => (
-            <p class="text-muted">{paragraph}</p>
+      <Section id="takeaway" label={labels.takeaway} tone="panel">
+        <div class="proj-take">
+          {copy.takeaway.map((paragraph, index) => (
+            <p class="reveal-item" style={spanStyle(takeaway[index])}>
+              {keep(paragraph)}
+            </p>
           ))}
         </div>
 
-        <p class="reveal mt-8">
+        <p class="proj-close reveal">
           <a href={projectsPath} class="cta">
             <ArrowLeft class="size-[1.05rem]" aria-hidden="true" />
             {dict.projects.all}

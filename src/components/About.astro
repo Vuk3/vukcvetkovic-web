@@ -1,6 +1,7 @@
 ---
+import { Gamepad2, GraduationCap } from '@lucide/astro';
 import type { Lang } from '../i18n/types';
-import { getDict } from '../i18n/utils';
+import { getDict, localizePath } from '../i18n/utils';
 import Section, { type SectionTone } from './Section.astro';
 
 interface Props {
@@ -11,25 +12,40 @@ interface Props {
 const { lang, tone } = Astro.props;
 const dict = getDict(lang);
 
-/* The opening paragraph is set large across the column and the rest run in two
- * columns under it. Splitting the array here rather than indexing in the
- * markup keeps the two layouts separate. */
-const [lead, ...rest] = dict.about.paragraphs;
+/* The opening paragraph is the statement tile; the other two sit under it. */
+const [lead, education, site] = dict.about.paragraphs;
 ---
 
 {/*
-  Editorial rather than a card: the opening statement at display size, the rest
-  in two columns beneath it.
+  Three tiles: the opening statement across the full measure at display size,
+  then the other two paragraphs side by side at 7 and 5 columns, which is the
+  split that makes their two lengths finish level in all four languages.
 
-  Nothing here is boxed. About is the one section on the page that is pure
-  prose, and what sets it apart from its neighbours is exactly that - after a
-  hero of chips and before a grid of cards, a run of text at reading size is the
-  break.
+  They are labelled with names the page already uses for what they are about -
+  the degrees are Education, and the site with its seven games is Games - and
+  the Games tile is the whole tile a link to the games, on cobalt, because it is
+  the one paragraph on the page that points somewhere a reader can go and try.
 */}
-<Section id="about" label={dict.about.label} width="text" tone={tone}>
-  <p class="about-lead reveal">{lead}</p>
+<Section id="about" label={dict.about.label} tone={tone}>
+  <div class="bento">
+    <div class="card about-statement reveal-item sm:col-span-6 lg:col-span-12">
+      <p class="about-lead">{lead}</p>
+    </div>
 
-  <div class="about-grid reveal mt-8">
-    {rest.map((paragraph) => <p class="text-muted">{paragraph}</p>)}
+    <div class="card about-note reveal-item sm:col-span-6 lg:col-span-7">
+      <p class="tile-label">
+        <span class="tile-icon"><GraduationCap aria-hidden="true" /></span>
+        {dict.education.label}
+      </p>
+      <p class="about-body">{education}</p>
+    </div>
+
+    <div class="card card-hover tile-cobalt about-note reveal-item sm:col-span-6 lg:col-span-5">
+      <p class="tile-label">
+        <span class="tile-icon"><Gamepad2 aria-hidden="true" /></span>
+        <a href={localizePath('/games/', lang)} class="stretch">{dict.nav.games}</a>
+      </p>
+      <p class="about-body">{site}</p>
+    </div>
   </div>
 </Section>

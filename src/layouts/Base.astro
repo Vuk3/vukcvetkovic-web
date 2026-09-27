@@ -5,6 +5,14 @@ import { locales, ogLocales, type Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
 import { site } from '../site';
 import '../styles/global.css';
+/*
+ * The Latin face of Archivo, the one every page's first screen is set in, as a
+ * URL so it can be preloaded. `?url` goes through the same asset pipeline as
+ * the `@font-face` in the fontsource stylesheet, so it is the same hashed file
+ * and the preload is a hit rather than a second download. See the preload
+ * below.
+ */
+import archivoLatin from '@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url';
 
 interface Props {
   lang: Lang;
@@ -109,6 +117,16 @@ const structuredData = {
       })();
     </script>
 
+    {/*
+      The Latin face, fetched with the document rather than after the
+      stylesheet is parsed. Without it the text painted in the fallback face
+      and reflowed when Archivo arrived, which Lighthouse measured as a layout
+      shift on the project pages' meta tiles. Latin only: latin-ext carries a
+      handful of letters (the ć in the name among them) and 85 KB more, and
+      preloading both put two fonts ahead of the portrait on a slow phone.
+    */}
+    <link rel="preload" href={archivoLatin} as="font" type="font/woff2" crossorigin />
+
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
     <meta name="author" content={site.name} />
@@ -161,17 +179,18 @@ const structuredData = {
     }
 
     {/*
-      These match --site-panel-bg, not --site-bg: the browser chrome sits
-      directly above the header, and the header is the ink panel in both themes,
-      so matching the page ground would put a light strip over a dark bar.
+      These match --site-bg: the header is a capsule floating on the page with
+      the ground showing round it, so the browser chrome sits directly above the
+      ground, not above ink. Matching the panel would put a dark strip over the
+      light gap the capsule floats in.
 
       ⚠️ They duplicate the token in both themes and have to be changed with it.
       They also key on the media query rather than the .dark class, so a manual
       toggle does not move the chrome - see open item 1 in
       docs/design-system.md.
     */}
-    <meta name="theme-color" content="#14161a" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#14171c" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#eceef2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#090b10" media="(prefers-color-scheme: dark)" />
 
     {/*
       Vuk's own V mark, cropped in tight from the master in src/assets. The 32px

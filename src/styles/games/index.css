@@ -1,11 +1,17 @@
 /*
- * The games index: the grid of cards, the thumbnail's frame and the status
- * ribbon across its corner.
+ * The games index: the head, the bento wall of cards, the thumbnail's frame,
+ * and the small piece of its own game each thumbnail plays under the pointer.
  *
- * Imported by GameIndex.astro and nothing else. Each thumbnail's own drawing -
- * its tray, and the few overrides that make a real board into a still - lives
- * in that game's file, beside the rules it overrides, and comes in with the
- * thumbnail component that imports it.
+ * Imported by GameIndex.astro and nothing else, which is what keeps every
+ * hover animation below off the game pages: the thumbnails are built from the
+ * real pieces - `.g2048-tier`, `.ms-cell`, `.mem-card`, `.acc-body`, the hulls,
+ * the cube's tiles, the discs - so a rule written against those pieces here
+ * would move the real board too if this file were ever loaded beside one.
+ * Every selector is therefore rooted at `.game-card`, which exists only here.
+ *
+ * Each thumbnail's own drawing - its tray, and the few overrides that make a
+ * real board into a still - lives in that game's file, beside the rules it
+ * overrides, and comes in with the thumbnail component that imports it.
  */
 
 /*
@@ -16,76 +22,162 @@
 @layer properties, theme, base, components, games, utilities;
 
 @layer games {
-  /* ---- The games index ----------------------------------------------- */
+  /* ---- The head --------------------------------------------------------- */
 
   /*
-   * Three across, fixed, and a short row stays short.
+   * The title and the lead side by side on a wide screen.
    *
-   * Not one big card with a row under it either. That shape was borrowed from
-   * the projects section and it was the wrong loan: a project is a write-up,
-   * so the first one earns the extra room, while a game is a thing you either
-   * want to play or you do not.
+   * The title is one short word in every language - Games, Igre, Jeux, Spiele
+   * - so stacked over a full-width lead it left a head of mostly air, and the
+   * lead ran 1150px as one line and a three-word second one. Beside the
+   * title, the lead takes whatever the word leaves, which is about 830px at
+   * 1440: two full lines, and the head is as tall as the title.
    *
-   * `auto-fit` was tried here so that one game would stretch to fill the row
-   * rather than sitting in the first third of it, and it is the wrong answer:
-   * a card is a fixed-size object and stretching it to 72rem turns the
-   * thumbnail into a wall. An unfilled track reads as a grid waiting for the
-   * next entry, which is what it is.
+   * `auto` for the title's track because it is one word and cannot wrap, and
+   * `last baseline` so the lead's last line sits on the title's baseline
+   * rather than on the bottom of its line box, which at the title's 0.96
+   * line-height and the lead's 1.45 are a few pixels apart.
    */
-  .game-grid {
-    display: grid;
-    gap: clamp(0.875rem, 1.5vw, 1.25rem);
+  .games-head .page-title {
+    /* The foundation's top margin clears a crumb row. The index is the top
+       of its section and has no crumb, so the head's own padding is the gap
+       under the header. */
+    margin-top: 0;
   }
 
-  @media (min-width: 40rem) {
-    .game-grid {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-
-  /*
-   * Three across on a wide screen, two below that.
-   *
-   * ⚠️ **Four games leave one card alone on the second row, and that is
-   * accepted.** Two columns fill a square exactly and were tried, but the games
-   * are a growing list rather than a set of four - at five and six a row of
-   * three is full again, and a layout that has to be re-decided every time one
-   * is added is the wrong shape for it.
-   */
   @media (min-width: 64rem) {
-    .game-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+    .games-head {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: end;
+      align-items: last baseline;
+      column-gap: clamp(3rem, 6vw, 6.5rem);
+    }
+
+    .games-head .page-lead {
+      margin-top: 0;
+    }
+  }
+
+  /* ---- The wall --------------------------------------------------------- */
+
+  /* The head's own bottom padding is the gap above the wall. With the
+     section's top padding on as well the two stacked to 88px of bare ground
+     between the lead and the first row of cards. */
+  .games-wall {
+    padding-top: 0;
+  }
+
+  /*
+   * Seven cards on the foundation's `.bento`, and every row full.
+   *
+   * On a desktop's twelve columns the rows are two, three and two: halves,
+   * thirds, halves. On a tablet's six they are pairs, and the seventh card,
+   * which a pair would leave alone beside an empty cell, takes the whole row.
+   * One column on a phone.
+   *
+   * ⚠️ **The spans are written by position, not by game**, so the display
+   * order stays `site.games`'s declaration order and a game moved in the
+   * registry moves on the page with nothing to change here. The composition
+   * is for seven, though: an eighth game lands alone on a fourth row at half
+   * width, and the day one is added is the day this is decided again. A row
+   * that stops short is exactly what this wall exists to avoid.
+   */
+  @media (min-width: 40rem) {
+    .game-card {
+      grid-column: span 3;
+    }
+
+    .game-card:last-child:nth-child(odd) {
+      grid-column: span 6;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .game-card,
+    .game-card:last-child:nth-child(odd) {
+      grid-column: span 6;
+    }
+
+    .game-card:nth-child(7n + 3),
+    .game-card:nth-child(7n + 4),
+    .game-card:nth-child(7n + 5) {
+      grid-column: span 4;
     }
   }
 
   /*
-   * The thumbnail's frame: the bleed, the corners and the clip.
+   * A card is a column: picture, then the title row, then the tagline.
    *
-   * Negative margins of exactly `--card-pad`, which is why `.card` names it:
-   * the picture is the top of the card rather than something sitting inside
-   * it with a frame of ground around it. The radius is the card's own, less
-   * the border, so the two curves sit on each other rather than beside.
+   * ⚠️ **Not a subgrid, though it looks like it wants one.** Spanning three
+   * shared rows of the wall lines every tagline in a row up on one line, and
+   * that was built: where one title wrapped - "Bataille navale" with its pill
+   * in a third of a 64rem screen - every other card in the row got a line of
+   * nothing between its title and its tagline, a hole in the middle of three
+   * cards to save a step in one. Row-mates are the same width, so their
+   * pictures and titles line up anyway, and what is left over sits at the
+   * foot of a card, where it reads as margin.
+   */
+  .game-card {
+    /* How far the picture sits in from the card's edge. The picture's radius
+       is the card's less this, so the two curves are concentric rather than
+       a round card around a squarer picture. */
+    --shot-inset: clamp(0.375rem, 0.6vw, 0.5rem);
+
+    display: flex;
+    flex-direction: column;
+  }
+
+  /*
+   * The thumbnail's frame: the inset, the corners and the clip.
+   *
+   * Negative margins of `--card-pad` less the inset, which is why `.card`
+   * names its padding: the picture sits in the card like a screen in a
+   * console, a hair in from the edge on three sides, rather than behind a
+   * frame of card as wide as the text's margin.
    *
    * ⚠️ **It is a separate element from `.game-art` because it clips.** The
-   * status ribbon is a straight band laid across the bottom-right corner, long
-   * enough to run off both of the edges it crosses, and something has to cut
-   * it there. Putting the clip on `.game-art` instead would work and would put
-   * the ribbon inside the `aria-hidden` the art carries, which is right for a
-   * drawing of a board and wrong for the word "Beta".
+   * hover zooms the art, and the zoom has to happen inside corners that stay
+   * where they are. Putting the clip on `.game-art` instead would scale the
+   * corners with it.
    */
   .game-shot {
     position: relative;
     overflow: clip;
-    margin: calc(-1 * var(--card-pad)) calc(-1 * var(--card-pad)) clamp(1rem, 1.6vw, 1.35rem);
-    border-radius: calc(var(--site-radius-card) - 1px) calc(var(--site-radius-card) - 1px) 0 0;
+    margin: calc(var(--shot-inset) - var(--card-pad)) calc(var(--shot-inset) - var(--card-pad))
+      clamp(1.1rem, 1.8vw, 1.5rem);
+    /* The card's radius is on its outer edge, so its inner one is a pixel
+       less for the border, and the picture's is that less the inset. */
+    border-radius: calc(var(--site-radius-card) - 1px - var(--shot-inset));
+    /* Its own stacking context, so the ring below sits over the art however
+       the art is layered inside - the cube's 3D scene included. */
+    isolation: isolate;
+  }
+
+  /*
+   * A hairline ring drawn over the picture's edge rather than a border round
+   * it. Three of the trays are near the card's own tone in the dark theme -
+   * 2048's, the minefield's and the cube's stage - and without an edge the
+   * board lost its ground and the empty cells read as holes in the card. An
+   * inset shadow on a layer above the art is an edge that costs no layout and
+   * does not move when the art zooms.
+   */
+  .game-shot::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--site-fg) 9%, transparent);
+    pointer-events: none;
   }
 
   /*
    * The thumbnail itself, which fills the frame above.
    *
-   * `container-type` so everything inside is sized off the thumbnail. Three of
-   * these across a 72rem shell and one across a phone are very different
-   * widths, and a viewport clamp cannot tell them apart.
+   * `container-type` so everything inside is sized off the thumbnail. A half
+   * of an 80rem shell, a third of it and a phone are very different widths,
+   * and a viewport clamp cannot tell them apart.
    *
    * ⚠️ **The container declares no `cqi` of its own, and cannot.** An element
    * is not its own query container, so a `cqi` length in a rule on this
@@ -94,75 +186,15 @@
    * is what made the first version look the way it did: 2.5% of the window
    * between cells, on a card a third of the window wide, so the cells were
    * squeezed down to the size of their own text. Everything measured in `cqi`
-   * belongs on `.game-art-board` below.
+   * belongs on `.game-art-board` below, or on whatever the art puts inside.
+   *
+   * 5:2 because every thumbnail is composed for it - ArtAccretion's bodies
+   * are placed by hand against that box - and it is the one shape that keeps
+   * five cells across and two down square.
    */
   .game-art {
     container-type: inline-size;
     aspect-ratio: 5 / 2;
-  }
-
-  /*
-   * The status ribbon, cut across the thumbnail's bottom-right corner.
-   *
-   * A corner ribbon rather than a pill in the card body, because the card's own
-   * bottom-right corner is where the tagline ends and a band there would lie
-   * across the last line of it. The thumbnail has a real corner with nothing in
-   * it, and a band on a picture reads as a stamp on the picture.
-   *
-   * Every card carries one, because a mark that only the odd one out has is a
-   * mark the reader has nothing to compare against - "Beta" means something
-   * once "Live" is sitting on the two cards beside it.
-   *
-   * Only the odd one out is coloured, though. Beta takes the accent, which is
-   * the page's one way of saying look here, and Live is a paper band at the
-   * card's own tone. Three accent ribbons would point at nothing.
-   */
-  .game-status {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    /* Longer than the corner it cuts, because both ends run off the thumbnail
-       and are cut by it. 16rem clears the widest a card ever gets. */
-    width: 16rem;
-    padding: 0.3rem 0;
-    text-align: center;
-
-    /* The page's label voice. At this size the three words it can carry - LIVE,
-       BETA, BÊTA - come to about 2.6rem, well inside the 4.2rem of band the
-       corner leaves visible. */
-    font-size: 0.75rem;
-    font-stretch: 106%;
-    font-weight: 620;
-    letter-spacing: 0.14em;
-    line-height: 1.3;
-    text-transform: uppercase;
-
-    background-color: color-mix(in oklab, var(--site-card) 92%, transparent);
-    color: var(--site-muted);
-    box-shadow: var(--site-lift);
-
-    /*
-     * Rotated about the corner it cuts, and both numbers are arithmetic rather
-     * than taste. `translate(50%)` centres the band on the corner's vertical,
-     * and the y lifts it up that vertical; rotating about the corner then lays
-     * it on the diagonal without changing how far from the corner it sits. So
-     * its centre line ends up 1.31rem + half of its 1.575rem height = 2.1rem
-     * from the corner. A diagonal that far off a right angle crosses each edge
-     * 2.97rem out and leaves 4.2rem of band between the two, which is the
-     * visible width quoted above.
-     *
-     * ⚠️ The order matters. Transforms read right to left, so the band moves in
-     * its own upright axes and is rotated after. Swapping the two sends it off
-     * along the diagonal instead.
-     */
-    transform-origin: 100% 100%;
-    transform: rotate(-45deg) translate(50%, -1.31rem);
-  }
-
-  .game-status[data-status='beta'] {
-    background-color: var(--site-accent);
-    /* The same pairing the one filled thing on the site uses - see `.cta`. */
-    color: var(--site-bg);
   }
 
   /*
@@ -183,10 +215,470 @@
     padding: 2cqi;
   }
 
-  /* `.project-title` carries a top margin to clear the year tag above it on a
-     project card. A game card has no year, and the thumbnail's own bottom
-     margin is the whole gap. */
-  .game-grid .project-title {
-    margin-top: 0;
+  /*
+   * The name, at the site's large tile-title size, and the status on the
+   * same line. `space-between` so the pill closes the row at the card's right
+   * edge rather than trailing the word, and `wrap` so a long name in a narrow
+   * card - "Potapanje brodova", "Schiffe versenken" - takes the line and puts
+   * the pill under it instead of squeezing both.
+   */
+  .game-card-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+  }
+
+  .game-card-title {
+    min-width: 0;
+    font-stretch: 114%;
+    font-weight: 660;
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+    overflow-wrap: break-word;
+  }
+
+  .game-card-tagline {
+    margin-top: clamp(0.6rem, 1vw, 0.85rem);
+    color: var(--site-muted);
+  }
+
+  /*
+   * Keyboard focus on the card, not on the title inside it. The link is
+   * stretched over the whole card, so the card is what a Tab lands on as far
+   * as anyone can see, and a ring round the title alone pointed at a word.
+   * The link's own ring goes only where the card's can replace it - a
+   * browser without `:has()` keeps the default.
+   */
+  @supports selector(:has(*)) {
+    .game-card:has(.stretch:focus-visible) {
+      outline: 2px solid var(--site-accent);
+      outline-offset: 3px;
+      border-color: color-mix(in oklab, var(--site-accent) 45%, var(--site-hairline));
+    }
+
+    .game-card .stretch:focus-visible {
+      outline: none;
+    }
+  }
+
+  /* ---- The thumbnails, alive -------------------------------------------- */
+
+  /*
+   * Under the pointer, and under keyboard focus, the picture zooms a little
+   * and each board plays one beat of its own game: 2048's tiles pop in a
+   * wave and a new two lands in the empty cell, the minefield presses open
+   * and the flag flies, Memory's card in mid-turn lands face up while the
+   * face-down ones twitch, Accretion's bodies drift, the ships ride the swell
+   * while the misses ping, the three puzzles turn once, and the winning disc
+   * drops into its slot and the four in a row light up.
+   *
+   * ⚠️ **What travels far is a transition, and only what moves a few pixels
+   * is a keyframe.** The zoom, Memory's card, the cube's turn and the falling
+   * disc are transitions, so leaving the card plays them back to the still
+   * instead of snapping - a puzzle caught at 200 degrees jumping home is the
+   * one thing a hover must not do. A keyframed beat stops dead when the
+   * pointer leaves, and a few pixels of that are lost in the card settling at
+   * the same moment.
+   *
+   * ⚠️ **Individual transform properties only** - `scale`, `rotate`,
+   * `translate`. The real pieces are moved by those in their own files
+   * (a hull is placed by `translate`, a disc falls by `translate`, a card
+   * turns by `rotate`), so every beat here is on a property the piece does
+   * not already use, or on a child that has none.
+   *
+   * All of it behind `no-preference`: with reduced motion the card still
+   * lifts and takes the accent edge, and the picture stays a still.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    .game-card .game-art {
+      transition: scale 800ms var(--site-ease-out);
+    }
+
+    .game-card .game-art-mem .mem-card-inner {
+      transition: rotate 620ms var(--site-spring);
+    }
+
+    .game-card .game-art-cube .cube-view {
+      transition: rotate 1100ms var(--site-ease-out);
+    }
+
+    .game-card .game-art-cube .cube-art-scene:nth-of-type(2) .cube-view {
+      transition-delay: 90ms;
+    }
+
+    .game-card .game-art-cube .cube-art-scene:nth-of-type(3) .cube-view {
+      transition-delay: 180ms;
+    }
+
+    /* The way back up, quicker than the way down and without the bounce. */
+    .game-card .game-art-four .four-art-falling {
+      transition: translate 420ms var(--site-ease);
+    }
+
+    /* 2048's wave and the minefield's run from the top-left corner across
+       and down, the order the eye reads a board in: a cell's step is its
+       column plus its row. */
+    .game-card .game-art-board > :nth-child(5n + 2) {
+      --gi-col: 1;
+    }
+
+    .game-card .game-art-board > :nth-child(5n + 3) {
+      --gi-col: 2;
+    }
+
+    .game-card .game-art-board > :nth-child(5n + 4) {
+      --gi-col: 3;
+    }
+
+    .game-card .game-art-board > :nth-child(5n + 5) {
+      --gi-col: 4;
+    }
+
+    .game-card .game-art-board > :nth-child(n + 6) {
+      --gi-row: 1;
+    }
+
+    /*
+     * The new tile, drawn in the one empty cell and held at nothing until the
+     * wave has passed. The two is 2048's lowest tier, in that tier's own two
+     * tokens, and the fallbacks are only there so a renamed token draws a
+     * quiet tile rather than a transparent one.
+     */
+    .game-card .game-art-2048 .game-art-cell:not(.g2048-tier)::after {
+      content: '2';
+      display: grid;
+      place-items: center;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      background-color: var(--g2048-t1, var(--site-card));
+      color: var(--g2048-low-fg, var(--site-fg));
+      scale: 0;
+    }
+
+    /* Each body drifts on its own heading and period, so the field never
+       moves as one sheet. The steps are under a third of the field's
+       tightest gap - 2.96 units, see ArtAccretion.astro - so two neighbours
+       drifting straight at each other still never touch. */
+    .game-card .game-art-orb {
+      --gi-dx: 0.7cqi;
+      --gi-dy: -0.5cqi;
+      --gi-t: 3.1s;
+    }
+
+    .game-card .game-art-orb:nth-child(2n) {
+      --gi-dx: -0.6cqi;
+      --gi-dy: 0.7cqi;
+      --gi-t: 2.6s;
+    }
+
+    .game-card .game-art-orb:nth-child(3n) {
+      --gi-dx: 0.5cqi;
+      --gi-dy: 0.8cqi;
+      --gi-t: 3.6s;
+    }
+
+    .game-card .game-art-orb:nth-child(5n) {
+      --gi-dx: -0.8cqi;
+      --gi-dy: -0.4cqi;
+      --gi-t: 2.9s;
+    }
+
+    /* The Sun is the heaviest thing on the card and moves least. */
+    .game-card .game-art-orb:last-child {
+      --gi-dx: -0.35cqi;
+      --gi-dy: 0.3cqi;
+      --gi-t: 4.2s;
+    }
+
+    /*
+     * The beats themselves. `:focus-within` as well as `:hover`, so a card
+     * reached with Tab plays the same beat as one under the pointer - the
+     * link is the card's only focusable thing, so the two mean one card.
+     */
+    .game-card:is(:hover, :focus-within) .game-art {
+      scale: 1.06;
+    }
+
+    /* The three boards laid out as cells keep a margin of 2% of the width
+       round their edge cells, and a zoom that grows each side by that much
+       lays the outer column flush against the frame, which reads as the
+       board being squeezed rather than coming closer. 2% is 1 a side. */
+    .game-card:is(:hover, :focus-within) :is(.game-art-2048, .game-art-ms, .game-art-mem) {
+      scale: 1.02;
+    }
+
+    .game-card:is(:hover, :focus-within) .game-art-2048 .g2048-tier {
+      animation: gi-pop 2.6s var(--site-ease) infinite;
+      animation-delay: calc((var(--gi-col, 0) + var(--gi-row, 0)) * 70ms);
+    }
+
+    .game-card:is(:hover, :focus-within) .game-art-2048 .game-art-cell:not(.g2048-tier)::after {
+      animation: gi-spawn 460ms var(--site-spring) 520ms both;
+    }
+
+    .game-card:is(:hover, :focus-within) .game-art-ms .ms-cell.is-open {
+      animation: gi-press 2.4s var(--site-ease) infinite;
+      animation-delay: calc((var(--gi-col, 0) + var(--gi-row, 0)) * 80ms);
+    }
+
+    .game-card:is(:hover, :focus-within) .game-art-ms .ms-cell.is-flag::after {
+      transform-origin: 100% 50%;
+      animation: gi-flutter 520ms var(--site-ease) infinite alternate;
+    }
+
+    /* The turning card is the third, caught at 128 degrees by an inline
+       `rotate` in ArtMemory.astro. `!important` is the only way a stylesheet
+       outranks a style attribute, and it is scoped to the one card and the
+       one state. */
+    .game-card:is(:hover, :focus-within) .game-art-mem .mem-card:nth-child(3) .mem-card-inner {
+      rotate: y 180deg !important;
+    }
+
+    .game-card:is(:hover, :focus-within) .game-art-mem .mem-card:not([data-face]) .mem-card-body {
+      animation: gi-twitch 2.2s var(--site-ease) infinite;
+    }
+
+    .game-card:is(:hover, :focus-within) .game-art-mem .mem-card:nth-child(4) .mem-card-body {
+      animation-delay: 180ms;
+    }
+
+    .game-card:is(:hover, :focus-within) .game-art-mem .mem-card:nth-child(6) .mem-card-body {
+      animation-delay: 360ms;
+    }
+
+    .game-card:is(:hover, :focus-within) .game-art-mem .mem-card:nth-child(10) .mem-card-body {
+      animation-delay: 540ms;
+    }
+
+    .game-card:is(:hover, :focus-within) .game-art-orb {
+      animation: gi-drift var(--gi-t) ease-in-out infinite alternate;
+    }
+
+    .game-card:is(:hover, :focus-within) .game-art-bs .bs-hull-art {
+      animation: gi-bob 2.4s ease-in-out infinite;
+    }
+
+    /* The wreck lists and wallows rather than riding the swell. */
+    .game-card:is(:hover, :focus-within) .game-art-bs .bs-hull.is-sunk .bs-hull-art {
+      animation-name: gi-wallow;
+      animation-duration: 3.4s;
+    }
+
+    .game-card:is(:hover, :focus-within) .game-art-bs .bs-cell.is-miss::before {
+      animation: gi-ping 1.8s var(--site-ease-out) infinite;
+    }
+
+    .game-card:is(:hover, :focus-within) .game-art-bs .bs-cell.is-miss + .bs-cell.is-miss::before {
+      animation-delay: 600ms;
+    }
+
+    .game-card:is(:hover, :focus-within) .game-art-cube .cube-view {
+      rotate: y 360deg;
+    }
+
+    /*
+     * The winning disc, from half through the slot to the fourth row of the
+     * fifth column: 2.87 squares, from -0.8 of one to where row three's top
+     * is, 2.07 below the board's inner edge. `--cell` is the board's own
+     * square and is in scope on every disc, so the drop is the same distance
+     * on any card. A bounce written as a `linear()` curve, since a disc
+     * landing on the one below it does bounce. A browser without `linear()`
+     * drops that line and keeps the plain fall before it.
+     */
+    .game-card:is(:hover, :focus-within) .game-art-four .four-art-falling {
+      translate: 0 calc(var(--cell) * 2.87);
+      transition: translate 700ms cubic-bezier(0.55, 0, 1, 0.45);
+      transition: translate 900ms
+        linear(
+          0,
+          0.063,
+          0.25 18.2%,
+          0.563,
+          1 36.4%,
+          0.813,
+          0.75 45.5%,
+          0.813,
+          1 54.5%,
+          0.938,
+          0.922 59%,
+          0.938,
+          1 63.6%,
+          0.985,
+          1
+        );
+    }
+
+    /* The line it completes: discs two, seven and eleven of the twelve are
+       the diagonal up from the second column, and the falling one is last. */
+    .game-card:is(:hover, :focus-within)
+      .game-art-four
+      .four-discs
+      > :is(:nth-child(2), :nth-child(7), :nth-child(11), .four-art-falling) {
+      animation: gi-win 1.4s var(--site-ease) 820ms infinite;
+    }
+  }
+}
+
+/*
+ * Index motion. Outside the layer with the rest of the keyframes, and all of
+ * it on `scale`, `rotate` and `translate` - see the note above the beats.
+ */
+
+/* A merge's pop, then a long rest, so a wave reads as a move rather than as a
+   board that cannot sit still. */
+@keyframes gi-pop {
+  0% {
+    scale: 1;
+  }
+
+  7% {
+    scale: 1.16;
+  }
+
+  14% {
+    scale: 0.97;
+  }
+
+  20%,
+  100% {
+    scale: 1;
+  }
+}
+
+/* The shape of 2048's own new tile: from a fifth of its size, on the spring.
+   Opacity with it, because the tile waits out the wave at its `from` frame
+   and a fifth of a tile is still a speck. */
+@keyframes gi-spawn {
+  from {
+    opacity: 0;
+    scale: 0.2;
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+/* A cell pressed and let go, to about the depth the board's own opening
+   grows a cell from (0.82, `ms-open` in minesweeper.css). */
+@keyframes gi-press {
+  0% {
+    scale: 1;
+  }
+
+  8% {
+    scale: 0.86;
+  }
+
+  18%,
+  100% {
+    scale: 1;
+  }
+}
+
+/* The pennant on its pole, folding towards the pole and back out. */
+@keyframes gi-flutter {
+  from {
+    scale: 1 1;
+  }
+
+  to {
+    scale: 0.7 1.08;
+  }
+}
+
+/* A face-down card that nearly got picked. */
+@keyframes gi-twitch {
+  0%,
+  30%,
+  100% {
+    rotate: 0deg;
+  }
+
+  8% {
+    rotate: -5deg;
+  }
+
+  16% {
+    rotate: 4deg;
+  }
+
+  23% {
+    rotate: -2deg;
+  }
+}
+
+@keyframes gi-drift {
+  from {
+    translate: 0 0;
+  }
+
+  to {
+    translate: var(--gi-dx) var(--gi-dy);
+  }
+}
+
+@keyframes gi-bob {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+
+  50% {
+    translate: 0 -7%;
+    rotate: -1.4deg;
+  }
+}
+
+@keyframes gi-wallow {
+  0%,
+  100% {
+    translate: 0 2%;
+    rotate: 1deg;
+  }
+
+  50% {
+    translate: 0 5%;
+    rotate: 2.6deg;
+  }
+}
+
+/* The ring the game sends out from a shot (`bs-burst` in battleship.css), on
+   a loop, in the colour it rings a miss with. Reined in to 1.6 of the square
+   from the game's 2.4: on a card this size the full ring washed over both
+   ships. */
+@keyframes gi-ping {
+  from {
+    opacity: 0.9;
+    scale: 0.2;
+    box-shadow: inset 0 0 0 3px var(--bs-ring, currentColor);
+  }
+
+  to {
+    opacity: 0;
+    scale: 1.6;
+    box-shadow: inset 0 0 0 1px var(--bs-ring, currentColor);
+  }
+}
+
+/* The four in a row, lit the way the game lights a win: a swell and back. */
+@keyframes gi-win {
+  0%,
+  100% {
+    scale: 1;
+  }
+
+  12% {
+    scale: 1.14;
+  }
+
+  26% {
+    scale: 1;
   }
 }

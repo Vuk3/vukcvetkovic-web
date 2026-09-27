@@ -27,9 +27,10 @@ interface Card {
 /**
  * Row-major, 5 across and 2 down, against the 5:2 box every game card uses.
  *
- * ⚠️ **The bottom-right card is face down on purpose.** The status ribbon is
- * cut across that corner, and a back is the one card that loses nothing by
- * being partly covered.
+ * ⚠️ **The index reads this list by position.** On hover the third card - the
+ * one caught mid-turn - lands face up, and the face-down cards twitch one
+ * after another, staggered by `:nth-child` - see `.mem-card` in
+ * styles/games/index.css. Moving the turning card means moving that rule.
  */
 const cards: Card[] = [
   { picture: 'apple', face: 'matched' },

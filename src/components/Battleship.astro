@@ -14,12 +14,30 @@
  * buttons with real text in them, and the module only ever sets classes on
  * them. The same split as the labels on the minefield.
  *
- * Which panel is up, and whether the placing bar is showing, is decided in CSS
- * off `data-state` on the frame - see the .bs-* rules in
+ * Which panel is up, and which of the placing controls are showing, is decided
+ * in CSS off `data-state` on the root - see the .bs-* rules in
  * styles/games/battleship.css. The script sets one attribute and never touches
  * `hidden`.
+ *
+ * The chrome round the boards is the family every game page shares, in
+ * styles/games/shared.css, and it is the stacked stage: two waters side by side
+ * are the whole width of the shell, so there is no column left over to put
+ * anything in. What is over them is kept to two short rows on a desktop - the
+ * four opponents with the line about the chosen one, then the figures and the
+ * buttons - so the waters start as high as they can.
  */
-import { ArrowLeft, Play, RotateCcw, RotateCw, Shuffle } from "@lucide/astro";
+import {
+  ArrowLeft,
+  Crosshair,
+  MousePointerClick,
+  Play,
+  RotateCcw,
+  RotateCw,
+  Ship,
+  Shuffle,
+  Swords,
+  Trophy,
+} from "@lucide/astro";
 import type { Lang } from "../i18n/types";
 import { getDict, localizePath } from "../i18n/utils";
 import { FLEET, LEVELS } from "../games/battleship/game";
@@ -44,6 +62,10 @@ const copy = dict.games.items.battleship;
 
 const index = localizePath("/games/", lang);
 
+/* The badge beside the title, from the registry, as on Accretion's and the
+   Cube's pages: flipping the game to `live` there takes it off here. */
+const { status, date } = site.games.battleship;
+
 /*
  * The five ships, from the module rather than written out again here: the
  * lengths are a game rule and the names are prose, and the position in the list
@@ -56,27 +78,37 @@ const fleet = FLEET.map((length, i) => ({ length, name: copy.ships[i] }));
  *  reader is told the row and the column by the grid roles instead. */
 const files = Array.from({ length: 10 }, (_, i) => String.fromCharCode(65 + i));
 const ranks = Array.from({ length: 10 }, (_, i) => i + 1);
+
+/* The write-up opens on its first paragraph, set large, and the rest runs in
+   columns under it - see `.game-notes-lead` in styles/games/shared.css. */
+const [notesLead, ...notes] = copy.close.paragraphs;
 ---
 
-<div class="page-head">
-  <div class="shell shell-wide">
+<div class="page-head game-head">
+  <div class="shell">
     <div class="crumb-row">
       <a href={index} class="crumb enter">
         <ArrowLeft class="size-4" aria-hidden="true" />
         {dict.games.label}
       </a>
 
-      <GameStamp lang={lang} date={site.games.battleship.date} />
+      <GameStamp lang={lang} date={date} />
     </div>
 
-    <h1 class="page-title enter" style="--enter-delay:80ms">{copy.name}</h1>
+    <h1 class="page-title">
+      <span class="line-mask enter-line" style="--enter-delay:80ms"
+        ><span class="line-in"
+          >{copy.name}{status !== "live" && <span class="page-status">{dict.games.status[status]}</span>}</span
+        ></span
+      >
+    </h1>
 
     <p class="page-lead enter" style="--enter-delay:160ms">{copy.lead}</p>
   </div>
 </div>
 
-<div class="sec-lite">
-  <div class="shell shell-wide">
+<div class="game-play">
+  <div class="shell">
     <div
       class="bs enter"
       style="--enter-delay:240ms"
@@ -94,230 +126,277 @@ const ranks = Array.from({ length: 10 }, (_, i) => i + 1);
       data-msg-waiting={copy.messages.waiting}
       data-msg-ready={copy.messages.ready}
     >
-      {/*
-        Four opponents, as real radios for the same reasons the minefield's
-        three boards are: one tab stop for the set, the arrow keys already
-        work, and the label is the control.
-      */}
-      <fieldset class="bs-levels">
-        <legend class="bs-levels-title">{copy.opponents}</legend>
+      <div class="game-stage">
+        <div class="game-hud">
+          {/*
+            Four opponents, as real radios for the same reasons the minefield's
+            three boards are: one tab stop for the set, the arrow keys already
+            work, and the label is the control. Named by the tile label every
+            picker on the game pages carries - the same words, icon and marks
+            as Four in a Row's four.
+          */}
+          <fieldset class="bs-levels">
+            <legend class="tile-label bs-levels-title">
+              <span class="tile-icon"><Swords aria-hidden="true" /></span>
+              {copy.opponents}
+            </legend>
 
-        <div class="bs-levels-row">
-          {
-            LEVELS.map((id, i) => (
-              <label class="bs-level" data-note={copy.levels[id].note}>
-                <input
-                  type="radio"
-                  name="bs-level"
-                  value={id}
-                  checked={i === 0}
-                  class="sr-only"
-                  data-level-option
-                />
-                <svg class="bs-rank" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
-                  <use href={`#bs-rank-${id}`} />
-                </svg>
-                <span class="bs-level-name">{copy.levels[id].name}</span>
+            <div class="bs-levels-row">
+              {
+                LEVELS.map((id, i) => (
+                  <label class="bs-level" data-note={copy.levels[id].note}>
+                    <input
+                      type="radio"
+                      name="bs-level"
+                      value={id}
+                      checked={i === 0}
+                      class="sr-only"
+                      data-level-option
+                    />
+                    <svg class="bs-rank" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+                      <use href={`#bs-rank-${id}`} />
+                    </svg>
+                    <span class="bs-level-name">{copy.levels[id].name}</span>
 
-                {/*
-                  How hard each one is, as four marks rather than a word.
-                  Strength is position in the list, so there is no figure to
-                  keep anywhere: they are declared weakest first in the module.
-                  Decorative, because the line under the set says the same thing
-                  in words and a screen reader should hear it once.
-                */}
-                <span class="bs-level-rank" aria-hidden="true">
-                  {LEVELS.map((_, n) => (
-                    <span class={n <= i ? "is-on" : undefined} />
-                  ))}
-                </span>
-              </label>
-            ))
-          }
+                    {/*
+                      How hard each one is, as four marks rather than a word.
+                      Strength is position in the list, so there is no figure to
+                      keep anywhere: they are declared weakest first in the module.
+                      Decorative, because the line beside the set says the same
+                      thing in words and a screen reader should hear it once.
+                    */}
+                    <span class="bs-level-rank" aria-hidden="true">
+                      {LEVELS.map((_, n) => (
+                        <span class={n <= i ? "is-on" : undefined} />
+                      ))}
+                    </span>
+                  </label>
+                ))
+              }
+            </div>
+
+            {/*
+              One line about whoever is picked, beside all four. It is written
+              from the chosen label's `data-note` rather than rendered four times
+              and hidden three, so a screen reader is never offered three
+              descriptions of opponents nobody selected.
+            */}
+            <p class="bs-level-note" data-note-out aria-live="polite">{copy.levels.sailor.note}</p>
+          </fieldset>
+
+          {/*
+            The ship count is a figure rather than a sentence with a number in
+            it: "3 ships left" needs three plural forms in Serbian and a
+            different rule again in French, and a figure beside a label needs
+            none of them. It is there only while a fleet is going down - see
+            `.bs-stat-left`.
+          */}
+          <div class="game-stats">
+            <div class="game-stat tile-cobalt">
+              <span class="game-stat-label">
+                <span class="tile-icon"><Crosshair aria-hidden="true" /></span>
+                {copy.shots}
+              </span>
+              <span class="game-stat-value" data-shots>0</span>
+            </div>
+
+            <div class="game-stat">
+              <span class="game-stat-label">
+                <span class="tile-icon"><Trophy aria-hidden="true" /></span>
+                {copy.best}
+              </span>
+              <span class="game-stat-value" data-best>-</span>
+            </div>
+
+            <div class="game-stat bs-stat-left">
+              <span class="game-stat-label">
+                <span class="tile-icon"><Ship aria-hidden="true" /></span>
+                {copy.toPlace}
+              </span>
+              <span class="game-stat-value" data-left>5</span>
+            </div>
+          </div>
+
+          <div class="game-actions">
+            <SoundToggle lang={lang} />
+
+            <button type="button" class="cta-ghost" data-action="restart">
+              <RotateCcw class="shrink-0" aria-hidden="true" />
+              {copy.newGame}
+            </button>
+          </div>
+
+          {/*
+            The placing controls, a group of their own that CSS takes away the
+            moment the first shot is possible. Start is the one filled button in
+            the stage: it is the step that turns a fleet into a game. The words
+            on Turn and Rearrange are a span of their own so a phone can clip
+            them and keep the icon, as it does the sound switch's - see
+            `.bs-action-word` in styles/games/battleship.css.
+          */}
+          <div class="game-actions bs-setup">
+            <button type="button" class="cta-ghost" data-action="rotate">
+              <RotateCw class="shrink-0 bs-axis" aria-hidden="true" />
+              <span class="bs-action-word">{copy.rotate}</span>
+            </button>
+
+            <button type="button" class="cta-ghost" data-action="shuffle">
+              <Shuffle class="shrink-0" aria-hidden="true" />
+              <span class="bs-action-word">{copy.shuffle}</span>
+            </button>
+
+            <button type="button" class="cta" data-action="start">
+              <Play class="shrink-0" aria-hidden="true" />
+              {copy.start}
+            </button>
+          </div>
         </div>
 
         {/*
-          One line about whoever is picked, under all four. It is written from
-          the chosen label's `data-note` rather than rendered four times and
-          hidden three, so a screen reader is never offered three descriptions
-          of opponents nobody selected.
+          The frame holds both boards, and a round in flight is positioned
+          against it rather than against either one - a shot leaves your water
+          and lands in theirs, so it belongs to neither.
         */}
-        <p class="bs-level-note" data-note-out aria-live="polite">{copy.levels.sailor.note}</p>
-      </fieldset>
+        <div class="game-board bs-frame" data-frame>
+          {/* The burst over a won table, above both boards and the panel. */}
+          <div class="game-burst" aria-hidden="true" data-burst></div>
 
-      <div class="bs-bar">
-        <div class="bs-meter">
-          <span class="bs-meter-label">{copy.shots}</span>
-          <span class="bs-meter-value" data-shots>0</span>
+          <div class="bs-boards">
+            {
+              (["enemy", "own"] as const).map((side) => (
+                <section class="bs-side" data-side={side}>
+                  {/* The name of the water, and beside it what the last shot at
+                      it did - a status for the board rather than a caption
+                      under it, so the two boards keep the same height whatever
+                      is said about either. */}
+                  <div class="bs-side-head">
+                    <h2 class="bs-side-title">
+                      <span class="tile-icon" aria-hidden="true">
+                        {side === "enemy" ? <Crosshair /> : <Ship />}
+                      </span>
+                      {copy.sides[side]}
+                    </h2>
+
+                    <p class="bs-log" data-log={side} aria-hidden="true" />
+                  </div>
+
+                  <div class="bs-plot">
+                    <div class="bs-files" aria-hidden="true">
+                      {files.map((file) => (
+                        <span>{file}</span>
+                      ))}
+                    </div>
+
+                    <div class="bs-ranks" aria-hidden="true">
+                      {ranks.map((rank) => (
+                        <span>{rank}</span>
+                      ))}
+                    </div>
+
+                    {/* Named by the heading above it, which is the same words:
+                        a grid needs an accessible name of its own, and inventing
+                        a second phrase for it would only be a second thing to
+                        translate. */}
+                    <div class="bs-board" role="grid" aria-label={copy.sides[side]} data-board={side} />
+                  </div>
+
+                  {/*
+                    Your own five are buttons and theirs are not: picking a ship
+                    up is a thing you do, and knowing which of theirs has gone
+                    down is a thing you read.
+                  */}
+                  <ol class="bs-fleet" data-fleet={side}>
+                    {fleet.map((ship, i) => {
+                      /*
+                        The ship itself, on a strip of its own water, drawn from
+                        the same symbol the board draws it with and at one scale
+                        for all five - so the length reads off the chip the way
+                        it reads off the board, as a shape rather than a count,
+                        and a wreck goes dark here when it goes down there. The
+                        figure stays for a screen reader that has no board to
+                        look at.
+                      */
+                      const body = (
+                        <Fragment>
+                          <span class="bs-ship-sea" aria-hidden="true">
+                            <svg
+                              class="bs-ship-art"
+                              viewBox={`0 0 ${ship.length * 100} 100`}
+                              style={`--len:${ship.length}`}
+                              focusable="false"
+                            >
+                              <use href={`#bs-ship-${i}`} />
+                            </svg>
+                          </span>
+                          <span class="bs-ship-name">{ship.name}</span>
+                          <span class="sr-only">{ship.length}</span>
+                        </Fragment>
+                      );
+
+                      return side === "own" ? (
+                        <li>
+                          <button
+                            type="button"
+                            class="bs-ship"
+                            data-ship={i}
+                            data-name={ship.name}
+                            aria-pressed="false"
+                          >
+                            {body}
+                          </button>
+                        </li>
+                      ) : (
+                        <li class="bs-ship" data-ship={i} data-name={ship.name}>
+                          {body}
+                        </li>
+                      );
+                    })}
+                  </ol>
+                </section>
+              ))
+            }
+          </div>
+
+          <div class="bs-panel" data-panel="won">
+            <p class="bs-panel-title">{copy.won.title}</p>
+
+            {/* Both sentences ride on the element, so the second one is copy in
+                the markup rather than a string the script carries. */}
+            <p
+              class="bs-panel-body"
+              data-won-body
+              data-body={copy.won.body}
+              data-record={copy.won.record}
+            >
+              {copy.won.body}
+            </p>
+
+            <div class="bs-panel-actions">
+              <button type="button" class="cta" data-action="restart">{copy.won.again}</button>
+            </div>
+          </div>
+
+          <div class="bs-panel" data-panel="lost">
+            <p class="bs-panel-title">{copy.lost.title}</p>
+            <p class="bs-panel-body">{copy.lost.body}</p>
+
+            <div class="bs-panel-actions">
+              <button type="button" class="cta" data-action="restart">{copy.lost.again}</button>
+            </div>
+          </div>
         </div>
 
-        <div class="bs-meter">
-          <span class="bs-meter-label">{copy.best}</span>
-          <span class="bs-meter-value" data-best>-</span>
-        </div>
-
-        <div class="bs-actions">
-          <SoundToggle lang={lang} />
-
-          <button type="button" class="cta-ghost" data-action="restart">
-            <RotateCcw class="size-4 shrink-0" aria-hidden="true" />
-            {copy.newGame}
-          </button>
-        </div>
-      </div>
-
-      {/*
-        The placing bar, which CSS takes away the moment the first shot is
-        possible. The ship count is a meter rather than a sentence with a
-        number in it: "3 ships left" needs three plural forms in Serbian and
-        a different rule again in French, and a figure beside a label needs
-        none of them.
-      */}
-      <div class="bs-setup">
-        <div class="bs-meter">
-          <span class="bs-meter-label">{copy.toPlace}</span>
-          <span class="bs-meter-value" data-left>5</span>
-        </div>
-
-        <p class="bs-setup-hint">{copy.setupHint}</p>
-
-        <div class="bs-setup-actions">
-          <button type="button" class="cta-ghost" data-action="rotate">
-            <RotateCw class="size-4 shrink-0 bs-axis" aria-hidden="true" />
-            {copy.rotate}
-          </button>
-
-          <button type="button" class="cta-ghost" data-action="shuffle">
-            <Shuffle class="size-4 shrink-0" aria-hidden="true" />
-            {copy.shuffle}
-          </button>
-
-          <button type="button" class="cta" data-action="start">
-            <Play class="size-4 shrink-0" aria-hidden="true" />
-            {copy.start}
-          </button>
-        </div>
+        {/*
+          How to play, and while the fleet is still going down, how to put it
+          down first: the sentence about placing is shown only in that state.
+        */}
+        <p class="game-hint">
+          <span class="tile-icon"><MousePointerClick aria-hidden="true" /></span>
+          <span><span class="bs-for-placing">{copy.setupHint} </span>{copy.hint}</span>
+        </p>
       </div>
 
       <BattleshipSprites />
-
-      {/*
-        The frame holds both boards, and a round in flight is positioned
-        against it rather than against either one - a shot leaves your water
-        and lands in theirs, so it belongs to neither.
-      */}
-      <div class="bs-frame" data-frame>
-        {/* The burst over a won table, above both boards and the panel. */}
-        <div class="game-burst" aria-hidden="true" data-burst></div>
-
-        <div class="bs-boards">
-          {
-            (["enemy", "own"] as const).map((side) => (
-              <section class="bs-side" data-side={side}>
-                <h2 class="bs-side-title">{copy.sides[side]}</h2>
-
-                <div class="bs-plot">
-                  <div class="bs-files" aria-hidden="true">
-                    {files.map((file) => (
-                      <span>{file}</span>
-                    ))}
-                  </div>
-
-                  <div class="bs-ranks" aria-hidden="true">
-                    {ranks.map((rank) => (
-                      <span>{rank}</span>
-                    ))}
-                  </div>
-
-                  {/* Named by the heading above it, which is the same words:
-                      a grid needs an accessible name of its own, and inventing
-                      a second phrase for it would only be a second thing to
-                      translate. */}
-                  <div class="bs-board" role="grid" aria-label={copy.sides[side]} data-board={side} />
-                </div>
-
-                <p class="bs-log" data-log={side} aria-hidden="true" />
-
-                {/*
-                  Your own five are buttons and theirs are not: picking a ship
-                  up is a thing you do, and knowing which of theirs has gone
-                  down is a thing you read.
-                */}
-                <ol class="bs-fleet" data-fleet={side}>
-                  {fleet.map((ship, i) => {
-                    /*
-                      The length as a row of hull segments rather than a digit.
-                      It is the one thing about a ship you read off the board
-                      rather than count, so the chip shows the same shape, and
-                      the figure stays for a screen reader that has no board to
-                      look at.
-                    */
-                    const body = (
-                      <Fragment>
-                        <span class="bs-ship-name">{ship.name}</span>
-                        <span class="bs-ship-pips" aria-hidden="true">
-                          {Array.from({ length: ship.length }, () => (
-                            <span />
-                          ))}
-                        </span>
-                        <span class="sr-only">{ship.length}</span>
-                      </Fragment>
-                    );
-
-                    return side === "own" ? (
-                      <li>
-                        <button
-                          type="button"
-                          class="bs-ship"
-                          data-ship={i}
-                          data-name={ship.name}
-                          aria-pressed="false"
-                        >
-                          {body}
-                        </button>
-                      </li>
-                    ) : (
-                      <li class="bs-ship" data-ship={i} data-name={ship.name}>
-                        {body}
-                      </li>
-                    );
-                  })}
-                </ol>
-              </section>
-            ))
-          }
-        </div>
-
-        <div class="bs-panel" data-panel="won">
-          <p class="bs-panel-title">{copy.won.title}</p>
-
-          {/* Both sentences ride on the element, so the second one is copy in
-              the markup rather than a string the script carries. */}
-          <p
-            class="bs-panel-body"
-            data-won-body
-            data-body={copy.won.body}
-            data-record={copy.won.record}
-          >
-            {copy.won.body}
-          </p>
-
-          <div class="bs-panel-actions">
-            <button type="button" class="cta" data-action="restart">{copy.won.again}</button>
-          </div>
-        </div>
-
-        <div class="bs-panel" data-panel="lost">
-          <p class="bs-panel-title">{copy.lost.title}</p>
-          <p class="bs-panel-body">{copy.lost.body}</p>
-
-          <div class="bs-panel-actions">
-            <button type="button" class="cta" data-action="restart">{copy.lost.again}</button>
-          </div>
-        </div>
-      </div>
-
-      <p class="bs-hint">{copy.hint}</p>
 
       {/* The boards announce their own squares through the grid roles, so this
           only has to carry what is not in them: what a turn just did. */}
@@ -326,22 +405,26 @@ const ranks = Array.from({ length: 10 }, (_, i) => i + 1);
   </div>
 </div>
 
-<Section id="how" label={copy.how.label} width="wide" tone="band">
-  <ul class="svc-grid">
+<Section id="how" label={copy.how.label} tone="band">
+  {/* `role="list"` because the markers are drawn rather than the browser's,
+      and Safari stops announcing a list whose list-style is gone. */}
+  <ol class="card game-steps" role="list">
     {
-      copy.how.items.map((item) => (
-        <li class="card reveal-item">
-          <h3 class="svc-title">{item.title}</h3>
-          <p class="mt-2.5 text-muted">{item.description}</p>
+      copy.how.items.map((item, i) => (
+        <li class="game-step reveal-item">
+          <span class="game-step-n" aria-hidden="true">{i + 1}</span>
+          <h3 class="game-step-title">{item.title}</h3>
+          <p class="game-step-body">{item.description}</p>
         </li>
       ))
     }
-  </ul>
+  </ol>
 </Section>
 
-<Section id="build" label={copy.close.label} width="wide" tone="panel">
-  <div class="prose-columns text-muted">
-    {copy.close.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+<Section id="build" label={copy.close.label} tone="panel">
+  <p class="game-notes-lead reveal">{notesLead}</p>
+  <div class="prose-columns game-notes-cols reveal">
+    {notes.map((paragraph) => <p>{paragraph}</p>)}
   </div>
 </Section>
 
@@ -353,7 +436,7 @@ const ranks = Array.from({ length: 10 }, (_, i) => i + 1);
   import { createSound } from "../games/sound";
 
   /*
-   * The page's side of the game: the two figures, the record, the opponent
+   * The page's side of the game: the three figures, the record, the opponent
    * buttons and the three controls that only exist while a fleet is being put
    * down. Everything about the water itself is in the module.
    *
@@ -522,7 +605,7 @@ const ranks = Array.from({ length: 10 }, (_, i) => i + 1);
     // stored choice is not known until here.
     for (const option of options) option.checked = option.value === level;
 
-    /** The line under the four portraits, taken off whichever is chosen. */
+    /** The line beside the four portraits, taken off whichever is chosen. */
     const noteOut = root.querySelector<HTMLElement>("[data-note-out]");
 
     const showNote = () => {

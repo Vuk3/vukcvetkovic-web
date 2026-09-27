@@ -17,12 +17,13 @@ plus a project write-up section, in **four languages** (English, Serbian, French
   and nothing runs at request time.
 - **Tailwind 4** via `@tailwindcss/vite`, driven entirely from CSS. There is no
   `tailwind.config`: the theme is declared with `@theme inline` inside
-  [src/styles/global.css](../src/styles/global.css).
+  [src/styles/global.css](../src/styles/global.css), and each page area has its own
+  stylesheet beside it (`home.css`, `project.css`, `flow.css`, `notfound.css`, `games/`).
 - **Cloudflare** through `@astrojs/cloudflare`, whose only job here is `imageService:
   'compile'` and the assets shape. Nothing in the repository runs the deploy.
 - **60 pages**, 4 locales, 4 projects, 7 games. Three woff2 faces, a handful of webp
-  variants, and **no CSS file at all** - the stylesheet is inlined into every document, each
-  game's rules only into the pages that show it, and
+  variants, and **no CSS file at all** - global.css is inlined into every document and each
+  page area's stylesheet only into the pages that show it, and
   four small inline blocks cover the pre-paint theme script, the theme toggle, menu
   dismissal and the active-section indicator.
 - **JavaScript on seven routes only.** The games have real scripts: 2.9 KB, 3.6 KB, 4.5 KB,
@@ -40,11 +41,13 @@ plus a project write-up section, in **four languages** (English, Serbian, French
 | **add a language** | [content-and-i18n.md §Adding a locale](./content-and-i18n.md#6-adding-a-locale) - five places, every one checked |
 | a route, a URL shape, a 404, the sitemap or robots.txt | [routing-and-deploy.md](./routing-and-deploy.md) |
 | the Cloudflare or image configuration | [routing-and-deploy.md §Cloudflare](./routing-and-deploy.md#5-cloudflare-and-what-actually-ships) |
-| **colour, type, spacing or layout width** | [design-system.md](./design-system.md) |
+| **colour, type, spacing, the measure or the bento** | [design-system.md](./design-system.md) |
 | **a game's styles, colours or keyframes** | [src/styles/games/](../src/styles/games/), one file per game - [design-system.md §9](./design-system.md#9-the-game-boards-and-the-one-place-the-palette-opens-up) |
-| a section's width or tone | [Section.astro](../src/components/Section.astro) - [design-system.md §Sections](./design-system.md#3-sections-and-the-card) |
-| **how a card, chip or pill looks** | [design-system.md §Sections](./design-system.md#3-sections-and-the-card) |
-| the request diagram on a project page | [ArchitectureDiagram.astro](../src/components/ArchitectureDiagram.astro), [diagram-tokens.ts](../src/diagram-tokens.ts), [diagram-layout.ts](../src/diagram-layout.ts) - [design-system.md §The request diagram](./design-system.md#6-the-request-diagram) |
+| a section's heading or tone | [Section.astro](../src/components/Section.astro) - [design-system.md §Sections](./design-system.md#3-sections-tiles-and-the-bento) |
+| **how a tile, chip, mark tile or pill looks** | [design-system.md §Sections](./design-system.md#3-sections-tiles-and-the-bento) |
+| a page's composition - the hero, a project page, the games wall, the 404 | [design-system.md §The pages](./design-system.md#10-the-pages) and that page's stylesheet |
+| the header capsule or the footer | [Nav.astro](../src/components/Nav.astro), [Footer.astro](../src/components/Footer.astro) - [design-system.md §7](./design-system.md#7-the-active-section-indicator-and-the-sites-script-budget) |
+| the request diagram on a project page | [ArchitectureDiagram.astro](../src/components/ArchitectureDiagram.astro), [flow.css](../src/styles/flow.css), `flowTech` in [site.ts](../src/site.ts) - [design-system.md §The request diagram](./design-system.md#6-the-request-diagram) |
 | an animation | [design-system.md §Motion](./design-system.md#5-motion) |
 | a component's markup | [src/components/](../src/components/) - rules in its [CLAUDE.md](../src/components/CLAUDE.md) |
 | **add a game** | [content-and-i18n.md §Adding a game](./content-and-i18n.md#7-adding-a-game) - a route pair of its own, not a `[slug]` |
@@ -66,10 +69,11 @@ plus a project write-up section, in **four languages** (English, Serbian, French
   what lands in `dist/`, and the sitemap/canonical trailing-slash disagreement.
 
 - **[Design system](./design-system.md)** - the `--site-*` token path into Tailwind and why
-  `@theme inline` is load-bearing, `.panel` as the one inverted block, the `.shell-*`
-  measure family, `.card` as the page's unit and the grid-stretch trap that shaped it, the
-  request diagram, theming through a class rather than a media query, and the motion
-  system: the `enter` load sequence and the scroll-driven `reveal` family.
+  `@theme inline` is load-bearing, ink and cobalt as the two surfaces that re-declare the
+  palette, the one measure, the tile and the bento and the grid-stretch trap that shaped
+  them, the request diagram, theming through a class rather than a media query, the motion
+  system (the `enter` load sequence, the scroll-driven `reveal` family and why no keyframe
+  may use `transform`), the chrome every game page shares, and each page's composition.
 
 ## Rules for these pages
 

@@ -29,7 +29,7 @@ not need the map to change a dictionary, add a project, or touch the stylesheet.
 ## Working rules
 
 - **`npm run check` is the only gate this project has.** There is no test runner and no
-  linter - nothing to run but `astro check`, which reports 0 errors across 62 files. Do
+  linter - nothing to run but `astro check`, which reports 0 errors, 0 warnings and 0 hints across 98 files. Do
   not add Vitest, ESLint or Prettier without asking.
 - **`npm run build` runs `astro check` first**, so a failed build is usually a type error
   rather than a build error. Read the first failure, not the last line.
@@ -91,15 +91,22 @@ not need the map to change a dictionary, add a project, or touch the stylesheet.
   chunk for the stored record, the sound and the burst, and 4.4 KB for the cube's hints, fetched only when one is
   asked for. That budget is the games', not a precedent - it does not
   make a script cheaper anywhere else.
-- **A game's CSS lives in [src/styles/games/](./src/styles/games/), never in global.css**:
-  one file per game with its tokens, its rules and its keyframes, imported by that game's
-  component and its thumbnail. The stylesheet is inlined into every document, so a rule in
-  global.css is paid for by every page on the site, and a game's rules belong only on the
-  pages that show the game. Every file there opens with the same `@layer` line as
-  global.css - read the note at the top of global.css before adding one.
+- **global.css holds only what every page needs.** It is inlined into every document, so a
+  rule there is paid for by every page on the site. A page area's rules live in its own file
+  under [src/styles/](./src/styles/), imported by its component and inlined only where it
+  shows: `home.css`, `project.css`, `flow.css` (the request diagram), `notfound.css`, and
+  under `games/` one file per game with its tokens, its rules and its keyframes, plus
+  `shared.css` for the chrome every game page shares and `index.css` for the games index.
+  **A game's CSS never goes in global.css.** Every one of these files opens with the same
+  `@layer` line as global.css - read the note at the top of global.css before adding one.
 - Reach for an existing component before writing a new one. Sections go through
-  [Section.astro](./src/components/Section.astro), which owns the widths and the three
-  head shapes.
+  [Section.astro](./src/components/Section.astro), which owns the heading and the tone.
+  There is one measure (`.shell`, 80rem) for every section and page - no width variants.
+- **The look is tiles on a bento grid**, and three of the owner's rules decide most
+  layouts: every row fills its columns (never a mostly empty cell or a lonely tile), a text
+  block never stops halfway across its container, and there are no tracked-out capitals
+  and no arrows appended to link text. See
+  [docs/design-system.md](./docs/design-system.md#3-sections-tiles-and-the-bento).
 
 ### Abstractions and dependencies
 

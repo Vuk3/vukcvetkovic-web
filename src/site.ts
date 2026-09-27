@@ -95,6 +95,34 @@ interface ProjectResults {
  */
 export type FlowShape = "roundTrip" | "pipeline";
 
+/**
+ * What each node of the request diagram runs on, which is a fact about the
+ * system: the React front end is React in every language, and only the words
+ * "front end" are copy. So the marks live here and the node titles stay in the
+ * dictionaries, the same split as `stack` and `stackGroups`.
+ *
+ * An empty list is a real answer, not a gap. A capture file, five public
+ * endpoints and a folder of encrypted output run on nothing, and the diagram
+ * draws those nodes with their role icon and no marks rather than borrowing a
+ * technology that is not theirs.
+ *
+ * ⚠️ Two rules, and the build enforces both in ArchitectureDiagram.astro rather
+ * than the type system, because neither can be written as a type over a list:
+ *
+ *   1. `branches` is one list per entry of `flow.branches` in the dictionaries,
+ *      in the same order. A length mismatch throws at build.
+ *   2. Every name must already be in the project's own `stack`. The diagram
+ *      says where each technology runs, so it cannot introduce one the stack
+ *      does not list - a name missing from the stack throws at build.
+ */
+export interface FlowTech {
+  entry: TechName[];
+  core: TechName[];
+  branches: TechName[][];
+  /** Always empty on a round trip, which has no exit node to carry marks. */
+  exit: TechName[];
+}
+
 /** Exported because the pages hand one to the components that render it. */
 export interface Project {
   id: ProjectId;
@@ -102,6 +130,7 @@ export interface Project {
   slug: string;
   year: string;
   flowShape: FlowShape;
+  flowTech: FlowTech;
   /**
    * The names that identify the project at a glance, for the rows on the
    * homepage and the index. `stack` below is the full list, grouped by which
@@ -207,6 +236,22 @@ const projects: Project[] = [
     year: "2026",
     /* The one round trip: the front end asks, and the front end is answered. */
     flowShape: "roundTrip",
+    /*
+     * Each service shows its language and its framework, and the model it
+     * serves is already its badge in the copy ("Ultralytics YOLOv8m", "ML.NET
+     * model"). Ultralytics and ML.NET as marks as well would name the model
+     * twice on one card, while Python beside C# is the comparison the thesis
+     * is about.
+     */
+    flowTech: {
+      entry: ["React"],
+      core: ["NestJS"],
+      branches: [
+        ["Python", "FastAPI"],
+        ["C#", "ASP.NET Core"],
+      ],
+      exit: [],
+    },
     tech: [
       "React",
       "NestJS",
@@ -248,6 +293,18 @@ const projects: Project[] = [
     slug: "encryptix",
     year: "2023",
     flowShape: "pipeline",
+    /*
+     * The folder is read by the Windows Forms client, and the three ciphers run
+     * in the WCF service: AES is the .NET library's own, RC6 and XXTEA are
+     * written by hand in C#, which is exactly what each one's badge says. The
+     * encrypted files at the end run on nothing.
+     */
+    flowTech: {
+      entry: ["Windows Forms"],
+      core: ["WCF", ".NET"],
+      branches: [[".NET"], ["C#"], ["C#"]],
+      exit: [],
+    },
     tech: ["C#", ".NET", "WCF", "Windows Forms"],
     /*
      * Two processes, so two rows. The three ciphers are deliberately absent for
@@ -270,6 +327,18 @@ const projects: Project[] = [
     slug: "network-traffic-analyzer",
     year: "2024",
     flowShape: "pipeline",
+    /*
+     * A capture file runs on nothing, and the three protocol families are
+     * questions asked of each packet rather than services with a stack of
+     * their own. The parsing is Pyshark over Wireshark's tshark, and the row
+     * per packet is a Tkinter tree beside Matplotlib charts.
+     */
+    flowTech: {
+      entry: [],
+      core: ["Pyshark", "Wireshark"],
+      branches: [[], [], []],
+      exit: ["Tkinter", "Matplotlib"],
+    },
     tech: ["Python", "Tkinter", "Pyshark", "Matplotlib"],
     /*
      * One process, so the groups name jobs rather than services: the window, the
@@ -298,6 +367,17 @@ const projects: Project[] = [
     slug: "easy-breathe",
     year: "2024",
     flowShape: "pipeline",
+    /*
+     * The open-data endpoints are the agency's, not the app's, and the two
+     * clocks are two schedules inside the same NestJS seeder rather than
+     * services of their own. What they fill is MongoDB.
+     */
+    flowTech: {
+      entry: [],
+      core: ["NestJS"],
+      branches: [[], []],
+      exit: ["MongoDB"],
+    },
     tech: ["React Native", "Expo", "NestJS", "MongoDB"],
     stack: [
       { id: "mobile", items: ["React Native", "Expo"] },
@@ -341,7 +421,8 @@ export interface Game {
    * default would be the wrong way round: a game is at its least finished on
    * the day it is added, and an omitted line should not quietly claim
    * otherwise. It is also the one switch that matters - flipping it to `live`
-   * takes the ribbon off the card and the badge off the page together.
+   * turns the card's status pill from the accent to the quiet one and takes the
+   * badge off the page, together.
    */
   status: GameStatus;
 

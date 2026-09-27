@@ -27,7 +27,7 @@ const options = locales.map((locale) => ({
 */}
 <details class="group relative" data-menu>
   <summary
-    class="head-btn h-9 cursor-pointer list-none gap-1 px-2.5 text-[13px] font-medium [&::-webkit-details-marker]:hidden"
+    class="head-btn cursor-pointer list-none gap-1.5 px-3 text-[0.875rem] font-semibold [&::-webkit-details-marker]:hidden"
   >
     <Languages class="size-4" aria-hidden="true" />
     <span class="sr-only">{dict.nav.language}</span>
@@ -40,9 +40,9 @@ const options = locales.map((locale) => ({
 
   <nav
     aria-label={dict.nav.language}
-    class="absolute right-0 z-50 mt-2 overflow-hidden rounded-card border border-hairline bg-card shadow-lg"
+    class="absolute right-0 z-50 mt-3 overflow-hidden rounded-card border border-hairline bg-bg p-1.5 shadow-[var(--site-float)]"
   >
-    <ul class="min-w-40 py-1.5">
+    <ul class="min-w-44">
       {
         options.map((option) => (
           <li>
@@ -52,8 +52,8 @@ const options = locales.map((locale) => ({
               lang={option.locale}
               aria-current={option.isCurrent ? 'page' : undefined}
               class:list={[
-                'flex items-center gap-2 px-3.5 py-2 text-[14px] transition-colors duration-150',
-                option.isCurrent ? 'text-accent' : 'text-muted hover:text-fg',
+                'flex items-center gap-2.5 rounded-[var(--site-radius)] px-3 py-2.5 text-[1rem] font-medium transition-colors duration-150',
+                option.isCurrent ? 'text-accent' : 'text-muted hover:bg-inset hover:text-fg',
               ]}
             >
               {option.isCurrent ? (

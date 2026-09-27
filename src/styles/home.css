@@ -1,0 +1,743 @@
+/*
+ * The homepage's sections: the hero, About, Skills, Experience, Education,
+ * Services and Contact. Projects is in project.css, since its cards are the
+ * same object the project index shows.
+ *
+ * Imported by Home.astro and nothing else, so it is inlined into the four home
+ * pages only.
+ *
+ * The layer order, the same line global.css opens with. See the note there:
+ * this file can land in a page ahead of global.css, and whichever stylesheet
+ * names the layers first is the one that orders them.
+ */
+@layer properties, theme, base, components, games, utilities;
+
+@layer components {
+  /* ---- Hero ------------------------------------------------------------ */
+
+  .hero {
+    padding-block: clamp(1rem, 2vw, 1.5rem) clamp(2rem, 4vw, 3.5rem);
+  }
+
+  /*
+   * One ink tile holding everything, a step rounder than a tile because it is
+   * the page's frame rather than something on it.
+   */
+  .hero-tile {
+    border: 1px solid var(--site-hairline);
+    border-radius: calc(var(--site-radius-card) + 8px);
+    padding: clamp(1.25rem, 3.4vw, 3rem);
+  }
+
+  .hero-grid {
+    display: grid;
+    gap: clamp(1.75rem, 3.5vw, 3rem);
+  }
+
+  /*
+   * The copy and the portrait side by side from 60rem. The portrait column is
+   * a clamp so the picture grows with the screen and the name keeps the rest.
+   */
+  @media (min-width: 60rem) {
+    .hero-grid {
+      grid-template-columns: minmax(0, 1fr) clamp(17rem, 29vw, 25rem);
+      align-items: center;
+    }
+  }
+
+  /* The container the name is sized against. */
+  .hero-copy {
+    container-type: inline-size;
+    min-width: 0;
+  }
+
+  .hero-role {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-pill);
+    background-color: var(--site-card);
+    padding: 0.45rem 1.05rem 0.45rem 0.85rem;
+    font-size: 0.9375rem;
+    font-weight: 580;
+    line-height: 1.3;
+  }
+
+  /* The dot that says "currently", and it pulses to say it: a ring goes out
+     from it every couple of seconds. */
+  .hero-role::before {
+    content: '';
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background-color: var(--site-accent);
+  }
+
+  /*
+   * The name, and the one place the page is allowed to be loud.
+   *
+   * ⚠️ **The size is the column's width, not the viewport's.** "Cvetković" at
+   * this stretch, weight and tracking measures 5.42 times its font size, so
+   * 17.9cqi sets it at 97% of the column at every width: 131px beside the
+   * portrait on a desktop, 57px on a 390 phone. The 3% is for other engines'
+   * rounding - the line rises into a mask, and a mask clips what overhangs. A viewport clamp could not do
+   * that, because the column is a different fraction of the screen on either
+   * side of the 60rem breakpoint - it was 48px on a phone and left a quarter of
+   * the line empty.
+   *
+   * Leading is 0.86 because the second line carries a ć: tighter and its
+   * accent meets the baseline above. The masks the two lines rise into get
+   * extra room at the top for the same accent (see `.display-name .line-mask`).
+   */
+  .display-name {
+    margin-top: clamp(1rem, 2vw, 1.5rem);
+    font-stretch: 122%;
+    font-weight: 720;
+    font-size: 17.9cqi;
+    line-height: 0.86;
+    letter-spacing: -0.05em;
+  }
+
+  .display-name .line-mask {
+    padding-block: 0.14em 0.06em;
+    margin-block: -0.14em -0.06em;
+  }
+
+  /*
+   * The lead, at the full width of the column - it is the page's first
+   * paragraph and it has the column to itself, so a reading measure here would
+   * only leave a hole beside it.
+   */
+  .hero-lead {
+    margin-top: clamp(1.25rem, 2.2vw, 1.75rem);
+    font-size: clamp(1.125rem, 1.6vw, 1.375rem);
+    line-height: 1.5;
+    color: var(--site-muted);
+  }
+
+  .hero-actions {
+    margin-top: clamp(1.5rem, 2.5vw, 2rem);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  /*
+   * The portrait, in a frame at the image's own proportions.
+   *
+   * ⚠️ 3:4 is the photograph's ratio to three decimal places, so `cover` crops
+   * nothing. Framing it at any other ratio cuts the arm off at the edge or the
+   * head in half on a phone, which is why it is set here and never stretched to
+   * a row's height.
+   */
+  .portrait {
+    position: relative;
+    margin: 0;
+    width: 100%;
+    max-width: 26rem;
+    justify-self: center;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-card);
+    background-color: var(--site-inset);
+  }
+
+  .portrait img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: scale 900ms var(--site-ease-out);
+  }
+
+  .portrait:hover img {
+    scale: 1.04;
+  }
+
+  /*
+   * The stack as a tray of mark tiles along the bottom of the hero. A wrapping
+   * row whose tiles grow, so every row is full: eleven in one line on a
+   * desktop, and on a phone the last row's tiles widen to meet the edge rather
+   * than leaving a gap.
+   */
+  .hero-tray {
+    margin-top: clamp(1.5rem, 3vw, 2.5rem);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  /* 5rem is what puts three across a 360 phone and eleven across a desktop. */
+  .hero-tray > .mark-tile {
+    flex: 1 1 5rem;
+  }
+
+  /* ---- About ----------------------------------------------------------- */
+
+  /*
+   * The opening statement, at display size across the full measure: the one
+   * paragraph on the page set to be read as a sentence spoken rather than as
+   * copy.
+   */
+  .about-lead {
+    font-stretch: 104%;
+    font-weight: 480;
+    font-size: clamp(1.375rem, 2.6vw, 2.25rem);
+    line-height: 1.28;
+    letter-spacing: -0.028em;
+  }
+
+  .about-note {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .about-body {
+    margin-top: 1rem;
+    color: var(--site-muted);
+  }
+
+  /* The label of the Games tile is its link, and takes the tile's own ink. */
+  .about-note .tile-label a {
+    color: var(--site-fg);
+  }
+
+  /* ---- Skills ---------------------------------------------------------- */
+
+  /*
+   * A group per tile, sized by how many it holds.
+   *
+   * Phone: one tile a row, marks two across, and Backend's first mark spans
+   * both. Tablet: Backend across the full width with its five in one row, and
+   * the other three side by side under it. Desktop: 2:1:1:1, Backend's lead
+   * over a two-by-two and the others' two marks stacked - which is three rows
+   * against two, so the grid stretches the short groups' rows until every tile
+   * is exactly as tall as Backend and nothing is empty.
+   */
+  .skills-grid {
+    display: grid;
+    gap: var(--site-gap);
+  }
+
+  .skill-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .skill-group-name {
+    font-stretch: 112%;
+    font-weight: 660;
+    font-size: 1.125rem;
+    letter-spacing: -0.02em;
+    color: var(--site-fg);
+  }
+
+  .skill-marks {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
+    gap: 0.6rem;
+  }
+
+  .skill-group[data-group='backend'] .skill-marks > :first-child {
+    grid-column: 1 / -1;
+  }
+
+  @media (min-width: 40rem) {
+    .skills-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .skill-group[data-group='backend'] {
+      grid-column: 1 / -1;
+    }
+
+    .skill-group[data-group='backend'] .skill-marks {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .skill-group[data-group='backend'] .skill-marks > :first-child {
+      grid-column: auto;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .skills-grid {
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+    }
+
+    .skill-group[data-group='backend'] {
+      grid-column: auto;
+    }
+
+    .skill-group[data-group='backend'] .skill-marks {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .skill-group[data-group='backend'] .skill-marks > :first-child {
+      grid-column: 1 / -1;
+    }
+
+    .skill-group:not([data-group='backend']) .skill-marks {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    /*
+     * ⚠️ The four tiles share their two rows through a subgrid, so the marks
+     * start on one line across the row. "Cloud & DevOps" takes two lines in a
+     * one-unit tile in every language, and without this its marks sat a line
+     * lower and shorter than the three beside it.
+     */
+    .skills-grid {
+      grid-template-rows: auto 1fr;
+    }
+
+    .skill-group {
+      display: grid;
+      grid-row: span 2;
+      grid-template-rows: subgrid;
+      row-gap: 0.85rem;
+    }
+
+    .skill-group > .tile-label {
+      align-self: start;
+    }
+  }
+
+  /*
+   * The marks a little over the tray's size, on a tighter tile. At 2.6rem
+   * with 1.1rem of padding Backend's tiles were 108 pixels tall and the grid
+   * 478 at 1440, which read as oversized beside the sections round it. This
+   * is 85 and 399.
+   */
+  .skill-marks .mark-tile {
+    padding-block: 0.7rem;
+    gap: 0.55rem;
+  }
+
+  .skill-marks .mark-tile-icon {
+    width: 2.1rem;
+    height: 2.1rem;
+  }
+
+  /* NestJS, leading Backend: the mark beside its name, at twice the width. */
+  @media (min-width: 64rem) {
+    .skill-group[data-group='backend'] .skill-marks > :first-child {
+      flex-direction: row;
+      gap: 1.1rem;
+    }
+
+    .skill-group[data-group='backend'] .skill-marks > :first-child .mark-tile-icon {
+      width: 2.75rem;
+      height: 2.75rem;
+    }
+
+    .skill-group[data-group='backend'] .skill-marks > :first-child .mark-tile-name {
+      font-stretch: 114%;
+      font-weight: 680;
+      font-size: 1.375rem;
+      letter-spacing: -0.03em;
+    }
+  }
+
+  /* ---- Experience ------------------------------------------------------ */
+
+  .role-list {
+    display: grid;
+    row-gap: clamp(1.5rem, 2.5vw, 2rem);
+  }
+
+  /*
+   * Who and when on the left, what on the right, from 60rem. The split is 5:7,
+   * which puts the bullets at about 85 characters a line on a desktop.
+   */
+  .role {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  /* The head is centred on the bullets beside it, so a role with three points
+     does not leave its name at the top of an empty column. */
+  @media (min-width: 60rem) {
+    .role {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      column-gap: clamp(2rem, 4vw, 3.5rem);
+      align-items: center;
+    }
+  }
+
+  .role-head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.5rem 1rem;
+    align-items: center;
+  }
+
+  /* The company's initial, in the display voice: what sits at each end of the
+     line that says employment is a sequence. */
+  .role-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: var(--site-radius-inner);
+    background-color: var(--site-inset);
+    font-stretch: 118%;
+    font-weight: 740;
+    font-size: 1.625rem;
+    line-height: 1;
+  }
+
+  .role[data-current] .role-mark {
+    background-color: var(--site-accent);
+    color: var(--site-bg);
+  }
+
+  .role-company {
+    font-stretch: 116%;
+    font-weight: 680;
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+  }
+
+  .role-title {
+    margin-top: 0.2rem;
+    color: var(--site-muted);
+  }
+
+  /* The period, under the name, lined up with it rather than with the mark. */
+  .role-period {
+    grid-column: 2;
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-pill);
+    padding: 0.25rem 0.9rem;
+    font-size: 0.9375rem;
+    font-weight: 560;
+    font-variant-numeric: tabular-nums;
+    color: var(--site-muted);
+  }
+
+  .role[data-current] .role-period {
+    border-color: var(--site-accent);
+    background-color: color-mix(in oklab, var(--site-accent) 10%, var(--site-card));
+    color: var(--site-accent);
+  }
+
+  .role[data-current] .role-period::before {
+    content: '';
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background-color: currentColor;
+  }
+
+  /*
+   * The line between two roles, in the gap, from one initial to the next. It
+   * starts under the previous tile's edge and ends at this one's, aligned on
+   * the initials' centre line.
+   */
+  .role + .role::before {
+    content: '';
+    position: absolute;
+    left: calc(var(--card-pad) + 1.75rem - 1px);
+    bottom: 100%;
+    width: 2px;
+    height: clamp(1.5rem, 2.5vw, 2rem);
+    background-color: var(--site-accent);
+  }
+
+  .role-points {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .role-points > li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.85rem;
+    align-items: start;
+    color: var(--site-muted);
+  }
+
+  .role-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    margin-top: 0.05rem;
+    border-radius: 50%;
+    background-color: color-mix(in oklab, var(--site-accent) 12%, var(--site-card));
+    color: var(--site-accent);
+  }
+
+  .role-check svg {
+    width: 0.95rem;
+    height: 0.95rem;
+    stroke-width: 2.6;
+  }
+
+  /* ---- Education ------------------------------------------------------- */
+
+  .edu-grid {
+    display: grid;
+    gap: var(--site-gap);
+  }
+
+  @media (min-width: 48rem) {
+    .edu-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .edu {
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(1rem, 2vw, 1.5rem);
+  }
+
+  .edu-crest {
+    width: 4rem;
+    height: 4rem;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background-color: #fff;
+    box-shadow: 0 0 0 1px var(--site-hairline);
+    transition: rotate 700ms var(--site-spring);
+  }
+
+  .edu:hover .edu-crest {
+    rotate: -12deg;
+  }
+
+  .edu-degree {
+    font-stretch: 112%;
+    font-weight: 660;
+    font-size: clamp(1.25rem, 1.8vw, 1.5rem);
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+  }
+
+  .edu-school {
+    margin-top: 0.35rem;
+    color: var(--site-muted);
+  }
+
+  /* ---- Services -------------------------------------------------------- */
+
+  .svc-bento {
+    display: grid;
+    gap: var(--site-gap);
+  }
+
+  @media (min-width: 40rem) {
+    .svc-bento {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .svc-bento {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .svc-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+
+  .svc-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: var(--site-radius-inner);
+    background-color: color-mix(in oklab, var(--site-accent) 12%, var(--site-card));
+    color: var(--site-accent);
+    transition:
+      rotate 450ms var(--site-spring),
+      background-color 250ms var(--site-ease),
+      color 250ms var(--site-ease);
+  }
+
+  .svc-icon svg {
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+
+  .svc-card:hover .svc-icon {
+    rotate: -10deg;
+    background-color: var(--site-accent);
+    color: var(--site-bg);
+  }
+
+  .svc-body {
+    color: var(--site-muted);
+  }
+
+  /* ---- Contact --------------------------------------------------------- */
+
+  /*
+   * The ask: the intro at display size and the button under it, on cobalt,
+   * spanning both rows of the channels beside it.
+   */
+  .contact-call {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.75rem;
+  }
+
+  @media (min-width: 64rem) {
+    .contact-call {
+      grid-row: span 2;
+    }
+  }
+
+  .contact-intro {
+    font-stretch: 104%;
+    font-weight: 500;
+    font-size: clamp(1.375rem, 2.4vw, 2rem);
+    line-height: 1.3;
+    letter-spacing: -0.025em;
+  }
+
+  .channel {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  /* The two profiles share a row on a desktop, three columns each, which is too
+     narrow for a URL beside its icon - so there the icon stands above. */
+  @media (min-width: 64rem) {
+    .channel:not(.channel-mail) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.25rem;
+    }
+  }
+
+  .channel-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: var(--site-radius-inner);
+  }
+
+  .channel-icon svg {
+    width: 1.3rem;
+    height: 1.3rem;
+  }
+
+  /*
+   * The address, and the loudest channel - one step over the two profile URLs
+   * and the accent, and nothing more. `anywhere` on the wrap so it still breaks
+   * rather than pushing a narrow phone sideways.
+   */
+  .mail {
+    display: inline-block;
+    margin-top: 0.2rem;
+    font-stretch: 108%;
+    font-weight: 620;
+    font-size: 1.25rem;
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+    overflow-wrap: anywhere;
+    color: var(--site-accent);
+  }
+
+  .channel-value {
+    display: inline-block;
+    margin-top: 0.2rem;
+    font-size: 1.0625rem;
+    font-weight: 560;
+    letter-spacing: -0.01em;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* The ring that goes out from the hero's dot. */
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--site-accent) 70%, transparent);
+  }
+
+  70%,
+  100% {
+    box-shadow: 0 0 0 0.6rem color-mix(in oklab, var(--site-accent) 0%, transparent);
+  }
+}
+
+/*
+ * The whole photograph, in colour, from the first frame: out of focus and
+ * close, pulling back into its frame as it sharpens. The 1.22 zoom carries the
+ * blur's soft edge outside the frame, so the frame never shows it.
+ *
+ * ⚠️ **Nothing hides it at any point**: no opacity, no clip. The portrait is
+ * the page's largest paint, and a browser does not count a paint it cannot
+ * see - a reveal from fully clipped held the page's LCP back 894ms in a
+ * Lighthouse run. A zoom and a blur leave every pixel of it painted from the
+ * start, so they cost the LCP nothing.
+ */
+@keyframes portrait-in {
+  from {
+    scale: 1.22;
+    filter: blur(14px);
+  }
+
+  to {
+    scale: 1;
+    filter: none;
+  }
+}
+
+/* A mark landing in the tray: from small and low, with an overshoot. */
+@keyframes tray-pop {
+  from {
+    opacity: 0;
+    translate: 0 1.25rem;
+    scale: 0.7;
+  }
+
+  to {
+    opacity: 1;
+    translate: none;
+    scale: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-role::before,
+  .role[data-current] .role-period::before {
+    animation: pulse-ring 2.4s var(--site-ease-out) infinite;
+  }
+
+  /* `backwards`, not `both`: a fill held forwards would pin `scale` at 1 and
+     outrank the hover's zoom for the life of the page. */
+  .enter-portrait img {
+    animation: portrait-in 1600ms var(--site-ease-out) backwards;
+    animation-delay: var(--enter-delay, 0ms);
+  }
+
+  .tray-in {
+    animation: tray-pop 750ms var(--site-spring) both;
+    animation-delay: var(--enter-delay, 0ms);
+  }
+}

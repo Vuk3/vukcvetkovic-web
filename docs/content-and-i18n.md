@@ -192,6 +192,8 @@ take whatever is in the array.
 | `year` | shown in the left column of the index row |
 | `tech` | the short identifying list, for the homepage row and the index row |
 | `stack` | the full list, grouped by **service** rather than category. Only the detail page shows it |
+| `flowShape` | `roundTrip` or `pipeline` - the topology of the request diagram, see below |
+| `flowTech` | which technologies each node of the request diagram runs on: `{ entry, core, branches, exit }`, each a list of `TechName`. An empty list is a real answer - the node runs on nothing and shows no marks. ⚠️ The diagram **throws at build** if `branches` has a different length from the dictionary's `flow.branches`, or if a name is not in this project's `stack` |
 | `results` | optional. Omit it and the results section does not render |
 | `links` | `{}` hides both links. Filling either `live` or `source` makes that one appear |
 
@@ -212,13 +214,13 @@ Two shapes are not free-form:
 
   | Key | What it names | Drawn as |
   |---|---|---|
-  | `entry` | where the run starts | a terminal, tier 1 |
-  | `entryLabel` | the payload on the way in | an annotation riding on the line, or nothing if empty |
-  | `core` | the one address the run passes through | the largest node, tier 2 |
-  | `branches` | `{ title, badge }` per parallel service | a lane of tier 3 nodes, the badge in uppercase mono |
-  | `exit` | where the answer lands | a terminal, tier 1 |
-  | `exitLabel` | the payload on the way back out | an annotation on the returning line |
-  | `exitNote` | something true *about* the output | mono beside it, never a stage of its own |
+  | `entry` | where the run starts | a terminal tile |
+  | `entryLabel` | the payload on the way in | a label riding beside the line, or nothing if empty |
+  | `core` | the one address the run passes through | the ink tile, the strongest node |
+  | `branches` | `{ title, badge }` per parallel service | white tiles in a lane, the badge in the platform monospace |
+  | `exit` | where the answer lands | a terminal tile |
+  | `exitLabel` | the payload on the way back out | a label beside the returning line |
+  | `exitNote` | something true *about* the output | a footnote in the exit tile, never a stage of its own |
 
   ⚠️ **The topology is a fact and lives in [src/site.ts](../src/site.ts), as `flowShape`.**
   `roundTrip` comes back to the terminal it started from, so its `exit` is empty and the
@@ -228,10 +230,14 @@ Two shapes are not free-form:
 
   What is fixed is the shape itself: one fan-out into one lane, and one gather-in. A project
   that forks twice, or not at all, needs
-  [diagram-layout.ts](../src/diagram-layout.ts) extended rather than the data bent.
+  [ArchitectureDiagram.astro](../src/components/ArchitectureDiagram.astro) and
+  [flow.css](../src/styles/flow.css) extended rather than the data bent.
 
-  `projects.flowCaptions` holds the three captions the diagram draws over its stages -
-  orchestration, in parallel, output. They are shared by every project because they name
+  The marks on each node are not copy: they are `flowTech` in [src/site.ts](../src/site.ts),
+  because a technology name reads the same in four languages.
+
+  `projects.flowCaptions` holds the four captions the diagram sets at the top of its tiles -
+  entry, orchestration, in parallel, output. They are shared by every project because they name
   what a stage *is*, and they are the only diagram copy that is not per-project.
 - **The results table splits down the middle: numbers in
   [src/site.ts](../src/site.ts), every word in the dictionaries.** See §5.1.
@@ -328,8 +334,9 @@ five are code.
 3. **[src/site.ts](../src/site.ts)**, a new entry in `games` keyed by the same id, with a
    `slug`, a `status` and the `date` it was written, a day rather than a project's year.
    The title is prose and lives in the dictionaries. `status` is `live` or `beta`, and it is required
-   rather than defaulting: it puts the ribbon on the card and the badge beside the title,
-   and flipping it to `live` is the one line that takes both off. `GameId` is
+   rather than defaulting: it sets the status pill on the card and the badge beside the
+   title, and flipping it to `live` is the one line that quiets the one and takes the other
+   off. `GameId` is
    `keyof Dict["games"]["items"]`, so a
    registry entry with no copy behind it fails `astro check`, and the id has to be spelled
    the same in both files or neither compiles. Declaration order is the order the index
@@ -375,6 +382,12 @@ anybody as protection - see
   name under `games.items.memory.pictures` - the page builds its name map from the module's
   ids, so the missing key is a type error there
 
+**Throws during `npm run build`:**
+
+- a project whose `flowTech.branches` has a different length from its dictionary
+  `flow.branches`, or whose `flowTech` names a technology missing from its own `stack` -
+  [ArchitectureDiagram.astro](../src/components/ArchitectureDiagram.astro) checks both
+
 **Silently degrades:**
 
 - a translated array shorter than the English one - the page renders fewer items (§2)
@@ -395,6 +408,10 @@ anybody as protection - see
 
 ## Changelog
 
+- 2026-09-27 - a project gains `flowTech`, the technologies each node of its request
+  diagram runs on, which the diagram checks against the branch count and the project's own
+  stack at build (§5, §8). The diagram's captions are four, set inside its tiles, and a
+  game's status is a pill on its card rather than a ribbon (§7).
 - 2026-09-24 - a seventh game, `fourInARow`, last on the index. ⚠️ Its title is not a trade
   name in any language, for the cube's reason: Four in a Row, Četiri u nizu, Quatre en
   ligne and Vier in einer Reihe, since two of the names it is sold under are the everyday

@@ -1,0 +1,298 @@
+/*
+ * The 404: the status as three tiles that drop in and bounce, and the heading,
+ * the line of explanation and the way home in a tile beside them.
+ *
+ * Imported by NotFound.astro and nowhere else, so none of it is paid for by a
+ * page that is not a 404.
+ */
+
+/*
+ * The layer order, the same line global.css opens with. See the note there:
+ * this file can land in a page ahead of global.css, and whichever stylesheet
+ * names the layers first is the one that orders them.
+ */
+@layer properties, theme, base, components, games, utilities;
+
+@layer components {
+  /*
+   * ⚠️ Rules that could tie with a foundation class - `.card`'s padding and
+   * transition, above all - are written under `.notfound` so they win by
+   * specificity. Astro does not promise which of the two stylesheets lands
+   * first in the page, so order cannot be what decides it.
+   */
+
+  /*
+   * The body is a flex column and `main` grows to fill it, but `main` itself
+   * is a plain block, so on a screen taller than the page the extra height
+   * would all sit under the tiles as a band of bare ground above the footer.
+   * Making `main` a column here - a rule that ships only with this page - lets
+   * the section take that height, and the grid centres the composition in it
+   * (see `.notfound-grid`).
+   */
+  main:has(> .notfound) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .notfound {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+    /* Close under the capsule, because nothing on this page needs an
+       introduction, and the section rhythm's full 4.5rem above the footer. */
+    padding-block: clamp(1rem, 2.5vw, 2rem) clamp(2.75rem, 5vw, 4.5rem);
+  }
+
+  /*
+   * Stacked on a phone and a tablet - the digits as one row across the
+   * measure, the text tile under them - and side by side from 64rem.
+   *
+   * 3fr against 2.2fr is a 7 : 5 split: the digits keep the larger share, so
+   * the numerals are the first thing seen, and the text tile is still wide
+   * enough for a lead-sized paragraph of four or five lines beside them, which
+   * is what makes the two sides come out the same height at 1440.
+   *
+   * ⚠️ `align-content: center`, not the default stretch. Given the height of a
+   * tall screen, stretched rows made 800px tiles around numerals that are
+   * sized by their width and cannot grow with it - two-fifths of every digit
+   * tile empty and a hole in the middle of the text tile. The composition
+   * keeps its own proportions and sits between header and footer instead.
+   */
+  .notfound-grid {
+    display: grid;
+    flex: 1 0 auto;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    gap: var(--site-gap);
+  }
+
+  @media (min-width: 64rem) {
+    .notfound-grid {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2.2fr);
+    }
+  }
+
+  .notfound-digits {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--site-gap);
+  }
+
+  /*
+   * A digit tile. `container-type: size` so the numeral inside can be sized
+   * against both of the tile's sides at once (see `.notfound-glyph`), and a
+   * portrait aspect because a numeral is taller than it is wide.
+   *
+   * ⚠️ `place-self: stretch` is load-bearing, on both axes. A grid item with
+   * an aspect ratio treats `normal` alignment as `start`. In the block axis
+   * that left the tiles at their own height under a taller text tile, with a
+   * strip of ground beneath them. In the inline axis it was worse: stretched
+   * to that taller row, a tile took its width from the ratio instead of from
+   * its column, and at 1024 in German the three came out 195px wide in 167px
+   * columns, overlapping. Stretched both ways the ratio no longer sizes the
+   * tile, and only sets the row's minimum height.
+   *
+   * `overflow: clip` for a browser without `text-box` (see `.notfound-glyph`),
+   * where the numeral's line box is a full em and runs past the top and
+   * bottom of a 3 : 5 tile, though the figure inside it does not.
+   */
+  .notfound .notfound-digit {
+    container-type: size;
+    display: grid;
+    place-items: center;
+    place-self: stretch;
+    aspect-ratio: 1 / 2;
+    padding: 0;
+    overflow: clip;
+  }
+
+  /* Squatter on a tablet, where the row runs the whole measure and three
+     tiles at 1 : 2 would stand about 450px tall and push the heading below
+     the fold. */
+  @media (min-width: 40rem) and (max-width: 63.99rem) {
+    .notfound .notfound-digit {
+      aspect-ratio: 3 / 5;
+    }
+  }
+
+  /* The paper tile's numeral in the accent, so in the dark theme - where paper
+     and ink are two close shades of near-black - the first 4 still reads as a
+     different surface from the last. */
+  .notfound-paper {
+    color: var(--site-accent);
+  }
+
+  /*
+   * The numeral, as large as its tile allows.
+   *
+   * ⚠️ Set at the bottom of the width axis, 62%, where every heading on the
+   * site runs at the top of it. It is the same family pushed the other way,
+   * and it is what the tile's shape demands: a tile is about half as wide as
+   * it is tall, and an expanded numeral - as wide as it is high - would fill
+   * under half of it. Condensed, a 4 is 0.44em wide and its figure 0.70em
+   * tall (measured in the browser at weight 900).
+   *
+   * The size is whichever side runs out first: 200cqi puts the advance at 88%
+   * of the tile's width, and 111cqh puts the figure at 78% of its height. On
+   * a 1 : 2 tile the width runs out first, on the tablet's 3 : 5 the height
+   * does, and a tile stretched taller than its ratio by the text tile beside
+   * it keeps the width-limited size rather than growing past its edges.
+   *
+   * `text-box` trims the line to the figure itself - cap height to baseline -
+   * so centring the box centres the ink. Where it is not supported the figure
+   * sits about 1.5% of its size high, which is not visible.
+   */
+  .notfound-glyph {
+    font-stretch: 62%;
+    font-weight: 900;
+    font-size: min(200cqi, 111cqh);
+    line-height: 1;
+    text-box: trim-both cap alphabetic;
+    user-select: none;
+    transition: transform 450ms var(--site-spring);
+  }
+
+  /* A small hop under the pointer. On the glyph rather than the tile, because
+     the tile's drop animation holds `translate` and `scale`, and `transform`
+     here composes with neither. */
+  .notfound-digit:hover .notfound-glyph {
+    transform: translateY(-4%) rotate(-5deg);
+  }
+
+  /*
+   * The text tile: the heading at the top, the explanation and the way home
+   * at the bottom, so however tall the digits make the row the tile is full
+   * from edge to edge rather than a block of text with a hole under it.
+   *
+   * `container-type` so the heading is sized against the tile it sits in
+   * rather than the viewport - the tile is a different share of the screen
+   * stacked and side by side.
+   */
+  .notfound .notfound-copy {
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: clamp(1.75rem, 4vw, 3rem);
+    padding: clamp(1.5rem, 3vw, 2.75rem);
+  }
+
+  /*
+   * The page title's voice, sized to the tile rather than the screen. The
+   * longest first line in the four dictionaries is the Serbian "Stranica
+   * nije", 6.66em wide at this stretch and tracking, so 14.5cqi is the
+   * largest size that still keeps every heading to two lines: the line takes
+   * 96% of the tile. The ratio holds at every tile width, because both sides
+   * of it are in the tile's own units.
+   */
+  .notfound-heading {
+    font-stretch: 122%;
+    font-weight: 720;
+    font-size: clamp(2.25rem, 14.5cqi, 5.5rem);
+    line-height: 0.96;
+    letter-spacing: -0.05em;
+    hyphens: auto;
+    overflow-wrap: break-word;
+  }
+
+  .notfound-foot {
+    display: grid;
+    justify-items: start;
+    gap: clamp(1.5rem, 3vw, 2rem);
+  }
+
+  /*
+   * The lead's range and tone, from `.page-lead`, but sized in the tile like
+   * the heading: 5.4cqi reaches the lead's full 1.5rem in the tile at 1440
+   * and again when the tile runs the whole measure on a tablet, where a
+   * viewport size gave a 19px paragraph two lines of ninety characters. No
+   * measure cap: the tile is the measure.
+   */
+  .notfound-body {
+    font-size: clamp(1.1875rem, 5.4cqi, 1.5rem);
+    line-height: 1.45;
+    letter-spacing: -0.012em;
+    color: var(--site-muted);
+  }
+
+  /*
+   * The drop, on load.
+   *
+   * Time-based rather than scroll-driven, like `.enter`, because the tiles
+   * are in view at first paint. The delay is the same `--enter-delay`, set
+   * inline per tile, so the order of the sequence is readable in the markup.
+   *
+   * The origin is the tile's bottom edge, so the squash on landing spreads
+   * along the floor instead of shrinking the tile towards its middle.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    .notfound-digit {
+      transform-origin: 50% 100%;
+      animation: notfound-drop 1150ms linear both;
+      animation-delay: var(--enter-delay, 0ms);
+    }
+  }
+}
+
+/*
+ * A disc dropped into a board: it falls under gravity from a tile's height and
+ * a bit above where it rests, lands, squashes, bounces once to under a tenth of
+ * its height, lands again with a smaller squash and settles.
+ *
+ * Each segment carries its own curve - ease-in for a fall, ease-out for a rise
+ * - which is why the animation itself runs `linear`: the curve on a keyframe
+ * governs the stretch that starts there, and a second curve over the whole
+ * run would bend the physics.
+ *
+ * ⚠️ `translate` and `scale`, never `transform`: the fill holds the last frame
+ * for as long as the page is open, and a `transform` there would beat every
+ * later `transform` on the tile. The fade covers only the first tenth, while
+ * the tile is still above the header, so it is solid for the whole fall.
+ */
+@keyframes notfound-drop {
+  0% {
+    opacity: 0;
+    translate: 0 -125%;
+    scale: 1;
+    animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.45);
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  50% {
+    translate: 0 0;
+    scale: 1;
+    animation-timing-function: cubic-bezier(0.2, 0.6, 0.35, 1);
+  }
+
+  57% {
+    translate: 0 0;
+    scale: 1.06 0.9;
+    animation-timing-function: cubic-bezier(0.25, 0.7, 0.4, 1);
+  }
+
+  72% {
+    translate: 0 -8%;
+    scale: 0.98 1.03;
+    animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.45);
+  }
+
+  85% {
+    translate: 0 0;
+    scale: 1.025 0.965;
+    animation-timing-function: cubic-bezier(0.25, 0.7, 0.4, 1);
+  }
+
+  93% {
+    translate: 0 -1.5%;
+    scale: 1;
+  }
+
+  100% {
+    opacity: 1;
+    translate: none;
+    scale: none;
+  }
+}

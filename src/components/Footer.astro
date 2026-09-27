@@ -1,8 +1,12 @@
 ---
-import { ArrowUp } from '@lucide/astro';
-import type { Lang } from '../i18n/types';
-import { getDict } from '../i18n/utils';
-import { site } from '../site';
+import { ArrowUp, Mail } from '@lucide/astro';
+import { Image } from 'astro:assets';
+import { locales, type Lang } from '../i18n/types';
+import { getDict, localizePath } from '../i18n/utils';
+import { languageNames, site, type Game } from '../site';
+import BrandIcon from './BrandIcon.astro';
+/* The header's V mark, at the size it is shown - see the note in Nav.astro. */
+import vMark from '../../public/apple-touch-icon.png';
 
 interface Props {
   lang: Lang;
@@ -12,39 +16,137 @@ const { lang } = Astro.props;
 const dict = getDict(lang);
 
 const year = new Date().getFullYear();
+const home = localizePath('/', lang);
+
+/*
+ * The three lists the footer offers, every label from the dictionary and every
+ * target from site.ts, so nothing here is a second copy: add a project or a game
+ * and it appears here with no edit to this file.
+ */
+const sections = [
+  { id: 'about', label: dict.nav.about },
+  { id: 'skills', label: dict.nav.skills },
+  { id: 'experience', label: dict.nav.experience },
+  { id: 'education', label: dict.nav.education },
+  { id: 'projects', label: dict.nav.projects },
+  { id: 'services', label: dict.nav.services },
+  { id: 'contact', label: dict.nav.contact },
+];
+
+const projects = site.projects.map((project) => ({
+  label: dict.projects.items[project.id].title,
+  href: localizePath(`/projects/${project.slug}/`, lang),
+}));
+
+type GameId = keyof typeof dict.games.items;
+const games = (Object.entries(site.games) as [GameId, Game][]).map(([id, game]) => ({
+  label: dict.games.items[id].name,
+  href: localizePath(`/games/${game.slug}/`, lang),
+}));
+
+/* The same page in each language, like the switcher in the header. */
+const languages = locales.map((locale) => ({
+  locale,
+  name: languageNames[locale],
+  href: localizePath(Astro.url.pathname, locale),
+  current: locale === lang,
+}));
+
+const channels = [
+  { label: dict.contact.linkedinLabel, href: site.links.linkedin, brand: 'linkedin' as const },
+  { label: dict.contact.githubLabel, href: site.links.github, brand: 'github' as const },
+];
 ---
 
 {/*
-  The footer takes the ink panel, so every page on the site ends the same way -
-  the homepage under its contact block, a project page under its takeaway, the
-  404 under four lines of type. Where a panelled section sits directly above it
-  the two share a ground and only the hairline separates them, which reads as
-  one closing block rather than two.
+  Every page ends on this ink block: the way back to every section, every
+  project and every game, the channels, the languages, and the name as wide as
+  the page. Where a panelled section sits directly above it - Contact, a
+  takeaway, a game's build notes - the two share a ground and read as one
+  closing block.
 
-  The name leads in the display voice with the year under it, rather than both
-  being folded into one small copyright line: it is the last thing on the page
-  and it may as well be his name.
-
-  ⚠️ Back to top is written here but it is **not in the footer's row** - `.to-top`
-  is `position: fixed`, so it floats at the bottom right of the page for the
-  whole scroll. It stays in this component because the panel palette it inherits
-  is what makes it a dark pill on a light page, and because the label should come
-  from one place. See `.to-top` in global.css.
-
-  The label is hidden on a phone and the `aria-label` carries the name there, so
-  the arrow alone is still a named control rather than an unlabelled link.
+  ⚠️ Back to top is written here but it is **not in the footer's flow** -
+  `.to-top` is `position: fixed`, so it floats at the bottom right of the page
+  for the whole scroll. It stays in this component because the panel palette it
+  inherits is what makes it an ink circle on a light page. It is the arrow
+  alone at every width: as a labelled pill it covered the right edge of the
+  tiles and the game boards, and the `aria-label` carries the name.
 */}
 <footer class="panel site-foot">
-  <div class="shell shell-hero foot-inner">
-    <div>
-      <p class="foot-name">{site.name}</p>
-      <p class="foot-note">&copy; {year} {site.domain}</p>
+  <div class="shell">
+    <div class="foot-grid">
+      <div class="foot-lead">
+        <a href={home} class="brand">
+          <Image src={vMark} alt="" width={36} height={36} densities={[1, 2]} loading="lazy" class="brand-mark" />
+          <span>{site.name}</span>
+        </a>
 
+        <div class="foot-channels">
+          <a href={`mailto:${site.email}`} class="cta">
+            <Mail class="size-[1.05rem]" aria-hidden="true" />
+            {site.email}
+          </a>
+
+          {
+            channels.map((channel) => (
+              <a href={channel.href} target="_blank" rel="me noopener" class="cta-ghost">
+                <BrandIcon name={channel.brand} class="size-[1rem] shrink-0" />
+                {channel.label}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      <div>
+        <p class="foot-title">{dict.nav.sections}</p>
+        <ul class="foot-links">
+          {sections.map((section) => <li><a href={`${home}#${section.id}`}>{section.label}</a></li>)}
+        </ul>
+      </div>
+
+      <div>
+        <p class="foot-title">{dict.projects.label}</p>
+        <ul class="foot-links">
+          {projects.map((project) => <li><a href={project.href}>{project.label}</a></li>)}
+        </ul>
+      </div>
+
+      <div>
+        <p class="foot-title">{dict.games.label}</p>
+        <ul class="foot-links">
+          {games.map((game) => <li><a href={game.href}>{game.label}</a></li>)}
+        </ul>
+      </div>
     </div>
 
-    <a href="#main" class="cta-ghost to-top" aria-label={dict.footer.backToTop}>
-      <span class="to-top-label">{dict.footer.backToTop}</span>
-      <ArrowUp class="to-top-icon shrink-0" aria-hidden="true" />
-    </a>
+    <div class="foot-base">
+      <p>&copy; {year} {site.domain}</p>
+
+      <ul class="foot-langs" aria-label={dict.nav.language}>
+        {
+          languages.map((language) => (
+            <li>
+              <a
+                href={language.href}
+                hreflang={language.locale}
+                lang={language.locale}
+                aria-current={language.current ? 'page' : undefined}
+              >
+                {language.name}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="foot-word-wrap" aria-hidden="true">
+      <span class="foot-word reveal">{site.name}</span>
+    </div>
   </div>
+
+  <a href="#main" class="cta-ghost to-top" aria-label={dict.footer.backToTop}>
+    <ArrowUp class="to-top-icon shrink-0" aria-hidden="true" />
+  </a>
 </footer>

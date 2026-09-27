@@ -2,10 +2,12 @@
 /**
  * The /games/ index, shared by the four locales.
  *
- * Three cards to a row, each opening with a thumbnail of the game itself. The
- * thumbnails are markup rather than images - a still of the real board, built
- * from the same tokens - so they cost nothing to serve, stay sharp at any
- * size, and follow the theme toggle like the rest of the page.
+ * A bento wall of seven cards, each opening on a thumbnail of the game itself.
+ * The thumbnails are markup rather than images - a still of the real board,
+ * built from the game's own pieces and tokens - so they cost nothing to serve,
+ * stay sharp at any size, follow the theme toggle, and can move: every one
+ * plays a small piece of its own game when the card is hovered. All of that is
+ * CSS, in styles/games/index.css, and the page ships no script.
  */
 import type { Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
@@ -56,42 +58,52 @@ const art: Record<GameId, typeof Art2048> = {
 const entries = Object.entries(site.games) as [GameId, Game][];
 ---
 
+{/*
+  The title and the lead side by side from 64rem rather than stacked: the
+  title is one short word in all four languages, and stacked, the lead ran the
+  full measure as one long line and a stray three-word second one. See
+  `.games-head` in styles/games/index.css.
+*/}
 <div class="page-head">
-  <div class="shell shell-projects">
-    <h1 class="page-title enter">{copy.index.heading}</h1>
-    <p class="page-lead enter" style="--enter-delay:120ms">{copy.index.intro}</p>
+  <div class="shell games-head">
+    <h1 class="page-title enter-line">
+      <span class="line-mask"><span class="line-in">{copy.index.heading}</span></span>
+    </h1>
+    <p class="page-lead enter" style="--enter-delay:160ms">{copy.index.intro}</p>
   </div>
 </div>
 
-<div class="sec-lite">
-  <div class="shell shell-projects">
-    <ol class="game-grid">
+<div class="sec-lite games-wall">
+  <div class="shell">
+    <ol class="bento">
       {
         entries.map(([id, game]) => {
           const Art = art[id];
 
           return (
-            <li class="card card-hover project reveal-item">
+            <li class="card card-hover game-card reveal-item">
               {/*
-                The ribbon is a sibling of the art, not a child of it, for two
-                reasons: `.game-shot` is what clips the band to the corner it
-                cuts, and the art carries `aria-hidden` - "Beta" is information
-                and has to stay outside it.
+                The frame is a separate element from the art because it clips:
+                the hover zoom scales the art inside it, and the corners have to
+                stay put while it does. The art itself carries `aria-hidden`,
+                so nothing a reader needs may go inside it.
               */}
               <div class="game-shot">
                 <Art />
-                <span class="game-status" data-status={game.status}>
+              </div>
+
+              <div class="game-card-head">
+                <h2 class="game-card-title">
+                  <a href={localizePath(`/games/${game.slug}/`, lang)} class="entry-link stretch">
+                    {copy.items[id].name}
+                  </a>
+                </h2>
+                <span class="pill-status" data-status={game.status}>
                   {copy.status[game.status]}
                 </span>
               </div>
 
-              <h2 class="project-title">
-                <a href={localizePath(`/games/${game.slug}/`, lang)} class="entry-link stretch">
-                  {copy.items[id].name}
-                </a>
-              </h2>
-
-              <p class="mt-2.5 text-muted">{copy.items[id].tagline}</p>
+              <p class="game-card-tagline">{copy.items[id].tagline}</p>
             </li>
           );
         })

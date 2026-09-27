@@ -3,24 +3,30 @@
  * A showcase, not a list: the first project takes a card of its own, the rest
  * share a row of three.
  *
- * The featured card is the largest object on the page - the title at display
- * size, the tagline that says what the thing is, the description, and the full
- * summary stack in an inset beside it. That inset is as close as this section
- * gets to a picture, and it is an honest one: six technology names with their
- * marks say more about what the system is than a screenshot of an upload form
- * would.
+ * Every card has a picture, and it is an honest one: the project's own request
+ * drawn small (FlowMini.astro) - the same flow its page opens on, every node
+ * named in the reader's language with its real marks beside it - rather than
+ * a screenshot of an upload form. The featured card sets it large beside the
+ * title, the tagline and the description, left to right with its packets
+ * running from load; the three smaller cards draw it as a vertical spine and
+ * run theirs when the card is picked up.
  *
  * Order comes from `site.projects`, so which project is featured is decided
  * where the projects are, not here. Each card links to the project's own page
  * under /projects/, where the architecture, the results and the grouped stack
- * live.
+ * live. The project index (ProjectIndex.astro) repeats these two card shapes
+ * on purpose, so a project looks the same wherever it is listed; the rules for
+ * both are in src/styles/project.css.
  */
-import { ArrowRight, ArrowUpRight } from '@lucide/astro';
+import { LayoutGrid } from '@lucide/astro';
 import type { Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
 import { site } from '../site';
+import FlowMini from './FlowMini.astro';
+import MarkTile from './MarkTile.astro';
 import Section, { type SectionTone } from './Section.astro';
 import TechIcon from './TechIcon.astro';
+import '../styles/project.css';
 
 interface Props {
   lang: Lang;
@@ -34,6 +40,10 @@ const [featured, ...rest] = site.projects;
 const featuredCopy = dict.projects.items[featured.id];
 const featuredPage = localizePath(`/projects/${featured.slug}/`, lang);
 
+/* The spaced hyphen the copy uses as a dash, kept on the line with the word
+   before it - see `keep` in ProjectDetail.astro. */
+const keep = (text: string) => text.replace(/ ([:;!?]|-(?= ))/g, '\u00a0$1');
+
 /** Live and source, dropping whichever has no URL yet. */
 const outboundLinks = (links: { live?: string; source?: string }) =>
   [
@@ -44,61 +54,51 @@ const outboundLinks = (links: { live?: string; source?: string }) =>
 const featuredLinks = outboundLinks(featured.links);
 ---
 
-<Section id="projects" label={dict.projects.label} width="projects" tone={tone}>
+<Section id="projects" label={dict.projects.label} tone={tone}>
   <a slot="aside" href={localizePath('/projects/', lang)} class="cta-ghost">
+    <LayoutGrid class="size-[1rem] shrink-0" aria-hidden="true" />
     {dict.projects.all}
-    <ArrowRight class="size-[0.95rem] shrink-0" aria-hidden="true" />
   </a>
 
   {/*
     `stretch` makes the whole card the target while the accessible name stays
     the title alone; the outbound links inside are lifted above it with
-    `above`, or they would be covered by it.
+    `above`, or they would be covered by it. The picture comes first in the
+    markup so a phone shows it at the top of the card; it is `aria-hidden`
+    whole, so the order changes nothing a screen reader hears.
   */}
-  <article class="card card-hover project-featured reveal">
-    <div class="project-featured-grid">
-      <div>
-        <p class="tag">{featured.year}</p>
+  <article class="card card-hover work-feature reveal">
+    <FlowMini lang={lang} project={featured} loop="always" class="work-pic" />
 
-        <h3 class="project-featured-title">
-          <a href={featuredPage} class="entry-link stretch">{featuredCopy.title}</a>
-        </h3>
+    <div class="work-feature-text">
+      <p class="work-year">{featured.year}</p>
 
-        <p class="project-tagline">{featuredCopy.tagline}</p>
+      <h3 class="work-feature-title">
+        <a href={featuredPage} class="entry-link stretch">{featuredCopy.title}</a>
+      </h3>
 
-        <p class="measure mt-5 text-muted">{featuredCopy.description}</p>
+      <p class="work-tagline">{keep(featuredCopy.tagline)}</p>
 
-        <p class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
-          <span class="link">{dict.projects.view}</span>
-          {
-            featuredLinks.map((link) => (
-              <a href={link.href} target="_blank" rel="noopener" class="link above">
-                {link.label}
-                <ArrowUpRight class="ml-1 inline size-[0.9rem] align-[-0.05em]" aria-hidden="true" />
-              </a>
-            ))
-          }
-        </p>
-      </div>
+      <p class="work-desc">{keep(featuredCopy.description)}</p>
 
-      <div class="inset">
-        <p class="stack-label">{dict.projects.detail.stack}</p>
-
-        <ul class="mt-3 flex flex-wrap gap-2">
-          {
-            featured.tech.map((tech) => (
-              <li class="chip">
-                <TechIcon name={tech} class="chip-icon" />
-                {tech}
-              </li>
-            ))
-          }
-        </ul>
-      </div>
+      <p class="work-more">
+        <span class="link">{dict.projects.view}</span>
+        {
+          featuredLinks.map((link) => (
+            <a href={link.href} target="_blank" rel="noopener" class="link above">
+              {link.label}
+            </a>
+          ))
+        }
+      </p>
     </div>
+
+    <ul class="work-marks">
+      {featured.tech.map((tech) => <MarkTile name={tech} as="li" />)}
+    </ul>
   </article>
 
-  <ul class="project-grid">
+  <ul class="work-row">
     {
       rest.map((project) => {
         const copy = dict.projects.items[project.id];
@@ -106,39 +106,41 @@ const featuredLinks = outboundLinks(featured.links);
         const links = outboundLinks(project.links);
 
         return (
-          <li class="card card-hover project reveal-item">
-            <div>
-              <p class="tag">{project.year}</p>
+          <li class="card card-hover work-card reveal-item">
+            <FlowMini lang={lang} project={project} />
 
-              <h3 class="project-title">
+            <div class="work-card-body">
+              <p class="work-year">{project.year}</p>
+
+              <h3 class="work-card-title">
                 <a href={page} class="entry-link stretch">
                   {copy.title}
                 </a>
               </h3>
 
-              <p class="mt-2.5 text-[15px] text-muted">{copy.description}</p>
-            </div>
+              <p class="work-desc">{keep(copy.description)}</p>
 
-            <div class="project-aside">
-              {project.tech.length > 0 && (
-                <ul class="project-tags">
-                  {project.tech.map((tech) => (
-                    <li class="tag">
-                      <TechIcon name={tech} class="tag-icon" />
-                      {tech}
-                    </li>
+              <div class="work-foot">
+                {project.tech.length > 0 && (
+                  <ul class="work-tags">
+                    {project.tech.map((tech) => (
+                      <li class="tag">
+                        <TechIcon name={tech} class="tag-icon" />
+                        {tech}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                <p class="work-more">
+                  <span class="link">{dict.projects.view}</span>
+                  {links.map((link) => (
+                    <a href={link.href} target="_blank" rel="noopener" class="link above">
+                      {link.label}
+                    </a>
                   ))}
-                </ul>
-              )}
-
-              <p class="flex flex-wrap items-center gap-x-5 gap-y-1 text-[15px]">
-                <span class="link">{dict.projects.view}</span>
-                {links.map((link) => (
-                  <a href={link.href} target="_blank" rel="noopener" class="link above">
-                    {link.label}
-                  </a>
-                ))}
-              </p>
+                </p>
+              </div>
             </div>
           </li>
         );

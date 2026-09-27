@@ -1,0 +1,30 @@
+---
+/**
+ * One technology as a tile: its mark large, its name under it.
+ *
+ * A component rather than markup repeated in the hero, Skills and a project's
+ * stack, because the tile needs `--brand` on itself - not only on the icon - so
+ * that its hover can tint the tile in the mark's own colour. See `.mark-tile`
+ * in global.css.
+ *
+ * `as` lets a list render it as its `<li>`, which keeps `.reveal-item`'s
+ * nth-child stagger counting the tiles themselves.
+ */
+import { brandStyle, type TechName } from '../tech';
+import TechIcon from './TechIcon.astro';
+
+interface Props {
+  name: TechName;
+  as?: 'li' | 'div';
+  class?: string;
+  style?: string;
+}
+
+const { name, as: Tag = 'div', class: className, style }: Props = Astro.props;
+const brand = brandStyle(name);
+---
+
+<Tag class:list={['mark-tile', className]} style={[brand, style].filter(Boolean).join(';') || undefined}>
+  <TechIcon name={name} class="mark-tile-icon" />
+  <span class="mark-tile-name">{name}</span>
+</Tag>

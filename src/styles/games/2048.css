@@ -37,24 +37,33 @@
    * bold text threshold and what these are. The two pale ones and the 2048
    * itself take the ink instead.
    */
-  --g2048-tray: #d8d4c9;
-  --g2048-cell: #e5e1d8;
+  /*
+   * The tray and its sixteen slots, in the site's own cool greys rather than
+   * the warm beige they were: on the paper ground and in a white stage, beige
+   * read as a stain. The tray is a step darker than the slots so the grid is
+   * drawn by the tray showing between them.
+   */
+  --g2048-tray: #cfd5df;
+  --g2048-cell: #e2e6ed;
 
   /* A tile is a piece resting on the tray, and the tray is a well cut into
-     the page. Both are quiet - two shadows this size across sixteen elements
+     the stage. Both are quiet - two shadows this size across sixteen elements
      is the difference between pieces and coloured rectangles, and anything
      heavier turns the board into a pile of buttons. */
   --g2048-tile-lift:
-    0 1px 2px color-mix(in oklab, #14161a 12%, transparent),
-    0 4px 14px color-mix(in oklab, #14161a 8%, transparent);
-  --g2048-tray-inset: inset 0 2px 7px color-mix(in oklab, #14161a 9%, transparent);
+    0 1px 2px color-mix(in oklab, #14161a 14%, transparent),
+    0 4px 14px color-mix(in oklab, #1a2470 10%, transparent);
+  --g2048-tray-inset: inset 0 2px 7px color-mix(in oklab, #14161a 10%, transparent);
 
   --g2048-low-fg: #14161a;
   --g2048-on-dark: #ffffff;
   --g2048-t11-fg: #14161a;
 
-  --g2048-t1: #faf8f3;
-  --g2048-t2: #f2dfaf;
+  /* Paper for a 2 and a real sand for a 4: the two had been cream and pale
+     yellow, close enough that the smallest pair on the board was read by its
+     digit rather than its colour. */
+  --g2048-t1: #fbfaf6;
+  --g2048-t2: #f3d690;
   --g2048-t3: #1c74c8;
   --g2048-t4: #2331c8;
   --g2048-t5: #5320cc;
@@ -71,23 +80,28 @@
   /*
    * The ramp again, on a dark ground.
    *
-   * The two pale steps become greys, because paper on a dark board reads as
-   * the brightest thing on it and the smallest tile should be the quietest.
-   * The chromatic steps are lifted rather than re-picked: the same sequence,
-   * bright enough to hold against the tray instead of against paper.
+   * The two pale steps go dark, because paper on a dark board reads as the
+   * brightest thing on it and the smallest tile should be the quietest: a 2
+   * is a slate a clear step above its slot, and a 4 keeps its sand as a
+   * dimmed one, so the pair is told apart by colour here too - it was two
+   * greys one shade apart. The chromatic steps are lifted rather than
+   * re-picked: the same sequence, bright enough to hold against the tray.
+   *
+   * The tray is darker than the stage it sits in, so the board is a well in
+   * both themes rather than a slab that vanishes into a dark page.
    */
-  --g2048-tray: #131820;
-  --g2048-cell: #1d2430;
+  --g2048-tray: #090c12;
+  --g2048-cell: #1a1f29;
 
   --g2048-tile-lift:
     0 1px 2px color-mix(in oklab, #000 45%, transparent),
     0 6px 18px color-mix(in oklab, #000 30%, transparent);
-  --g2048-tray-inset: inset 0 2px 9px color-mix(in oklab, #000 38%, transparent);
+  --g2048-tray-inset: inset 0 2px 9px color-mix(in oklab, #000 50%, transparent);
 
-  --g2048-low-fg: #e8ebf0;
+  --g2048-low-fg: #eef0f4;
 
-  --g2048-t1: #303844;
-  --g2048-t2: #46505f;
+  --g2048-t1: #3a4455;
+  --g2048-t2: #6a5b3c;
   --g2048-t3: #2e86d9;
   --g2048-t4: #3341dc;
   --g2048-t5: #6430de;
@@ -137,106 +151,157 @@
     --g2048-glide: cubic-bezier(0.16, 0.84, 0.28, 1);
     --g2048-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-    max-width: 36rem;
-    margin-inline: auto;
+    /*
+     * The board's width, off the screen's height as well as its width.
+     *
+     * ⚠️ **A board whose bottom row is under the fold is one you play blind**,
+     * and at 1440x900 this one was: 576 pixels wide under 417 of head. The
+     * height term is the room left under the compact head and the stage's
+     * padding - `--game-reserve`, shared by every game in shared.css - so the
+     * whole board is on screen when the page opens. 22rem is the floor a short
+     * laptop screen stops at rather than shrinking the tiles to buttons, and
+     * `100vw - 30rem` keeps it inside its column beside the menu on the
+     * narrowest screen that sets the two side by side.
+     *
+     * Stacked, on a phone or a tablet, the board is as wide as the stage
+     * allows up to 36rem, and the height term there only stops a landscape
+     * phone from putting half the board below the fold.
+     */
+    --g2048-size: min(100%, 36rem, max(20rem, 100svh - 17rem));
   }
 
-  .g2048-bar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.6rem;
-    margin-bottom: clamp(0.75rem, 2vw, 1.1rem);
+  @media (min-width: 64rem) {
+    .g2048 {
+      --g2048-size: min(44rem, 100vw - 30rem, max(22rem, 100svh - var(--game-reserve)));
+    }
   }
 
   /*
-   * A figure with its label above it. Narrow, because the two of them sit
-   * beside the controls and the board is what the eye should land on.
+   * The ladder: every tile the game is played towards, 2 to 2048, in the
+   * ramp's own colours, lit as far as the biggest tile on the board.
+   *
+   * It is the column beside the board's `.game-fill`, and the one thing there
+   * worth the room: the figures say how many points, this says how far. The
+   * rungs not reached yet are empty slots in the board's own cell colour, so
+   * the ladder reads as a second, smaller board filling up rather than as a
+   * legend. 2048 is two rungs wide - the aim, and the reason eleven rungs
+   * make two even rows of six.
+   *
+   * Stacked, under the board, it is a strip of twelve where the stage is wide
+   * enough and two rows of six on a phone, square either way. Beside the
+   * board it is two rows of six stretched to whatever height the board
+   * leaves - see the side rules below.
    */
-  .g2048-meter {
-    position: relative;
-    min-width: 5.5rem;
-    border: 1px solid var(--site-hairline);
-    border-radius: var(--site-radius);
-    background-color: var(--site-card);
-    padding: 0.45rem 0.8rem 0.5rem;
-    text-align: center;
+  .g2048-ladder {
+    container-name: g2048-ladder;
+    container-type: inline-size;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 0.75rem;
   }
 
-  .g2048-meter-label {
-    display: block;
-    font-size: 0.6875rem;
-    line-height: 1.3;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--site-muted);
+  .g2048-rungs {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: clamp(0.35rem, 0.8vw, 0.55rem);
   }
 
-  .g2048-meter-value {
-    display: block;
+  .g2048-rung {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    border-radius: 12px;
     font-stretch: 112%;
-    font-weight: 660;
-    font-size: 1.25rem;
+    font-weight: 680;
+    font-size: clamp(0.8125rem, 4.2cqi, 1.75rem);
     font-variant-numeric: tabular-nums;
-    letter-spacing: -0.03em;
-    line-height: 1.2;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    transition:
+      background-color 320ms var(--site-ease),
+      color 320ms var(--site-ease);
+  }
+
+  .g2048-rung[data-tier='11'] {
+    grid-column: span 2;
+    aspect-ratio: auto;
+  }
+
+  /* Not reached yet: an empty slot. Three classes so it beats the tier's own
+     colour, which is on the rung from the start so a rung lights by losing
+     this rule rather than by gaining a second copy of the ramp. 2048 keeps a
+     trace of its gold while it is still the aim. */
+  .g2048-ladder .g2048-rung:not([data-reached]) {
+    background-color: var(--g2048-cell);
+    color: var(--site-muted);
+    box-shadow: none;
+  }
+
+  .g2048-ladder .g2048-rung[data-tier='11']:not([data-reached]) {
+    background-color: color-mix(in oklab, var(--g2048-t11) 26%, var(--g2048-cell));
+    color: var(--site-fg);
+  }
+
+  /* Reached: a piece resting on the tray, with the board's own lift, so a
+     paper 2 on the white stage still reads as a tile rather than a gap. */
+  .g2048-rung[data-reached] {
+    box-shadow: var(--g2048-tile-lift);
+  }
+
+  /* The biggest tile on the board arrives on the ladder the way a new tile
+     arrives on the board: from small, on the spring. */
+  .g2048-rung[data-top] {
+    animation: g2048-rung 420ms var(--g2048-spring);
+  }
+
+  @container g2048-ladder (min-width: 36rem) {
+    .g2048-rungs {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+
+    .g2048-rung {
+      font-size: clamp(0.8125rem, 2.2cqi, 1.5rem);
+    }
+  }
+
+  /* Beside the board: three across and four down, stretched to the height
+     the board leaves in the narrow menu column (the ladder is a size container
+     there, see `.game-fill` in shared.css) - the 2048 takes two of the last
+     row, which is what makes eleven rungs a full grid. Six across left each
+     rung a tall sliver in a column 21rem wide. The numbers are sized off both
+     sides of the ladder so a short laptop and a tall monitor both get digits
+     that fill their rung. */
+  @media (min-width: 64rem) {
+    .g2048 .game-stage-side .g2048-rungs {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-rows: repeat(4, minmax(0, 1fr));
+    }
+
+    .g2048 .game-stage-side .g2048-rung {
+      aspect-ratio: auto;
+      font-size: clamp(0.9375rem, min(8cqi, 9cqb), 1.75rem);
+    }
   }
 
   /*
-   * The points a move was worth, floating off the score.
+   * The points a move was worth, floating up off the score.
    *
    * Without it the total jumps and nothing on screen says why. It is taken out
-   * of flow so the card cannot change size under it, which would shift the
-   * board every time a merge landed.
+   * of flow so the figure's block cannot change size under it, which would
+   * shift the board every time a merge landed. Its block is the cobalt one, so
+   * the accent here is white.
    */
   .g2048-gain {
     position: absolute;
-    inset: auto 0 0.35rem 0;
-    font-stretch: 110%;
-    font-weight: 640;
-    font-size: 1rem;
+    right: clamp(1rem, 1.6vw, 1.35rem);
+    bottom: clamp(0.8rem, 1.6vw, 1.35rem);
+    font-stretch: 112%;
+    font-weight: 680;
+    font-size: clamp(1rem, 1.6vw, 1.375rem);
     font-variant-numeric: tabular-nums;
     color: var(--site-accent);
     pointer-events: none;
     animation: g2048-gain 620ms var(--site-ease) forwards;
-  }
-
-  .g2048-actions {
-    display: flex;
-    gap: 0.5rem;
-    margin-left: auto;
-  }
-
-  .g2048-actions .cta-ghost {
-    padding: 0.55rem 0.9rem;
-    font-size: 0.875rem;
-  }
-
-  .g2048-actions .cta-ghost:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-
-  .g2048-actions .cta-ghost:disabled:hover {
-    border-color: var(--site-hairline);
-    color: inherit;
-    transform: none;
-  }
-
-  /* Two figures and two controls do not fit on one line on a small phone, so
-     the controls take the next row rather than being squeezed. `.g2048-bar`
-     wraps, and this is what makes them wrap together instead of one at a time. */
-  @media (max-width: 30rem) {
-    .g2048-actions {
-      width: 100%;
-      margin-left: 0;
-    }
-
-    .g2048-actions .cta-ghost {
-      flex: 1;
-      justify-content: center;
-      padding: 0.55rem 0.7rem;
-    }
   }
 
   /*
@@ -244,13 +309,18 @@
    *
    * `container-type` is what lets a tile's number be sized off the board
    * rather than off the viewport, so the digits hold their proportion whether
-   * the board is 320px on a phone or capped at 36rem on a desktop. A vw-based
-   * clamp cannot do that: past the cap the board stops growing and the numbers
-   * would carry on.
+   * the board is 320px on a phone or 44rem on a big screen. A vw-based clamp
+   * cannot do that: the board's size follows the screen's height as much as
+   * its width, and the numbers would not.
+   *
+   * ⚠️ The width is explicit rather than a stretch: in the side-by-side stage
+   * the board sits in an `auto` column, and an inline-size container sized by
+   * its column would collapse to nothing.
    */
   .g2048-board {
     position: relative;
     container-type: inline-size;
+    width: var(--g2048-size);
     aspect-ratio: 1;
     border-radius: var(--site-radius-card);
     background-color: var(--g2048-tray);
@@ -494,8 +564,9 @@
     border-radius: var(--site-radius-card);
     padding: var(--site-pad);
     text-align: center;
-    background-color: color-mix(in oklab, var(--g2048-tray) 82%, transparent);
-    backdrop-filter: blur(4px);
+    /* Nearly opaque rather than frosted: the board under a blur was the one
+       piece of glass on the site, and the question needs no board behind it. */
+    background-color: color-mix(in oklab, var(--g2048-tray) 93%, transparent);
     animation: g2048-panel 240ms var(--site-ease);
   }
 
@@ -507,14 +578,14 @@
   .g2048-panel-title {
     font-stretch: 116%;
     font-weight: 680;
-    font-size: clamp(1.75rem, 8cqi, 2.75rem);
+    font-size: clamp(2rem, 8cqi, 3.25rem);
     line-height: 1.05;
     letter-spacing: -0.04em;
   }
 
   .g2048-panel-body {
     max-width: 24rem;
-    font-size: clamp(0.9375rem, 3.4cqi, 1.0625rem);
+    font-size: clamp(1rem, 3.4cqi, 1.1875rem);
     line-height: 1.5;
     color: var(--site-muted);
   }
@@ -543,7 +614,11 @@
     border-radius: 1.4cqi;
     background-color: var(--g2048-cell);
     font-stretch: 110%;
-    font-weight: 680;
+    /* 700 or more, with the floor on the four-digit step below, keeps every
+       figure in the WCAG's large-bold class: white on the ramp's chromatic
+       steps is 3.5:1 or better, which clears large text and not small, and a
+       phone's third-width card had set 1024 at 16px. */
+    font-weight: 720;
     font-size: 7cqi;
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.04em;
@@ -561,22 +636,15 @@
   .game-art-cell[data-tier='10'],
   .game-art-cell[data-tier='11'],
   .game-art-cell[data-tier='12'] {
-    font-size: 4.5cqi;
-  }
-
-  .g2048-hint {
-    margin-top: clamp(0.75rem, 2vw, 1.1rem);
-    font-size: 0.875rem;
-    text-align: center;
-    color: var(--site-muted);
+    font-size: max(4.5cqi, 1.1875rem);
   }
 }
 
 /*
  * 2048 motion.
  *
- * Outside the components layer with the rest of the keyframes, and reduced
- * along with everything else by the block at the end of this file - a merge
+ * Outside the layer, as every keyframe on the site is, and reduced along with
+ * everything else by the blanket rule at the end of global.css - a merge
  * still has to be visible without motion, so the pop and the appear are
  * shortened rather than removed.
  */
@@ -605,6 +673,16 @@
   }
 
   100% {
+    scale: 1;
+  }
+}
+
+@keyframes g2048-rung {
+  from {
+    scale: 0.55;
+  }
+
+  to {
     scale: 1;
   }
 }

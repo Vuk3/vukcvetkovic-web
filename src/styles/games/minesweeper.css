@@ -30,14 +30,24 @@
    * to relearn it, but navy becomes violet and the last two are separated by
    * weight of colour rather than by hue.
    *
-   * A covered cell lifts and an open one is flat, which is the whole of the
-   * board's depth. The original drew bevels, which is a picture of a button
-   * from a system that no longer exists.
+   * A covered cell is raised and an open one is flat ground, which is the
+   * whole of the board's depth: a light top edge and a darker bottom one on
+   * every covered cell, the least that reads as a key rather than a square.
+   * The original drew full bevels, which is a picture of a button from a
+   * system that no longer exists; flat squares on a flat tray, which is what
+   * this was, read as a placeholder table until the first press.
+   *
+   * The greys are the site's own cool ones. Beige in a white stage on the
+   * paper ground read as a stain.
    */
-  --ms-tray: #cfcbc0;
-  --ms-cell: #e9e6de;
-  --ms-cell-hover: #f4f2ed;
-  --ms-open: #ddd8ce;
+  --ms-tray: #c9d0db;
+  --ms-cell: #eef1f6;
+  --ms-cell-hover: #f9fafc;
+  --ms-open: #dce1e9;
+  --ms-raise:
+    inset 0 1px 0 color-mix(in oklab, #ffffff 90%, transparent),
+    inset 0 -2px 0 color-mix(in oklab, #1a2230 13%, transparent),
+    0 1px 1px color-mix(in oklab, #1a2230 10%, transparent);
 
   --ms-flag: #c8202b;
   --ms-mine: #14161a;
@@ -67,10 +77,14 @@
    * The eight numbers are lifted rather than re-picked: the same sequence,
    * bright enough to hold against a dark cell instead of against paper.
    */
-  --ms-tray: #11161d;
-  --ms-cell: #252d39;
-  --ms-cell-hover: #313a48;
-  --ms-open: #171d26;
+  --ms-tray: #090c12;
+  --ms-cell: #262e3b;
+  --ms-cell-hover: #313b4a;
+  --ms-open: #141922;
+  --ms-raise:
+    inset 0 1px 0 color-mix(in oklab, #ffffff 8%, transparent),
+    inset 0 -2px 0 color-mix(in oklab, #000000 35%, transparent),
+    0 1px 1px color-mix(in oklab, #000000 40%, transparent);
 
   --ms-flag: #ff6b74;
   --ms-mine: #e8ebf0;
@@ -132,47 +146,139 @@
        is one number in one file. What is here is only what applies for the
        frame before the script runs. */
     --ms-wave: 14ms;
+
+    /*
+     * The rows of the board, which the height of a cell is worked out from.
+     *
+     * ⚠️ **A copy of `LEVELS` in games/minesweeper/game.ts**, by the level the
+     * module writes to `data-level`. The module writes the columns onto the
+     * board itself as `--ms-cols` and has no rows to give, and changing what
+     * it writes would be changing the game for the sake of its chrome.
+     */
+    --ms-rows: 9;
+
+    /* The tray's padding, named because a cell's size is worked out from what
+       is left inside it - see `.ms-board`. */
+    --ms-tray-pad: clamp(0.5rem, 1.2vw, 0.75rem);
+
+    /*
+     * What sits over the board in the stacked stage: the HUD and the gap under
+     * it, which the board's height term takes off the screen as well as
+     * `--game-reserve`. Measured, not derived:
+     *
+     * - On a phone, the picker, the figures and the buttons, a row each: 220
+     *   pixels at 390. The height term rarely decides there: `--ms-floor`
+     *   keeps it from going under 2rem, and the phone's width is under that,
+     *   since under a phone's head and three rows of HUD there is no height
+     *   to give.
+     * - From 40rem, a tablet, the same three rows at 768 (236 pixels), and
+     *   the floor goes, so the height left is what a cell gets. A wider
+     *   tablet puts the picker and the figures on one row and the board
+     *   comes out a little smaller than it could be, never cut off.
+     * - From 64rem - expert, the one board stacked on a desktop - the HUD is
+     *   one strip of 99 pixels and a gap of 20. The reserve keeps 74 under a
+     *   board for the stage's foot and some air, and a stacked board needs
+     *   only the surface's padding and a little air there (35), since the
+     *   hint comes after it: 99 + 20 - 74 + 35 is 80.
+     */
+    --ms-hud: 13.75rem;
+    --ms-floor: 2rem;
+
+    /* The smallest a stacked cell gets on a desktop - see `.ms-board`. */
+    --ms-min: 1.55rem;
+  }
+
+  @media (min-width: 40rem) {
+    .ms {
+      --ms-hud: 14.75rem;
+      --ms-floor: 0px;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .ms {
+      --ms-hud: 5rem;
+    }
+  }
+
+  /* With a mouse a cell is not a fingertip's target, and the classic's own
+     were 16 pixels: 20 is what lets expert's sixteen rows open whole under a
+     1280x800 laptop's head, where 25 put the last two under the fold. An
+     iPad on its side is 64rem wide as well, and keeps the touch floor. */
+  @media (min-width: 64rem) and (pointer: fine) {
+    .ms {
+      --ms-min: 1.25rem;
+    }
+  }
+
+  .ms:is([data-level='intermediate'], [data-level='expert']) {
+    --ms-rows: 16;
   }
 
   /*
    * The three boards.
    *
    * A fieldset of real radios, so the label is the control: `:has(:checked)`
-   * paints the chosen one and `:has(:focus-visible)` draws the ring the
-   * clipped input cannot draw for itself.
+   * marks the chosen one and `:has(:focus-visible)` draws the ring the
+   * clipped input cannot draw for itself. The HUD's first item: a row of its
+   * own on a phone, the head of a single strip with the figures and the
+   * buttons from 40rem, and beside the board a list of three (see the side
+   * rules below).
+   *
+   * Each board is a tile: its name, its size and its mines, and beside the
+   * board a drawing of the field. The chosen one takes the accent as an edge
+   * and a tint rather than a fill - the Mines figure is the stage's cobalt
+   * block, and two of them together read as one shout.
    */
   .ms-levels {
     display: flex;
-    gap: 4px;
-    width: fit-content;
-    margin: 0 auto clamp(0.75rem, 2vw, 1.1rem);
-    border: 1px solid var(--site-hairline);
-    border-radius: var(--site-radius-pill);
-    background-color: var(--site-inset);
-    padding: 4px;
+    /* A width rather than a flex basis, so it is a full row in the phone's
+       HUD, which wraps, and a full-width line in the side one, which is a
+       column - where a basis of 100% would be a height. */
+    width: 100%;
+    min-width: 0;
+    gap: 0.5rem;
+    margin: 0;
+    border: 0;
+    padding: 0;
   }
 
+  /* The name over its figures, and a tile as wide as its words and never
+     narrower. Shared out evenly, three tiles squeezed "Intermediate" to
+     "Interme / diate" in a third of a tablet. */
   .ms-level {
-    border-radius: var(--site-radius-pill);
-    padding: 0.4rem 0.95rem;
-    font-size: 0.875rem;
-    font-weight: 560;
-    line-height: 1.2;
-    color: var(--site-muted);
+    display: grid;
+    flex: 1 1 auto;
+    /* `min-content` and not 0, or the tile's own minimum is its padding and
+       `min-width` below means nothing. */
+    grid-template-columns: minmax(min-content, 1fr);
+    grid-template-areas:
+      'name'
+      'meta';
+    align-content: center;
+    row-gap: 0.25rem;
+    min-width: min-content;
+    min-height: 3.25rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-inner);
+    background-color: var(--site-card);
+    padding: 0.6rem 1rem;
     cursor: pointer;
     transition:
-      background-color 160ms var(--site-ease),
-      color 160ms var(--site-ease);
+      border-color 200ms var(--site-ease),
+      background-color 200ms var(--site-ease),
+      transform 250ms var(--site-ease-out);
   }
 
   .ms-level:hover {
-    color: var(--site-fg);
+    border-color: color-mix(in oklab, var(--site-accent) 45%, var(--site-hairline));
+    transform: translateY(-2px);
   }
 
   .ms-level:has(:checked) {
-    background-color: var(--site-card);
-    box-shadow: var(--site-lift);
-    color: var(--site-fg);
+    border-color: var(--site-accent);
+    background-color: color-mix(in oklab, var(--site-accent) 9%, var(--site-card));
+    box-shadow: inset 0 0 0 1px var(--site-accent);
   }
 
   .ms-level:has(:focus-visible) {
@@ -180,90 +286,263 @@
     outline-offset: 2px;
   }
 
-  .ms-bar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.6rem;
-    margin-bottom: clamp(0.75rem, 2vw, 1.1rem);
-  }
-
-  /* Three figures rather than 2048's two, and narrower for it. They are a
-     readout and not the subject: the board is what the eye should land on. */
-  .ms-meter {
-    min-width: 4.75rem;
-    border: 1px solid var(--site-hairline);
-    border-radius: var(--site-radius);
-    background-color: var(--site-card);
-    padding: 0.45rem 0.7rem 0.5rem;
-    text-align: center;
-  }
-
-  .ms-meter-label {
-    display: block;
-    font-size: 0.6875rem;
-    line-height: 1.3;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--site-muted);
-  }
-
-  .ms-meter-value {
-    display: block;
-    font-stretch: 112%;
-    font-weight: 660;
-    font-size: 1.25rem;
-    /* The clock changes every second and the mine count on every flag. Without
-       tabular figures both twitch sideways as the digits change width. */
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.03em;
+  .ms-level-name {
+    grid-area: name;
+    min-width: 0;
+    font-stretch: 108%;
+    font-weight: 640;
+    font-size: 1.0625rem;
     line-height: 1.2;
+    letter-spacing: -0.01em;
   }
 
-  .ms-actions {
+  .ms-level:has(:checked) .ms-level-name {
+    color: var(--site-accent);
+  }
+
+  .ms-level-meta {
+    grid-area: meta;
     display: flex;
-    gap: 0.5rem;
-    margin-left: auto;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9375rem;
+    font-weight: 540;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+    color: var(--site-muted);
+    white-space: nowrap;
   }
 
-  .ms-actions .cta-ghost {
-    padding: 0.55rem 0.9rem;
-    font-size: 0.875rem;
+  .ms-level-mines {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .ms-level-mines svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  /* The drawing is for the column beside the board, where there is height
+     for it. */
+  .ms-level-map {
+    display: none;
+    grid-area: map;
+  }
+
+  /*
+   * On a phone the name goes over the board's size, centred, and the mines
+   * are left to the Mines figure right under the picker. Three tiles share
+   * 330 pixels, and with both figures under it "Fortgeschritten" came out as
+   * "Fortgeschrit-ten". Measured at 360 in German the three still share one
+   * row; `wrap` is only for a screen narrower than that.
+   */
+  @media (max-width: 40rem) {
+    .ms-levels {
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .ms-level {
+      justify-items: center;
+      padding: 0.55rem 0.55rem 0.6rem;
+      text-align: center;
+    }
+
+    .ms-level-name {
+      font-size: 0.9375rem;
+    }
+
+    .ms-level-meta {
+      font-size: 0.8125rem;
+    }
+
+    .ms-level-mines {
+      display: none;
+    }
+  }
+
+  /*
+   * Stacked from 40rem - a tablet, and expert on a desktop - the picker is
+   * the head of one strip with the figures and the buttons rather than a row
+   * across the stage of its own. As a full row, three tiles a third of 80rem
+   * wide each held a name and a size in their first 150 pixels, and the
+   * strip under them pushed expert's last row 110 pixels under the fold at
+   * 1440x900. Here the tiles are the width of their words and the three
+   * groups share one line wherever it holds them: all four languages at
+   * 1440, and the buttons wrap to a line of their own on a narrower screen.
+   *
+   * Side by side, the HUD is a column and the fill's flex is shared.css's,
+   * which wins on specificity, so this basis is only ever a width.
+   */
+  @media (min-width: 40rem) {
+    .ms-levels {
+      flex: 1 1 22rem;
+      width: auto;
+      min-width: min-content;
+    }
+  }
+
+  /* At 360 the expanded bold name was what pushed "Experte" onto a row of
+     its own: normal width and a step smaller keeps the three on one line. */
+  @media (max-width: 24rem) {
+    .ms-level {
+      padding-inline: 0.45rem;
+    }
+
+    .ms-level-name {
+      font-stretch: 100%;
+      font-size: 0.875rem;
+    }
+  }
+
+  /*
+   * Beside the board, the picker is the column's `.game-fill`: it takes the
+   * height the board leaves (it is a size container there, see shared.css),
+   * and the three boards are a list of three rows sharing it - the words on
+   * the left, and a drawing of the field on the right in whatever the row has
+   * left. Three tiles across the narrow column were a third of 21rem each:
+   * "Beginn / er" and "Interme / diate" broke over two lines, and the mines
+   * ran out of the tile.
+   *
+   * ⚠️ **The three drawings are to one scale.** A cell is the largest that
+   * lets the widest board's columns and the tallest board's rows fit a box -
+   * `--ms-span-c` and `--ms-span-r`, from LEVELS in the component - so expert
+   * fills its box and beginner comes out a third of its width beside it,
+   * which is the difference between the three boards said without a word.
+   * That needs every box the same size, so the rows share their columns
+   * through a subgrid: the words take the width of the longest name in the
+   * language ("Fortgeschritten", "Intermédiaire"), and the three drawings
+   * share what is left.
+   *
+   * Named, because the rows ask it how tall it is: shared.css sets only the
+   * container's type, so the name survives.
+   */
+  @media (min-width: 64rem) {
+    .ms .game-stage-side:not(:has([data-stage-wide]:checked)) .ms-levels {
+      container-name: ms-levels;
+      display: grid;
+      grid-template-columns: max-content minmax(0, 1fr);
+      grid-template-rows: repeat(3, minmax(0, 1fr));
+      gap: 0.5rem;
+    }
+
+    /* Rows of 1fr round the two lines of words, so the words sit in the
+       middle and the drawing spans the whole height of the tile. */
+    .ms .game-stage-side:not(:has([data-stage-wide]:checked)) .ms-level {
+      grid-column: 1 / -1;
+      grid-template-columns: subgrid;
+      grid-template-rows: minmax(0, 1fr) auto auto minmax(0, 1fr);
+      column-gap: 1rem;
+      row-gap: 0.2rem;
+      min-width: 0;
+      min-height: 0;
+      padding: 0.5rem 0.85rem 0.5rem 1rem;
+    }
+
+    .ms .game-stage-side:not(:has([data-stage-wide]:checked)) .ms-level-name {
+      grid-area: 2 / 1;
+    }
+
+    .ms .game-stage-side:not(:has([data-stage-wide]:checked)) .ms-level-meta {
+      grid-area: 3 / 1;
+    }
+
+    .ms .game-stage-side:not(:has([data-stage-wide]:checked)) .ms-level-map {
+      container: ms-map / size;
+      grid-area: 1 / 2 / -1 / 3;
+      display: grid;
+      place-content: center end;
+      min-height: 0;
+    }
+  }
+
+  /*
+   * A short column - a small laptop, or the buttons on two lines in French -
+   * leaves the rows no height for a drawing and two lines of words: each row
+   * is then one line, the name on the left and the board's size and mines at
+   * the right, where the drawing was. The floor is shared.css's 8rem, three
+   * of these lines and the gaps between them.
+   *
+   * ⚠️ The selectors repeat the side rules' in full: a container query adds
+   * nothing to specificity, and one class here lost to the rules above.
+   */
+  @container ms-levels (max-height: 11rem) {
+    .ms .game-stage-side:not(:has([data-stage-wide]:checked)) .ms-level {
+      grid-template-rows: minmax(0, 1fr);
+      align-items: center;
+    }
+
+    .ms .game-stage-side:not(:has([data-stage-wide]:checked)) .ms-level-name {
+      grid-area: 1 / 1;
+    }
+
+    .ms .game-stage-side:not(:has([data-stage-wide]:checked)) .ms-level-meta {
+      grid-area: 1 / 2;
+      justify-self: end;
+    }
+
+    .ms .game-stage-side:not(:has([data-stage-wide]:checked)) .ms-level-map {
+      display: none;
+    }
+  }
+
+  /* The field: covered cells on the tray, drawn as a grid of lines rather
+     than as cells, since expert would be 480 elements to say "wide". */
+  .ms-level-field {
+    /* Less the rim on both sides and the closing line, so expert's field and
+       its rim fill the box exactly. */
+    --cell: min((100cqi - 7px) / var(--ms-span-c), (100cqb - 7px) / var(--ms-span-r));
+
+    display: block;
+    width: calc(var(--c) * var(--cell) + 1px);
+    height: calc(var(--r) * var(--cell) + 1px);
+    border-radius: 3px;
+    background-color: var(--ms-cell);
+    /* The tray's rim, so the field reads as the board it stands for rather
+       than as a faint hatching on the tile. Inside the box, by the margin. */
+    margin: 3px;
+    box-shadow: 0 0 0 3px var(--ms-tray);
+    background-image:
+      linear-gradient(to right, var(--ms-tray) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--ms-tray) 1px, transparent 1px);
+    background-size: var(--cell) var(--cell);
+  }
+
+  /* A tile too short to draw a field worth reading shows its words alone. */
+  @container ms-map (max-height: 2.25rem) {
+    .ms-level-field {
+      display: none;
+    }
   }
 
   /* Flag mode is on. It is a mode the board is in, so it has to be visible
-     from the board rather than only from the button. */
-  /* By its action and not by being a pressed button: the sound switch beside
-     it is pressed too whenever the sound is on, and it is not a flag. */
+     from the board rather than only from the button. By its action and not
+     by being a pressed button: the sound switch beside it is pressed too
+     whenever the sound is on, and it is not a flag. */
   .ms-actions [data-action='flagging'][aria-pressed='true'] {
     border-color: var(--ms-flag);
     background-color: color-mix(in oklab, var(--ms-flag) 12%, transparent);
     color: var(--ms-flag);
   }
 
-  @media (max-width: 34rem) {
-    .ms-actions {
-      width: 100%;
-      margin-left: 0;
-    }
-
-    .ms-actions .cta-ghost {
-      flex: 1;
-      justify-content: center;
-      padding: 0.55rem 0.7rem;
-    }
-
-    .ms-meter {
-      flex: 1;
-      min-width: 0;
-    }
-  }
-
   /* The panels cover the board, so they are positioned against the frame and
      not against the scroller - a panel inside a scrolling box would slide off
-     the top of an expert board along with it. */
-  .ms-frame {
+     the top of an expert board along with it.
+
+     ⚠️ Stretched in the stacked stage, not centred like the stage's other
+     boards: the scroller inside is the query container its cells measure
+     against, and a container that shrinks to fit its content has no content
+     width to give them - an expert board came out 24 pixels wide, its own
+     padding. Two classes, because shared.css comes after this file and its
+     `.game-board` would win a tie. Side by side, shared.css centres the slot
+     on the play surface with a stronger selector, and from 64rem the
+     scroller is not a container in either layout - see the desktop rules on
+     `.ms-board`. */
+  .ms .ms-frame {
     position: relative;
+    justify-self: stretch;
   }
 
   /*
@@ -282,9 +561,36 @@
     container-type: inline-size;
     overflow-x: auto;
     overscroll-behavior-x: contain;
-    border-radius: var(--site-radius-card);
+    border-radius: var(--site-radius-inner);
     background-color: var(--ms-tray);
-    padding: clamp(0.5rem, 1.5vw, 0.75rem);
+    padding: var(--ms-tray-pad);
+  }
+
+  /*
+   * The edge that has more board past it fades out, so an expert board on a
+   * phone says it scrolls: its last visible column used to be cut clean at
+   * the tray's edge, which reads as the end of the board.
+   *
+   * Driven by the scroller's own position, so at the start only the right
+   * edge fades, at the end only the left, and a board that fits has no
+   * scroll timeline at all and no fade. Not motion - it moves nothing and is
+   * the same under reduced motion - and where scroll timelines are missing
+   * the board is simply unmasked.
+   */
+  @supports (animation-timeline: scroll()) {
+    .ms-scroll {
+      mask-image: linear-gradient(
+        to right,
+        transparent,
+        black var(--ms-fade-start),
+        black calc(100% - var(--ms-fade-end)),
+        transparent
+      );
+      animation-name: ms-edges;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(self inline);
+    }
   }
 
   /*
@@ -295,15 +601,142 @@
    * unreachable. Auto margins resolve to zero when there is no free space, so
    * the board centres while it fits and simply overflows to the right when it
    * does not.
+   *
+   * **A cell is as large as the width allows and as the height allows, between
+   * two bounds it may not leave.** The width term is the stage. The height
+   * term is the screen less `--game-reserve` - everything on screen that is
+   * not the board, shared by every game in shared.css - less the HUD over the
+   * board (`--ms-hud`, on `.ms`) and the tray's own padding, so the board the
+   * page opens on is whole on screen where the screen is tall enough for it:
+   * a 16 by 16 on a tablet held upright is 27 pixel cells, all on screen.
+   *
+   * On a phone the height term never goes under 2rem (`--ms-floor`), where
+   * the phone's own width is what decides. The ceiling is for a tablet, the
+   * one stacked screen where the stage is wider than the board: at 2.6rem a
+   * 9 by 9 sat in a tray with 130 pixels of bare grey either side.
    */
   .ms-board {
-    --ms-size: clamp(1.55rem, calc(100cqi / var(--ms-cols) - var(--ms-gap)), 2.4rem);
+    --ms-size: clamp(
+      1.55rem,
+      min(
+        100cqi / var(--ms-cols) - var(--ms-gap),
+        max(
+          var(--ms-floor),
+          (100svh - var(--game-reserve) - var(--ms-hud) - 2 * var(--ms-tray-pad)) / var(--ms-rows) -
+            var(--ms-gap)
+        )
+      ),
+      3.25rem
+    );
 
     display: grid;
     grid-template-columns: repeat(var(--ms-cols), var(--ms-size));
     gap: var(--ms-gap);
     width: fit-content;
     margin-inline: auto;
+  }
+
+  /*
+   * From 64rem the tray hugs the board in both layouts - the board sits on a
+   * lighter play surface, the way 2048's does - so the scroller is no longer
+   * a query container, and the width term comes off the viewport instead.
+   * ⚠️ An inline-size container as wide as its content is sized as though it
+   * were empty. `--ms-column` is the room worked out from the screen: the
+   * shell's measure, less the stage's edge and padding and the surface's
+   * margin or padding on both sides.
+   *
+   * Stacked - expert, 30 by 16, too wide to share the stage with a column -
+   * the surface is the slot itself, the full width of the stage under a HUD
+   * of one strip. Grey tray from edge to edge round a board 830 pixels wide
+   * read as a slab with a board in it. The height term is the one above with
+   * the desktop's `--ms-hud`, and the floor is `--ms-min`.
+   */
+  @media (min-width: 64rem) {
+    .ms .ms-scroll {
+      container-type: normal;
+      width: fit-content;
+      max-width: 100%;
+      margin-inline: auto;
+    }
+
+    .ms .ms-board {
+      --ms-column: calc(
+        min(100vw - 2 * var(--site-pad), var(--site-shell)) - 2px - 2 * var(--stage-pad) -
+          2 * var(--stage-gap)
+      );
+      --ms-size: clamp(
+        var(--ms-min),
+        min(
+          (100svh - var(--game-reserve) - var(--ms-hud) - 2 * var(--ms-tray-pad)) / var(--ms-rows) -
+            var(--ms-gap),
+          (var(--ms-column) - 2 * var(--ms-tray-pad)) / var(--ms-cols) - var(--ms-gap)
+        ),
+        3.25rem
+      );
+    }
+
+    .ms .game-stage-side:has([data-stage-wide]:checked) > .ms-frame {
+      border-radius: var(--site-radius-inner);
+      background-color: var(--game-surface, var(--site-inset));
+      padding: var(--stage-gap);
+    }
+
+    /* The sound switch is its icon in the strip, as it is on a phone and
+       beside a board. With its word the strip ran 17 pixels past a 1280
+       stage in English, and the buttons took a second line - 60 pixels the
+       board then did not get. The word stays in the accessible name. */
+    .ms .game-stage-side:has([data-stage-wide]:checked) .game-actions .game-sound {
+      flex: 0 0 auto;
+      padding-inline: 0.9rem;
+    }
+
+    .ms .game-stage-side:has([data-stage-wide]:checked) .game-sound-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+
+  /*
+   * Beside the HUD, for the two square boards: the board centred in the
+   * stage's wide column, on the play surface shared.css draws there. The
+   * column is the room above less the gap and `--hud-w` of the menu beside
+   * it. The gap is shared.css's clamp written again, since the stage does
+   * not name it - the one number here to move if that one moves.
+   *
+   * The height term is `--game-reserve` less the tray's padding, so the page
+   * opens on the board whole: at 1440x900 a 16 by 16 of 30 pixel cells, 553
+   * pixels square. The width term only decides on a tall narrow screen - an
+   * iPad held upright, 1024 wide and side by side.
+   *
+   * The floor is what decides intermediate on a short laptop: sixteen rows
+   * at 800 pixels are 24 each, and at 1.5rem the last row still ends above
+   * the fold there. ⚠️ **The ceiling is what decides beginner**, on every
+   * desktop: 2.75rem is 44 pixel cells, a 9 by 9 of 447 pixels. Sized by the
+   * height like the others, beginner came out 56 pixel cells at 1440x900 and
+   * read as too big, nine keys the size of a thumbnail.
+   *
+   * The selector is the one the stage uses to decide it is side by side, so
+   * the two can never disagree: see `data-stage-wide` in shared.css.
+   */
+  @media (min-width: 64rem) {
+    .ms:not(:has([data-stage-wide]:checked)) .ms-board {
+      --ms-column: calc(
+        min(100vw - 2 * var(--site-pad), var(--site-shell)) - 2px - 2 * var(--stage-pad) -
+          clamp(1rem, 1.6vw, 1.5rem) - var(--hud-w) - 2 * var(--stage-gap)
+      );
+      --ms-size: clamp(
+        1.5rem,
+        min(
+          (100svh - var(--game-reserve) - 2 * var(--ms-tray-pad)) / var(--ms-rows) - var(--ms-gap),
+          (var(--ms-column) - 2 * var(--ms-tray-pad)) / var(--ms-cols) - var(--ms-gap)
+        ),
+        2.75rem
+      );
+    }
   }
 
   /* A row has to exist for the grid roles to mean anything and must not exist
@@ -349,7 +782,7 @@
   .ms-cell.is-flag,
   .ms-cell.is-wrong {
     background-color: var(--ms-cell);
-    box-shadow: var(--site-lift);
+    box-shadow: var(--ms-raise);
     cursor: pointer;
   }
 
@@ -507,11 +940,13 @@
     align-items: center;
     justify-content: center;
     gap: 0.6rem;
-    border-radius: var(--site-radius-card);
+    /* The tray's own corner, since the panel lies exactly over it. */
+    border-radius: var(--site-radius-inner);
     padding: var(--site-pad);
     text-align: center;
-    background-color: color-mix(in oklab, var(--ms-tray) 84%, transparent);
-    backdrop-filter: blur(4px);
+    /* Nearly opaque rather than frosted, for 2048's reason: glass over the
+       board is a tell, and the answer needs no board showing through it. */
+    background-color: color-mix(in oklab, var(--ms-tray) 93%, transparent);
     animation: ms-panel 240ms var(--site-ease);
   }
 
@@ -523,14 +958,14 @@
   .ms-panel-title {
     font-stretch: 116%;
     font-weight: 680;
-    font-size: clamp(1.75rem, 7vw, 2.75rem);
+    font-size: clamp(2rem, 7vw, 3.25rem);
     line-height: 1.05;
     letter-spacing: -0.04em;
   }
 
   .ms-panel-body {
     max-width: 28rem;
-    font-size: clamp(0.9375rem, 3vw, 1.0625rem);
+    font-size: clamp(1rem, 3vw, 1.1875rem);
     line-height: 1.5;
     color: var(--site-muted);
   }
@@ -541,13 +976,6 @@
     justify-content: center;
     gap: 0.6rem;
     margin-top: 0.7rem;
-  }
-
-  .ms-hint {
-    margin-top: clamp(0.75rem, 2vw, 1.1rem);
-    font-size: 0.875rem;
-    text-align: center;
-    color: var(--site-muted);
   }
 }
 
@@ -572,6 +1000,32 @@
   to {
     opacity: 1;
     scale: 1;
+  }
+}
+
+/* The two fading edges, registered so they can be interpolated at all: an
+   unregistered custom property flips from one value to the other halfway. */
+@property --ms-fade-start {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --ms-fade-end {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@keyframes ms-edges {
+  from {
+    --ms-fade-start: 0px;
+    --ms-fade-end: 3rem;
+  }
+
+  to {
+    --ms-fade-start: 3rem;
+    --ms-fade-end: 0px;
   }
 }
 

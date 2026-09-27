@@ -1,4 +1,5 @@
 ---
+import { Braces, CloudCog, Layers, ScanSearch } from '@lucide/astro';
 import type { Lang } from '../i18n/types';
 import { getDict } from '../i18n/utils';
 import Section, { type SectionTone } from './Section.astro';
@@ -10,22 +11,39 @@ interface Props {
 
 const { lang, tone } = Astro.props;
 const dict = getDict(lang);
+
+/*
+ * One outline per service, in the order the dictionaries list them: the API,
+ * the whole feature, the cloud, the review. By position because the services
+ * are an array of prose with no ids - the four locales keep the same order, and
+ * a fifth service would simply render without an icon until one is added here.
+ */
+const icons = [Braces, Layers, CloudCog, ScanSearch];
 ---
 
 {/*
-  Four cards, two up. The label is a sentence rather than a word ("What I can
-  help with"), which the section head takes in its stride - it is a heading, so
-  it wraps and sets at the same size as every other one.
+  Four tiles in one row on a desktop, two by two on a tablet. Each opens with a
+  large icon, which is what gives four blocks of text something to be read by
+  at a glance - four identical title-and-paragraph cards were the plainest thing
+  on the old page.
 */}
-<Section id="services" label={dict.services.label} width="wide" tone={tone}>
-  <ul class="svc-grid">
+<Section id="services" label={dict.services.label} tone={tone}>
+  <ul class="svc-bento">
     {
-      dict.services.items.map((item) => (
-        <li class="card reveal-item">
-          <h3 class="svc-title">{item.title}</h3>
-          <p class="mt-2.5 text-muted">{item.description}</p>
-        </li>
-      ))
+      dict.services.items.map((item, index) => {
+        const Icon = icons[index];
+        return (
+          <li class="card svc-card reveal-item">
+            {Icon && (
+              <span class="svc-icon" aria-hidden="true">
+                <Icon />
+              </span>
+            )}
+            <h3 class="svc-title">{item.title}</h3>
+            <p class="svc-body">{item.description}</p>
+          </li>
+        );
+      })
     }
   </ul>
 </Section>

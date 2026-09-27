@@ -76,141 +76,116 @@
    * See src/games/accretion/game.ts and src/components/Accretion.astro.
    */
 
-  .acc {
-    max-width: 32.5rem;
-    margin-inline: auto;
-  }
-
-  .acc-bar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.6rem;
-    margin-bottom: clamp(0.75rem, 2vw, 1.1rem);
-  }
-
-  .acc-meter {
-    position: relative;
-    min-width: 5.25rem;
-    border: 1px solid var(--site-hairline);
-    border-radius: var(--site-radius);
-    background-color: var(--site-card);
-    padding: 0.45rem 0.8rem 0.5rem;
-    text-align: center;
-  }
-
-  .acc-meter-label {
-    display: block;
-    font-size: 0.6875rem;
-    line-height: 1.3;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--site-muted);
-  }
-
-  .acc-meter-value {
-    display: block;
-    font-stretch: 112%;
-    font-weight: 660;
-    font-size: 1.25rem;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.03em;
-    line-height: 1.2;
-  }
-
-  /* Out of flow, so the card cannot change size under it and shift the well
-     every time a merge lands. */
+  /*
+   * The first figure's points, floating up off it as a merge lands.
+   *
+   * Without it a chain of four merges reads as the score jumping on its own.
+   * Out of flow, so the figure cannot change size under it and shift the
+   * well; in the figure's corner, where 2048 floats its own. The figure is
+   * the cobalt one, so the accent here is white.
+   */
   .acc-gain {
     position: absolute;
-    inset: auto 0 0.35rem 0;
-    font-stretch: 110%;
-    font-weight: 640;
-    font-size: 1rem;
+    right: clamp(0.85rem, 1.6vw, 1.35rem);
+    bottom: clamp(0.8rem, 1.6vw, 1.35rem);
+    font-stretch: 112%;
+    font-weight: 680;
+    font-size: clamp(1rem, 1.6vw, 1.375rem);
     font-variant-numeric: tabular-nums;
     color: var(--site-accent);
     pointer-events: none;
     animation: acc-gain 700ms var(--site-ease) forwards;
   }
 
-  /* What is coming. The one readout that is a picture rather than a figure,
-     because the answer is an object and not a number. */
-  .acc-next {
-    display: grid;
-    grid-template-columns: auto auto;
+  /*
+   * What is coming: the body itself, as tall as the digits beside it, and
+   * its name after it at a size that fits a third of the HUD. The figure's
+   * value slot sets the size, so the body and the name follow the figures
+   * up from a phone to a desktop without a rule of their own.
+   */
+  .acc-next-value {
+    display: flex;
     align-items: center;
-    gap: 0 0.55rem;
-    border: 1px solid var(--site-hairline);
-    border-radius: var(--site-radius);
-    background-color: var(--site-card);
-    padding: 0.4rem 0.8rem 0.45rem;
-  }
-
-  /* Centred, like the two figures beside it, now that the three share the row
-     evenly: left-aligned in a stretched box, the planet and its name drifted
-     apart. */
-  .acc-next {
-    justify-content: center;
-  }
-
-  .acc-next .acc-meter-label {
-    grid-column: 1 / -1;
-    text-align: center;
+    gap: 0.3em;
+    min-width: 0;
   }
 
   .acc-next-body {
-    width: 1.4rem;
-    height: 1.4rem;
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
   }
 
   .acc-next-name {
-    font-stretch: 108%;
-    font-weight: 620;
-    font-size: 0.9375rem;
-    line-height: 1.2;
+    min-width: 0;
+    font-size: 0.62em;
+    font-stretch: 110%;
+    font-weight: 660;
+    letter-spacing: -0.02em;
   }
 
   /*
-   * Two rows at every width: the three readouts share the first and the
-   * buttons the second, which is the shape the bar always had on a phone.
+   * ⚠️ **On a phone the name goes under the body.** Three figures share 330
+   * pixels there, 75 of content each, and "Mercury" beside a body is 95 of
+   * them in every language - side by side it ran out of its block and into
+   * the next. Under it, the Next figure is a line taller than its two
+   * neighbours, and the row stretches them to match with their numbers at
+   * the foot, where the stacked figures always put them.
    *
-   * ⚠️ **On purpose rather than by wrapping.** The well is a 30rem column, and
-   * with the sound switch beside New game the French, German and Serbian bars
-   * no longer fitted on one line while the English one did - so the same page
-   * came out in two different shapes depending on the length of a word.
-   * Measured: without the switch the widest bar was ten pixels short of the
-   * edge. One layout for all four is the honest answer to that.
+   * The two numbers come down a step there as well: a good game runs to
+   * four figures and a separator, and "2,480" is 80 pixels at the stacked
+   * size against 75 of room, 72 at this one.
    */
-  .acc-bar > .acc-meter,
-  .acc-bar > .acc-next {
-    flex: 1;
-  }
+  @media (max-width: 30rem) {
+    .acc-next-value {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.3rem;
+    }
 
-  .acc-actions {
-    display: flex;
-    gap: 0.5rem;
-    width: 100%;
-  }
+    .acc-next-body {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
 
-  .acc-actions .cta-ghost {
-    flex: 1;
-    justify-content: center;
-    padding: 0.55rem 0.9rem;
-    font-size: 0.875rem;
+    .acc-next-name {
+      font-size: 0.9375rem;
+    }
+
+    .acc .game-stat-value {
+      font-size: 1.5rem;
+    }
   }
 
   /*
    * The well.
    *
-   * `--acc-ratio` and `--acc-line` come from the module's own constants
+   * `--acc-ratio` and `--acc-line-at` come from the module's own constants
    * through an inline style, so the box and the simulation cannot disagree
    * about the shape of the well or where the line across it sits.
+   *
+   * Its width is the one number the page sets, and the height follows from
+   * the ratio. Stacked, it is the stage's width - a phone's well is the full
+   * width of the screen less the stage's padding - and it stops growing at
+   * whatever keeps the whole well on screen once the stage is scrolled under
+   * the header (8rem: the header capsule and the stage's padding), so a
+   * tablet held upright does not get a well taller than itself. 14rem is the
+   * floor a phone on its side stops at. Beside the column it is sized off
+   * the screen's height instead - see the side rules at the end.
+   *
+   * An inline-size container, so the panel's type is a share of the well
+   * rather than of the screen. That is safe here because the width is always
+   * given, never taken from the content.
    */
   .acc-field {
     position: relative;
+    container-type: inline-size;
+    width: min(100%, max(14rem, (100svh - 8rem) * var(--acc-ratio)));
     aspect-ratio: var(--acc-ratio);
     overflow: hidden;
     border: 1px solid var(--acc-well-edge);
-    border-radius: var(--site-radius-card);
+    /* A block inside the stage, at the radius a block inside a tile takes. */
+    border-radius: var(--site-radius-inner);
     /*
      * The ground the sky is laid on: the band's glow and three soft pools of
      * colour under the nebulae. The stars and the clouds themselves are the
@@ -461,7 +436,7 @@
    * then clouds, then the lit ball underneath.
    *
    * Every length in here is a percentage, which is what makes one rule work for
-   * a body 15px across in the sequence and 230px across in the well.
+   * a body 15px across on the games index and 230px across in the well.
    */
   .acc-body {
     --acc-sphere: radial-gradient(
@@ -485,7 +460,7 @@
      * of the work, following the curve rather than fading straight down.
      *
      * All of it in percentages, because `box-shadow` takes none and these have
-     * to hold from a 15px body in the sequence to a 230px one in the field.
+     * to hold from a 15px body on the games index to a 230px one in the field.
      */
     /*
      * ⚠️ **The specular is split out of the stack**, because one surface on
@@ -532,8 +507,8 @@
      * ⚠️ **`position` belongs here and nowhere else below.**
      *
      * It is `relative` so that Saturn's ring, an absolutely positioned
-     * pseudo-element, anchors to its own planet in the readout and in the
-     * sequence under the board. Inside the field `.acc-world .acc-body`
+     * pseudo-element, anchors to its own planet in the Next figure and in
+     * the sequence beside the well. Inside the field `.acc-world .acc-body`
      * overrides it to `absolute`, and that works only because this selector is
      * one class and that one is two.
      *
@@ -574,8 +549,8 @@
    * against the light, which is the opposite of where a beginner puts it.
    *
    * Only the two largest get all three. At the fifteen pixels a Moon is drawn
-   * at in the sequence under the board, the small ones are one gradient with a
-   * dark floor and a bright rim in a single stop list.
+   * at on the games index, the small ones are one gradient with a dark floor
+   * and a bright rim in a single stop list.
    */
   .acc-body[data-tier='0'] {
     --acc-tint: var(--acc-p0);
@@ -1097,7 +1072,8 @@
   /* ⚠️ The glow is in pixels and therefore only in the well, where a Sun is
      always about the same size. `box-shadow` takes no percentages at all, so a
      glow that scaled with the element is not available - and one sized for the
-     well would swallow the 15px Sun in the sequence under the board. */
+     well would swallow the Sun in the sequence beside it and the 15px one on
+     the games index. */
   .acc-world .acc-body[data-tier='9'] {
     /* Three rings rather than two, and the outer one is red: a corona is not
        the disc's own colour spread thinner, it cools outwards the same way the
@@ -1260,6 +1236,15 @@
     animation: acc-nova 780ms var(--site-ease) forwards;
   }
 
+  /*
+   * The panel at the end, over the well.
+   *
+   * Nearly opaque rather than frosted, as on every game page: glass over the
+   * board is a tell, and at 93% the pile under it no longer shows through as
+   * a second, blurred well. The type is sized off the well (`.acc-field` is
+   * its container), so the panel is the same share of what it covers on a
+   * phone and beside the column.
+   */
   .acc-panel {
     position: absolute;
     inset: 0;
@@ -1268,14 +1253,15 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.6rem;
-    border-radius: var(--site-radius-card);
-    padding: var(--site-pad);
+    gap: 0.65rem;
+    border-radius: inherit;
+    padding: clamp(1rem, 7cqi, 2rem);
     text-align: center;
 
     /*
      * ⚠️ **The palette is re-declared here rather than the buttons restyled**,
-     * which is the move `.panel` makes and the note on it explains.
+     * which is the move `.panel` makes and the note on it explains - and from
+     * the same tokens, so the panel's words are the ink panel's words.
      *
      * It has more cause than `.panel` does. The well is dark space in both
      * themes - a sky that answers the theme toggle is not a sky - so in the
@@ -1284,12 +1270,13 @@
      * and then took the panel's near-white text on top of it, so New game was a
      * button that was not there.
      *
-     * The other two games need none of this. Their trays follow the theme, so
-     * the tokens are already right over them.
+     * The other games need none of this. Their trays follow the theme, so the
+     * tokens are already right over them.
      */
-    --site-fg: #f2f4f8;
+    color-scheme: dark;
+    --site-fg: var(--site-panel-fg);
     --site-bg: var(--acc-well);
-    --site-muted: color-mix(in oklab, var(--site-fg) 74%, transparent);
+    --site-muted: var(--site-panel-muted);
     --site-card: color-mix(in oklab, var(--acc-well) 55%, transparent);
     --site-hairline: color-mix(in oklab, var(--site-fg) 26%, transparent);
     /* The dark-surface accent, in both themes: cobalt on a night sky is a
@@ -1297,8 +1284,7 @@
     --site-accent: var(--site-panel-accent);
 
     color: var(--site-fg);
-    background-color: color-mix(in oklab, var(--acc-well) 84%, transparent);
-    backdrop-filter: blur(4px);
+    background-color: color-mix(in oklab, var(--acc-well) 93%, transparent);
     animation: acc-panel 260ms var(--site-ease);
   }
 
@@ -1309,17 +1295,17 @@
   .acc-panel-title {
     font-stretch: 116%;
     font-weight: 680;
-    font-size: clamp(1.75rem, 9vw, 2.5rem);
+    font-size: clamp(2rem, 8cqi, 3.25rem);
     line-height: 1.05;
     letter-spacing: -0.04em;
   }
 
   .acc-panel-body {
-    max-width: 24rem;
-    font-size: clamp(0.9375rem, 3.4vw, 1.0625rem);
+    max-width: 26rem;
+    font-size: clamp(1rem, 3.4cqi, 1.1875rem);
     line-height: 1.5;
-    /* The panel's own muted, which is what the other two games write here too. */
     color: var(--site-muted);
+    text-wrap: pretty;
   }
 
   .acc-panel-actions {
@@ -1327,152 +1313,349 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.6rem;
-    margin-top: 0.7rem;
-  }
-
-  .acc-hint {
-    margin-top: clamp(0.75rem, 2vw, 1.1rem);
-    font-size: 0.875rem;
-    text-align: center;
-    color: var(--site-muted);
+    margin-top: 0.5rem;
   }
 
   /*
    * The sequence, which is the legend and the drawing at once.
    *
    * A merge game is unreadable until you know what becomes what, and this is
-   * the answer in one line. It fills in as the well climbs, so it doubles as
+   * the answer in one block. It fills in as the well climbs, so it doubles as
    * the only progress the game has.
+   *
+   * ⚠️ **A strip of the same night as the well, in both themes**, and for the
+   * reason the well is: the bodies are lit spheres, and on the white stage
+   * they read as stickers where on the dark they read as planets. So the
+   * palette is re-declared as `.acc-panel` does it, from the ink panel's
+   * tokens, and the label, its icon and the names all come out right with no
+   * rule of their own. Beside the well it is a second window onto the same
+   * sky; under it on a phone, the well's own foot.
+   *
+   * Named, because the rows below ask it how wide it is. Beside the well
+   * shared.css makes it a size container as well (`.game-fill`), and since it
+   * sets only the type the name survives, the way 2048's ladder keeps its.
    */
   .acc-chain {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.35rem 0.6rem;
-    margin-top: clamp(0.9rem, 2.4vw, 1.4rem);
+    container: acc-chain / inline-size;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 0.85rem;
+    border: 1px solid var(--acc-well-edge);
+    border-radius: var(--site-radius-inner);
+    background-color: var(--acc-well);
+    padding: clamp(0.85rem, 1.6vw, 1.25rem);
+
+    color-scheme: dark;
+    --site-fg: var(--site-panel-fg);
+    --site-muted: var(--site-panel-muted);
+    --site-card: var(--acc-well);
+    --site-accent: var(--site-panel-accent);
+
+    color: var(--site-fg);
   }
 
+  /*
+   * Ten across where the strip is wide enough for a name under every body,
+   * five by two where it is not. The names are the width that decides it:
+   * "Mercury", "Mercure" and "Neptune" at label size want 60 pixels each.
+   */
+  .acc-links {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.9rem 0.5rem;
+  }
+
+  @container acc-chain (min-width: 40rem) {
+    .acc-links {
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+    }
+  }
+
+  /*
+   * A step of the sequence: the body over its name, standing on the foot of
+   * its slot, so a row of them stands on one line and climbs from left to
+   * right the way the sizes do.
+   *
+   * `--acc-slot` is the Sun's size and the slot is the full width of the
+   * step and that tall, so a smaller body sits at its foot. `--acc-grow`,
+   * from the component, is a body's size in the game on a square root - the
+   * Moon a third of the Sun - and it is taken at under half its slope
+   * (`--acc-scale`, the Moon at 0.7), because the bodies are in a grid of
+   * equal cells: at the full slope a phone's Moon was 13 pixels and the first
+   * row of a two-row strip was five dots in five empty cells.
+   *
+   * Stacked, the slot is a share of the step's width (the step is an
+   * inline-size container); beside the well the step is a rung of a ladder
+   * and the slot is its height - see the side rules.
+   */
   .acc-link {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    /* Unreached steps are present but quiet: the sequence is a map of where
-       the game goes, and greying it out entirely would hide the map. */
-    opacity: 0.42;
+    --acc-slot: min(3.75rem, 78cqi);
+    --acc-scale: calc(0.55 + 0.45 * var(--acc-grow, 1));
+
+    container-type: inline-size;
+    display: grid;
+    /* The step's own width, however long the name under it: a name wider
+       than its column overflows both sides of it, centred, rather than
+       widening the track and running off to the right. */
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    justify-items: center;
+    align-content: end;
+    gap: 0.45rem;
+    min-width: 0;
+  }
+
+  .acc-chain-slot {
+    display: grid;
+    place-items: end center;
+    width: 100%;
+    height: var(--acc-slot);
+  }
+
+  /*
+   * Not reached yet: there, and dim. The sequence is a map of where the game
+   * goes, so every step stays on it; what a step waits for is its colour.
+   * Reached, it lands the way a body arrives in the well - from small, on the
+   * spring - so the step a merge has just opened is the one that moves.
+   */
+  .acc-chain-body {
+    width: calc(var(--acc-slot) * var(--acc-scale));
+    height: calc(var(--acc-slot) * var(--acc-scale));
+    opacity: 0.34;
     transition: opacity 320ms var(--site-ease);
   }
 
-  .acc-link[data-reached] {
+  .acc-link[data-reached] .acc-chain-body {
     opacity: 1;
   }
 
-  .acc-chain-body {
-    width: 0.95rem;
-    height: 0.95rem;
-    flex-shrink: 0;
+  @media (prefers-reduced-motion: no-preference) {
+    .acc-link[data-reached] .acc-chain-body {
+      animation: acc-reach 620ms var(--site-spring);
+    }
   }
 
   .acc-chain-name {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 560;
     line-height: 1.2;
+    white-space: nowrap;
     color: var(--site-muted);
+    transition: color 320ms var(--site-ease);
   }
 
   .acc-link[data-reached] .acc-chain-name {
     color: var(--site-fg);
   }
 
-  /*
-   * Wide screens: the well in the middle at the full height of the screen, and
-   * everything else beside it.
-   *
-   * ⚠️ **Height is what limits the well, not width.** Stacked, the bar and the
-   * well together were already the height of a laptop screen at 30rem, so the
-   * only way to a bigger well was to take the bar out from above it. The bar
-   * becomes the left-hand column and the sequence the right-hand one - the
-   * shape the genre's own game has - and the well is sized to the screen: the
-   * height the page has below the header, turned into a width through the
-   * well's own ratio, between the old 30rem and a cap.
-   *
-   * ⚠️ **Each side is one grid item, never several.** Placed one readout per
-   * row, the two columns shared their row heights, and the tall Next card on
-   * the right opened a gap between Score and Best on the left.
-   */
-  @media (min-width: 64rem) {
-    .acc {
-      display: grid;
-      grid-template-columns: minmax(8.5rem, 11rem) auto minmax(8.5rem, 11rem);
-      grid-template-rows: auto 1fr;
-      grid-template-areas:
-        'bar field chain'
-        'bar field hint';
-      justify-content: center;
-      align-items: start;
-      gap: 0.75rem clamp(1rem, 2vw, 1.75rem);
-      max-width: none;
-    }
-
-    .acc-bar {
-      grid-area: bar;
-      flex-direction: column;
-      align-items: stretch;
-      margin-bottom: 0;
-    }
-
-    .acc-bar > .acc-meter,
-    .acc-bar > .acc-next {
-      flex: none;
-    }
-
-    .acc-bar > .acc-next {
-      grid-template-columns: auto;
-      justify-items: center;
-      gap: 0.35rem;
-      padding: 0.6rem 0.8rem 0.7rem;
-    }
-
-    .acc-bar > .acc-next .acc-next-body {
-      width: 2.6rem;
-      height: 2.6rem;
-    }
-
-    .acc-field {
-      grid-area: field;
-      width: clamp(30rem, calc((100svh - 6rem) * (var(--acc-ratio))), 32.5rem);
-    }
-
-    /* Down the side rather than under the well, largest last, so the column
-       fills in from the top as the game climbs. */
-    .acc-chain {
-      grid-area: chain;
-      flex-direction: column;
-      flex-wrap: nowrap;
-      align-items: flex-start;
-      gap: 0.5rem;
-      margin-top: 0.35rem;
-    }
-
-    .acc-chain-body {
-      width: 1.35rem;
-      height: 1.35rem;
-    }
-
+  /* A phone's strip is five steps of 54 pixels, and "Neptune" or "Mercure"
+     at the label size is 57: a step down keeps a gap between neighbours. */
+  @container acc-chain (max-width: 24rem) {
     .acc-chain-name {
       font-size: 0.8125rem;
     }
+  }
 
-    .acc-hint {
-      grid-area: hint;
-      margin-top: 0.5rem;
-      text-align: start;
-      text-wrap: pretty;
+  /*
+   * Beside the menu, on a wide screen.
+   *
+   * ⚠️ **Height is what limits the well, not width.** It is tall and narrow
+   * (1200 by 1650), and the brief is that the whole of it is on screen when
+   * the page opens. So its height is the room the page leaves a board,
+   * `100svh - var(--game-reserve)` from shared.css, plus 3.5rem, and its
+   * width follows from the ratio: at 1440x900 a well 612 pixels tall and 445
+   * wide, its foot at 882. The 3.5rem is the room the reserve keeps under a
+   * board for the stage's foot: the well takes it, so its smallest bodies
+   * are a tenth larger, and only the stage's own lower edge is left below the
+   * fold. 22rem is the floor a short laptop stops at, 2048's own, and 52rem
+   * the cap on a tall monitor.
+   *
+   * ⚠️ **The selectors repeat shared.css's side selector in full**,
+   * `:not(:has(…))` and all, though no radio on this page can switch the side
+   * layout off: shared.css comes after this file, so a rule here that changes
+   * one of its declarations has to outrank its selector, not tie it.
+   */
+  @media (min-width: 64rem) {
+    .acc {
+      --acc-h: clamp(22rem, 100svh - var(--game-reserve) + 3.5rem, 52rem);
+    }
+
+    .acc .game-stage-side > .acc-field {
+      width: calc(var(--acc-h) * var(--acc-ratio));
+    }
+
+    /*
+     * The board column is space. The well takes under half of the column's
+     * width, and on the stage's grey the rest read as a sheet of paper with a
+     * window cut in it, so the play surface is the well's own night - in both
+     * themes, for the well's reason - with a glow in two of the nebulae's
+     * colours rising behind the well.
+     *
+     * ⚠️ **On its own night the well needs walls that show**, because they
+     * are walls: every body in it rolls against them. The 1px edge that
+     * parts a dark well from a light page vanished here, so beside the menu
+     * the edge takes some starlight and the well throws a halo, and it reads
+     * as a lit column standing in the dark rather than a slightly lighter box.
+     */
+    .acc .game-stage-side {
+      --game-surface: var(--acc-well);
+    }
+
+    .acc .game-stage-side::before {
+      background-image:
+        radial-gradient(34% 64% at 50% 42%, color-mix(in oklab, var(--acc-nebula-a) 26%, transparent), transparent),
+        radial-gradient(46% 42% at 50% 96%, color-mix(in oklab, var(--acc-nebula-b) 20%, transparent), transparent);
+    }
+
+    .acc .game-stage-side > .acc-field {
+      border-color: color-mix(in oklab, var(--acc-star-cool) 30%, var(--acc-well-edge));
+      box-shadow:
+        0 0 0 1px color-mix(in oklab, var(--acc-well) 60%, transparent),
+        0 0 2.5rem -0.25rem color-mix(in oklab, var(--acc-nebula-a) 50%, transparent);
+    }
+
+    /*
+     * What is coming, on a row of its own under the two numbers: its label at
+     * one end and the answer at the other, the planet large and its name
+     * beside it. Three figures across a column 18 to 21.5rem wide left each a
+     * block 70 pixels wide, and neither "Mercury" nor "Als Nächstes" fits
+     * one. As a line it is 56 pixels tall, where the name under the planet
+     * made a block of 100.
+     */
+    .acc .game-stage-side:not(:has([data-stage-wide]:checked)) .acc-next {
+      flex-basis: 100%;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.75rem;
+      padding-block: 0.5rem;
+    }
+
+    .acc .game-stage-side .acc-next-value {
+      gap: 0.55rem;
+    }
+
+    .acc .game-stage-side .acc-next-body {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+
+    .acc .game-stage-side .acc-next-name {
+      font-size: 1.1875rem;
+    }
+
+    /*
+     * The sequence, in the menu column: a ladder of two columns of five
+     * rungs, read down - the Moon to Earth, then Neptune to the Sun - each
+     * body beside its name.
+     *
+     * ⚠️ **A ladder, not a row.** Ten across a 300 pixel column made the
+     * bodies dots under ten names that ran into each other. Beside its body a
+     * name has a hundred pixels in every language, and the rung's height is
+     * the one thing the body answers to. Five by two, names under, is only
+     * the short column's arrangement (below): its steps are 50 pixels wide,
+     * so the bodies are held to the width and the names need a smaller size
+     * to keep clear of each other.
+     *
+     * A rung is a size container, so the slot is its height, up to 4.5rem on
+     * a tall monitor. Its content then counts for nothing towards the ladder,
+     * which is what the fill needs - see `.game-fill` in shared.css.
+     *
+     * The names stand off their slots by an eighth of the slot as well as the
+     * gap, because Saturn's ring reaches a quarter of a slot past it on the
+     * right: with the gap alone the ring ran into "Saturn" once the rungs were
+     * 64 pixels tall. In the slot's own units, so it holds at every height.
+     *
+     * ⚠️ **14rem is this fill's own floor**, over the 8rem every fill has: the
+     * label and five rungs 1.75rem tall. At 1024x768 and 1280x800 the room
+     * the well leaves under the figures is less than that, and the column
+     * becomes the taller side - the well stays whole, centred on its night.
+     */
+    .acc .game-stage-side:not(:has([data-stage-wide]:checked)) > .acc-chain {
+      min-height: 14rem;
+    }
+
+    .acc .game-stage-side .acc-links {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: repeat(5, minmax(0, 1fr));
+      grid-auto-flow: column;
+      gap: 0.3rem 0.75rem;
+    }
+
+    .acc .game-stage-side .acc-link {
+      --acc-slot: min(100cqb, 4.5rem);
+
+      container-type: size;
+      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr);
+      align-items: center;
+      justify-items: start;
+      align-content: stretch;
+      column-gap: 0.6rem;
+      min-height: 0;
+    }
+
+    .acc .game-stage-side .acc-chain-slot {
+      width: var(--acc-slot);
+      place-items: center;
+    }
+
+    .acc .game-stage-side .acc-chain-name {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-inline-start: calc(var(--acc-slot) * 0.14);
+      font-size: clamp(0.875rem, 0.4rem + 0.8vw, 1.0625rem);
     }
   }
 
+  /*
+   * Where the column is short - a laptop 800 pixels tall or less, under the
+   * figures and the buttons - five rungs are 23 pixels each, and a Moon of
+   * 16 is a dot. There the fill is wider than it is tall, and five by two
+   * gives the bodies the width instead: a Sun of about 40 over its name, the
+   * names at a size that keeps "Mercure" and "Neptune" clear of the step
+   * beside them. The steps stay size containers, so the slot is whichever
+   * of the step's width and its height over the name runs out first.
+   *
+   * ⚠️ The selectors repeat the side rules' in full: a container query adds
+   * nothing to specificity, so these win on coming later.
+   */
+  @container acc-chain (max-height: 15rem) {
+    .acc .game-stage-side .acc-links {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      grid-auto-flow: row;
+      gap: 0.5rem 0.35rem;
+    }
+
+    .acc .game-stage-side .acc-link {
+      --acc-slot: min(88cqi, 100cqb - 1.2rem, 4rem);
+
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr) auto;
+      justify-items: center;
+      row-gap: 0.2rem;
+    }
+
+    .acc .game-stage-side .acc-chain-slot {
+      width: 100%;
+      height: var(--acc-slot);
+      align-self: end;
+      place-items: end center;
+    }
+
+    .acc .game-stage-side .acc-chain-name {
+      max-width: none;
+      overflow: visible;
+      margin-inline-start: 0;
+      font-size: 0.8125rem;
+    }
+  }
+
+  /* The well's own flat night, as on the page. The glow it had from the top
+     was the gradient wash the redesign took out of every stage and still. */
   .game-art-acc {
-    background:
-      radial-gradient(120% 90% at 50% 0%, color-mix(in oklab, var(--acc-well) 78%, white) 0%, transparent 72%),
-      var(--acc-well);
+    background-color: var(--acc-well);
   }
 
   /*
@@ -1597,6 +1780,19 @@
 
   50% {
     opacity: 0.45;
+  }
+}
+
+/* A step of the sequence being reached: the body arrives from small on the
+   spring, as a new body arrives at the top of the well. `scale`, so it grows
+   about its own centre inside the slot. */
+@keyframes acc-reach {
+  from {
+    scale: 0.3;
+  }
+
+  to {
+    scale: 1;
   }
 }
 

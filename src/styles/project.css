@@ -1,0 +1,943 @@
+/*
+ * The projects: the homepage's Projects section, the /projects/ index and the
+ * project pages - everything but the request diagram, which brings its own
+ * (flow.css), and the small flow picture on the cards, which is scoped to
+ * FlowMini.astro.
+ *
+ * Imported by Projects.astro, ProjectIndex.astro and ProjectDetail.astro, so
+ * it is inlined into the home pages, the index and the project pages and
+ * nothing else.
+ *
+ * The layer order, the same line global.css opens with. See the note there:
+ * this file can land in a page ahead of global.css, and whichever stylesheet
+ * names the layers first is the one that orders them.
+ *
+ * ⚠️ For the same reason, a rule here that overrides a foundation class *on
+ * the same element* - a tile's padding, a mark tile's ground - is written
+ * with a compound selector (`.card.proj-group`, `.proj-mark > .mark-tile`).
+ * Both files put their rules in `components`, so at equal specificity the
+ * winner is whichever file the page happens to inline last.
+ */
+@layer properties, theme, base, components, games, utilities;
+
+@layer components {
+  /* ==== The cards: homepage and index ==================================== */
+
+  /*
+   * The featured project: one wide tile, the words on the left and the
+   * project's request drawn large on the right, with its stack under the
+   * drawing. On a phone it stacks in markup order - picture, words, stack.
+   *
+   * The split is 5:7 because the drawing needs the width: its row - four
+   * columns of words and the gutters between them - is drawn from 30rem of
+   * picture (FlowMini.astro), and 7 of 12 is 501px at a 1024 window, just
+   * over it. A wider text side would drop the featured card to the tall
+   * spine the cards of the row draw. The picture is its own frame, stretched
+   * to the text beside it with the drawing centred on its ground.
+   */
+  .work-feature {
+    display: grid;
+    gap: clamp(1.25rem, 2.4vw, 2rem);
+  }
+
+  @media (min-width: 64rem) {
+    .work-feature {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      grid-template-areas:
+        'text pic'
+        'text chips';
+      grid-template-rows: 1fr auto;
+      column-gap: clamp(2rem, 3.5vw, 3rem);
+    }
+
+    .work-feature > .work-feature-text {
+      grid-area: text;
+    }
+
+    .work-feature > .work-pic {
+      grid-area: pic;
+    }
+
+    .work-feature > .work-marks {
+      grid-area: chips;
+    }
+  }
+
+  .work-feature-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /*
+   * The stack under the drawing, as mark tiles rather than chips: a wrapping
+   * row whose tiles grow, so every row is full - six in one line beside the
+   * text on a desktop, and on a phone the last row widens to meet the edge
+   * instead of leaving ML.NET alone on a line of its own.
+   */
+  .work-marks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .work-marks > .mark-tile {
+    flex: 1 1 6rem;
+    border-color: transparent;
+    background-color: var(--site-inset);
+  }
+
+  /* The year: a date, not a technology, so it is not dressed as one of the
+     tags - the accent's tint, where the tags are hairline and muted. */
+  .work-year {
+    display: inline-flex;
+    align-self: flex-start;
+    border-radius: var(--site-radius-pill);
+    background-color: color-mix(in oklab, var(--site-accent) 11%, var(--site-card));
+    padding: 0.25rem 0.85rem;
+    font-size: 0.9375rem;
+    font-weight: 620;
+    line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+    color: var(--site-accent);
+  }
+
+  .work-feature-title {
+    margin-top: 1rem;
+    font-stretch: 118%;
+    font-weight: 700;
+    font-size: clamp(1.875rem, 3.2vw, 2.75rem);
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+    hyphens: auto;
+    overflow-wrap: break-word;
+  }
+
+  .work-tagline {
+    margin-top: 0.9rem;
+    font-stretch: 104%;
+    font-weight: 500;
+    font-size: clamp(1.1875rem, 1.6vw, 1.375rem);
+    line-height: 1.4;
+    letter-spacing: -0.015em;
+  }
+
+  .work-desc {
+    margin-top: 0.9rem;
+    color: var(--site-muted);
+  }
+
+  /*
+   * "Read the write-up", and the outbound links when a project has them. The
+   * write-up is a span, not a link: the whole card is already the link, and a
+   * second one to the same page would be announced twice.
+   */
+  .work-more {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 1.5rem;
+    margin-top: 1.25rem;
+    font-weight: 600;
+  }
+
+  .work-feature .work-more {
+    margin-top: auto;
+    padding-top: 1.5rem;
+  }
+
+  /* The title's stretched link lies over the span, so the span never sees a
+     hover of its own: its rule is drawn when the card is picked up - by the
+     pointer or by the keyboard reaching the title - as a link's would be. */
+  .card-hover:hover .work-more > span.link,
+  .card-hover:has(.stretch:focus-visible) .work-more > span.link {
+    background-size:
+      100% 2px,
+      100% 1px;
+  }
+
+  /*
+   * The other three, a row of them. Two to a row on a tablet would leave the
+   * third alone with a hole beside it, so there the odd one out spans the row
+   * (see below).
+   */
+  .work-row {
+    display: grid;
+    gap: var(--site-gap);
+    margin-top: var(--site-gap);
+  }
+
+  @media (min-width: 40rem) {
+    .work-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .work-row {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  /*
+   * A card is two rows it shares with the cards beside it: the picture, and
+   * the words under it. The pictures are as tall as their words need
+   * (FlowMini.astro) and those differ - Easy Breathe draws two services where
+   * the others draw three, and a German title takes a line more - so on
+   * tracks of its own each card's year started at a different height. On a
+   * shared track the shorter drawing is centred on a ground as tall as the
+   * tallest, and every card's words start on one line.
+   *
+   * Only the picture is shared. All five parts on shared rows was tried: it
+   * aligned the descriptions too, and left a line of nothing under every
+   * one-line title in a row with a two-line one.
+   *
+   * The row's gap is the space between cards, and inside one there is none.
+   */
+  .work-card {
+    display: grid;
+    grid-row: span 2;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+  }
+
+  .work-card-body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .work-card-body > .work-year {
+    margin-top: 1.25rem;
+  }
+
+  .work-card-title {
+    margin-top: 0.75rem;
+    font-stretch: 114%;
+    font-weight: 660;
+    font-size: clamp(1.5rem, 2.2vw, 1.875rem);
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+    hyphens: auto;
+    overflow-wrap: break-word;
+  }
+
+  .work-card .work-desc {
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+
+  /* The tags and the link sit on the floor of the card, so across a row they
+     line up however long each description runs. */
+  .work-foot {
+    margin-top: auto;
+    padding-top: 1.25rem;
+  }
+
+  /*
+   * The tags, two to a row, each row full. Every project lists four, so this
+   * is a 2 x 2 block on every card rather than three and then one stretched
+   * across the card - which is what growing tags on their own natural widths
+   * gave Encryptix, with Windows Forms alone on a pill the card's width.
+   *
+   * The basis is 35% rather than half because a tag's floor is its own text
+   * (`nowrap`, and a flex item never shrinks under its content): Windows Forms
+   * sets at 161px, and a 50% basis would push it and its partner onto a row
+   * each on a phone, where the card has 316px (390) or 286px (360) inside.
+   * At 35% the pair is 100 + 161 plus the gap, which fits both; three can
+   * never share a row, since three bases are already over 100%. Growth then
+   * shares out what is left, so every row meets both edges.
+   */
+  .work-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .work-tags > .tag {
+    flex: 1 1 35%;
+    justify-content: center;
+    white-space: nowrap;
+  }
+
+  .work-card .tag {
+    font-size: 0.9375rem;
+    color: var(--site-fg);
+  }
+
+  .work-card .tag-icon {
+    width: 1.05rem;
+    height: 1.05rem;
+  }
+
+  /*
+   * The odd card out on a tablet takes the whole row, stacked like the
+   * featured card above it: its drawing across the full width, which is
+   * enough for it to be drawn left to right as the featured one is, and its
+   * four tags on one line.
+   *
+   * ⚠️ Not laid out sideways. With the picture in a column beside the words,
+   * that column was as tall as the text - some 480px - around a drawing 110px
+   * tall: a cell of empty dot grid, which is the one thing a tile here may
+   * not be.
+   */
+  @media (min-width: 40rem) and (max-width: 63.99rem) {
+    .work-card:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+
+    .work-card:last-child:nth-child(odd) .work-tags > .tag {
+      flex-basis: 20%;
+    }
+  }
+
+  /* ---- The index head ---------------------------------------------------- */
+
+  @media (min-width: 64rem) {
+    .work-index-head {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: end;
+      column-gap: clamp(2.5rem, 5vw, 5rem);
+    }
+
+    .work-index-head .page-lead {
+      margin-top: 0;
+      /* Sits on the title's baseline rather than under its descender box. */
+      padding-bottom: 0.35rem;
+    }
+  }
+
+  .work-index {
+    padding-top: 0;
+  }
+
+  /* ==== A project page ==================================================== */
+
+  /* ---- Head: the three facts --------------------------------------------- */
+
+  .proj-meta {
+    margin-top: clamp(1.5rem, 3vw, 2.25rem);
+  }
+
+  /* Label over value, and the value at the tile's floor, so three tiles of
+     different lengths still read as one row. */
+  .proj-meta > .card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.9rem;
+  }
+
+  /*
+   * On a phone the year's label and figure share a line, so the four
+   * characters do not cost a whole tile's height. From 40rem the three go
+   * side by side: 2 + 4 over the full-width domain on a tablet, and 3 + 5 + 4
+   * on a desktop, which is what lets the longest context ("Seminar paper on
+   * e-government systems, ...") set in two lines beside a one-line domain.
+   */
+  .proj-meta > .proj-meta-year {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  @media (min-width: 40rem) {
+    .proj-meta > .proj-meta-year {
+      flex-direction: column;
+      align-items: stretch;
+      grid-column: span 2;
+    }
+
+    .proj-meta-context {
+      grid-column: span 4;
+    }
+
+    .proj-meta-domain {
+      grid-column: span 6;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .proj-meta > .proj-meta-year {
+      grid-column: span 3;
+    }
+
+    .proj-meta-context {
+      grid-column: span 5;
+    }
+
+    .proj-meta-domain {
+      grid-column: span 4;
+    }
+  }
+
+  .proj-meta-figure {
+    font-stretch: 120%;
+    font-weight: 720;
+    font-size: clamp(2.5rem, 4vw, 3.5rem);
+    line-height: 0.9;
+    letter-spacing: -0.045em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* No `hyphens: auto`: Chrome hyphenates to fill a line, not only to stop an
+     overflow, so a two-line value came out as "Fakultät für Elektro- / nik".
+     Every value is a phrase of ordinary words that fits any of these tiles;
+     the break-word is only the floor under a compound that one day does not. */
+  .proj-meta-value {
+    font-stretch: 110%;
+    font-weight: 620;
+    font-size: clamp(1.125rem, 1.5vw, 1.375rem);
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    overflow-wrap: break-word;
+  }
+
+  .proj-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+
+  /* ---- Rows of tiles sized by their text --------------------------------- */
+
+  /*
+   * The spans are worked out in ProjectDetail.astro (`place`) per locale and
+   * handed over as `--sm` and `--lg`. Twice the bento's columns - twelve from
+   * 40rem, twenty-four from 64rem - so a split can land between two of the
+   * bento's own; see the note on `TILES` there. One on a phone. The fallbacks
+   * are a full row.
+   */
+  .proj-fit {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--site-gap);
+  }
+
+  @media (min-width: 40rem) {
+    .proj-fit {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+
+    .proj-fit > * {
+      grid-column: span var(--sm, 12);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .proj-fit {
+      grid-template-columns: repeat(24, minmax(0, 1fr));
+    }
+
+    .proj-fit > * {
+      grid-column: span var(--lg, 24);
+    }
+  }
+
+  /* The overview's opening paragraph, set as a spoken sentence rather than as
+     copy - the size the span estimate in ProjectDetail assumes (26px on 35). */
+  .proj-lead {
+    font-stretch: 104%;
+    font-weight: 470;
+    font-size: clamp(1.3125rem, 1.9vw, 1.625rem);
+    line-height: 1.35;
+    letter-spacing: -0.022em;
+  }
+
+  .proj-text {
+    color: var(--site-muted);
+  }
+
+  /* ---- Architecture: the numbered steps ---------------------------------- */
+
+  .proj-step {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .proj-step-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  /* The number, on the accent: the one numbered list on the site, because it
+     is the one place the order is the content. */
+  .proj-step-n {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background-color: var(--site-accent);
+    color: var(--site-bg);
+    font-stretch: 112%;
+    font-weight: 700;
+    font-size: 1.0625rem;
+    font-variant-numeric: tabular-nums;
+    transition: rotate 450ms var(--site-spring);
+  }
+
+  .proj-step:hover .proj-step-n {
+    rotate: -12deg;
+  }
+
+  /*
+   * The connector: a 2px line from the number to the tile's edge, in the
+   * request diagram's own weight and colour. Where the next step sits beside
+   * this one it runs on across the gap and lands on that tile's edge with an
+   * arrowhead - `data-end-lg` / `data-end-sm` mark the last tile of each row,
+   * which is where it stops instead. On a phone the steps are a column, and
+   * the connector turns into a line down the gap from disc to disc.
+   */
+  .proj-step-line {
+    position: relative;
+    flex: 1;
+    height: 2px;
+    background-color: var(--site-accent);
+    transform-origin: 0 50%;
+  }
+
+  .proj-step-line::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 0.6rem;
+    height: 0.75rem;
+    translate: 0 -50%;
+    background-color: inherit;
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+    display: none;
+  }
+
+  @media (max-width: 39.99rem) {
+    .proj-step + .proj-step::before {
+      content: '';
+      position: absolute;
+      /* Centred on the disc: the tile's padding, half the 2.75rem disc, less
+         half the line - and up out of the tile, across the gap and the two
+         borders, to the disc of the step above. */
+      left: calc(var(--card-pad) + 1.375rem - 2px);
+      bottom: calc(100% + 1px);
+      width: 2px;
+      height: calc(var(--site-gap) + 2px);
+      background-color: var(--site-accent);
+    }
+  }
+
+  @media (min-width: 40rem) and (max-width: 63.99rem) {
+    .proj-step:not([data-end-sm]) .proj-step-line {
+      margin-right: calc(-1 * (var(--card-pad) + var(--site-gap)) - 1px);
+    }
+
+    .proj-step:not([data-end-sm]) .proj-step-line::after {
+      display: block;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .proj-step:not([data-end-lg]) .proj-step-line {
+      margin-right: calc(-1 * (var(--card-pad) + var(--site-gap)) - 1px);
+    }
+
+    .proj-step:not([data-end-lg]) .proj-step-line::after {
+      display: block;
+    }
+  }
+
+  .proj-step-title,
+  .proj-trait-title {
+    font-stretch: 112%;
+    font-weight: 640;
+    font-size: clamp(1.25rem, 1.6vw, 1.4rem);
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+  }
+
+  .proj-step-body {
+    margin-top: 0.6rem;
+    font-size: 1.0625rem;
+    color: var(--site-muted);
+  }
+
+  /* ---- What it does ------------------------------------------------------- */
+
+  .proj-trait .proj-text {
+    margin-top: 0.6rem;
+  }
+
+  /* ---- Results ------------------------------------------------------------ */
+
+  /*
+   * The table's tile. Its cells carry the padding, so the tile's own is
+   * small - otherwise the table sat in a white margin twice as deep as any
+   * other tile's.
+   *
+   * `view-timeline-name` is for the bars: they sit inside the table's own
+   * scroller, and an anonymous view() there would measure against that box,
+   * which never scrolls vertically, and never run. A timeline named on the
+   * tile is measured against the page instead, and the bars inside it use
+   * that.
+   */
+  .card.proj-results {
+    --card-pad: clamp(0.35rem, 1vw, 0.9rem);
+
+    view-timeline-name: --proj-results;
+  }
+
+  /*
+   * Scrolls sideways inside the tile on a phone rather than pushing the page,
+   * with a shadow on the right edge while there is more table behind it. The
+   * old trick of paired backgrounds: a tile-coloured cover that travels with
+   * the content (`local`) over a shadow that stays at the edge (`scroll`), so
+   * the cover arrives on the shadow and hides it exactly when the last column
+   * is reached. The left edge needs no pair: the row names are sticky and
+   * ruled off, so what has scrolled past them visibly slides under a column.
+   * Nothing scrolls on a desktop, so the cover sits on its shadow from the
+   * start and nothing shows.
+   */
+  .proj-table-scroll {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    border-radius: var(--site-radius-inner);
+    background:
+      linear-gradient(to left, var(--site-card) 40%, transparent) right center / 2.5rem 100% no-repeat local,
+      radial-gradient(
+          farthest-side at 100% 50%,
+          color-mix(in oklab, var(--site-fg) 22%, transparent),
+          transparent
+        )
+        right center / 1rem 100% no-repeat scroll;
+  }
+
+  .proj-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 1.0625rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .proj-table th,
+  .proj-table td {
+    border-bottom: 1px solid var(--site-hairline);
+    padding: 1rem clamp(0.75rem, 1.4vw, 1.25rem);
+    text-align: right;
+    vertical-align: top;
+    white-space: nowrap;
+  }
+
+  .proj-table tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+
+  /*
+   * The heads over their figures: right-aligned like the numbers under them,
+   * and the first - which names the row labels - left-aligned like they are.
+   */
+  .proj-table thead th {
+    border-bottom: 2px solid color-mix(in oklab, var(--site-fg) 55%, transparent);
+    padding-block: 0.9rem 0.75rem;
+    font-stretch: 106%;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: var(--site-muted);
+  }
+
+  .proj-table thead th:first-child,
+  .proj-table tbody th {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background-color: var(--site-card);
+    text-align: left;
+  }
+
+  .proj-table tbody th {
+    font-stretch: 110%;
+    font-weight: 660;
+    letter-spacing: -0.015em;
+  }
+
+  /* A new group - YOLOv8m to ML.NET - is ruled off heavier than a row within
+     one: an inset line on top of the row above's hairline makes it two. */
+  .proj-table tr[data-group] > * {
+    box-shadow: inset 0 1px 0 color-mix(in oklab, var(--site-fg) 40%, transparent);
+  }
+
+  /* On a phone the frozen label column is ruled off from what scrolls past it. */
+  @media (max-width: 47.99rem) {
+    .proj-table thead th:first-child,
+    .proj-table tbody th {
+      border-right: 1px solid var(--site-hairline);
+    }
+  }
+
+  .proj-table td {
+    min-width: 6.5rem;
+  }
+
+  /*
+   * The columns nobody reads a bar in - the row names and a count, which is
+   * the condition a run was made under - set as narrow as their text, so the
+   * width of the tile goes to the measured columns and their bars read as a
+   * chart. Left to the browser, Encryptix's four columns split the tile
+   * evenly and "Sequential" sat 450px from its 150 with nothing between.
+   */
+  .proj-table thead th:first-child,
+  .proj-table tbody th,
+  .proj-table [data-count] {
+    width: 1%;
+  }
+
+  .proj-num {
+    display: block;
+    font-weight: 520;
+  }
+
+  /*
+   * The bar under a measured figure: a ratio out of 1, a time as its share of
+   * the slowest run in the column (`--v`, set per cell). The best figure in
+   * the column takes the accent, bar and number both, so the answer shows
+   * before the numbers are read.
+   */
+  .proj-bar {
+    position: relative;
+    display: block;
+    margin-top: 0.55rem;
+    height: 0.4rem;
+    overflow: hidden;
+    border-radius: var(--site-radius-pill);
+    background-color: color-mix(in oklab, var(--site-fg) 8%, transparent);
+  }
+
+  .proj-bar::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: calc(var(--v, 0) * 100%);
+    border-radius: inherit;
+    background-color: color-mix(in oklab, var(--site-fg) 32%, transparent);
+    transform-origin: 0 50%;
+  }
+
+  .proj-table td[data-best] .proj-num {
+    font-weight: 720;
+    color: var(--site-accent);
+  }
+
+  .proj-table td[data-best] .proj-bar::before {
+    background-color: var(--site-accent);
+  }
+
+  .proj-notes {
+    margin-top: var(--site-gap);
+  }
+
+  /* ---- Technologies: a tile per service ----------------------------------- */
+
+  /*
+   * Two columns on a phone, six on a tablet, twelve on a desktop, and every
+   * group spans what ProjectDetail worked out for it (`--xs`, `--sm`, `--lg`)
+   * so each row is full and the marks in it come out about one width.
+   */
+  .proj-stack {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--site-gap);
+  }
+
+  .proj-group {
+    grid-column: span var(--xs, 2);
+  }
+
+  @media (min-width: 40rem) {
+    .proj-stack {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
+    .proj-group {
+      grid-column: span var(--sm, 6);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .proj-stack {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+
+    .proj-group {
+      grid-column: span var(--lg, 12);
+    }
+  }
+
+  /* A tighter pad than a tile of text: the marks are tiles themselves, and
+     the estimate in ProjectDetail assumes 18px. */
+  .card.proj-group {
+    --card-pad: clamp(0.875rem, 1.3vw, 1.125rem);
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .proj-group-name {
+    padding-inline: 0.2rem;
+    font-stretch: 110%;
+    font-weight: 640;
+    font-size: 1.0625rem;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+  }
+
+  /*
+   * The marks wrap, and each grows, so a row of them is always full - the
+   * last mark of an odd count widens to meet the edge rather than leaving a
+   * hole. The gap is the 10px ProjectDetail's estimate subtracts.
+   */
+  .proj-marks {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+  }
+
+  /* A container, so a mark tile knows how wide it came out (see below). */
+  .proj-mark {
+    flex: 1 1 7rem;
+    display: grid;
+    min-width: 0;
+    container-type: inline-size;
+  }
+
+  .proj-mark > .mark-tile {
+    border-color: transparent;
+    background-color: var(--site-inset);
+    padding-block: 1.25rem 1.1rem;
+  }
+
+  .proj-mark > .mark-tile:hover {
+    border-color: color-mix(in oklab, var(--brand, var(--site-accent)) 55%, var(--site-hairline));
+    background-color: color-mix(in oklab, var(--brand, var(--site-accent)) 10%, var(--site-inset));
+  }
+
+  .proj-mark .mark-tile-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .proj-mark .mark-tile-name {
+    font-size: 1rem;
+  }
+
+  /*
+   * A mark tile that came out wide - a group of one on a phone, or a row
+   * whose marks are few - sets the mark beside its name instead of over it,
+   * both larger, so the tile reads as full rather than as a small mark
+   * floating in the middle of a wide box.
+   */
+  @container (min-width: 15rem) {
+    .proj-mark > .mark-tile {
+      flex-direction: row;
+      gap: 1rem;
+    }
+
+    .proj-mark .mark-tile-icon {
+      width: 3.25rem;
+      height: 3.25rem;
+    }
+
+    .proj-mark .mark-tile-name {
+      font-stretch: 110%;
+      font-weight: 640;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      text-align: left;
+    }
+  }
+
+  /* ---- The takeaway, on the ink ------------------------------------------- */
+
+  /*
+   * Two columns of text rather than tiles, sized by `place` like the tiles
+   * are, on the 3rem gutter its estimate assumes at a desktop's width. Below
+   * 64rem the two paragraphs stack: `place` gives the takeaway one to a row
+   * there, so the `--sm` it hands over is always the full row and needs no
+   * grid of its own.
+   *
+   * ⚠️ There was one, of six columns, and `--sm` came over as 12: a span
+   * wider than the grid adds implicit tracks, and their gaps quietly shrank
+   * the real ones. Nothing showed, which is why it is written down here.
+   */
+  .proj-take {
+    display: grid;
+    gap: 1.25rem clamp(2rem, 3.4vw, 3rem);
+  }
+
+  @media (min-width: 64rem) {
+    .proj-take {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+
+    .proj-take > * {
+      grid-column: span var(--lg, 12);
+    }
+  }
+
+  .proj-take > p {
+    font-size: clamp(1.125rem, 1.4vw, 1.25rem);
+    line-height: 1.55;
+    letter-spacing: -0.008em;
+  }
+
+  .proj-close {
+    margin-top: clamp(1.75rem, 3vw, 2.5rem);
+  }
+}
+
+/*
+ * Two drawings on the scroll: each step's connector runs out from its number,
+ * and each result bar grows to its value. Scroll-driven, longhands only - the
+ * shorthand resets animation-timeline - and `scale`, never `transform`, so
+ * they compose with anything else that moves the element. Both end well
+ * inside the budget global.css sets (`cover 290px`), and where scroll-driven
+ * animation is missing or motion is reduced, both are simply drawn.
+ *
+ * The standard curve rather than the entrances' expo-out: on a scroll
+ * timeline the curve maps distance, not time, and expo-out had a bar at 99%
+ * of its value 60px into a 220px range - drawn before anyone saw it grow. On
+ * `--site-ease` the growth tracks the scroll across the whole range.
+ */
+@keyframes proj-draw {
+  from {
+    scale: 0 1;
+  }
+
+  to {
+    scale: 1 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .proj-step-line {
+      animation-name: proj-draw;
+      animation-timing-function: var(--site-ease);
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: cover 80px cover 280px;
+    }
+
+    .proj-bar::before {
+      animation-name: proj-draw;
+      animation-timing-function: var(--site-ease);
+      animation-fill-mode: both;
+      animation-timeline: --proj-results;
+      animation-range: cover 40px cover 280px;
+    }
+  }
+}

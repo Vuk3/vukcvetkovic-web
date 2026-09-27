@@ -11,10 +11,16 @@
  *
  * ⚠️ Which panel is up is decided in CSS off `data-state` on the frame, see the
  * .ms-* rules in styles/games/minesweeper.css. The script sets one attribute
- * and never touches
- * `hidden`, so the two panels can never both be showing.
+ * and never touches `hidden`, so the two panels can never both be showing.
+ *
+ * The chrome round the board is the family every game page shares, in
+ * styles/games/shared.css: the side-by-side stage for beginner and
+ * intermediate, whose boards are square and sized off the screen's height,
+ * with the level picker taking the column's spare height to draw the three
+ * fields, and the stacked one for expert, which is twice as wide as it is
+ * tall and wants the whole width of the stage.
  */
-import { ArrowLeft, Flag, RotateCcw } from "@lucide/astro";
+import { ArrowLeft, Bomb, Flag, MousePointerClick, RotateCcw, Timer, Trophy } from "@lucide/astro";
 import type { Lang } from "../i18n/types";
 import { getDict, localizePath } from "../i18n/utils";
 import { LEVELS } from "../games/minesweeper/game";
@@ -46,10 +52,33 @@ const index = localizePath("/games/", lang);
  * added to `LEVELS` with no label behind it fails `astro check` on this line.
  */
 const levels = Object.keys(LEVELS) as (keyof typeof LEVELS)[];
+
+/*
+ * A board wider than it is tall - expert, 30 by 16 - is marked on its radio,
+ * and while that radio is checked the stage stacks rather than setting the
+ * HUD beside the board. Beside it, thirty columns would share the board's
+ * column: cells of 15 pixels at 1024 wide, and never more than 24 however
+ * big the screen, since the shell stops growing at 80rem. Stacked under a
+ * HUD of one strip they are 25 at 1440x900 and 36 at 1920x1080, whole on
+ * screen either way. See `data-stage-wide` in styles/games/shared.css. From
+ * the dimensions rather than the id, so the rule is about the shape and not
+ * about which level it happens to be.
+ */
+const wide = (id: keyof typeof LEVELS) => LEVELS[id].columns > LEVELS[id].rows;
+
+/* The largest board's columns and rows, which set the one scale the three
+   drawings in the picker share - so expert is drawn as wide as its tile
+   allows and beginner comes out the size it is next to it. */
+const span = {
+  columns: Math.max(...levels.map((id) => LEVELS[id].columns)),
+  rows: Math.max(...levels.map((id) => LEVELS[id].rows)),
+};
+
+const [notesLead, ...notes] = copy.close.paragraphs;
 ---
 
-<div class="page-head">
-  <div class="shell shell-wide">
+<div class="page-head game-head">
+  <div class="shell">
     <div class="crumb-row">
       <a href={index} class="crumb enter">
         <ArrowLeft class="size-4" aria-hidden="true" />
@@ -59,14 +88,18 @@ const levels = Object.keys(LEVELS) as (keyof typeof LEVELS)[];
       <GameStamp lang={lang} date={site.games.minesweeper.date} />
     </div>
 
-    <h1 class="page-title enter" style="--enter-delay:80ms">{copy.name}</h1>
+    <h1 class="page-title">
+      <span class="line-mask enter-line" style="--enter-delay:80ms"
+        ><span class="line-in">{copy.name}</span></span
+      >
+    </h1>
 
     <p class="page-lead enter" style="--enter-delay:160ms">{copy.lead}</p>
   </div>
 </div>
 
-<div class="sec-lite">
-  <div class="shell shell-wide">
+<div class="game-play">
+  <div class="shell">
     <div
       class="ms enter"
       style="--enter-delay:240ms"
@@ -74,131 +107,172 @@ const levels = Object.keys(LEVELS) as (keyof typeof LEVELS)[];
       data-state="ready"
       data-level="beginner"
     >
-      {/*
-        Real radios, hidden and labelled, rather than three buttons wearing
-        `role="radio"`.
+      <div class="game-stage game-stage-side">
+        <div class="game-hud">
+          {/*
+            Real radios, hidden and labelled, rather than three buttons wearing
+            `role="radio"`.
 
-        Picking a board is one choice out of three, and the native control
-        already is that: it groups, it moves on the arrow keys, it keeps one
-        tab stop for the whole set, and it announces "2 of 3". Hand-rolling the
-        same thing out of buttons means writing the roving focus by hand and
-        getting less. The `sr-only` class clips rather than hides, so the input
-        is still focusable and the ring below is drawn on the label around it.
-      */}
-      <fieldset class="ms-levels">
-        <legend class="sr-only">{copy.boards}</legend>
+            Picking a board is one choice out of three, and the native control
+            already is that: it groups, it moves on the arrow keys, it keeps one
+            tab stop for the whole set, and it announces "2 of 3". Hand-rolling
+            the same thing out of buttons means writing the roving focus by hand
+            and getting less. The `sr-only` class clips rather than hides, so the
+            input is still focusable and the ring below is drawn on the label
+            around it.
 
-        {
-          levels.map((id, i) => (
-            <label class="ms-level">
-              <input
-                type="radio"
-                name="ms-level"
-                value={id}
-                checked={i === 0}
-                class="sr-only"
-                data-level-option
-              />
-              <span>{copy.levels[id]}</span>
-            </label>
-          ))
-        }
-      </fieldset>
-
-      <div class="ms-bar">
-        <div class="ms-meter">
-          <span class="ms-meter-label">{copy.mines}</span>
-          <span class="ms-meter-value" data-mines>0</span>
-        </div>
-
-        <div class="ms-meter">
-          <span class="ms-meter-label">{copy.time}</span>
-          <span class="ms-meter-value" data-time>0:00</span>
-        </div>
-
-        <div class="ms-meter">
-          <span class="ms-meter-label">{copy.best}</span>
-          <span class="ms-meter-value" data-best>-</span>
-        </div>
-
-        <div class="ms-actions">
-          <SoundToggle lang={lang} />
-
-          {/* A toggle rather than a command, so it says what mode the board is
-              in rather than what pressing it will do. It is the only way to
-              flag on a phone that does not need explaining. */}
-          <button
-            type="button"
-            class="cta-ghost"
-            data-action="flagging"
-            aria-pressed="false"
+            Each board is a tile with its size and its mines on it, and beside
+            the board a drawing of the field to one scale - so the three read
+            as the difference between them rather than as three words. The
+            figures and the drawing are hidden from the accessibility tree:
+            "10" with no word after it is not something a listener can use, and
+            the radio's name stays the level's.
+          */}
+          <fieldset
+            class="game-fill ms-levels"
+            style={`--ms-span-c:${span.columns};--ms-span-r:${span.rows}`}
           >
-            <Flag class="size-4 shrink-0" aria-hidden="true" />
-            {copy.flagMode}
-          </button>
+            <legend class="sr-only">{copy.boards}</legend>
 
-          <button type="button" class="cta-ghost" data-action="restart">
-            <RotateCcw class="size-4 shrink-0" aria-hidden="true" />
-            {copy.newGame}
-          </button>
-        </div>
-      </div>
+            {
+              levels.map((id, i) => (
+                <label class="ms-level">
+                  <input
+                    type="radio"
+                    name="ms-level"
+                    value={id}
+                    checked={i === 0}
+                    class="sr-only"
+                    data-level-option
+                    data-stage-wide={wide(id) ? "" : undefined}
+                  />
+                  <span class="ms-level-map" aria-hidden="true">
+                    <span
+                      class="ms-level-field"
+                      style={`--c:${LEVELS[id].columns};--r:${LEVELS[id].rows}`}
+                    />
+                  </span>
+                  <span class="ms-level-name">{copy.levels[id]}</span>
+                  <span class="ms-level-meta" aria-hidden="true">
+                    <span>{LEVELS[id].columns} × {LEVELS[id].rows}</span>
+                    <span class="ms-level-mines">
+                      <Bomb class="shrink-0" />
+                      {LEVELS[id].mines}
+                    </span>
+                  </span>
+                </label>
+              ))
+            }
+          </fieldset>
 
-      <div class="ms-frame">
-        {/* The burst over a cleared field, above the panel that says so. */}
-        <div class="game-burst" aria-hidden="true" data-burst></div>
+          <div class="game-stats">
+            <div class="game-stat tile-cobalt">
+              <span class="game-stat-label">
+                <span class="tile-icon"><Bomb aria-hidden="true" /></span>
+                {copy.mines}
+              </span>
+              <span class="game-stat-value" data-mines>0</span>
+            </div>
 
-        {/* The scroller is the query container, and the board inside it is what
-            measures itself in `cqi`. An element is not its own container. */}
-        <div class="ms-scroll">
-          <div
-            class="ms-board"
-            role="grid"
-            aria-label={copy.gridLabel}
-            data-board
-            data-label-hidden={copy.cells.hidden}
-            data-label-flagged={copy.cells.flagged}
-            data-label-mine={copy.cells.mine}
-            data-label-empty={copy.cells.empty}
-            data-label-wrong={copy.cells.wrong}
-          >
+            <div class="game-stat">
+              <span class="game-stat-label">
+                <span class="tile-icon"><Timer aria-hidden="true" /></span>
+                {copy.time}
+              </span>
+              <span class="game-stat-value" data-time>0:00</span>
+            </div>
+
+            <div class="game-stat">
+              <span class="game-stat-label">
+                <span class="tile-icon"><Trophy aria-hidden="true" /></span>
+                {copy.best}
+              </span>
+              <span class="game-stat-value" data-best>-</span>
+            </div>
           </div>
-        </div>
 
-        <div class="ms-panel" data-panel="won">
-          <p class="ms-panel-title">{copy.won.title}</p>
+          <div class="game-actions ms-actions">
+            <SoundToggle lang={lang} />
 
-          {/* Both sentences ride on the element, so the second one is copy in
-              the markup rather than a string the script carries. */}
-          <p
-            class="ms-panel-body"
-            data-won-body
-            data-body={copy.won.body}
-            data-record={copy.won.record}
-          >
-            {copy.won.body}
-          </p>
-
-          <div class="ms-panel-actions">
-            <button type="button" class="cta" data-action="restart"
-              >{copy.won.again}</button
+            {/* A toggle rather than a command, so it says what mode the board is
+                in rather than what pressing it will do. It is the only way to
+                flag on a phone that does not need explaining. */}
+            <button
+              type="button"
+              class="cta-ghost"
+              data-action="flagging"
+              aria-pressed="false"
             >
+              <Flag class="shrink-0" aria-hidden="true" />
+              {copy.flagMode}
+            </button>
+
+            <button type="button" class="cta-ghost" data-action="restart">
+              <RotateCcw class="shrink-0" aria-hidden="true" />
+              {copy.newGame}
+            </button>
           </div>
         </div>
 
-        <div class="ms-panel" data-panel="lost">
-          <p class="ms-panel-title">{copy.lost.title}</p>
-          <p class="ms-panel-body">{copy.lost.body}</p>
+        <div class="game-board ms-frame">
+          {/* The burst over a cleared field, above the panel that says so. */}
+          <div class="game-burst" aria-hidden="true" data-burst></div>
 
-          <div class="ms-panel-actions">
-            <button type="button" class="cta" data-action="restart"
-              >{copy.lost.again}</button
+          {/* The scroller is the query container, and the board inside it is what
+              measures itself in `cqi`. An element is not its own container. */}
+          <div class="ms-scroll">
+            <div
+              class="ms-board"
+              role="grid"
+              aria-label={copy.gridLabel}
+              data-board
+              data-label-hidden={copy.cells.hidden}
+              data-label-flagged={copy.cells.flagged}
+              data-label-mine={copy.cells.mine}
+              data-label-empty={copy.cells.empty}
+              data-label-wrong={copy.cells.wrong}
             >
+            </div>
+          </div>
+
+          <div class="ms-panel" data-panel="won">
+            <p class="ms-panel-title">{copy.won.title}</p>
+
+            {/* Both sentences ride on the element, so the second one is copy in
+                the markup rather than a string the script carries. */}
+            <p
+              class="ms-panel-body"
+              data-won-body
+              data-body={copy.won.body}
+              data-record={copy.won.record}
+            >
+              {copy.won.body}
+            </p>
+
+            <div class="ms-panel-actions">
+              <button type="button" class="cta" data-action="restart"
+                >{copy.won.again}</button
+              >
+            </div>
+          </div>
+
+          <div class="ms-panel" data-panel="lost">
+            <p class="ms-panel-title">{copy.lost.title}</p>
+            <p class="ms-panel-body">{copy.lost.body}</p>
+
+            <div class="ms-panel-actions">
+              <button type="button" class="cta" data-action="restart"
+                >{copy.lost.again}</button
+              >
+            </div>
           </div>
         </div>
-      </div>
 
-      <p class="ms-hint">{copy.hint}</p>
+        <p class="game-hint">
+          <span class="tile-icon"><MousePointerClick aria-hidden="true" /></span>
+          <span>{copy.hint}</span>
+        </p>
+      </div>
 
       {/* The board announces its own cells through the grid roles, so this only
           has to carry the two things that are not in it: that the game ended,
@@ -208,22 +282,26 @@ const levels = Object.keys(LEVELS) as (keyof typeof LEVELS)[];
   </div>
 </div>
 
-<Section id="how" label={copy.how.label} width="wide" tone="band">
-  <ul class="svc-grid">
+<Section id="how" label={copy.how.label} tone="band">
+  {/* `role="list"` because the markers are drawn rather than the browser's,
+      and Safari stops announcing a list whose list-style is gone. */}
+  <ol class="card game-steps" role="list">
     {
-      copy.how.items.map((item) => (
-        <li class="card reveal-item">
-          <h3 class="svc-title">{item.title}</h3>
-          <p class="mt-2.5 text-muted">{item.description}</p>
+      copy.how.items.map((item, i) => (
+        <li class="game-step reveal-item">
+          <span class="game-step-n" aria-hidden="true">{i + 1}</span>
+          <h3 class="game-step-title">{item.title}</h3>
+          <p class="game-step-body">{item.description}</p>
         </li>
       ))
     }
-  </ul>
+  </ol>
 </Section>
 
-<Section id="build" label={copy.close.label} width="wide" tone="panel">
-  <div class="prose-columns text-muted">
-    {copy.close.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+<Section id="build" label={copy.close.label} tone="panel">
+  <p class="game-notes-lead reveal">{notesLead}</p>
+  <div class="prose-columns game-notes-cols reveal">
+    {notes.map((paragraph) => <p>{paragraph}</p>)}
   </div>
 </Section>
 

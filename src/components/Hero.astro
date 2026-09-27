@@ -6,7 +6,7 @@ import type { Lang } from '../i18n/types';
 import { getDict } from '../i18n/utils';
 import { site } from '../site';
 import BrandIcon from './BrandIcon.astro';
-import TechIcon from './TechIcon.astro';
+import MarkTile from './MarkTile.astro';
 
 interface Props {
   lang: Lang;
@@ -26,30 +26,39 @@ const portrait = Object.values(portraits)[0]?.default;
 /*
  * The master's own dimensions, handed over whole.
  *
- * The card frames the photograph at its own 3:4, so nothing is cropped: no arm
- * cut off at the frame and, on a phone, no head cut in half. That was the cost
- * of stretching the column and covering it, and it is not a cost worth paying.
- * One 730-wide variant is emitted, which is 2x at the largest rendering.
+ * The frame is the photograph's own 3:4, so nothing is cropped: no arm cut off
+ * at the edge and, on a phone, no head cut in half.
+ *
+ * Three widths, not one. The largest is 2x the frame's 25rem on a desktop;
+ * a phone shows the frame about 340px wide, at 1.75x on the phone Lighthouse
+ * emulates, which is what the 600 is for - sending it the 730 was the one
+ * finding a mobile run on the build had left (30 KiB). `sizes`
+ * follows the layout in home.css: the portrait column's clamp from 60rem,
+ * the stage's width less its padding below that, capped at the frame's 26rem.
+ *
+ * webp and not AVIF: at this quality sharp's AVIF came out larger (39 KB
+ * against 23 KB at 600 wide), and `<Picture>` added a PNG fallback on top.
  */
 const portraitWidth = 730;
 const portraitHeight = 976;
+const portraitWidths = [360, 600, 730];
+const portraitSizes = '(min-width: 60rem) min(29vw, 25rem), min(calc(100vw - 4.5rem), 26rem)';
 
 /*
  * The name on two lines, split off the single string in site.ts rather than
  * hardcoded here, so the name is still stated in exactly one place.
  *
- * Two lines is what buys the size: on one line "Vuk Cvetković" runs out of
- * measure around 60px. It stays one <h1> with one accessible name.
+ * Two lines is what buys the size - see `.display-name` in home.css, where the
+ * size is taken from the column so "Cvetković" fills it exactly. It stays one
+ * <h1> with one accessible name.
  */
 const [firstName, ...restOfName] = site.name.split(' ');
 const lastName = restOfName.join(' ');
 
 /*
- * The stack, as the first thing under the fold-line rather than only in Skills.
- *
- * It is the same list Skills sets out grouped further down, flattened here, so
- * the hero answers what he works with using content the page already holds - no
- * new copy, and nothing about it to keep in sync.
+ * The stack, as a tray of marks under the name and the portrait. It is the same
+ * list Skills sets out grouped further down, flattened here, so the first
+ * screen answers what he works with using content the page already holds.
  */
 const stack = site.skillGroups.flatMap((group) => group.items);
 
@@ -60,60 +69,52 @@ const profiles = [
 ---
 
 {/*
-  No scroll reveal anywhere in here - the hero is in view at first paint and
-  runs the load sequence instead.
+  The hero is one ink tile - the page opens on the same surface its header and
+  its footer are made of, and on a light page that is the strongest contrast the
+  site has to spend. Everything in it runs the load sequence rather than a
+  scroll reveal, because it is in view at first paint.
+
+  The beats, in order: the role, the two lines of the name rising into their
+  masks, the photograph uncovering itself upwards inside its frame, the lead and
+  the buttons, then the marks landing one after another along the tray.
 */}
 <section class="hero">
-  <div class="shell shell-hero">
-    <div class="hero-grid">
-      <div>
-        <p class="hero-role enter">{dict.hero.role}</p>
+  <div class="shell">
+    <div class="hero-tile panel">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p class="hero-role enter">{dict.hero.role}</p>
 
-        <h1 class="display-name">
-          <span class="enter-name">{firstName}</span>
-          <span class="enter-name" style="--enter-delay:110ms">{lastName}</span>
-        </h1>
+          <h1 class="display-name">
+            <span class="line-mask enter-line" style="--enter-delay:80ms"><span class="line-in">{firstName}</span></span>
+            <span class="line-mask enter-line" style="--enter-delay:190ms"><span class="line-in">{lastName}</span></span>
+          </h1>
 
-        <div class="enter" style="--enter-delay:380ms">
-          <p class="hero-lead">{dict.hero.positioning}</p>
+          <p class="hero-lead enter" style="--enter-delay:420ms">{dict.hero.positioning}</p>
 
-          <div class="hero-actions">
+          <div class="hero-actions enter" style="--enter-delay:520ms">
             <a href={`mailto:${site.email}`} class="cta">
-              <Mail class="size-[1.05rem]" aria-hidden="true" />
+              <Mail class="size-[1.1rem]" aria-hidden="true" />
               {dict.hero.cta}
             </a>
 
             {
               profiles.map((profile) => (
                 <a href={profile.href} target="_blank" rel="me noopener" class="cta-ghost">
-                  <BrandIcon name={profile.brand} class="size-[0.95rem] shrink-0" />
+                  <BrandIcon name={profile.brand} class="size-[1rem] shrink-0" />
                   {profile.label}
                 </a>
               ))
             }
           </div>
-
-          <ul class="hero-chips">
-            {
-              stack.map((tech) => (
-                <li class="chip">
-                  <TechIcon name={tech} class="chip-icon" />
-                  {tech}
-                </li>
-              ))
-            }
-          </ul>
         </div>
-      </div>
 
-      {/*
-        The portrait, as a card the size of the column - so the photograph is
-        part of the composition rather than an avatar dropped beside a heading.
-        The card is what integrates it: same border, same radius and same tone
-        as everything else on the page.
-      */}
-      <figure class="portrait enter enter-portrait" style="--enter-delay:240ms">
-        <div class="portrait-frame">
+        {/*
+          The portrait, in a frame at the photograph's own ratio. What arrives is
+          the picture, not the frame: the frame is there from the start and the
+          whole photograph settles into it out of a zoom.
+        */}
+        <figure class="portrait enter-portrait" style="--enter-delay:260ms">
           {
             portrait ? (
               <Image
@@ -121,6 +122,8 @@ const profiles = [
                 alt={dict.hero.portraitAlt}
                 width={portraitWidth}
                 height={portraitHeight}
+                widths={portraitWidths}
+                sizes={portraitSizes}
                 quality={86}
                 loading="eager"
                 fetchpriority="high"
@@ -135,8 +138,16 @@ const profiles = [
               </div>
             )
           }
-        </div>
-      </figure>
+        </figure>
+      </div>
+
+      <ul class="hero-tray">
+        {
+          stack.map((tech, index) => (
+            <MarkTile as="li" name={tech} class="tray-in" style={`--enter-delay:${620 + index * 45}ms`} />
+          ))
+        }
+      </ul>
     </div>
   </div>
 </section>
