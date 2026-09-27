@@ -219,6 +219,12 @@
        why it is a token and not a padding. */
     --bs-rail: 1.5rem;
     --bs-pad: clamp(0.45rem, 1.1vw, 0.75rem);
+
+    /* The menu's trays: their padding, and from a tablet up the one height
+       every tile, figure and button inside them shares. See "The menu is four
+       groups" below. */
+    --bs-tray-pad: 0.375rem;
+    --bs-control: 2.625rem;
   }
 
   /*
@@ -405,7 +411,7 @@
 
   /* Portrait beside the name, once four tiles have the width for it: the
      tile is half the height and the set reads as a row of people rather than
-     a row of stamps - 56 pixels, a pill a little taller than the buttons. */
+     a row of stamps - 42 pixels, the height of the buttons in the trays. */
   @media (min-width: 52rem) {
     .bs-level {
       flex: 1 1 0;
@@ -414,15 +420,22 @@
         'rank name'
         'rank marks';
       justify-items: start;
-      column-gap: 0.7rem;
-      padding: 0.45rem 1.1rem 0.45rem 0.45rem;
+      column-gap: 0.6rem;
+      row-gap: 0.2rem;
+      min-height: var(--bs-control);
+      padding: 0.3rem 1rem 0.3rem 0.3rem;
       text-align: left;
+    }
+
+    .bs-rank {
+      width: 2rem;
+      height: 2rem;
     }
 
     .bs-level-name {
       align-self: end;
       font-stretch: 108%;
-      font-size: 1rem;
+      font-size: 0.9375rem;
     }
 
     .bs-level-rank {
@@ -497,10 +510,6 @@
   @media (max-width: 30rem) {
     .bs-level-note {
       font-size: 0.875rem;
-    }
-
-    .bs-levels-row {
-      gap: 0.4rem;
     }
 
     .bs-level {
@@ -599,21 +608,29 @@
        1024 and "Fewest shots" broken over two lines inside it. The icons are
        taken away here rather than by shared.css's query. */
     .bs .game-stat {
-      flex: 1 1 auto;
+      flex: 0 0 auto;
       container-type: normal;
       flex-direction: row;
       align-items: center;
       gap: 0.75rem;
-      min-height: 3rem;
-      padding: 0.35rem 0.85rem;
+      min-height: var(--bs-control);
+      padding: 0.25rem 0.85rem;
+    }
+
+    .bs .game-stat-label {
+      font-size: 0.875rem;
     }
 
     .bs .game-stat-label .tile-icon {
       display: none;
     }
 
+    /* Two digits' room, right-aligned, so the count going from 9 to 10
+       does not widen the figure under the pointer. */
     .bs .game-stat-value {
-      font-size: clamp(1.5rem, 1.9vw, 2rem);
+      min-width: 2ch;
+      font-size: clamp(1.25rem, 1.6vw, 1.5rem);
+      text-align: end;
     }
 
     /*
@@ -625,12 +642,17 @@
      * their own and the waters 64 pixels further down. The word is clipped,
      * not removed, so a screen reader still hears it.
      */
-    .bs .game-actions .cta-ghost {
-      padding-inline: 1rem;
+    .bs .game-actions .cta-ghost,
+    .bs .bs-setup .cta {
+      min-height: var(--bs-control);
+      padding: 0.4rem 1rem;
+      font-size: 0.9375rem;
     }
 
-    .bs .bs-setup .cta {
-      padding-inline: 1.1rem;
+    .bs .game-actions .cta-ghost svg,
+    .bs .bs-setup .cta svg {
+      width: 1rem;
+      height: 1rem;
     }
 
     .bs .game-actions .game-sound {
@@ -660,6 +682,94 @@
 
     .bs .game-stat-value {
       font-size: 1.5rem;
+    }
+  }
+
+  /*
+   * The menu is four groups, and space is what parts them: whom you play, the
+   * figures, the game's own buttons, and the placing buttons while there are
+   * ships to place.
+   *
+   * ⚠️ **They read as one bar twice.** First the four opponents, three figures
+   * and six buttons sat loose on the stage's white in two full rows. Then each
+   * group got a tray of the inset grey, but the figures' tray grew to meet the
+   * buttons and the opponents' spanned the stage, so it was two grey bars
+   * edge to edge with 20 pixels between them. So now nothing stretches: the
+   * opponents' tray holds only the four, between the set's name and the
+   * sentence, which stand on the white; the figures are as wide as their
+   * words at the row's left end, the buttons at its right end, and the room
+   * between is the separation. Rows are further apart than the parts of a
+   * row, and a hairline under the menu parts it from the waters.
+   *
+   * Each tray is the inset grey holding its parts on white (or cobalt), a
+   * narrow gap of the grey between them. The figures are white here and not
+   * the inset grey they are on every other game page, since the tray is it.
+   */
+  .bs .game-hud {
+    row-gap: clamp(1rem, 1.8vw, 1.5rem);
+    border-bottom: 1px solid var(--site-hairline);
+    padding-bottom: clamp(1rem, 1.8vw, 1.5rem);
+  }
+
+  .bs .bs-levels-row,
+  .bs .game-stats,
+  .bs .game-actions {
+    border-radius: calc(var(--site-radius-inner) + var(--bs-tray-pad));
+    background-color: var(--site-inset);
+    padding: var(--bs-tray-pad);
+  }
+
+  .bs .bs-levels-row,
+  .bs .game-stats,
+  .bs .game-actions {
+    gap: var(--bs-tray-pad);
+  }
+
+  .bs .game-stat:not(.tile-cobalt) {
+    background-color: var(--site-card);
+  }
+
+  /* On a phone the box is no box: each group of buttons takes a row of its
+     own, as shared.css lays them out. */
+  .bs-buttons {
+    display: contents;
+  }
+
+  /*
+   * From a tablet up the figures sit at the row's left end, as wide as their
+   * words, and the buttons' box takes the rest, its groups at the right end.
+   * When both groups do not fit beside the figures - at 1024 in German, or on
+   * a tablet - the placing group wraps inside the box, under the game's own
+   * group and flush with it on the right, and the figures stay at the top.
+   */
+  @media (min-width: 40rem) {
+    .bs .game-hud {
+      column-gap: clamp(1rem, 2.4vw, 2rem);
+    }
+
+    .bs .game-stats {
+      flex: 0 1 auto;
+      align-self: start;
+    }
+
+    .bs-buttons {
+      display: flex;
+      flex: 1 1 18rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: start;
+      gap: clamp(0.75rem, 1.4vw, 1.25rem);
+    }
+
+    .bs .game-actions {
+      flex: 0 1 auto;
+    }
+  }
+
+  /* The sentence a step in from the tray's edge beside it. */
+  @media (min-width: 64rem) {
+    .bs-level-note {
+      padding-inline-start: 0.25rem;
     }
   }
 
@@ -788,26 +898,28 @@
    * allows, between two bounds. The height term is the screen less
    * `--bs-reserve`: everything else on screen with the boards once the stage
    * is scrolled up to the figures - the header, the row of figures and
-   * buttons, the board's head row, the letters, the tray's padding and the
-   * fleet under it, 18rem with the HUD's rows one line each - so a table
-   * scrolled to is a table seen whole, with the shot count still in view. It
+   * buttons, the hairline under the menu and its gaps, the board's head row,
+   * the letters, the tray's padding and the fleet under it, 20rem with the
+   * HUD's rows one line each - so a table scrolled to is a table seen whole,
+   * with the shot count still in view. It
    * is its own number and not shared.css's `--game-reserve`, which is the
    * head over a board on load: 1440 by 900 has 556 pixels for a board under
    * that, and two waters, their heads and their fleets under the picker and
    * the figures would get squares of 39 pixels in it - a third of the width
    * two waters have, given up to save a scroll of a hundred.
    *
-   * So the width decides on every screen 800 pixels or taller: at 1440 by
-   * 900 a square is 54 pixels and the waters run from 456 to 1002, the
-   * picker and the figures two rows of 56 and 48 over them. What the height
-   * term still does is stop a short wide screen - 1366 by 768, 1440 by 800 -
-   * from drawing a table taller than it can show at once.
+   * So the width decides on every screen about 870 pixels or taller: at 1440 by
+   * 900 a square is 54 pixels and the waters and their fleets run from 442 to
+   * 1109, under the picker's and the figures' trays of 56 and 54. What the
+   * height term does is stop a shorter screen - 1280 by 800, 1366 by 768 -
+   * from drawing a table taller than it can show at once: 48 and 45 pixel
+   * squares there.
    *
    * The ceiling is 3.5rem because the side's own width stops it first on
    * every screen this shell fits: 80rem across two boards is 55px a square.
    */
   .bs-side {
-    --bs-reserve: 18rem;
+    --bs-reserve: 20rem;
     --bs-size: clamp(
       1.5rem,
       min(

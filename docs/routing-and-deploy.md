@@ -106,7 +106,9 @@ Everything in `<head>` is built there, and three of its behaviours are worth kno
 - **The theme script is `is:inline` and must stay that way.** It runs before first paint to
   put `.dark` on `<html>`, and a bundled version would flash. It reads `localStorage`, falls
   back to `prefers-color-scheme`, and swallows a storage exception (private mode) into
-  light. See [design-system.md §Theming](./design-system.md#8-theming-is-class-based-except-for-two-tags).
+  light. When a theme is stored it also points the `theme-color` tags at it, which is why
+  those two tags come before the script in `<head>`: it can only find what is already
+  parsed. See [design-system.md §Theming](./design-system.md#8-theming-is-class-based-except-for-two-tags).
 - **The `Person` and `WebSite` JSON-LD is emitted on the four home pages only**, gated on
   `isHome`, which compares `canonical.pathname` against `localizePath('/', lang)` rather
   than taking a prop - so the English route and its `[lang]` twin cannot disagree about
@@ -247,7 +249,7 @@ weight on every page.
 
 The four `<script>` blocks - the pre-paint theme script, the theme toggle, the disclosure
 dismissal and the active-section indicator - are all small enough that Astro inlines them
-into each page rather than emitting a bundle. 1.7 KB of JS per page, in a 36 KB gz home
+into each page rather than emitting a bundle. About 2 KB of JS per page (0.9 KB gz), in a 36 KB gz home
 page, with no extra request. Keep it that way: see [src/components/CLAUDE.md](../src/components/CLAUDE.md).
 
 Eight of the files in `_astro` are the seven game engines and the piece they share. 2048 is
@@ -338,7 +340,7 @@ trailing slash for a directory route, nothing for anything that looks like a fil
 
 **After changing anything about routing or locales, read `dist/client/sitemap-0.xml`.** It is
 the one output nothing else checks - the 404 exclusion depends on the locale being registered
-(design-system §8, open item 1), and the slash depends on this hook.
+([content-and-i18n.md §6](./content-and-i18n.md#6-adding-a-locale)), and the slash depends on this hook.
 
 ---
 
@@ -368,6 +370,9 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-09-27 - the theme script and the toggle point the `theme-color` tags at a chosen
+  theme, so the four inline blocks are about 2 KB (0.9 KB gz). The two tags moved above the
+  theme script.
 - 2026-09-27 - the redesign splits the CSS by page area (`home.css`, `project.css`,
   `flow.css`, `notfound.css` beside the games' files), so a page carries 9 to 14 KB gz of it
   and the games index 31.5 KB. The Latin font is preloaded, the portrait ships at three

@@ -679,9 +679,12 @@ Three pieces cooperate:
 ⚠️ **The `theme-color` meta tags are the exception, and the only raw hex values outside
 the stylesheets.** They match `--site-bg`: the header is a capsule floating on the page
 with the ground round it, so the browser chrome sits directly above the ground rather than
-above ink. They duplicate the token in both themes and must be changed with it, and because
-they key on the media query rather than the class, **a manual toggle does not change the
-browser chrome colour.** See open item 1.
+above ink. They duplicate the token in both themes and must be changed with it. By their
+media queries they follow the system's theme, which is right until the visitor chooses one:
+then the inline script (on load, from `localStorage`) and ThemeToggle.astro (on a click) set
+the chosen tag's `media` to `all` and the other's to `not all`, so the bar on a phone and in
+Safari follows the page. The tags carry `data-scheme` for the scripts to find them, and sit
+above the inline script in `<head>` because it runs before anything after it is parsed.
 
 ---
 
@@ -1944,12 +1947,21 @@ the module removes each round on `animationend`, and the global blanket shortens
 reason.
 
 **Battleship keeps a stacked stage** - two waters side by side are the shell's width - and
-everything above them is two rows on a desktop: the opponent legend, four compact chips and
-the note (56px), then the figures, one line each, and the buttons (48px). `--bs-reserve` is
-18rem and deliberately not `--game-reserve`: it is what has to stay on screen with the
-waters once the stage is scrolled to the figures, so on any screen 800px or taller the
-width sets the square - 54px at 1440 - and the waters are whole once scrolled about 105px,
-and whole on load from 1920x1080. Whole on load at 1440x900 would have meant 39px squares.
+everything above them is a menu of four groups, parted by space rather than stretched to
+meet: the opponent legend, the four on a tray of the inset grey and the note, then the
+figures on a tray at the row's left end and the two groups of buttons, each on a tray, at
+its right end, with the room between them as the separation. A hairline under the menu
+parts it from the waters. ⚠️ **Nothing in the menu stretches**: with the figures' tray grown
+to the buttons and the opponents' spanning the stage, four trays read as two grey bars edge
+to edge, which is the "all merged" the menu was rejected for. The two button groups share
+`.bs-buttons`, so when the placing group wraps (1024 in German, a tablet) it lands under
+the other, flush right, not at the left edge. The figures' counts keep two digits' room, so
+9 to 10 does not move anything. `--bs-reserve` is 20rem and deliberately not
+`--game-reserve`: it is what has to stay on screen with the waters once the stage is
+scrolled to the figures, so on any screen about 870px or taller the width sets the square - 54px
+at 1440 - and on a shorter one the height does (48px at 1280x800, 45px at 1366x768), and the
+waters and their fleets are whole once the figures reach the header. Whole on load at
+1440x900 would have meant 39px squares.
 ⚠️ Its figures, and the cube's in the menu, set `container-type: normal`: shared.css makes
 every figure an inline-size container, and these two need a figure sized by its own text.
 
@@ -2094,16 +2106,22 @@ centred in the space between the capsule and the footer on a tall screen.
 
 | # | Item | Severity |
 |---|---|---|
-| 1 | **`theme-color` disagrees with the toggle.** The two tags in [Base.astro](../src/layouts/Base.astro) key on `prefers-color-scheme`, while everything else keys on the `.dark` class, so a visitor whose system is light and who switches the site to dark gets the light ground's colour above a dark page. Fixing it needs the inline script to write the tag, which is script doing a job CSS cannot. | cosmetic |
-| 2 | **The hero repeats the full stack.** Eleven marks in the hero's tray answer what he works with immediately, and then Skills sets out the same eleven grouped a screen further down. It is deliberate - the hero should not need the reader to scroll to learn the domain - but the two are the same content twice and worth revisiting if the stack grows. | judgement call |
-| 3 | **The games wall is composed for seven games.** The spans in [index.css](../src/styles/games/index.css) are set by position (6 + 6, 4 + 4 + 4, 6 + 6); an eighth game would sit alone at half width. | known limit |
-| 4 | **Some boards are not whole on load.** Battleship's two waters need about 105px of scroll at 1440x900 (54px squares were chosen over 39px ones that would fit). On a phone the head of every game page ends 350 to 400px down, so a board is whole once the stage is scrolled under the header. | known limit |
-| 5 | **A spacing typo in the French copy.** `fr.ts`, the first Minesweeper how-to-play item, reads "appuyé :le premier coup", with the space on the wrong side of the colon. The redesign did not change copy, so it is still there. | copy |
+| 1 | **The hero repeats the full stack.** Eleven marks in the hero's tray answer what he works with immediately, and then Skills sets out the same eleven grouped a screen further down. It is deliberate - the hero should not need the reader to scroll to learn the domain - but the two are the same content twice and worth revisiting if the stack grows. | judgement call |
+| 2 | **The games wall is composed for seven games.** The spans in [index.css](../src/styles/games/index.css) are set by position (6 + 6, 4 + 4 + 4, 6 + 6); an eighth game would sit alone at half width. | known limit |
+| 3 | **Some boards are not whole on load.** Battleship's two waters and their fleets end at 1109 at 1440x900, so they need about 210px of scroll (54px squares were chosen over 39px ones that would fit). On a phone the head of every game page ends 350 to 400px down, so a board is whole once the stage is scrolled under the header. | known limit |
 
 ---
 
 ## Changelog
 
+- 2026-09-27 - the browser's `theme-color` follows a theme chosen with the toggle, not only
+  the system's: the scripts switch the two tags' `media`. That closes the open item it was,
+  and the rest are renumbered (§8, §11).
+- 2026-09-27 - Battleship's menu is four groups parted by space: the opponents on a tray
+  between their name and the note, the figures as wide as their words at the left end, the
+  buttons at the right end in `.bs-buttons`, and a hairline over the waters. `--bs-reserve`
+  is 20rem for the taller menu. The French spacing typo in Minesweeper's how-to-play is
+  fixed, which closes that open item (§9, §11).
 - 2026-09-27 - Skills is a size smaller (2.1rem marks on 85px tiles, 399px against 478 at
   1440), the portrait's entrance shows the whole photograph in colour from the first frame,
   pulling back out of a zoom and a blur, beginner Minesweeper's cells are capped at 2.75rem

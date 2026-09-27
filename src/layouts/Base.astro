@@ -102,6 +102,23 @@ const structuredData = {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    {/*
+      The colour of the browser's own bar, on a phone and in Safari. These match
+      --site-bg: the header is a capsule floating on the page with the ground
+      showing round it, so the bar sits directly above the ground, not above
+      ink. Matching the panel would put a dark strip over the light gap the
+      capsule floats in.
+
+      ⚠️ They duplicate the token in both themes and have to be changed with it.
+      By their media queries they follow the system's theme. A theme chosen with
+      the toggle overrides that: the script below and ThemeToggle.astro set the
+      chosen tag's media to `all` and the other's to `not all`, so the bar
+      follows the page and not the phone. They are above the script because it
+      has to find them, and it runs before anything after it is parsed.
+    */}
+    <meta name="theme-color" content="#eceef2" media="(prefers-color-scheme: light)" data-scheme="light" />
+    <meta name="theme-color" content="#090b10" media="(prefers-color-scheme: dark)" data-scheme="dark" />
+
     {/* Must run before first paint, and must not be bundled, or it flashes. */}
     <script is:inline>
       (() => {
@@ -111,6 +128,11 @@ const structuredData = {
             stored === 'dark' ||
             (stored === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
           document.documentElement.classList.toggle('dark', dark);
+          if (stored !== null) {
+            for (const meta of document.querySelectorAll('meta[data-scheme]')) {
+              meta.media = meta.dataset.scheme === stored ? 'all' : 'not all';
+            }
+          }
         } catch {
           /* Storage unavailable (private mode); fall through to light. */
         }
@@ -177,20 +199,6 @@ const structuredData = {
         <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
       )
     }
-
-    {/*
-      These match --site-bg: the header is a capsule floating on the page with
-      the ground showing round it, so the browser chrome sits directly above the
-      ground, not above ink. Matching the panel would put a dark strip over the
-      light gap the capsule floats in.
-
-      ⚠️ They duplicate the token in both themes and have to be changed with it.
-      They also key on the media query rather than the .dark class, so a manual
-      toggle does not move the chrome - see open item 1 in
-      docs/design-system.md.
-    */}
-    <meta name="theme-color" content="#eceef2" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#090b10" media="(prefers-color-scheme: dark)" />
 
     {/*
       Vuk's own V mark, cropped in tight from the master in src/assets. The 32px

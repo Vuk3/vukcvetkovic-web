@@ -693,7 +693,7 @@ const fr: Dict = {
             {
               title: "Le premier clic est sûr",
               description:
-                "Les mines sont placées après lui, en épargnant l’endroit où vous avez appuyé :le premier coup ne peut donc pas faire perdre et ouvre toujours une zone dégagée. Commencez où vous voulez.",
+                "Les mines sont placées après lui, en épargnant l’endroit où vous avez appuyé : le premier coup ne peut donc pas faire perdre et ouvre toujours une zone dégagée. Commencez où vous voulez.",
             },
             {
               title: "Un nombre compte ses voisines",

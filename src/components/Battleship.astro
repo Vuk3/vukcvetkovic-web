@@ -217,6 +217,13 @@ const [notesLead, ...notes] = copy.close.paragraphs;
             </div>
           </div>
 
+          {/*
+            The two groups of buttons share one box, so that when the placing
+            group has to take a line of its own it lands under the other at
+            the right end, not at the left edge. See "The menu is four groups"
+            in styles/games/battleship.css.
+          */}
+          <div class="bs-buttons">
           <div class="game-actions">
             <SoundToggle lang={lang} />
 
@@ -249,6 +256,7 @@ const [notesLead, ...notes] = copy.close.paragraphs;
               <Play class="shrink-0" aria-hidden="true" />
               {copy.start}
             </button>
+          </div>
           </div>
         </div>
 
