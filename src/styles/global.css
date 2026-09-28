@@ -1748,6 +1748,40 @@
   animation-duration: 300ms;
 }
 
+/*
+ * The theme toggle's change: the new theme spreads over the page as a circle
+ * from the button. ThemeToggle.astro runs the flip inside a same-document
+ * view transition, marks the root with `data-theme-flip` for its length, and
+ * writes the button's centre and its distance to the farthest corner as
+ * `--flip-x`, `--flip-y` and `--flip-r`. The old page stays whole underneath
+ * and the new one is uncovered over it.
+ *
+ * ⚠️ Every other name is dropped while it runs. A card's title or a board is
+ * a layer of its own in a transition, above the page, so it would change
+ * theme all at once while the circle was still on its way.
+ */
+:root[data-theme-flip] * {
+  view-transition-name: none !important;
+}
+
+:root[data-theme-flip]::view-transition-old(root) {
+  animation: none;
+}
+
+:root[data-theme-flip]::view-transition-new(root) {
+  animation: theme-flip 650ms var(--site-ease);
+}
+
+@keyframes theme-flip {
+  from {
+    clip-path: circle(0 at var(--flip-x) var(--flip-y));
+  }
+
+  to {
+    clip-path: circle(var(--flip-r) at var(--flip-x) var(--flip-y));
+  }
+}
+
 /* A name with no partner on the other page - the other cards' titles, on
    the way out - leaves with the rest of the page, at the page's own 250ms,
    rather than hanging over the new one for the length of a flight. */

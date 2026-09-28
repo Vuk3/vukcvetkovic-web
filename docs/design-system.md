@@ -501,6 +501,23 @@ back and a language switch, where the title changes words in place.
   at 1280x800, 1440x900 and on a phone, and it assembles as it scrolls in, so the card's
   small one would have flown off the screen into an empty frame.
 
+### The theme spreads from the toggle
+
+Changing theme uncovers the new one as a circle growing from the sun or moon button to the
+farthest corner, over 650ms on the standard ease. [ThemeToggle.astro](../src/components/ThemeToggle.astro)
+runs its flip inside a same-document view transition, marks the root with
+`data-theme-flip` while it runs, and writes the button's centre and the radius as
+`--flip-x`, `--flip-y` and `--flip-r`. The `theme-flip` rules in global.css leave the old
+page whole underneath and clip the new one to the circle.
+
+- ⚠️ **Every other `view-transition-name` is dropped while it runs.** A card's title or a
+  board is a layer of its own in a transition, above the page, so it changed theme all at
+  once while the circle was still on its way.
+- Without `startViewTransition`, or with reduced motion asked for, the theme simply
+  changes. Firefox is the case today.
+- It is the one change to the site's script budget since the redesign: the toggle's block
+  grew by about half a kilobyte, and it is still inline.
+
 ---
 
 ## 6. The request diagram
@@ -2210,6 +2227,8 @@ centred in the space between the capsule and the footer on a tall screen.
 
 ## Changelog
 
+- 2026-09-28 - the theme toggle uncovers the new theme as a circle growing from the button,
+  through a same-document view transition (§5).
 - 2026-09-28 - a project or game card opens into its page: the title grows into the page
   title and a game's picture into its board, by paired `view-transition-name`s (§5).
 - 2026-09-28 - the request diagrams' packets run their lines by `offset-path`, round every

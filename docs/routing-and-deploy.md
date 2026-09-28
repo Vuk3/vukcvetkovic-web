@@ -249,7 +249,7 @@ weight on every page.
 
 The four `<script>` blocks - the pre-paint theme script, the theme toggle, the disclosure
 dismissal and the active-section indicator - are all small enough that Astro inlines them
-into each page rather than emitting a bundle. About 2 KB of JS per page (0.9 KB gz), in a 36 KB gz home
+into each page rather than emitting a bundle. About 2.6 KB of JS per page (1.1 KB gz), in a 36 KB gz home
 page, with no extra request. Keep it that way: see [src/components/CLAUDE.md](../src/components/CLAUDE.md).
 
 Eight of the files in `_astro` are the seven game engines and the piece they share. 2048 is
@@ -370,6 +370,8 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-09-28 - the theme toggle spreads the new theme from the button through a view
+  transition, so the four inline blocks are about 2.6 KB (1.1 KB gz).
 - 2026-09-27 - the theme script and the toggle point the `theme-color` tags at a chosen
   theme, so the four inline blocks are about 2 KB (0.9 KB gz). The two tags moved above the
   theme script.

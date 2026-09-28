@@ -7,7 +7,7 @@ reference: **[docs/design-system.md](../../docs/design-system.md)**.
 
 Three woff2 faces, a handful of webp variants, and no CSS file either: every stylesheet is
 inlined into the documents that use it. The four `<script>` blocks that exist are small
-enough that Astro inlines them into each page too - about 2 KB total, no extra request.
+enough that Astro inlines them into each page too - about 2.6 KB total, no extra request.
 
 ⚠️ **The exceptions are the seven games**, [Game2048.astro](./Game2048.astro),
 [Minesweeper.astro](./Minesweeper.astro), [Memory.astro](./Memory.astro),

@@ -32,7 +32,7 @@ const dict = getDict(lang);
   // The class is already set by the inline script in <head>; this only flips it,
   // and points the browser's bar at the chosen theme's colour (see the
   // theme-color tags in Base.astro).
-  document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => {
+  const flip = () => {
     const isDark = document.documentElement.classList.toggle('dark');
     const chosen = isDark ? 'dark' : 'light';
     for (const meta of document.querySelectorAll<HTMLMetaElement>('meta[data-scheme]')) {
@@ -43,5 +43,26 @@ const dict = getDict(lang);
     } catch {
       /* Storage unavailable; the choice just will not persist. */
     }
+  };
+
+  // The new theme spreads over the page as a circle from the button: a view
+  // transition whose new picture is clipped to a circle growing from the
+  // button's centre to the farthest corner. The rules are `theme-flip` in
+  // global.css, and they read the three lengths written here. Without view
+  // transitions, or with less motion asked for, the theme simply changes.
+  document.querySelector('[data-theme-toggle]')?.addEventListener('click', (event) => {
+    const root = document.documentElement;
+    if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      flip();
+      return;
+    }
+    const { left, top, width, height } = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = left + width / 2;
+    const y = top + height / 2;
+    root.style.setProperty('--flip-x', `${x}px`);
+    root.style.setProperty('--flip-y', `${y}px`);
+    root.style.setProperty('--flip-r', `${Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y))}px`);
+    root.dataset.themeFlip = '';
+    document.startViewTransition(flip).finished.finally(() => delete root.dataset.themeFlip);
   });
 </script>
