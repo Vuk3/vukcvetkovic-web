@@ -474,9 +474,10 @@ const meta = [
           Numbered, because a request genuinely runs in this order and the
           number is the only thing that can carry it; the `<ol>` says it to a
           screen reader, so the drawn figure is hidden. Two digits so the disc
-          does not resize at the tenth step. The line after each number runs
-          on across the gap into the next tile, which is what makes a row of
-          them read as a sequence rather than a set.
+          does not resize at the tenth step. The line after a number runs on
+          across the gap into the next tile, which is what makes a row of them
+          read as a sequence rather than a set, and a tile that ends its row
+          has none.
         */}
         <ol class="proj-fit">
           {copy.steps.map((step, index) => (

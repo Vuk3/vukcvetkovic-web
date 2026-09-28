@@ -486,14 +486,17 @@
   }
 
   /*
-   * The connector: a 2px line from the number to the tile's edge, in the
-   * request diagram's own weight and colour. Where the next step sits beside
-   * this one it runs on across the gap and lands on that tile's edge with an
-   * arrowhead - `data-end-lg` / `data-end-sm` mark the last tile of each row,
-   * which is where it stops instead. On a phone the steps are a column, and
-   * the connector turns into a line down the gap from disc to disc.
+   * The connector: a 2px line from the number, in the request diagram's own
+   * weight and colour, across the gap and onto the next tile's edge with an
+   * arrowhead. It is drawn only where the next step sits beside this one:
+   * `data-end-lg` / `data-end-sm` mark the last tile of each row, and there,
+   * or anywhere on a phone, where every tile ends its row, the number stands
+   * alone. Stopped at the tile's own edge instead, the line led nowhere. On a
+   * phone the steps are a column, and the connector is a line down the gap
+   * from disc to disc.
    */
   .proj-step-line {
+    display: none;
     position: relative;
     flex: 1;
     height: 2px;
@@ -511,7 +514,6 @@
     translate: 0 -50%;
     background-color: inherit;
     clip-path: polygon(0 0, 100% 50%, 0 100%);
-    display: none;
   }
 
   @media (max-width: 39.99rem) {
@@ -531,21 +533,15 @@
 
   @media (min-width: 40rem) and (max-width: 63.99rem) {
     .proj-step:not([data-end-sm]) .proj-step-line {
-      margin-right: calc(-1 * (var(--card-pad) + var(--site-gap)) - 1px);
-    }
-
-    .proj-step:not([data-end-sm]) .proj-step-line::after {
       display: block;
+      margin-right: calc(-1 * (var(--card-pad) + var(--site-gap)) - 1px);
     }
   }
 
   @media (min-width: 64rem) {
     .proj-step:not([data-end-lg]) .proj-step-line {
-      margin-right: calc(-1 * (var(--card-pad) + var(--site-gap)) - 1px);
-    }
-
-    .proj-step:not([data-end-lg]) .proj-step-line::after {
       display: block;
+      margin-right: calc(-1 * (var(--card-pad) + var(--site-gap)) - 1px);
     }
   }
 

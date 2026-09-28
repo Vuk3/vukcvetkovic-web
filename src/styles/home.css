@@ -170,9 +170,37 @@
     gap: 0.6rem;
   }
 
-  /* 5rem is what puts three across a 360 phone and eleven across a desktop. */
+  /* 5rem is what puts eleven across a desktop. */
   .hero-tray > .mark-tile {
     flex: 1 1 5rem;
+  }
+
+  /*
+   * On a phone, four to a row and a size down: eleven set 4, 4 and 3, with
+   * the last three widening to the edge, three rows where the full-size tiles
+   * took four and pushed About a screen further down. Two rows would be six
+   * across at about 48px, and "MongoDB" does not fit that at the 11px that is
+   * the least any word on the site sets at.
+   */
+  @media (max-width: 39.99rem) {
+    .hero-tray {
+      gap: 0.5rem;
+    }
+
+    .hero-tray > .mark-tile {
+      flex-basis: calc((100% - 3 * 0.5rem) / 4);
+      gap: 0.4rem;
+      padding: 0.7rem 0.3rem 0.6rem;
+    }
+
+    .hero-tray .mark-tile-icon {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
+
+    .hero-tray .mark-tile-name {
+      font-size: 0.8125rem;
+    }
   }
 
   /*
@@ -629,8 +657,10 @@
    * beat is the previous one plus that window, so moving one means moving
    * everything after it.
    *
-   * Time-based rather than scroll-driven. A packet only shows on a line that
-   * has been drawn, because the line's own clip hides it until then.
+   * Time-based rather than scroll-driven. The diagram arrives whole, with the
+   * stage's `reveal`, so a packet never runs to a group that is not there
+   * yet - which is what built up group by group along the flow it did, a dot
+   * reaching the end of Data's line with Data still to come.
    */
   @media (prefers-reduced-motion: no-preference) {
     .skills-grid {
@@ -688,95 +718,6 @@
 
       .skill-link:is([data-link='frontend'], [data-link='data']) .skill-pk-back {
         animation-name: skills-pk-left;
-      }
-    }
-  }
-
-  /* ---- The assembly ----
-   *
-   * The diagram builds as it scrolls in, in the order the request takes it:
-   * Frontend, its line, Backend, the two lines out, then Data and Cloud.
-   * Tiles rise along the flow and lines draw themselves from where they start
-   * by a clip. Longhands throughout, because the `animation` shorthand resets
-   * the timeline and the range.
-   *
-   * In the column each element runs on its own `view()`, since the stage is
-   * taller than a phone and one timeline would hold the top tiles back until
-   * the foot arrived - the page's own order sequences them.
-   *
-   * ⚠️ In the row the stage is one named timeline and `--step` slices it. The
-   * last range ends at `entry 94%`, and `entry` is measured in the stage's
-   * height, so the drawing is finished the moment its foot is on screen at
-   * any viewport. A `cover` range there would still be drawing with the whole
-   * diagram in view.
-   *
-   * Inside both guards, as everywhere on the site: without scroll-driven
-   * animation, or with reduced motion asked for, nothing is ever hidden.
-   */
-  @media (prefers-reduced-motion: no-preference) {
-    @supports (animation-timeline: view()) {
-      .skills-stage {
-        view-timeline-name: --skills;
-        view-timeline-axis: block;
-      }
-
-      .skills-grid > .skill-group,
-      .skill-link {
-        --in: 0 24px;
-
-        animation-timing-function: var(--site-ease-out);
-        animation-fill-mode: both;
-        animation-timeline: view();
-        animation-range: cover 20px cover 240px;
-      }
-
-      .skills-grid > .skill-group {
-        animation-name: skills-rise;
-      }
-
-      .skill-link {
-        --clip-from: inset(-16px -16px 100% -16px);
-
-        animation-name: skills-draw;
-      }
-
-      .skill-group[data-group='frontend'] {
-        --step: 0;
-      }
-
-      .skill-link[data-link='frontend'] {
-        --step: 1;
-      }
-
-      .skill-group[data-group='backend'] {
-        --step: 2;
-      }
-
-      .skill-link:is([data-link='data'], [data-link='cloud']) {
-        --step: 3;
-      }
-
-      .skill-group:is([data-group='data'], [data-group='cloud']) {
-        --step: 4;
-      }
-
-      @container skills (min-width: 52rem) {
-        .skills-grid > .skill-group,
-        .skill-link {
-          --in: -24px 0;
-
-          animation-timeline: --skills;
-          animation-range: entry calc(4% + var(--step) * 16%) entry calc(30% + var(--step) * 16%);
-        }
-
-        /* Cloud arrives from Backend, above it. */
-        .skill-group[data-group='cloud'] {
-          --in: 0 -24px;
-        }
-
-        .skill-link:is([data-link='frontend'], [data-link='data']) {
-          --clip-from: inset(-16px 100% -16px -16px);
-        }
       }
     }
   }
@@ -1047,8 +988,11 @@
     }
   }
 
+  /* The crest and the degree on one line, the thesis wrapping under them
+     across the whole tile. */
   .edu {
     display: flex;
+    flex-wrap: wrap;
     align-items: flex-start;
     gap: clamp(1rem, 2vw, 1.5rem);
   }
@@ -1067,6 +1011,14 @@
     rotate: -12deg;
   }
 
+  /* The degree takes the rest of the crest's line, however long its name:
+     left to its own width in a wrapping row, it dropped under the crest on a
+     phone. */
+  .edu-text {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
   .edu-degree {
     font-stretch: 112%;
     font-weight: 660;
@@ -1080,6 +1032,58 @@
     color: var(--site-muted);
   }
 
+  /*
+   * The degree's thesis: a recessed tile inside the tile, the whole of it the
+   * link to the project's write-up, which is what the tile's right half stood
+   * empty for. The label names it, the title is the project's, and the
+   * tagline says what it was in one line. It takes the accent on its edge
+   * under the pointer, as a card-hover tile does.
+   */
+  .edu-thesis {
+    display: grid;
+    flex-basis: 100%;
+    gap: 0.35rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-inner);
+    background-color: var(--site-inset);
+    padding: 1rem 1.15rem 1.1rem;
+    transition: border-color 250ms var(--site-ease);
+  }
+
+  .edu-thesis:hover,
+  .edu-thesis:focus-visible {
+    border-color: color-mix(in oklab, var(--site-accent) 55%, var(--site-hairline));
+  }
+
+  .edu-thesis > .tile-label {
+    margin-bottom: 0.3rem;
+  }
+
+  .edu-thesis-title {
+    font-stretch: 110%;
+    font-weight: 640;
+    font-size: 1.125rem;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+  }
+
+  .edu-thesis-line {
+    color: var(--site-muted);
+  }
+
+  /* On a phone the thesis is its label and its title, the link the tile is
+     for: with the tagline too, the two tiles added 566px to a page that was
+     already the longest thing on the site. */
+  @media (max-width: 39.99rem) {
+    .edu-thesis {
+      padding: 0.8rem 0.95rem 0.9rem;
+    }
+
+    .edu-thesis-line {
+      display: none;
+    }
+  }
+
   /* ---- Services -------------------------------------------------------- */
 
   .svc-bento {
@@ -1087,15 +1091,17 @@
     gap: var(--site-gap);
   }
 
+  /*
+   * Two by two from a tablet up, never four across. With its chips and its
+   * proof at the foot, a tile in a row of four was under 200px of text: the
+   * first service's description ran twice the others', and the tiles beside it
+   * stood with up to 229px of nothing above their proof. Two across, that is
+   * 84px at the most, and four equal columns of icon and text were also the
+   * template look the section is here to get away from.
+   */
   @media (min-width: 40rem) {
     .svc-bento {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .svc-bento {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
 
@@ -1134,6 +1140,83 @@
 
   .svc-body {
     color: var(--site-muted);
+  }
+
+  /* A size under the project cards' tags, so two share a row in the 195px a
+     tile has at the narrowest four-across: at full size the first tile's four
+     stacked one to a line and it stood a hundred pixels over the others. */
+  .svc-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .svc-tags > .tag {
+    gap: 0.35rem;
+    padding: 0.1rem 0.6rem;
+    font-size: 0.8125rem;
+  }
+
+  /*
+   * Where the service is shown done, at the foot of the tile whatever the text
+   * above it runs to (`margin-top: auto`), so the four line up along the row.
+   * Education's thesis tile in small: recessed, the whole of it the link, the
+   * accent on its edge under the pointer.
+   */
+  .svc-proof {
+    display: grid;
+    gap: 0.3rem;
+    margin-top: auto;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-inner);
+    background-color: var(--site-inset);
+    padding: 0.8rem 0.95rem 0.9rem;
+    transition: border-color 250ms var(--site-ease);
+  }
+
+  .svc-proof:hover,
+  .svc-proof:focus-visible {
+    border-color: color-mix(in oklab, var(--site-accent) 55%, var(--site-hairline));
+  }
+
+  .svc-proof-name {
+    font-stretch: 108%;
+    font-weight: 620;
+    line-height: 1.3;
+    letter-spacing: -0.012em;
+  }
+
+  /*
+   * On a phone the icon sits beside the title instead of on a row of its
+   * own, and the proof's label and name share a line where they fit: the
+   * chips and the proof added 585px to the section, and this takes back what
+   * the tiles can spare without losing either.
+   */
+  @media (max-width: 39.99rem) {
+    .svc-card {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      gap: 0.9rem 1rem;
+    }
+
+    .svc-card > :not(.svc-icon, .svc-title) {
+      grid-column: 1 / -1;
+    }
+
+    .svc-icon {
+      width: 3rem;
+      height: 3rem;
+      margin-bottom: 0;
+    }
+
+    .svc-proof {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.3rem 0.75rem;
+      padding: 0.65rem 0.85rem;
+    }
   }
 
   /* ---- Contact --------------------------------------------------------- */
@@ -1288,42 +1371,11 @@
 }
 
 /*
- * The Skills diagram's assembly and its loop. The rise, the draw and the ring
- * are the request diagram's keyframes under names of their own, since
- * flow.css is not on this page. Its packets are simpler than that diagram's:
- * every line runs straight from one group to the next, with no corner and no
- * join, so a translate eased end to end is the whole run.
- *
- * A group rising along the flow. `translate` and `scale`, never `transform`,
- * for the reason in global.css: the mark tiles inside move on hover by
- * `transform`, and an animation holding it would eat the hover.
+ * The Skills diagram's loop, and its ring, the request diagram's under a
+ * name of its own since flow.css is not on this page. Its packets are simpler
+ * than that diagram's: every line runs straight from one group to the next,
+ * with no corner and no join, so a translate eased end to end is the whole run.
  */
-@keyframes skills-rise {
-  from {
-    opacity: 0;
-    translate: var(--in);
-    scale: 0.96;
-  }
-
-  to {
-    opacity: 1;
-    translate: none;
-    scale: none;
-  }
-}
-
-/* A line drawing itself by uncovering. The clip reaches 16px past the box on
-   every other side, so the head and a packet's ring are never shaved. */
-@keyframes skills-draw {
-  from {
-    clip-path: var(--clip-from);
-  }
-
-  to {
-    clip-path: inset(-16px);
-  }
-}
-
 /* A packet along its line in the first 11% of the cycle, fading in as it
    leaves and out as it lands, so it reads as arriving rather than
    vanishing. Out is down or right, back is up or left. */

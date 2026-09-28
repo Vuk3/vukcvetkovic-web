@@ -46,7 +46,7 @@ const de: Dict = {
     label: 'Über mich',
     paragraphs: [
       'Ich arbeite an Kundenprojekten vom ersten Datenmodell bis zum Deployment auf AWS. Dabei fange ich immer bei der Domäne an: welche Daten es gibt, wer darauf zugreifen darf und mit welchen Systemen sie sprechen müssen. Daraus ergeben sich die API, die Services und die React-Oberfläche.',
-      'Ich habe einen Master in Software Engineering. In meiner Masterarbeit habe ich zwei Machine-Learning-Ökosysteme anhand derselben Aufgabe verglichen: ein YOLOv8m-Modell in Python und ein ML.NET-Modell in .NET, beide hinter einem gemeinsamen NestJS-Gateway und einem React-Frontend. Für meine Bachelorarbeit habe ich die Verschlüsselungsverfahren RC6 und XXTEA nach ihren Spezifikationen implementiert.',
+      'Ich habe einen Master in Software Engineering. In meiner Masterarbeit habe ich zwei Machine-Learning-Ökosysteme anhand derselben Aufgabe verglichen: ein YOLOv8m-Modell in Python und ein ML.NET-Modell in .NET, beide hinter einem gemeinsamen NestJS-Gateway und einem React-Frontend.',
       'Das beste Beispiel für meine Frontend-Arbeit ist diese Website selbst: vier Sprachen und sieben Spiele, geschrieben ohne Canvas und ohne Spielbibliothek. Zu jedem Spiel gibt es einen Text darüber, wie es gebaut ist.',
     ],
   },
@@ -87,10 +87,12 @@ const de: Dict = {
     degrees: {
       master: {
         degree: 'Master, Software Engineering',
+        thesis: 'Masterarbeit',
         school: 'Fakultät für Elektronik, Universität Niš',
       },
       bachelor: {
         degree: 'Bachelor, Informatik',
+        thesis: 'Bachelorarbeit',
         school: 'Fakultät für Elektronik, Universität Niš',
       },
     },
@@ -1335,6 +1337,7 @@ const de: Dict = {
 
   services: {
     label: 'Womit ich helfen kann',
+    proof: 'In der Praxis',
     items: [
       {
         title: 'Backend- und API-Entwicklung',

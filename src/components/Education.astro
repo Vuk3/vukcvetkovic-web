@@ -1,8 +1,9 @@
 ---
+import { FileText } from '@lucide/astro';
 import { Image } from 'astro:assets';
 import elfak from '../assets/elfak.webp';
 import type { Lang } from '../i18n/types';
-import { getDict } from '../i18n/utils';
+import { getDict, localizePath } from '../i18n/utils';
 import { site } from '../site';
 import Section, { type SectionTone } from './Section.astro';
 
@@ -20,14 +21,19 @@ const crestSize = 64;
 
 {/*
   Two tiles side by side: the crest large, the degree in the display voice, the
-  school, and the years. The shorter rhythm keeps it the quietest block on the
-  page, so it does not compete with Projects.
+  school, and the years, then the degree's thesis across the foot of the tile -
+  both are projects on the site, so each is its title and tagline, and a link to
+  its write-up. The shorter rhythm keeps it the quietest block on the page, so
+  it does not compete with Projects.
 */}
 <Section id="education" label={dict.education.label} tone={tone} space="lite">
   <ol class="edu-grid">
     {
       site.education.map((degree) => {
         const copy = dict.education.degrees[degree.id];
+        const thesis = site.projects.find((project) => project.id === degree.thesis);
+        if (!thesis) throw new Error(`${degree.id}: no project "${degree.thesis}" for its thesis.`);
+        const thesisCopy = dict.projects.items[thesis.id];
         return (
           <li class="card edu reveal-item">
             {/*
@@ -49,11 +55,22 @@ const crestSize = 64;
               class="edu-crest"
             />
 
-            <div class="min-w-0">
+            <div class="edu-text">
               <h3 class="edu-degree">{copy.degree}</h3>
               <p class="edu-school">{copy.school}</p>
               <p class="tag mt-4">{degree.period}</p>
             </div>
+
+            <a href={localizePath(`/projects/${thesis.slug}/`, lang)} class="edu-thesis">
+              <span class="tile-label">
+                <span class="tile-icon">
+                  <FileText aria-hidden="true" />
+                </span>
+                {copy.thesis}
+              </span>
+              <span class="edu-thesis-title">{thesisCopy.title}</span>
+              <span class="edu-thesis-line">{thesisCopy.tagline}</span>
+            </a>
           </li>
         );
       })

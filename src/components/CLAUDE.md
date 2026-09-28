@@ -116,7 +116,8 @@ Decided by one question: is the element in view at first paint?
 | a section heading | nothing to add - Section.astro renders it with `.reveal-line` |
 | a block arriving on scroll | `reveal` |
 | a repeated tile that should stagger within its grid | `reveal-item` |
-| the request diagram, the Skills diagram | none of them - each assembles against its own stage's `view()` timeline, and a `reveal` on top would fade the block in and then assemble it inside itself |
+| the request diagram | none - it assembles against its own stage's `view()` timeline, and a `reveal` on top would fade the block in and then assemble it inside itself |
+| the Skills diagram | `reveal` on its stage, so the whole drawing arrives at once and its loop never runs to a group that is not there yet |
 | an Experience tile | none - it slides in off the rail on its own `--role` timeline, which the rail inside it uses to stay put (see home.css) |
 
 `reveal-item` staggers by `nth-child`, so it goes on the element directly inside the grid.

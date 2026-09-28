@@ -1,8 +1,10 @@
 ---
-import { Braces, CloudCog, Layers, ScanSearch } from '@lucide/astro';
+import { Braces, Briefcase, CloudCog, FolderOpen, Layers, ScanSearch } from '@lucide/astro';
 import type { Lang } from '../i18n/types';
-import { getDict } from '../i18n/utils';
+import { getDict, localizePath } from '../i18n/utils';
+import { site } from '../site';
 import Section, { type SectionTone } from './Section.astro';
+import TechIcon from './TechIcon.astro';
 
 interface Props {
   lang: Lang;
@@ -19,19 +21,51 @@ const dict = getDict(lang);
  * a fifth service would simply render without an icon until one is added here.
  */
 const icons = [Braces, Layers, CloudCog, ScanSearch];
+
+/*
+ * What backs each service, from `services` in src/site.ts, by the same
+ * position. Enforced where it would otherwise turn into a silent gap: a
+ * service with nothing under it, or a proof for a service that is not there.
+ */
+if (site.services.length !== dict.services.items.length) {
+  throw new Error(
+    `site.services has ${site.services.length} entries, services.items has ${dict.services.items.length}.`,
+  );
+}
+
+/** Where a service is shown done: a project's page, or its role in Experience. */
+const proofOf = (proof: (typeof site.services)[number]['proof']) => {
+  if ('project' in proof) {
+    const project = site.projects.find((entry) => entry.id === proof.project);
+    if (!project) throw new Error(`services: no project "${proof.project}".`);
+    return {
+      Icon: FolderOpen,
+      href: localizePath(`/projects/${project.slug}/`, lang),
+      name: dict.projects.items[project.id].title,
+    };
+  }
+  const role = site.experience.find((entry) => entry.id === proof.role);
+  if (!role) throw new Error(`services: no role "${proof.role}".`);
+  return { Icon: Briefcase, href: '#experience', name: role.company };
+};
 ---
 
 {/*
-  Four tiles in one row on a desktop, two by two on a tablet. Each opens with a
+  Four tiles, two by two from a tablet up. Each opens with a
   large icon, which is what gives four blocks of text something to be read by
   at a glance - four identical title-and-paragraph cards were the plainest thing
-  on the old page.
+  on the old page. Under the text, what the service is done in, and at the foot
+  the place on the site it is shown done, so each tile ends on proof rather than
+  on a promise.
 */}
 <Section id="services" label={dict.services.label} tone={tone}>
   <ul class="svc-bento">
     {
       dict.services.items.map((item, index) => {
         const Icon = icons[index];
+        const service = site.services[index];
+        const proof = proofOf(service.proof);
+
         return (
           <li class="card svc-card reveal-item">
             {Icon && (
@@ -41,6 +75,27 @@ const icons = [Braces, Layers, CloudCog, ScanSearch];
             )}
             <h3 class="svc-title">{item.title}</h3>
             <p class="svc-body">{item.description}</p>
+
+            {service.tech.length > 0 && (
+              <ul class="svc-tags">
+                {service.tech.map((tech) => (
+                  <li class="tag">
+                    <TechIcon name={tech} class="tag-icon" />
+                    {tech}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <a href={proof.href} class="svc-proof">
+              <span class="tile-label">
+                <span class="tile-icon">
+                  <proof.Icon aria-hidden="true" />
+                </span>
+                {dict.services.proof}
+              </span>
+              <span class="svc-proof-name">{proof.name}</span>
+            </a>
           </li>
         );
       })

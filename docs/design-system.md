@@ -2084,7 +2084,9 @@ Each page has one memorable thing, and everything else is a bento that fills its
   column allows (§4), the lead at the column's full width, the buttons, the portrait framed
   at its own 3:4 beside them, and under both a tray of the eleven marks, landing one after
   another. The tray is a wrapping row whose tiles grow (`flex: 1 1 5rem`), so every row is
-  full: eleven across on a desktop, three across on a 360 phone.
+  full: eleven across on a desktop. On a phone the tiles are a size down and four to a row,
+  set 4, 4 and 3 in three rows where the full-size ones took four. Two rows would be six
+  across at about 48px, too narrow for "MongoDB" at the 11px floor.
 - ⚠️ **The portrait is never cropped in CSS.** Its frame is the photograph's own ratio to
   three decimal places, so `cover` crops nothing; framing it at any other ratio cuts the arm
   off at the edge or the head in half on a phone. It is not stretched to the row's height,
@@ -2098,8 +2100,10 @@ Each page has one memorable thing, and everything else is a bento that fills its
   894ms, so a clip, a mask or an opacity fade on it costs the score. webp rather than AVIF,
   which came out larger at this quality.
 - **About** is the opening statement across the full measure at display size, then the
-  other two paragraphs at 7 and 5 columns, labelled Education and Games. The Games tile is
-  the whole tile a link, on cobalt.
+  other two paragraphs at 7 and 5 columns, labelled Education and Games, which finish within
+  a line of each other in all four languages. The Education tile names the master's and its
+  thesis only: both theses are in Education, with their links. The Games tile is the whole
+  tile a link, on cobalt.
 - **Skills is a diagram of the stack**, drawn with the request diagram's method (§6) but
   written in home.css, because flow.css is on the project pages alone. Frontend, Backend
   and Data sit in a row with a line through each gap, and Cloud & DevOps runs across the foot
@@ -2119,9 +2123,10 @@ Each page has one memorable thing, and everything else is a bento that fills its
     in the row share their label and marks rows through a subgrid too, and so do Data and
     Cloud in the column, where "Cloud & DevOps" wraps.
   - The gaps are grid tracks rather than `gap`, so each line's area is exactly the gap it
-    crosses. In the row the stage is one named `view()` timeline and the assembly ends by
-    `entry 94%`; in the column every element runs its own `view()`, as the request diagram's
-    spine does.
+    crosses.
+  - ⚠️ **It arrives whole**, the stage one `reveal` like any block. Built group by group
+    along the flow as it scrolled in, the loop ran ahead of it: a packet reached the end of
+    Data's line with Data still to come, and the right of the row stood empty.
 - **Experience** is one wide tile per role: the company's initial, the name, the title and
   the period on the left, the bullets on the right at about 85 characters a line, the head
   at the top. A 2px rail runs from the first initial to the last, through the tiles and the
@@ -2143,11 +2148,22 @@ Each page has one memorable thing, and everything else is a bento that fills its
     timeline, so the line stays put and the tile comes in under it.
   - At rest, or without scroll-driven animation, the rail is whole and every initial it
     reaches is lit.
-- **Education** is two tiles with the crest at 4rem on its white disc.
+- **Education** is two tiles with the crest at 4rem on its white disc, and across the foot
+  of each its thesis: a recessed tile that is the whole of it a link to the project, with the
+  label ("Master's thesis"), the project's title and its tagline. Which project each thesis
+  was is `thesis` on the degree in site.ts. On a phone the tagline is left out: with it the
+  two tiles added 566px to the longest page on the site.
 - **Projects** is banded: the first project as one wide card, its text beside a large
   `FlowMini` that loops, then three cards with their `FlowMini` as a picture that runs on
   hover (see "Project cards" below).
-- **Services** is four tiles in one row, each opening with a large icon that turns on hover.
+- **Services** is four tiles, two by two from a tablet up, each opening with a large icon
+  that turns on hover, then its text, the technologies it is done in as tags, and at the
+  foot "In practice": the place on the site it is shown done, a project's page or the role
+  in Experience where no project is. The tags and the proof are `services` in site.ts, by
+  position, checked against the dictionaries at build. ⚠️ **Not four across**: in a row of
+  four the first description ran twice the others and the tiles beside it stood with up to
+  229px of nothing above their proof, and four equal icon-and-text columns were the
+  template look. On a phone the icon sits beside the title and the proof is one line.
 - **Contact** is the close, on ink: the intro at display size on cobalt with Contact me,
   beside the three channels.
 
@@ -2191,7 +2207,9 @@ flow.css.
 - **Architecture** is the five steps as a numbered sequence, 3 + 2 on a desktop and 2 + 2 + 1
   on a tablet, never two columns with a lonely fifth. Each step's accent disc has a line that
   runs across the gap to the next tile in its row and lands in an arrowhead, drawn as the
-  row scrolls in; on a phone it runs down the gap from disc to disc.
+  row scrolls in; on a phone it runs down the gap from disc to disc. ⚠️ **A tile that ends
+  its row has no line**, and on a phone none has one across: stopped at the tile's own edge,
+  it led nowhere.
 - **Results** is the table in a tile with the figures made visible: every ratio or time cell
   has a bar under its number (a ratio out of 1, a time as its share of the slowest run), and
   the best figure in each column - the highest ratio, the lowest time, never a count - is in
@@ -2252,6 +2270,11 @@ centred in the space between the capsule and the footer on a tall screen.
 
 ## Changelog
 
+- 2026-09-28 - the Skills diagram arrives whole with its stage's reveal instead of building
+  group by group, which let a packet run to a group not yet there (§10).
+- 2026-09-28 - Education carries each thesis as a link to its project, and About no longer
+  repeats the bachelor's; Services is two by two with tags and a proof per service; the
+  hero's tray is four across on a phone; a step that ends its row draws no line (§10).
 - 2026-09-28 - the hero steps back as the page scrolls past it: the tile shrinks a little
   and the portrait a little more (§5).
 - 2026-09-28 - Experience is a timeline: a rail from initial to initial that fills to the

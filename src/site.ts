@@ -38,9 +38,21 @@ interface Role {
   current?: boolean;
 }
 
+/**
+ * One of the services on the homepage, and what backs it. `tech` is what the
+ * service is done in, set as its chips. `proof` is where the site shows it
+ * done: a project's own page, or a role in Experience where no project is.
+ */
+interface Service {
+  tech: TechName[];
+  proof: { project: ProjectId } | { role: RoleId };
+}
+
 interface Degree {
   id: DegreeId;
   period: string;
+  /** The project the degree's thesis was, which its tile links to. */
+  thesis: ProjectId;
 }
 
 /** One row of a project's stack, as a service rather than as a category. */
@@ -195,7 +207,27 @@ const experience: Role[] = [
 ];
 
 /**
- * Degrees, newest first. Only the dates live here.
+ * The services, by position: one per entry of `services.items` in the
+ * dictionaries, in the same order, which Services.astro checks at build.
+ *
+ * Each proof is the place on the site the service is already shown. The API
+ * work is the object detection gateway and its two services, in Node.js and
+ * .NET. A whole feature by one person is Easy Breathe: the schema, the API and
+ * the app's screens. No project runs on AWS, so the cloud points at the role
+ * where it is done, and the review at the one where the work was taking over
+ * a live platform and reading other teams' projects.
+ */
+const services: Service[] = [
+  { tech: ["NestJS", "Node.js", "Express", ".NET"], proof: { project: "objectDetection" } },
+  { tech: ["React", "NestJS", "MongoDB"], proof: { project: "easyBreathe" } },
+  { tech: ["AWS", "Docker"], proof: { role: "ncoded" } },
+  { tech: [], proof: { role: "novateq" } },
+];
+
+/**
+ * Degrees, newest first. The dates and which project each thesis was live
+ * here: both theses are projects on the site, so a degree's tile carries its
+ * thesis rather than About repeating it.
  *
  * The school name sits in the dictionaries instead, unlike `company` above: a
  * company name is the same word in every language, while this faculty is
@@ -206,10 +238,12 @@ const education: Degree[] = [
   {
     id: "master",
     period: "2023 - 2026",
+    thesis: "objectDetection",
   },
   {
     id: "bachelor",
     period: "2019 - 2023",
+    thesis: "encryptix",
   },
 ];
 
@@ -484,6 +518,7 @@ export const site = {
 
   skillGroups,
   experience,
+  services,
   education,
   projects,
   games,

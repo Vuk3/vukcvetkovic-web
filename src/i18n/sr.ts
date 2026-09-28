@@ -46,7 +46,7 @@ const sr: Dict = {
     label: "O meni",
     paragraphs: [
       "Radim na klijentskim projektima od prvog modela podataka do deploymenta na AWS-u. Uvek krećem od domena: koji su podaci, ko sme da im pristupa i sa kojim sistemima treba da komuniciraju, a iz toga proizlaze API, servisi i React interfejs.",
-      "Završio sam master studije softverskog inženjerstva. U master radu sam poredio dva ekosistema mašinskog učenja na istom zadatku: YOLOv8m model u Python-u i ML.NET model u .NET-u, iza jednog NestJS gateway-a i jednog React frontenda. Za diplomski rad sam implementirao algoritme šifrovanja RC6 i XXTEA po njihovim specifikacijama.",
+      "Završio sam master studije softverskog inženjerstva. U master radu sam poredio dva ekosistema mašinskog učenja na istom zadatku: YOLOv8m model u Python-u i ML.NET model u .NET-u, iza jednog NestJS gateway-a i jednog React frontenda.",
       "Najbolji primer mog frontend rada je sam ovaj sajt: četiri jezika i sedam igara napisanih bez canvasa i bez biblioteke za igre. Uz svaku igru postoji tekst o tome kako je napravljena.",
     ],
   },
@@ -87,10 +87,12 @@ const sr: Dict = {
     degrees: {
       master: {
         degree: "Master, Softversko inženjerstvo",
+        thesis: "Master rad",
         school: "Elektronski fakultet, Univerzitet u Nišu",
       },
       bachelor: {
         degree: "Osnovne studije, Računarstvo i informatika",
+        thesis: "Diplomski rad",
         school: "Elektronski fakultet, Univerzitet u Nišu",
       },
     },
@@ -1339,6 +1341,7 @@ const sr: Dict = {
 
   services: {
     label: "U čemu mogu da pomognem",
+    proof: "U praksi",
     items: [
       {
         title: "Razvoj backenda i API-ja",

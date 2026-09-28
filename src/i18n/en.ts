@@ -50,7 +50,7 @@ const en = {
     label: "About",
     paragraphs: [
       "I work on client projects from the first data model to the deployment on AWS. I always start from the domain: what the data is, who can access it, and which systems it has to talk to, and the API, the services and the React interface follow from that.",
-      "I have a master’s in software engineering. My thesis compared two machine learning ecosystems on the same task: a YOLOv8m model in Python and an ML.NET model in .NET, behind one NestJS gateway and one React front end. For my bachelor’s thesis I implemented the RC6 and XXTEA ciphers from their specifications.",
+      "I have a master’s in software engineering. My thesis compared two machine learning ecosystems on the same task: a YOLOv8m model in Python and an ML.NET model in .NET, behind one NestJS gateway and one React front end.",
       "The best example of my front end work is this site itself: four languages, and seven games written without a canvas or a game library. Each game has a write-up on how it was built.",
     ],
   },
@@ -91,10 +91,12 @@ const en = {
     degrees: {
       master: {
         degree: "MSc, Software Engineering",
+        thesis: "Master's thesis",
         school: "Faculty of Electronic Engineering, University of Niš",
       },
       bachelor: {
         degree: "BSc, Computing and Informatics",
+        thesis: "Bachelor's thesis",
         school: "Faculty of Electronic Engineering, University of Niš",
       },
     },
@@ -1522,6 +1524,7 @@ const en = {
 
   services: {
     label: "What I can help with",
+    proof: "In practice",
     items: [
       {
         title: "Backend and API development",
