@@ -215,8 +215,14 @@
    * it is and the gap to About from opening up. The portrait scales on its
    * frame, not the photograph, which already carries the entrance's zoom and
    * the hover's. `scale`, never `transform`, the site's rule for keyframes.
+   *
+   * ⚠️ **From 60rem only**, where the copy and the portrait sit side by side
+   * and the tile fits the screen (0.85 of it at 1440 x 900). Stacked it is
+   * 1.46 screens tall on a 390 phone and 1.26 on a tablet, so its exit starts
+   * after 89px of scroll, and the portrait and the tray shrank under the
+   * reader's thumb while they were still being read.
    */
-  @media (prefers-reduced-motion: no-preference) {
+  @media (prefers-reduced-motion: no-preference) and (min-width: 60rem) {
     @supports (animation-timeline: view()) {
       .hero-tile {
         view-timeline-name: --hero;

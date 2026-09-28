@@ -396,8 +396,9 @@ sit at 100% and never animate.
   top reaching the top of the screen to its foot reaching it - so nothing moves before the
   reader scrolls. From the foot, so the part still on screen stays put and the gap to
   About does not open. On the frame, not the photograph, which already carries the
-  entrance's zoom and the hover's. On a phone the tile is about 1400px tall, so the same
-  scale is spread over a longer scroll and reads gentler.
+  entrance's zoom and the hover's. ⚠️ **From 60rem only**, where the tile fits the screen.
+  Stacked it is 1.46 screens tall on a phone, its exit starts after 89px of scroll, and
+  the portrait and the tray shrank while they were still being read.
 
 ⚠️ **Every keyframe moves with `translate`, `scale` and `rotate`, never `transform`.** An
 animation beats a normal declaration in the cascade, and `fill-mode: both` holds the last
@@ -2313,6 +2314,8 @@ centred in the space between the capsule and the footer on a tall screen.
 
 ## Changelog
 
+- 2026-09-28 - the hero steps back from 60rem only, and the phone footer's rules come after
+  the footer's own, which had kept the email over the name (§5, §10).
 - 2026-09-28 - the site a size smaller: display type, leads and card padding down about a
   sixth, body 16/17px, and a tile's detail a step under the page's text in the muted ink so
   a row reads as its titles. A project page lists its technologies straight after the
