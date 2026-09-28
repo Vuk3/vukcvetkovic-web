@@ -175,6 +175,41 @@
     flex: 1 1 5rem;
   }
 
+  /*
+   * The hero steps back as the page leaves it: the tile shrinks a little and
+   * the portrait inside it further, so the two sit at different depths and
+   * the picture reads as going away rather than the page as shrinking. Both
+   * run on the tile's own exit (`--hero`), from its top reaching the top of
+   * the screen to its foot reaching it, so nothing moves until the reader
+   * scrolls, and linear, so the depth follows the scroll exactly.
+   *
+   * The tile scales from its foot, which keeps the part still on screen where
+   * it is and the gap to About from opening up. The portrait scales on its
+   * frame, not the photograph, which already carries the entrance's zoom and
+   * the hover's. `scale`, never `transform`, the site's rule for keyframes.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .hero-tile {
+        view-timeline-name: --hero;
+        transform-origin: 50% 100%;
+        animation-name: hero-recede;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: --hero;
+        animation-range: exit-crossing 0% exit-crossing 100%;
+      }
+
+      .portrait {
+        animation-name: portrait-recede;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: --hero;
+        animation-range: exit-crossing 0% exit-crossing 100%;
+      }
+    }
+  }
+
   /* ---- About ----------------------------------------------------------- */
 
   /*
@@ -1215,6 +1250,25 @@
   to {
     scale: 1;
     filter: none;
+  }
+}
+
+/*
+ * The hero stepping back as it leaves, over its whole exit, so by the time a
+ * reader sees the end of it the tile is off the screen. 0.86 is a tile about
+ * 45px narrower on each side at 1440 halfway out and 90px at the end, and the
+ * portrait's extra 0.06 is what puts it a step behind the tile. 0.92 and 0.88
+ * were seen but read as barely there.
+ */
+@keyframes hero-recede {
+  to {
+    scale: 0.86;
+  }
+}
+
+@keyframes portrait-recede {
+  to {
+    scale: 0.8;
   }
 }
 

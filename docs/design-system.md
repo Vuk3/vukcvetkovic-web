@@ -382,6 +382,14 @@ sit at 100% and never animate.
   its frame out of a 1.22 zoom and a 14px blur, the tray's marks land one
   after another with an overshoot, and the dot before "Software engineer" sends a ring out
   every 2.4s. So does the current role's period.
+- **The hero steps back as the page leaves it.** The tile scales to 0.86 from its foot and
+  the portrait's frame to 0.8 from its middle, so the picture sits a step behind the tile.
+  Both run linear on the tile's own `--hero` view timeline over `exit-crossing` - from its
+  top reaching the top of the screen to its foot reaching it - so nothing moves before the
+  reader scrolls. From the foot, so the part still on screen stays put and the gap to
+  About does not open. On the frame, not the photograph, which already carries the
+  entrance's zoom and the hover's. On a phone the tile is about 1400px tall, so the same
+  scale is spread over a longer scroll and reads gentler.
 
 ⚠️ **Every keyframe moves with `translate`, `scale` and `rotate`, never `transform`.** An
 animation beats a normal declaration in the cascade, and `fill-mode: both` holds the last
@@ -2244,6 +2252,8 @@ centred in the space between the capsule and the footer on a tall screen.
 
 ## Changelog
 
+- 2026-09-28 - the hero steps back as the page scrolls past it: the tile shrinks a little
+  and the portrait a little more (§5).
 - 2026-09-28 - Experience is a timeline: a rail from initial to initial that fills to the
   middle of the screen as the page scrolls, with the tiles sliding in under it (§10).
 - 2026-09-28 - the theme toggle uncovers the new theme as a circle growing from the button,
