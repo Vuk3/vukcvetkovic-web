@@ -136,12 +136,22 @@ export interface FlowTech {
   exit: TechName[];
 }
 
+/**
+ * The colour a project is drawn in: the accent of its card and of its own
+ * page, so its request diagram, its step numbers and its result bars are all
+ * in it (`[data-hue]` in global.css). Four projects in four hues read as four
+ * products of one studio rather than one card four times. Language-neutral,
+ * so it lives here with the rest of what a project is.
+ */
+export type ProjectHue = "cobalt" | "violet" | "teal" | "green";
+
 /** Exported because the pages hand one to the components that render it. */
 export interface Project {
   id: ProjectId;
   /** Last path segment of the project's own page, under /projects/. */
   slug: string;
   year: string;
+  hue: ProjectHue;
   flowShape: FlowShape;
   flowTech: FlowTech;
   /**
@@ -286,6 +296,7 @@ const projects: Project[] = [
     id: "objectDetection",
     slug: "object-detection",
     year: "2026",
+    hue: "cobalt",
     /* The one round trip: the front end asks, and the front end is answered. */
     flowShape: "roundTrip",
     /*
@@ -356,6 +367,7 @@ const projects: Project[] = [
     id: "encryptix",
     slug: "encryptix",
     year: "2023",
+    hue: "violet",
     flowShape: "pipeline",
     /*
      * The folder is read by the Windows Forms client, and the three ciphers run
@@ -392,6 +404,7 @@ const projects: Project[] = [
     id: "networkTrafficAnalyzer",
     slug: "network-traffic-analyzer",
     year: "2024",
+    hue: "teal",
     flowShape: "pipeline",
     /*
      * A capture file runs on nothing, and the three protocol families are
@@ -432,6 +445,7 @@ const projects: Project[] = [
     id: "easyBreathe",
     slug: "easy-breathe",
     year: "2024",
+    hue: "green",
     flowShape: "pipeline",
     /*
      * The open-data endpoints are the agency's, not the app's, and the two

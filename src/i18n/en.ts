@@ -37,6 +37,8 @@ const en = {
      * whole, and the lead under it says where the weight sits.
      */
     role: "Software engineer",
+    /** Where he works from, beside the role over the name. */
+    location: "Niš, Serbia",
     positioning:
       "I work across the whole product, from the data model to production. I write the backend in Node.js (NestJS, Express) and .NET. On AWS I handle deployment and event-driven communication between services, and I build everything the user sees in React.",
     cta: "Contact me",

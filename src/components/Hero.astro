@@ -1,5 +1,5 @@
 ---
-import { Mail } from '@lucide/astro';
+import { MapPin, Mail } from '@lucide/astro';
 import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
 import type { Lang } from '../i18n/types';
@@ -29,36 +29,34 @@ const portrait = Object.values(portraits)[0]?.default;
  * The frame is the photograph's own 3:4, so nothing is cropped: no arm cut off
  * at the edge and, on a phone, no head cut in half.
  *
- * Three widths, not one. The largest is 2x the frame's 25rem on a desktop;
- * a phone shows the frame about 340px wide, at 1.75x on the phone Lighthouse
- * emulates, which is what the 600 is for - sending it the 730 was the one
- * finding a mobile run on the build had left (30 KiB). `sizes`
- * follows the layout in home.css: the portrait column's clamp from 60rem,
- * the stage's width less its padding below that, capped at the frame's 26rem.
+ * Three widths. The largest is 2x the frame's 22rem on a desktop, and a phone
+ * shows the frame about 340px wide, at 1.75x on the phone Lighthouse
+ * emulates, which is what the 600 is for. `sizes` follows `.portrait` in
+ * home.css: the portrait column's clamp from 60rem, the stage less its
+ * padding below that, capped at the frame's 26rem.
  *
  * webp and not AVIF: at this quality sharp's AVIF came out larger (39 KB
- * against 23 KB at 600 wide), and `<Picture>` added a PNG fallback on top.
+ * against 23 KB at 600 wide).
  */
 const portraitWidth = 730;
 const portraitHeight = 976;
 const portraitWidths = [360, 600, 730];
-const portraitSizes = '(min-width: 60rem) min(29vw, 25rem), min(calc(100vw - 4.5rem), 26rem)';
+const portraitSizes = '(min-width: 60rem) min(25vw, 22rem), min(calc(100vw - 4.5rem), 26rem)';
 
 /*
- * The name on two lines, split off the single string in site.ts rather than
- * hardcoded here, so the name is still stated in exactly one place.
- *
- * Two lines is what buys the size - see `.display-name` in home.css, where the
- * size is taken from the column so "Cvetković" fills it exactly. It stays one
- * <h1> with one accessible name.
+ * The name as two words, split off `site.name` rather than hardcoded, so the
+ * name is still stated in exactly one place. Each rises into its own mask, a
+ * beat apart. On a desktop they share one line across the whole stage - the
+ * masthead - and on a phone they stack, which is what buys the size there.
+ * It stays one <h1> with one accessible name.
  */
 const [firstName, ...restOfName] = site.name.split(' ');
 const lastName = restOfName.join(' ');
 
 /*
- * The stack, as a tray of marks under the name and the portrait. It is the same
- * list Skills sets out grouped further down, flattened here, so the first
- * screen answers what he works with using content the page already holds.
+ * The stack, as a tray of marks: the same list Skills sets out grouped
+ * further down, flattened here, so the first screen answers what he works
+ * with using content the page already holds.
  */
 const stack = site.skillGroups.flatMap((group) => group.items);
 
@@ -69,29 +67,41 @@ const profiles = [
 ---
 
 {/*
-  The hero is one ink tile - the page opens on the same surface its header and
-  its footer are made of, and on a light page that is the strongest contrast the
-  site has to spend. Everything in it runs the load sequence rather than a
-  scroll reveal, because it is in view at first paint.
+  The hero is one ink stage set like the cover of a magazine: the name as the
+  masthead, across the whole stage on a desktop, and under it the lead, the
+  way to get in touch and the stack on the left, with the portrait framed at
+  its own ratio on the right.
 
-  The beats, in order: the role, the two lines of the name rising into their
-  masks, the whole photograph settling into its frame out of a zoom and a blur,
-  the lead and the buttons, then the marks landing one after another along the
-  tray. On the way out it steps back: the tile shrinks a little as the page
-  scrolls past it, and the portrait a little more (see home.css).
+  Everything in it runs the load sequence rather than a scroll reveal,
+  because it is in view at first paint. The beats, in order: the role and the
+  place, the two words of the name rising into their masks, the whole
+  photograph settling into its frame out of a zoom and a blur, the lead and
+  the buttons, then the marks landing one after another along the tray and a
+  signal running through them - each mark lit for a moment as it passes,
+  which is the stack read the way the site reads everything, as a path a
+  request takes.
+
+  On the way out it steps back: the stage shrinks as the page scrolls past
+  it, and the portrait and the name move at their own depths (see home.css).
 */}
 <section class="hero">
   <div class="shell">
-    <div class="hero-tile panel">
+    <div class="hero-stage panel">
+      <div class="hero-top">
+        <p class="hero-role enter">{dict.hero.role}</p>
+        <p class="hero-place enter" style="--enter-delay:60ms">
+          <MapPin class="size-[1rem] shrink-0" aria-hidden="true" />
+          {dict.hero.location}
+        </p>
+      </div>
+
+      <h1 class="hero-name">
+        <span class="line-mask enter-line" style="--enter-delay:80ms"><span class="line-in">{firstName}</span></span>
+        <span class="line-mask enter-line" style="--enter-delay:170ms"><span class="line-in">{lastName}</span></span>
+      </h1>
+
       <div class="hero-grid">
         <div class="hero-copy">
-          <p class="hero-role enter">{dict.hero.role}</p>
-
-          <h1 class="display-name">
-            <span class="line-mask enter-line" style="--enter-delay:80ms"><span class="line-in">{firstName}</span></span>
-            <span class="line-mask enter-line" style="--enter-delay:190ms"><span class="line-in">{lastName}</span></span>
-          </h1>
-
           <p class="hero-lead enter" style="--enter-delay:420ms">{dict.hero.positioning}</p>
 
           <div class="hero-actions enter" style="--enter-delay:520ms">
@@ -112,9 +122,9 @@ const profiles = [
         </div>
 
         {/*
-          The portrait, in a frame at the photograph's own ratio. What arrives is
-          the picture, not the frame: the frame is there from the start and the
-          whole photograph settles into it out of a zoom.
+          The portrait, in a frame at the photograph's own ratio. What arrives
+          is the picture, not the frame: the frame is there from the start and
+          the whole photograph settles into it out of a zoom.
         */}
         <figure class="portrait enter-portrait" style="--enter-delay:260ms">
           {
@@ -141,15 +151,17 @@ const profiles = [
             )
           }
         </figure>
-      </div>
 
-      <ul class="hero-tray">
-        {
-          stack.map((tech, index) => (
-            <MarkTile as="li" name={tech} class="tray-in" style={`--enter-delay:${620 + index * 45}ms`} />
-          ))
-        }
-      </ul>
+        {/* `--i` is each mark's place on the path the signal runs, which is
+            what times its landing and its moment lit. */}
+        <ul class="hero-tray">
+          {
+            stack.map((tech, index) => (
+              <MarkTile as="li" name={tech} class="tray-in" style={`--i:${index}`} />
+            ))
+          }
+        </ul>
+      </div>
     </div>
   </div>
 </section>

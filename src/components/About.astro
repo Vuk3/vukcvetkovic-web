@@ -13,37 +13,52 @@ interface Props {
 const { lang, tone } = Astro.props;
 const dict = getDict(lang);
 
-/* The opening paragraph is the statement tile; the other two sit under it. */
+/* The opening paragraph is the statement, and the other two sit under it. */
 const [lead, education, site] = dict.about.paragraphs;
+
+/*
+ * The statement word by word, so each word can take its ink as the page
+ * reaches it. `--p` is how far through the sentence a word is, from 0 to
+ * under 1, which is all its range on the statement's timeline needs (see
+ * `.about-word` in home.css). Split at build, per locale, on the spaces the
+ * copy already has - the words themselves are untouched, and the spaces
+ * between the spans are real, so the sentence reads and wraps exactly as the
+ * plain paragraph did.
+ */
+const words = lead.split(' ');
 ---
 
 {/*
-  Three tiles: the opening statement across the full measure at display size,
-  then the other two paragraphs side by side, Education at 4 columns and Games
-  at 8.
+  The opening statement across the full measure at display size, straight on
+  the ground rather than in a tile: it is the one paragraph on the page set to
+  be read as a sentence spoken, and a box round it made it one more card. As
+  the page scrolls, the words take their ink one after another, in reading
+  order, as though it were being said.
 
-  They are labelled with names the page already uses for what they are about -
-  the degrees are Education, and the site with its seven games is Games - and
-  the Games tile is on cobalt, the tile a link to the games and each of the
-  seven boards under its paragraph a link to its own, because it is the one
-  paragraph on the page that points somewhere a reader can go and try.
+  Then the other two paragraphs as tiles, labelled with names the page already
+  uses for what they are about - the degrees are Education, and the site with
+  its seven games is Games - Education at 4 columns and Games at 8, on cobalt,
+  the tile a link to the games and each of the seven boards under its
+  paragraph a link to its own, because it is the one paragraph on the page
+  that points somewhere a reader can go and try.
 
   The wider column is the Games tile's so the boards have the room, and the
   split is what lets them fill it: the Games paragraph ends above Education's,
   and the boards take the height between (see GameMinis.astro), so the two
-  tiles end level. Measured in all four languages, the room under the Games
-  paragraph on 4 and 8 is 71 to 121px at 1024, where the boards are 77px wide,
-  71px at 1280 (98px wide) and 46 to 96px at 1440 (107px wide), where English
-  falls under the boards' 4rem floor and Education ends 18px short of the row.
-  5 and 7 left 22 to 46px, a strip, and 3 and 9 boards nearly twice as tall as
-  wide in German at 1280.
+  tiles end level.
 */}
 <Section id="about" label={dict.about.label} tone={tone}>
-  <div class="bento">
-    <div class="card about-statement reveal-item sm:col-span-6 lg:col-span-12">
-      <p class="about-lead">{lead}</p>
-    </div>
+  <p class="about-lead">
+    {
+      words.map((word, index) => (
+        <>
+          <span class="about-word" style={`--p:${(index / words.length).toFixed(3)}`}>{word}</span>{' '}
+        </>
+      ))
+    }
+  </p>
 
+  <div class="bento about-notes">
     <div class="card about-note reveal-item sm:col-span-6 lg:col-span-4">
       <p class="tile-label">
         <span class="tile-icon"><GraduationCap aria-hidden="true" /></span>

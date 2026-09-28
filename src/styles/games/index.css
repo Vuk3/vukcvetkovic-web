@@ -59,6 +59,22 @@
     }
   }
 
+  /*
+   * The title's letters, each its own box so each can drop on its own. The
+   * row is a line of inline blocks that does not wrap - every heading is one
+   * short word - and the letters sit exactly where the word would, so the
+   * title's size and place are the page title's own.
+   */
+  .games-letters {
+    display: inline-flex;
+    white-space: nowrap;
+  }
+
+  .games-letter {
+    display: inline-block;
+    transform-origin: 50% 100%;
+  }
+
   /* ---- The wall --------------------------------------------------------- */
 
   /* The head's own bottom padding is the gap above the wall. With the
@@ -127,6 +143,127 @@
     display: flex;
     flex-direction: column;
   }
+
+  /*
+   * Each game's own colour, taken from its board rather than chosen for it:
+   * 2048's amber tile, the minefield's red three, Memory's gold edge on a
+   * found pair, Accretion's night, the sea, a cube face's green, and the red
+   * disc. It is what the card glows in when it is picked up - the one place
+   * outside a board that the games' palettes reach - so seven cards read as
+   * seven cabinets rather than one card seven times.
+   */
+  .game-card {
+    --game-hue: var(--site-accent);
+  }
+
+  .game-card[data-game='2048'] {
+    --game-hue: #e39a12;
+  }
+
+  .game-card[data-game='minesweeper'] {
+    --game-hue: #d8372c;
+  }
+
+  .game-card[data-game='memory'] {
+    --game-hue: #c9951a;
+  }
+
+  .game-card[data-game='accretion'] {
+    --game-hue: #6b4be0;
+  }
+
+  .game-card[data-game='battleship'] {
+    --game-hue: #1a73c4;
+  }
+
+  .game-card[data-game='cube'] {
+    --game-hue: #19a35a;
+  }
+
+  .game-card[data-game='four-in-a-row'] {
+    --game-hue: #e0283f;
+  }
+
+  /*
+   * Picked up, a card lifts, leans a degree - alternately one way and the
+   * other along the wall, like cabinets not quite in a line - and glows in its
+   * game's colour: an edge of it, and a wash of it underneath. The lean is
+   * `rotate`, which composes with the lift's `transform` and the reveals'
+   * `translate`.
+   */
+  .game-card.card-hover:hover {
+    border-color: color-mix(in oklab, var(--game-hue) 70%, var(--site-hairline));
+    box-shadow:
+      var(--site-rim),
+      0 0 0 1px color-mix(in oklab, var(--game-hue) 55%, transparent),
+      0 26px 50px -22px color-mix(in oklab, var(--game-hue) 55%, transparent);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .game-card {
+      transition:
+        border-color 300ms var(--site-ease),
+        box-shadow 300ms var(--site-ease),
+        transform 400ms var(--site-ease-out),
+        rotate 500ms var(--site-spring);
+    }
+
+    .game-card:hover {
+      rotate: -0.8deg;
+    }
+
+    .game-card:nth-child(even):hover {
+      rotate: 0.8deg;
+    }
+  }
+
+  .game-card.card-hover:hover .entry-link {
+    color: color-mix(in oklab, var(--game-hue) 80%, var(--site-fg));
+  }
+
+  /*
+   * A play mark on the screen, in the game's colour, when the card is picked
+   * up by the pointer or the keyboard. Decoration over a card that is already
+   * the link, which is why it is hidden from a screen reader.
+   *
+   * ⚠️ Not shown at rest on a touch screen. It was, and in the corner it has
+   * to sit in it covered the minefield's flag and 2048's 256 - the two pieces
+   * those stills are composed around. A card is plainly a thing to press
+   * without it.
+   */
+  .game-go {
+    position: absolute;
+    top: clamp(0.5rem, 1.2vw, 0.85rem);
+    right: clamp(0.5rem, 1.2vw, 0.85rem);
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background-color: var(--game-hue);
+    color: #fff;
+    box-shadow: 0 10px 24px -10px color-mix(in oklab, var(--game-hue) 80%, transparent);
+    opacity: 0;
+    scale: 0.6;
+    transition:
+      opacity 250ms var(--site-ease),
+      scale 450ms var(--site-spring);
+  }
+
+  .game-go svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    translate: 1px 0;
+    fill: currentColor;
+  }
+
+  .game-card:is(:hover, :focus-within) .game-go {
+    opacity: 1;
+    scale: 1;
+  }
+
 
   /*
    * The thumbnail's frame: the inset, the corners and the clip.
@@ -680,5 +817,60 @@
 
   26% {
     scale: 1;
+  }
+}
+
+/*
+ * The title's letters dropping onto their line, one after another, and
+ * bouncing twice as they land - the 404's digits, and a disc into a Four in a
+ * Row board. Each keyframe carries its own timing function and the animation
+ * runs linear: the fall eases in to the impact, the squash spreads from the
+ * letter's foot, and the bounces settle it. `translate` and `scale`, never
+ * `transform`.
+ */
+@keyframes games-drop {
+  0% {
+    opacity: 0;
+    translate: 0 -120%;
+    animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  48% {
+    translate: 0 0;
+    scale: 1.08 0.9;
+    animation-timing-function: cubic-bezier(0.2, 0.8, 0.4, 1);
+  }
+
+  66% {
+    translate: 0 -16%;
+    scale: 0.98 1.03;
+    animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+  }
+
+  82% {
+    translate: 0 0;
+    scale: 1.03 0.97;
+    animation-timing-function: cubic-bezier(0.2, 0.8, 0.4, 1);
+  }
+
+  91% {
+    translate: 0 -4%;
+    scale: none;
+  }
+
+  100% {
+    translate: none;
+    scale: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .games-letter {
+    animation: games-drop 900ms linear both;
+    animation-delay: calc(80ms + var(--i, 0) * 90ms);
   }
 }

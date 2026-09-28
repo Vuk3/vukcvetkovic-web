@@ -68,12 +68,14 @@ plus a project write-up section, in **four languages** (English, Serbian, French
   `build.format` is `'preserve'` and what that couples to, how Cloudflare resolves a 404,
   what lands in `dist/`, and the sitemap/canonical trailing-slash disagreement.
 
-- **[Design system](./design-system.md)** - the `--site-*` token path into Tailwind and why
-  `@theme inline` is load-bearing, ink and cobalt as the two surfaces that re-declare the
-  palette, the one measure, the tile and the bento and the grid-stretch trap that shaped
-  them, the request diagram, theming through a class rather than a media query, the motion
-  system (the `enter` load sequence, the scroll-driven `reveal` family and why no keyframe
-  may use `transform`), the chrome every game page shares, and each page's composition.
+- **[Design system](./design-system.md)** - the `--paper-*` and `--site-*` token path into
+  Tailwind and why `@theme inline` is load-bearing, ink and cobalt as the two surfaces that
+  re-declare the palette and `.surface` as the way back, the project hues and the signal,
+  the one measure, the trace and where it may be drawn, the tile and the bento and the
+  grid-stretch trap that shaped them, the request diagram, theming through a class rather
+  than a media query, the motion system (the `enter` load sequence, the scroll-driven
+  `reveal` family, the statement, the deck, and why no keyframe may use `transform` or the
+  width axis), the chrome every game page shares, and each page's composition.
 
 ## Rules for these pages
 

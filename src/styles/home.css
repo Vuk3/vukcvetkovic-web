@@ -1,10 +1,17 @@
 /*
- * The homepage's sections: the hero, About, Skills, Experience with the
- * degrees, Services and Contact. Projects is in project.css, since its cards
- * are the same object the project index shows.
+ * The homepage's scenes: the hero, About, Skills, Experience with the
+ * degrees, the stage Projects is played on, Services and Contact. The project
+ * cards themselves are in project.css, since they are the same object the
+ * project index shows.
  *
  * Imported by Home.astro and nothing else, so it is inlined into the four home
  * pages only.
+ *
+ * The page is a sequence of scenes, and no two share a composition: a
+ * masthead, a statement read as it is said, a drawing of the stack, a rail
+ * through a career, a deck of case studies on a dark stage, a list of what he
+ * can be hired for, and the ask. What separates one from the next is what it
+ * does, not a band of colour behind it.
  *
  * The layer order, the same line global.css opens with. See the note there:
  * this file can land in a page ahead of global.css, and whichever stylesheet
@@ -16,39 +23,55 @@
   /* ---- Hero ------------------------------------------------------------ */
 
   .hero {
-    padding-block: clamp(1rem, 2vw, 1.5rem) clamp(2rem, 4vw, 3.5rem);
+    padding-block: clamp(0.75rem, 1.5vw, 1.25rem) clamp(1.5rem, 3vw, 2.5rem);
   }
 
   /*
-   * One ink tile holding everything, a step rounder than a tile because it is
-   * the page's frame rather than something on it.
+   * One ink stage, a rank rounder than a tile because it is the page's frame
+   * rather than something on it. It is the container the name is sized
+   * against, so the masthead is the stage's width whatever the screen.
+   *
+   * `isolation` so the light below can sit under everything in the stage at
+   * `z-index: -1` without dropping behind the page.
    */
-  .hero-tile {
+  .hero-stage {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    container: hero / inline-size;
     border: 1px solid var(--site-hairline);
-    border-radius: calc(var(--site-radius-card) + 8px);
+    border-radius: var(--site-radius-stage);
     padding: clamp(1.25rem, 3.4vw, 3rem);
   }
 
-  .hero-grid {
-    display: grid;
-    gap: clamp(1.75rem, 3.5vw, 3rem);
-  }
-
   /*
-   * The copy and the portrait side by side from 60rem. The portrait column is
-   * a clamp so the picture grows with the screen and the name keeps the rest.
+   * The studio light: a cobalt glow behind the portrait, the colour of the
+   * suit, falling off to the ink, and a faint wash from the top left where the
+   * masthead starts. It is the one gradient on the page and it is there for
+   * the reason a photographer puts one behind a sitter - it separates the
+   * subject from the black.
    */
-  @media (min-width: 60rem) {
-    .hero-grid {
-      grid-template-columns: minmax(0, 1fr) clamp(17rem, 29vw, 25rem);
-      align-items: center;
-    }
+  .hero-stage::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(
+        55% 65% at 88% 72%,
+        color-mix(in oklab, var(--site-cobalt-bg) 34%, transparent),
+        transparent 72%
+      ),
+      radial-gradient(45% 55% at 0% 0%, color-mix(in oklab, #fff 5%, transparent), transparent 70%);
+    pointer-events: none;
   }
 
-  /* The container the name is sized against. */
-  .hero-copy {
-    container-type: inline-size;
-    min-width: 0;
+  /* The role and the place, over the name. */
+  .hero-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 1.25rem;
   }
 
   .hero-role {
@@ -60,60 +83,122 @@
     background-color: var(--site-card);
     padding: 0.45rem 1.05rem 0.45rem 0.85rem;
     font-size: 0.9375rem;
-    font-weight: 580;
+    font-weight: 600;
     line-height: 1.3;
   }
 
-  /* The dot that says "currently", and it pulses to say it: a ring goes out
-     from it every couple of seconds. */
+  /* The dot that says "currently", in the signal, and it pulses to say it: a
+     ring goes out from it every couple of seconds. */
   .hero-role::before {
     content: '';
     width: 0.55rem;
     height: 0.55rem;
     border-radius: 50%;
-    background-color: var(--site-accent);
+    background-color: var(--site-signal);
+  }
+
+  .hero-place {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.9375rem;
+    font-weight: 540;
+    color: var(--site-muted);
   }
 
   /*
-   * The name, and the one place the page is allowed to be loud.
+   * The name, and the one place the page is allowed to be loud: the masthead.
    *
-   * ⚠️ **The size is the column's width, not the viewport's.** "Cvetković" at
-   * this stretch, weight and tracking measures 5.42 times its font size, so
-   * 17.9cqi sets it at 97% of the column at every width: 131px beside the
-   * portrait on a desktop, 57px on a 390 phone. The 3% is for other engines'
-   * rounding - the line rises into a mask, and a mask clips what overhangs. A viewport clamp could not do
-   * that, because the column is a different fraction of the screen on either
-   * side of the 60rem breakpoint - it was 48px on a phone and left a quarter of
-   * the line empty.
+   * ⚠️ **The size is the stage's width, not the viewport's.** On a phone the
+   * two words stack, and "Cvetković" at this stretch, weight and tracking
+   * measures 5.46 times its font size, so 17.7cqi sets it at 97% of the
+   * stage. From 40rem they share one line, and "Vuk Cvetković" with the gap
+   * between the two masks measures 7.79 times its size, so 12.45cqi fills
+   * the stage the same way. The 3% is for other engines' rounding: the words
+   * rise into masks, and a mask clips what overhangs.
    *
-   * Leading is 0.86 because the second line carries a ć: tighter and its
-   * accent meets the baseline above. The masks the two lines rise into get
-   * extra room at the top for the same accent (see `.display-name .line-mask`).
+   * Leading is 0.86 because the second word carries a ć whose accent meets the
+   * line above any tighter, and the masks get 0.14em of extra room at the top
+   * for the same accent.
    */
-  .display-name {
-    margin-top: clamp(1rem, 2vw, 1.5rem);
+  .hero-name {
+    margin-top: clamp(1.25rem, 2.6vw, 2.25rem);
     font-stretch: 122%;
-    font-weight: 720;
-    font-size: 17.9cqi;
+    font-weight: 740;
+    font-size: 17.7cqi;
     line-height: 0.86;
     letter-spacing: -0.05em;
   }
 
-  .display-name .line-mask {
+  .hero-name .line-mask {
     padding-block: 0.14em 0.06em;
     margin-block: -0.14em -0.06em;
   }
 
+  @media (min-width: 40rem) {
+    .hero-name {
+      display: flex;
+      column-gap: 0.24em;
+      font-size: 12.45cqi;
+    }
+  }
+
   /*
-   * The lead, at the full width of the column - it is the page's first
-   * paragraph and it has the column to itself, so a reading measure here would
-   * only leave a hole beside it.
+   * Under the masthead: the words on the left and the portrait on the right,
+   * with the stack along the foot of the left column, level with the foot of
+   * the portrait. Stacked on a phone in reading order - the words, the
+   * picture, then the stack.
+   */
+  .hero-grid {
+    margin-top: clamp(1.5rem, 3vw, 2.5rem);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'copy'
+      'portrait'
+      'tray';
+    gap: clamp(1.5rem, 3vw, 2.25rem);
+  }
+
+  .hero-copy {
+    grid-area: copy;
+    min-width: 0;
+  }
+
+  .hero-tray {
+    grid-area: tray;
+  }
+
+  .portrait {
+    grid-area: portrait;
+  }
+
+  @media (min-width: 60rem) {
+    .hero-grid {
+      grid-template-columns: minmax(0, 1fr) clamp(16rem, 25vw, 22rem);
+      grid-template-rows: auto 1fr;
+      grid-template-areas:
+        'copy portrait'
+        'tray portrait';
+      column-gap: clamp(2.5rem, 5vw, 5rem);
+    }
+
+    .hero-tray {
+      align-self: end;
+    }
+  }
+
+  /*
+   * The lead, at the full width of its column and a size up from the page's
+   * text: it is the page's first paragraph and has the column to itself, so a
+   * reading measure here would only leave a hole beside it.
    */
   .hero-lead {
-    margin-top: clamp(1.25rem, 2.2vw, 1.75rem);
-    font-size: clamp(1.0625rem, 1.4vw, 1.25rem);
-    line-height: 1.5;
-    color: var(--site-muted);
+    font-size: clamp(1.125rem, 1.7vw, 1.5rem);
+    font-weight: 440;
+    line-height: 1.45;
+    letter-spacing: -0.015em;
+    color: color-mix(in oklab, var(--site-fg) 78%, var(--site-bg));
   }
 
   .hero-actions {
@@ -129,8 +214,8 @@
    *
    * ⚠️ 3:4 is the photograph's ratio to three decimal places, so `cover` crops
    * nothing. Framing it at any other ratio cuts the arm off at the edge or the
-   * head in half on a phone, which is why it is set here and never stretched to
-   * a row's height.
+   * head in half on a phone, which is why it is set here and never stretched
+   * to a row's height.
    */
   .portrait {
     position: relative;
@@ -143,6 +228,7 @@
     border: 1px solid var(--site-hairline);
     border-radius: var(--site-radius-card);
     background-color: var(--site-inset);
+    box-shadow: 0 30px 60px -30px color-mix(in oklab, #000 70%, transparent);
   }
 
   .portrait img {
@@ -158,44 +244,51 @@
   }
 
   /*
-   * The stack as a tray of mark tiles along the bottom of the hero. A wrapping
-   * row whose tiles grow, so every row is full: eleven in one line on a
-   * desktop, and on a phone the last row's tiles widen to meet the edge rather
-   * than leaving a gap.
+   * The stack as a tray of mark tiles: a wrapping row whose tiles grow, so
+   * every row is full rather than leaving a gap at its end.
+   *
+   * Six to a row at every width from a tablet up - the basis is a sixth of the
+   * row, less its share of the gaps and a pixel, so rounding never pushes the
+   * sixth onto the next line - and eleven always set six and five. A
+   * basis in rem put eleven in one row at 64px beside the portrait, where
+   * "MongoDB" broke in two, and eight and three on a tablet, the last three
+   * twice the width of the rest.
    */
   .hero-tray {
-    margin-top: clamp(1.5rem, 3vw, 2.5rem);
     display: flex;
     flex-wrap: wrap;
-    gap: 0.6rem;
+    gap: 0.5rem;
   }
 
-  /* 5rem is what puts eleven across a desktop. */
   .hero-tray > .mark-tile {
-    flex: 1 1 5rem;
+    flex: 1 1 calc((100% - 5 * 0.5rem) / 6 - 1px);
+    gap: 0.5rem;
+    padding: 0.95rem 0.3rem 0.8rem;
+  }
+
+  .hero-tray .mark-tile-icon {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .hero-tray .mark-tile-name {
+    font-size: 0.875rem;
   }
 
   /*
-   * On a phone, four to a row and a size down: eleven set 4, 4 and 3, with
-   * the last three widening to the edge, three rows where the full-size tiles
-   * took four and pushed About a screen further down. Two rows would be six
-   * across at about 48px, and "MongoDB" does not fit that at the 11px that is
-   * the least any word on the site sets at.
+   * On a phone, four to a row: eleven set 4, 4 and 3, the last three widening
+   * to the edge. Two rows would be six across at about 48px, and "MongoDB"
+   * does not fit that at the 11px that is the least any word sets at.
    */
   @media (max-width: 39.99rem) {
-    .hero-tray {
-      gap: 0.5rem;
-    }
-
     .hero-tray > .mark-tile {
-      flex-basis: calc((100% - 3 * 0.5rem) / 4);
-      gap: 0.4rem;
-      padding: 0.7rem 0.3rem 0.6rem;
+      flex-basis: calc((100% - 3 * 0.5rem) / 4 - 1px);
+      padding: 0.85rem 0.3rem 0.7rem;
     }
 
     .hero-tray .mark-tile-icon {
-      width: 1.75rem;
-      height: 1.75rem;
+      width: 1.875rem;
+      height: 1.875rem;
     }
 
     .hero-tray .mark-tile-name {
@@ -204,27 +297,22 @@
   }
 
   /*
-   * The hero steps back as the page leaves it: the tile shrinks a little and
-   * the portrait inside it further, so the two sit at different depths and
-   * the picture reads as going away rather than the page as shrinking. Both
-   * run on the tile's own exit (`--hero`), from its top reaching the top of
-   * the screen to its foot reaching it, so nothing moves until the reader
-   * scrolls, and linear, so the depth follows the scroll exactly.
+   * The hero steps back as the page leaves it, in three depths: the stage
+   * shrinks from its foot, the portrait's frame shrinks further and rises, and
+   * the masthead drifts up faster than either, so the three read as layers
+   * going away rather than the page as shrinking. All on the stage's own exit
+   * (`--hero`), from its top reaching the top of the screen to its foot
+   * reaching it, so nothing moves until the reader scrolls, and linear, so
+   * the depth follows the scroll exactly. Transforms only, the site's rule.
    *
-   * The tile scales from its foot, which keeps the part still on screen where
-   * it is and the gap to About from opening up. The portrait scales on its
-   * frame, not the photograph, which already carries the entrance's zoom and
-   * the hover's. `scale`, never `transform`, the site's rule for keyframes.
-   *
-   * ⚠️ **From 60rem only**, where the copy and the portrait sit side by side
-   * and the tile fits the screen (0.85 of it at 1440 x 900). Stacked it is
-   * 1.46 screens tall on a 390 phone and 1.26 on a tablet, so its exit starts
-   * after 89px of scroll, and the portrait and the tray shrank under the
-   * reader's thumb while they were still being read.
+   * ⚠️ **From 60rem only**, where the stage fits the screen. Stacked it is
+   * one and a half screens tall on a phone, its exit starts after 89px of
+   * scroll, and the portrait and the tray shrank while they were still being
+   * read.
    */
   @media (prefers-reduced-motion: no-preference) and (min-width: 60rem) {
     @supports (animation-timeline: view()) {
-      .hero-tile {
+      .hero-stage {
         view-timeline-name: --hero;
         transform-origin: 50% 100%;
         animation-name: hero-recede;
@@ -241,22 +329,36 @@
         animation-timeline: --hero;
         animation-range: exit-crossing 0% exit-crossing 100%;
       }
+
+      .hero-name {
+        animation-name: name-drift;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: --hero;
+        animation-range: exit-crossing 0% exit-crossing 100%;
+      }
     }
   }
 
   /* ---- About ----------------------------------------------------------- */
 
   /*
-   * The opening statement, at display size across the full measure: the one
-   * paragraph on the page set to be read as a sentence spoken rather than as
-   * copy.
+   * The opening statement, at display size across the full measure, on the
+   * ground: the one paragraph on the page set to be read as a sentence spoken
+   * rather than as copy. It is its own timeline, which its words take their
+   * ink along (below).
    */
   .about-lead {
-    font-stretch: 104%;
-    font-weight: 480;
-    font-size: clamp(1.25rem, 2.2vw, 1.875rem);
-    line-height: 1.28;
-    letter-spacing: -0.028em;
+    view-timeline-name: --statement;
+    font-stretch: 106%;
+    font-weight: 540;
+    font-size: clamp(1.625rem, 3.4vw, 3rem);
+    line-height: 1.14;
+    letter-spacing: -0.035em;
+  }
+
+  .about-notes {
+    margin-top: clamp(2rem, 4vw, 3.25rem);
   }
 
   .about-note {
@@ -276,6 +378,31 @@
   /* The label of the Games tile is its link, and takes the tile's own ink. */
   .about-note .tile-label a {
     color: var(--site-fg);
+  }
+
+  /*
+   * The statement being said: each word takes its ink as the page reaches it,
+   * in reading order, from a trace of the ink to the ink itself. Every word
+   * runs on the statement's own timeline, over a window a sixteenth of it
+   * wide that starts `--p` of the way along, so the front moves through the
+   * sentence word by word rather than line by line - which is what reads as
+   * speech. Done by the time the statement's top is about a fifth of the way
+   * down the screen, so nobody reads a faded word.
+   *
+   * Colour only, so it is paint: nothing moves and nothing reflows. Where
+   * scroll-driven animation is missing, or less motion is asked for, every
+   * word simply has its ink.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .about-word {
+        animation-name: word-ink;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: --statement;
+        animation-range: cover calc(10% + var(--p) * 42%) cover calc(16% + var(--p) * 42%);
+      }
+    }
   }
 
   /* ---- Skills ---------------------------------------------------------- */
@@ -732,6 +859,7 @@
     }
   }
 
+
   /* ---- Experience ------------------------------------------------------ */
 
   /* `--role-gap` is named because the rail crosses it, and `--chapter` is the
@@ -833,12 +961,13 @@
     color: var(--site-accent);
   }
 
+  /* The dot is the signal, the hero's "now": the one role that is running. */
   .role[data-current] .role-period::before {
     content: '';
     width: 0.5rem;
     height: 0.5rem;
     border-radius: 50%;
-    background-color: currentColor;
+    background-color: var(--site-signal);
   }
 
   /*
@@ -1092,31 +1221,83 @@
     }
   }
 
+
+  /* ---- Projects: the stage ------------------------------------------------
+   *
+   * The section the page is for, set apart as the one full-width dark scene
+   * between the hero and the close: the deck of case studies is played on it
+   * (project.css). `.panel` gives it the ink's text and edges, and the ground
+   * itself is `--site-stage`, which in the dark theme goes a step *below* the
+   * page rather than above it, so the white tiles on it lift in both themes.
+   */
+  .theater.panel {
+    background-color: var(--site-stage);
+  }
+
   /* ---- Services -------------------------------------------------------- */
 
-  .svc-bento {
+  /*
+   * A list rather than a grid: four rows across the whole measure, each the
+   * service's name at a large tile-title size, what it covers and what it is
+   * done in beside it, and at the row's far end where on the site it is shown
+   * done. Read down, the names are the list, and read across, a row is the whole
+   * claim and its proof.
+   *
+   * ⚠️ Not four across and not two by two with a picture in each: four equal
+   * icon-and-text tiles are the template look, and in a row of four the first
+   * description ran twice the others' and the tiles beside it stood with up
+   * to 229px of nothing above their proof. A row is as tall as its longest
+   * part, and at these proportions no part is ever short of the others by
+   * more than a line.
+   */
+  .svc-list {
     display: grid;
     gap: var(--site-gap);
   }
 
-  /*
-   * Two by two from a tablet up, never four across. With its chips and its
-   * proof at the foot, a tile in a row of four was under 200px of text: the
-   * first service's description ran twice the others', and the tiles beside it
-   * stood with up to 229px of nothing above their proof. Two across, that is
-   * 84px at the most, and four equal columns of icon and text were also the
-   * template look the section is here to get away from.
-   */
-  @media (min-width: 40rem) {
-    .svc-bento {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+  .card.svc-row {
+    --card-pad: clamp(1.25rem, 2.2vw, 2rem);
+
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 1rem 1.25rem;
+    align-items: start;
+    overflow: hidden;
+  }
+
+  @media (min-width: 64rem) {
+    .card.svc-row {
+      grid-template-columns: auto minmax(0, 1.1fr) minmax(0, 1fr) minmax(15rem, 0.8fr);
+      column-gap: clamp(1.5rem, 2.6vw, 2.5rem);
+      align-items: center;
     }
   }
 
-  .svc-card {
-    display: flex;
-    flex-direction: column;
-    gap: 0.9rem;
+  /*
+   * A trace down the row's left edge, drawn in from the top as the pointer
+   * arrives: the same line as everywhere else, telling the row apart from its
+   * neighbours without lifting it, since the row is not one link but holds
+   * one.
+   */
+  .card.svc-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 3px;
+    background-color: var(--site-accent);
+    transform-origin: 50% 0;
+    scale: 1 0;
+    transition: scale 450ms var(--site-ease-out);
+  }
+
+  .card.svc-row:hover {
+    border-color: color-mix(in oklab, var(--site-accent) 35%, var(--site-hairline));
+  }
+
+  .card.svc-row:hover::before {
+    scale: 1 1;
   }
 
   .svc-icon {
@@ -1125,7 +1306,6 @@
     justify-content: center;
     width: 3.5rem;
     height: 3.5rem;
-    margin-bottom: 0.5rem;
     border-radius: var(--site-radius-inner);
     background-color: color-mix(in oklab, var(--site-accent) 12%, var(--site-card));
     color: var(--site-accent);
@@ -1140,10 +1320,20 @@
     height: 1.6rem;
   }
 
-  .svc-card:hover .svc-icon {
+  .svc-row:hover .svc-icon {
     rotate: -10deg;
     background-color: var(--site-accent);
     color: var(--site-bg);
+  }
+
+  /* The name, at the row's display size: the list is read down its names. */
+  .svc-row .svc-title {
+    align-self: center;
+    font-stretch: 116%;
+    font-weight: 680;
+    font-size: clamp(1.375rem, 2.1vw, 1.875rem);
+    line-height: 1.08;
+    letter-spacing: -0.035em;
   }
 
   .svc-body {
@@ -1152,9 +1342,25 @@
     color: var(--site-muted);
   }
 
-  /* A size under the project cards' tags, so two share a row in the 195px a
-     tile has at the narrowest four-across: at full size the first tile's four
-     stacked one to a line and it stood a hundred pixels over the others. */
+  /* What it covers, and what it is done in under it. */
+  .svc-copy {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  /* Stacked, the icon sits beside the name and everything else takes the
+     row's width under the two. */
+  @media (max-width: 63.99rem) {
+    .svc-row > :is(.svc-copy, .svc-proof) {
+      grid-column: 1 / -1;
+    }
+
+    .svc-icon {
+      width: 3rem;
+      height: 3rem;
+    }
+  }
+
   .svc-tags {
     display: flex;
     flex-wrap: wrap;
@@ -1168,25 +1374,25 @@
   }
 
   /*
-   * Where the service is shown done, at the foot of the tile whatever the text
-   * above it runs to (`margin-top: auto`), so the four line up along the row.
-   * Education's thesis tile in small: recessed, the whole of it the link, the
+   * Where the service is shown done: recessed, the whole of it the link, the
    * accent on its edge under the pointer.
    */
   .svc-proof {
     display: grid;
     gap: 0.3rem;
-    margin-top: auto;
     border: 1px solid var(--site-hairline);
     border-radius: var(--site-radius-inner);
     background-color: var(--site-inset);
     padding: 0.8rem 0.95rem 0.9rem;
-    transition: border-color 250ms var(--site-ease);
+    transition:
+      border-color 250ms var(--site-ease),
+      background-color 250ms var(--site-ease);
   }
 
   .svc-proof:hover,
   .svc-proof:focus-visible {
     border-color: color-mix(in oklab, var(--site-accent) 55%, var(--site-hairline));
+    background-color: color-mix(in oklab, var(--site-accent) 6%, var(--site-inset));
   }
 
   .svc-proof-name {
@@ -1196,81 +1402,93 @@
     letter-spacing: -0.012em;
   }
 
-  /*
-   * On a phone the icon sits beside the title instead of on a row of its
-   * own, and the proof's label and name share a line where they fit: the
-   * chips and the proof added 585px to the section, and this takes back what
-   * the tiles can spare without losing either.
-   */
-  @media (max-width: 39.99rem) {
-    .svc-card {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      align-items: center;
-      gap: 0.9rem 1rem;
-    }
-
-    .svc-card > :not(.svc-icon, .svc-title) {
-      grid-column: 1 / -1;
-    }
-
-    .svc-icon {
-      width: 3rem;
-      height: 3rem;
-      margin-bottom: 0;
-    }
-
-    .svc-proof {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.3rem 0.75rem;
-      padding: 0.65rem 0.85rem;
-    }
-  }
-
   /* ---- Contact --------------------------------------------------------- */
 
   /*
-   * The ask: the intro at display size and the button under it, on cobalt,
-   * spanning both rows of the channels beside it.
+   * The close, on the ink, and the one section where the page asks for
+   * something - so the ask is the largest thing in it: the intro at display
+   * size on cobalt with the one button that matters, beside the three
+   * channels as the rows of one tile.
+   *
+   * ⚠️ The address stays at 1.25rem. It has been set at 2.875rem, 2.25rem and
+   * 1.75rem and every one was too big: an address is a thing you read, copy
+   * and type, and past this size it stops looking like one. The scale here
+   * belongs to the intro and the button.
    */
+  .contact-grid {
+    display: grid;
+    gap: var(--site-gap);
+  }
+
+  @media (min-width: 64rem) {
+    .contact-grid {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    }
+  }
+
   .contact-call {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 1.75rem;
+    gap: clamp(1.75rem, 4vw, 3rem);
+    padding: clamp(1.5rem, 3.4vw, 2.75rem);
+    overflow: hidden;
   }
 
-  @media (min-width: 64rem) {
-    .contact-call {
-      grid-row: span 2;
-    }
+  /* The call's own light, the hero's in reverse: a wash of white from the
+     corner the button sits in, so the tile has a near side. */
+  .contact-call::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      70% 80% at 0% 100%,
+      color-mix(in oklab, #fff 12%, transparent),
+      transparent 70%
+    );
+    pointer-events: none;
   }
 
   .contact-intro {
-    font-stretch: 104%;
-    font-weight: 500;
-    font-size: clamp(1.25rem, 2vw, 1.75rem);
-    line-height: 1.3;
-    letter-spacing: -0.025em;
+    position: relative;
+    font-stretch: 112%;
+    font-weight: 600;
+    font-size: clamp(1.625rem, 3vw, 2.625rem);
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+  }
+
+  .contact-call .cta {
+    position: relative;
+    padding: 1.05rem 1.9rem;
+    font-size: 1.0625rem;
+  }
+
+  /* The channels, as the rows of one tile: a row is the whole target. */
+  .card.channels {
+    --card-pad: 0.5rem;
+
+    display: grid;
+    align-content: stretch;
   }
 
   .channel {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 1rem;
+    border-radius: var(--site-radius-inner);
+    padding: clamp(0.9rem, 1.6vw, 1.25rem);
+    transition: background-color 250ms var(--site-ease);
   }
 
-  /* The two profiles share a row on a desktop, three columns each, which is too
-     narrow for a URL beside its icon - so there the icon stands above. */
-  @media (min-width: 64rem) {
-    .channel:not(.channel-mail) {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 1.25rem;
-    }
+  .channel + .channel {
+    border-top: 1px solid var(--site-hairline);
+  }
+
+  .channel:hover {
+    background-color: var(--site-inset);
   }
 
   .channel-icon {
@@ -1284,11 +1502,13 @@
     height: 1.3rem;
   }
 
-  /*
-   * The address, and the loudest channel - one step over the two profile URLs
-   * and the accent, and nothing more. `anywhere` on the wrap so it still breaks
-   * rather than pushing a narrow phone sideways.
-   */
+  .channel:hover .channel-icon {
+    transform: rotate(-8deg) scale(1.08);
+  }
+
+  /* The address, and the loudest channel: one step over the two profile URLs
+     and the accent, and nothing more. `anywhere` on the wrap so it still
+     breaks rather than pushing a narrow phone sideways. */
   .mail {
     display: inline-block;
     margin-top: 0.2rem;
@@ -1311,15 +1531,15 @@
   }
 }
 
-/* The ring that goes out from the hero's dot. */
+/* The ring that goes out from a signal dot: the hero's and the role held now. */
 @keyframes pulse-ring {
   0% {
-    box-shadow: 0 0 0 0 color-mix(in oklab, var(--site-accent) 70%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--site-signal) 70%, transparent);
   }
 
   70%,
   100% {
-    box-shadow: 0 0 0 0.6rem color-mix(in oklab, var(--site-accent) 0%, transparent);
+    box-shadow: 0 0 0 0.6rem color-mix(in oklab, var(--site-signal) 0%, transparent);
   }
 }
 
@@ -1330,9 +1550,8 @@
  *
  * ⚠️ **Nothing hides it at any point**: no opacity, no clip. The portrait is
  * the page's largest paint, and a browser does not count a paint it cannot
- * see - a reveal from fully clipped held the page's LCP back 894ms in a
- * Lighthouse run. A zoom and a blur leave every pixel of it painted from the
- * start, so they cost the LCP nothing.
+ * see - a reveal from fully clipped held the page's LCP back 894ms. A zoom and
+ * a blur leave every pixel painted from the start.
  */
 @keyframes portrait-in {
   from {
@@ -1347,21 +1566,27 @@
 }
 
 /*
- * The hero stepping back as it leaves, over its whole exit, so by the time a
- * reader sees the end of it the tile is off the screen. 0.86 is a tile about
- * 45px narrower on each side at 1440 halfway out and 90px at the end, and the
- * portrait's extra 0.06 is what puts it a step behind the tile. 0.92 and 0.88
- * were seen but read as barely there.
+ * The hero stepping back as it leaves, over its whole exit: the stage to
+ * 0.88 from its foot, the portrait's frame a step further and rising, the
+ * masthead lifting faster than both - three depths.
  */
 @keyframes hero-recede {
   to {
-    scale: 0.86;
+    scale: 0.88;
   }
 }
 
 @keyframes portrait-recede {
   to {
-    scale: 0.8;
+    scale: 0.84;
+    translate: 0 -2.5rem;
+  }
+}
+
+@keyframes name-drift {
+  to {
+    translate: 0 -3.5rem;
+    opacity: 0.35;
   }
 }
 
@@ -1379,6 +1604,59 @@
     scale: none;
   }
 }
+
+/* A mark lit as the signal passes it: its edge and its ground take the
+   accent for a moment and let it go. Only the middle frame is written, so it
+   starts from and returns to whatever the tile is. */
+@keyframes tray-lit {
+  35% {
+    border-color: var(--site-accent);
+    background-color: color-mix(in oklab, var(--site-accent) 22%, var(--site-card));
+  }
+}
+
+/* A word of the statement taking its ink. */
+@keyframes word-ink {
+  from {
+    color: color-mix(in oklab, var(--site-fg) 18%, var(--site-bg));
+  }
+
+  to {
+    color: var(--site-fg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-role::before,
+  .role[data-current] .role-period::before {
+    animation: pulse-ring 2.4s var(--site-ease-out) infinite;
+  }
+
+  /* `backwards`, not `both`: a fill held forwards would pin `scale` at 1 and
+     outrank the hover's zoom for the life of the page. */
+  .enter-portrait img {
+    animation: portrait-in 1600ms var(--site-ease-out) backwards;
+    animation-delay: var(--enter-delay, 0ms);
+  }
+
+  /*
+   * The marks land one after another, and once the last is down the signal
+   * runs through them in the order they sit, lighting each - so the stack is
+   * read as a path. ⚠️ The light's fill is `none`: held, its last frame would
+   * pin the tile's edge and ground and outrank the hover's tint for the life
+   * of the page.
+   */
+  .tray-in {
+    animation-name: tray-pop, tray-lit;
+    animation-duration: 750ms, 620ms;
+    animation-timing-function: var(--site-spring), var(--site-ease);
+    animation-fill-mode: both, none;
+    animation-delay:
+      calc(620ms + var(--i, 0) * 45ms),
+      calc(1350ms + var(--i, 0) * 75ms);
+  }
+}
+
 
 /*
  * The Skills diagram's loop, and its ring, the request diagram's under a
@@ -1528,21 +1806,3 @@
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .hero-role::before,
-  .role[data-current] .role-period::before {
-    animation: pulse-ring 2.4s var(--site-ease-out) infinite;
-  }
-
-  /* `backwards`, not `both`: a fill held forwards would pin `scale` at 1 and
-     outrank the hover's zoom for the life of the page. */
-  .enter-portrait img {
-    animation: portrait-in 1600ms var(--site-ease-out) backwards;
-    animation-delay: var(--enter-delay, 0ms);
-  }
-
-  .tray-in {
-    animation: tray-pop 750ms var(--site-spring) both;
-    animation-delay: var(--enter-delay, 0ms);
-  }
-}

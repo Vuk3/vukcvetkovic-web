@@ -2,14 +2,16 @@
 /**
  * A section: a heading, then content.
  *
- * One shape, and the variety comes from what a section puts inside it. Four
- * head shapes and a sticky label column were tried and thrown out: they spent
- * 12rem of every measure on a caption and left the content to spread thinly
- * across what was left, which is what made the page read as a document.
+ * One shape, and the variety comes from what a section puts inside it - each
+ * one on the homepage is its own composition, so no two read as the same
+ * block of tiles. Four head shapes and a sticky label column were tried and
+ * thrown out long ago: they spent 12rem of every measure on a caption.
  *
- * So the heading is a real heading at real size, rising into a mask as the
- * section arrives, and the content is a bento of tiles - which is what carries
- * the page.
+ * The heading is a real heading at real size, rising into a mask as the
+ * section arrives. Where there is something in the `aside` slot, the trace -
+ * the request diagram's own connector - runs out along the title's baseline
+ * into it and points at it. Nowhere else: a line that ended on the corner of
+ * the first tile pointed at nothing. See `.sec-head` in global.css.
  *
  *   tone    Ground, the band, or the ink panel.
  *   space   `lite` is the quieter rhythm.
@@ -27,20 +29,28 @@ interface Props {
   label: string;
   tone?: SectionTone;
   space?: 'full' | 'lite';
+  /** Placed on the section, for a page area's stylesheet to compose it. */
+  class?: string;
 }
 
-const { id, label, tone = 'base', space = 'full' } = Astro.props;
+const { id, label, tone = 'base', space = 'full', class: className } = Astro.props;
 
 const toneClass = { base: '', band: 'section-band', panel: 'panel' }[tone];
 const spaceClass = space === 'lite' ? 'sec-lite' : 'sec';
+
+/* The trace is drawn only when there is something beside the title for it to
+   lead to. Empty string rather than a boolean, for the reason noted in
+   Experience.astro. */
+const hasAside = Astro.slots.has('aside');
 ---
 
-<section id={id} class:list={[spaceClass, toneClass]}>
+<section id={id} class:list={[spaceClass, toneClass, className]}>
   <div class="shell">
-    <div class="sec-head">
+    <div class="sec-head" data-aside={hasAside ? '' : undefined}>
       <h2 class="sec-label reveal-line">
         <span class="line-mask"><span class="line-in">{label}</span></span>
       </h2>
+      {hasAside && <span class="sec-trace" aria-hidden="true"><span class="sec-trace-line"></span></span>}
       <slot name="aside" />
     </div>
 

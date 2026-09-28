@@ -35,31 +35,37 @@ cite them - the rules below are unchanged for every other component.
 ## Go through Section.astro
 
 [Section.astro](./Section.astro) owns what makes a section: a big heading rising into a
-mask, an optional `aside` slot beside it, then the content. A homepage, project-page or
+mask, the trace running out of it into the `aside` slot when there is one (only there - a
+line that ended on the corner of the first tile pointed at nothing), then the content. A homepage, project-page or
 game-page section is `<Section …>` with content inside, never a hand-rolled `<section>`.
+`class` is for a page area's stylesheet to compose the section (Projects is `theater`).
 
 - **There is no width.** Every section sits on the one `.shell` measure, so every left edge
   lines up with the header's. The width family and its prop were removed because six
   widths read as misalignment; do not add either back.
-- **`tone` is spent twice on the homepage and twice on a project page**, and once on every
-  game page for its build notes. It is not decoration for a new section: what separates
-  sections is what they put in their tiles. Do not reintroduce alternating bands.
+- **`tone` is spent where a scene needs it**: `panel` twice on the homepage (the Projects
+  stage and Contact), `band` twice and `panel` once on a project page, and `panel` once on
+  every game page for its build notes. It is not decoration for a new section: what
+  separates sections is what they do. Do not reintroduce alternating bands.
 - **There is no `head` prop, and adding one back is a step backwards.** Four head shapes and
   a sticky label column were built and removed: they spent about 12rem of every measure on a
   caption.
 
 ## Build a section out of tiles
 
-`.card` is the page's unit - a service, a role, a skill group, a project, a channel, a node
-of the request diagram, a how-to-play list. `.bento` lays tiles out on 12 columns from
+`.card` is an object on the page - a service, a role, a skill group, a project, a channel,
+a node of the request diagram, a game, a how-to-play list. Text that is only text - a
+statement, an overview, a write-up - stands on the ground at its own size instead. `.bento` lays tiles out on 12 columns from
 64rem and 6 from 40rem; a tile places itself with `sm:col-span-*` and `lg:col-span-*`, and
 **every row has to add up to the full count**. Add `.card-hover` **only** where the whole
 tile is a link, and pair it with `.stretch` on the title so the click target is the tile
 while the accessible name stays the title.
 
 `.panel` (ink) and `.tile-cobalt` re-declare the palette, so anything inside them comes out
-right with no rule of its own. Cobalt is at most one or two tiles a page. Never nest one in
-the other.
+right with no rule of its own, and `.surface` maps it back to the theme's paper (a white
+case on the dark Projects stage). Cobalt is at most one or two tiles a page. Never nest one
+in the other. A project's card and page carry `data-hue` from its `hue` in site.ts, which
+makes the accent inside them the project's colour.
 
 - ⚠️ **`.stretch` covers everything underneath it.** Any link that has to stay clickable
   inside a stretched tile needs `.above`.
@@ -119,6 +125,9 @@ Decided by one question: is the element in view at first paint?
 | the request diagram | none - it assembles against its own stage's `view()` timeline, and a `reveal` on top would fade the block in and then assemble it inside itself |
 | the Skills diagram | `reveal` on its stage, so the whole drawing arrives at once and its loop never runs to a group that is not there yet |
 | an Experience tile | none - it slides in off the rail on its own `--role` timeline, which the rail inside it uses to stay put (see home.css) |
+| a word of the About statement | none - `.about-word` takes its ink on the statement's own `--statement` timeline, stepped by `--p` (see home.css) |
+| a case in the homepage deck | `reveal-item`, which the deck's step-back rule outranks on every card but the last from 64rem - the two cannot share `scale` (see project.css) |
+| the letters of a heading that play | `aria-hidden` boxes beside an `sr-only` copy of the word, never a split of the word itself (the games index title) |
 
 `reveal-item` staggers by `nth-child`, so it goes on the element directly inside the grid.
 Wrapping the items in another element resets the count.

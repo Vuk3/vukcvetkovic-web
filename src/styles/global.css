@@ -5,27 +5,31 @@
  * here.** Each game's rules live in src/styles/games/ and are inlined only
  * into the pages that show that game, and Astro does not promise where in a
  * page they land: on the cube's page and on the games index they come out
- * ahead of this file, on Memory's after it. A game's rules used to sit in
- * `components` after the site's own and won every tie by coming later, so a
- * layer of their own after `components` keeps them winning wherever the
- * bytes fall, and `utilities` still beats both. Every other stylesheet under
+ * ahead of this file, on Memory's after it. A layer of their own after
+ * `components` keeps a game's rules winning every tie wherever the bytes
+ * fall, and `utilities` still beats both. Every other stylesheet under
  * src/styles/ opens with the same line - home.css, project.css, flow.css,
- * notfound.css and every file under games/ - since the first stylesheet to name the layers
- * is the one that orders them. `properties` is Tailwind's own, first in its
- * output, and is named here only so that a page's file landing first cannot
- * push it to the top.
+ * notfound.css and every file under games/ - since the first stylesheet to
+ * name the layers is the one that orders them. `properties` is Tailwind's
+ * own, first in its output, and is named here only so that a page's file
+ * landing first cannot push it to the top.
  */
 @layer properties, theme, base, components, games, utilities;
 
 @import 'tailwindcss';
 
 /*
- * One family for the whole page, on both its axes.
+ * One family for the whole site, on both its axes.
  *
  * The wdth build (62-125%) rather than wght alone, because the contrast between
- * display and text here is width, not a second typeface: headings run expanded
- * and heavy, text runs at normal width. Costs 90KB latin against 35KB, which is
- * the whole type system for this site - no second family is loaded.
+ * display and text here is width, not a second typeface: display type runs
+ * expanded and heavy, text runs at normal width. Costs 90KB latin against 35KB,
+ * which is the whole type system - no second family is loaded.
+ *
+ * ⚠️ The width axis is set, never animated. A change of `font-stretch` reflows
+ * the line, so a heading that widened on scroll moved every glyph after the
+ * first and counted as a layout shift on every frame it ran. Motion here is
+ * `translate`, `scale`, `clip-path`, colour and opacity only.
  */
 @import '@fontsource-variable/archivo/wdth.css';
 
@@ -33,71 +37,102 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * Palette: ink, paper and cobalt.
+ * Palette: paper, ink and cobalt, drawn like the systems the site is about.
  *
- * A cool paper ground with white tiles on it, so a tile reads as a sheet laid
- * on the page by its edge alone and needs no shadow to lift it. The accent is
- * cobalt, and it is borrowed rather than invented: it is the navy of the suit
- * in the portrait, the one photograph on the site, which is why it sits with
- * the image instead of arguing with it.
+ * The idea the whole design hangs on is the *trace*: the 2px connector with an
+ * arrowhead that the request diagrams are drawn in. It is the one ornament the
+ * site allows itself, and every line on a page is one - from "Projects" into
+ * All projects, along the header, down the Experience rail, through a diagram
+ * - and a line is only drawn where it goes somewhere a reader can name.
  *
- * Two loud surfaces re-declare the whole palette and are spent sparingly - ink
- * (`.panel`) and cobalt (`.tile-cobalt`). Everything else is paper.
+ * The accent is cobalt, and it is borrowed rather than invented: it is the
+ * navy of the suit in the portrait, the one photograph on the site.
  *
- * Contrast, measured: muted text is 5.57:1 on the band, which is the tightest
- * pair on the site, and 6.96:1 on a tile. The accent is 7.7:1 on the ground.
+ * `--paper-*` is the theme's own ground and ink, and `--site-*` is what a
+ * component reads. They are the same until a surface re-declares `--site-*`
+ * (`.panel`, `.tile-cobalt`), and `.surface` maps them back to `--paper-*`,
+ * which is what lets a white tile stand on the ink stage of Projects.
+ *
+ * Contrast, measured: muted text is 6.0:1 on the ground, 5.6:1 on the band and
+ * 6.9:1 on a tile, the accent 7.4:1 on the ground, white on cobalt 8.6:1. In
+ * the dark theme muted text is 7.7:1 and the accent 8.2:1 on the ground.
  */
 :root {
   color-scheme: light;
 
-  --site-bg: #eceef2;
-  --site-fg: #0e1117;
-  --site-muted: #525a67;
-  --site-hairline: #d9dde5;
-  --site-accent: #2331c8;
-
+  --paper-bg: #edeff3;
+  --paper-fg: #0b0f18;
+  --paper-muted: #525a69;
+  --paper-hairline: #d6dae2;
+  --paper-accent: #2432d1;
   /* A tile, pure white so the step from the ground is the whole of its lift. */
-  --site-card: #ffffff;
-  /* A block inside a tile, going back towards the ground, so nesting reads as
-     depth. */
-  --site-inset: #f3f4f7;
-  /* The band: a section set a step into the page rather than onto it. */
-  --site-band: #e3e6ec;
+  --paper-card: #ffffff;
+  /* A block inside a tile, going back towards the ground. */
+  --paper-inset: #f3f5f8;
+  /* A section set a step into the page. */
+  --paper-band: #e3e6ec;
+
+  --site-bg: var(--paper-bg);
+  --site-fg: var(--paper-fg);
+  --site-muted: var(--paper-muted);
+  --site-hairline: var(--paper-hairline);
+  --site-accent: var(--paper-accent);
+  --site-card: var(--paper-card);
+  --site-inset: var(--paper-inset);
+  --site-band: var(--paper-band);
+
+  /*
+   * The signal: safety orange, for the one thing on a page that is live right
+   * now - the dot before "Software engineer", the role held today, a game
+   * that is Live. It never carries text, so its contrast is a dot's, not a
+   * word's (3.4:1 on white, enough for a shape and not for a letter), and it
+   * is never a second accent: a link, a button or a line is cobalt.
+   */
+  --site-signal: #f05a0a;
 
   /*
    * ⚠️ No resting shadow. Identical soft shadows under every card is the
-   * default of a generated page, and on white over this ground a tile does not
-   * need one. The shadow is spent on two things only: a tile under the pointer,
-   * which rises to meet it, and what genuinely floats - the header capsule, the
-   * back-to-top button, a dropdown. Both are tinted with the ink, not grey.
+   * default of a generated page. The shadow is spent on a tile under the
+   * pointer, which rises to meet it, and on what genuinely floats - the header,
+   * a menu, the command sheet. Both are tinted with the ink, not grey.
    */
   --site-lift-hover:
-    0 1px 2px color-mix(in oklab, #0e1117 6%, transparent),
-    0 18px 40px -12px color-mix(in oklab, #1a2470 22%, transparent);
+    0 1px 2px color-mix(in oklab, #0b0f18 6%, transparent),
+    0 22px 44px -16px color-mix(in oklab, #1a2470 26%, transparent);
   --site-float:
-    0 1px 1px color-mix(in oklab, #0e1117 10%, transparent),
-    0 14px 36px -10px color-mix(in oklab, #0e1117 34%, transparent);
-  /* The top edge of a tile in dark mode, where a border alone flattens it. */
+    0 1px 1px color-mix(in oklab, #0b0f18 10%, transparent),
+    0 16px 40px -12px color-mix(in oklab, #0b0f18 36%, transparent);
+  /* The top edge of a tile on a dark ground, where a border alone flattens it. */
   --site-rim: 0 0 #0000;
 
-  /*
-   * The ink panel. A block that carries the whole token system re-declared, so
-   * anything placed in it comes out correct without knowing it is on dark. See
-   * `.panel`.
-   */
-  --site-panel-bg: #0d1017;
-  --site-panel-card: #161a24;
-  --site-panel-inset: #1e2330;
+  /* The ink: the header, the hero, the close of a page, the footer. See
+     `.panel`. */
+  --site-panel-bg: #0b0f18;
+  --site-panel-card: #151a25;
+  --site-panel-inset: #1d2331;
   --site-panel-fg: #f2f4f8;
-  --site-panel-muted: #a2a9b7;
-  --site-panel-hairline: #2a303c;
-  --site-panel-accent: #a3b2ff;
+  --site-panel-muted: #a3aab8;
+  --site-panel-hairline: #283040;
+  --site-panel-accent: #a9b5ff;
+
+  /* The stage Projects is played on: the ink in the light theme, and in the
+     dark theme a step *below* the ground, so the tiles on it still lift. */
+  --site-stage: #0b0f18;
+
+  /* Cobalt as a surface. White on it is 8.6:1. See `.tile-cobalt`. */
+  --site-cobalt-bg: #2432d1;
 
   /*
-   * Cobalt, the suit's own blue as a surface. White on it is 8.96:1, and its
-   * muted text is white at 80%, 6.27:1. See `.tile-cobalt`.
+   * One hue per project, each the accent of its own card and its own page -
+   * the request diagram, the step numbers and the result bars are drawn in
+   * it - so four projects read as four products of one studio rather than one
+   * card four times. Cobalt, violet, teal and green, each 5.1:1 or better as
+   * text on white, and 8:1 or better in the dark theme on a tile.
    */
-  --site-cobalt-bg: #2331c8;
+  --hue-cobalt: #2432d1;
+  --hue-violet: #6a3bd8;
+  --hue-teal: #0b7a82;
+  --hue-green: #2b7a3d;
 
   /* One general curve, one for arrivals, one that overshoots for a small pop. */
   --site-ease: cubic-bezier(0.4, 0, 0.2, 1);
@@ -111,65 +146,95 @@
      site lines up with the header's. */
   --site-shell: 80rem;
 
+  /*
+   * Four radii, one per rank: a stage (the hero, the Projects cards, a game's
+   * stage), a tile, a block inside a tile, a small control. Concentric by
+   * construction - each is the one above less the padding between them - so
+   * a tile never sits round-cornered inside a square-cornered frame.
+   */
   --site-radius: 10px;
-  --site-radius-inner: 16px;
-  --site-radius-card: 24px;
+  --site-radius-inner: 14px;
+  --site-radius-card: 22px;
+  --site-radius-stage: 32px;
   --site-radius-pill: 999px;
 
   /* The space between two tiles, everywhere. */
   --site-gap: clamp(0.75rem, 1.2vw, 1rem);
+
+  /* How tall the floating header is, from the top of the screen to the foot
+     of its capsule: what a sticky element has to clear. */
+  --head-h: 4.75rem;
+
+  /*
+   * A section title's size, and the space between a section's head and its
+   * content. On the root rather than on the head, because the head and the
+   * content are siblings and both read them - declared on the head, the
+   * content's margin resolved to nothing.
+   */
+  --sec-size: clamp(2.375rem, 5vw, 4.25rem);
+  --sec-gap: clamp(1.5rem, 2.8vw, 2.5rem);
 }
 
 .dark {
   color-scheme: dark;
 
-  --site-bg: #090b10;
-  --site-fg: #eceef3;
-  --site-muted: #9aa1ae;
-  --site-hairline: #232936;
-  --site-accent: #93a2ff;
-
-  --site-card: #12161f;
-  --site-inset: #191e29;
+  /* Night rather than black: the ground carries a trace of the cobalt, so the
+     dark theme is the same place at night and not the light one inverted. */
+  --paper-bg: #080b12;
+  --paper-fg: #edf0f5;
+  --paper-muted: #9aa2b1;
+  --paper-hairline: #222837;
+  --paper-accent: #93a1ff;
+  --paper-card: #10141e;
+  --paper-inset: #171c28;
   /*
    * A band *recesses* on a dark page while a tile lifts, which is the opposite
-   * of light mode and is what gives dark mode a legible ladder: band, ground,
-   * tile, inset, panel. All but black, because at #06070a the band was
-   * indistinguishable from the ground and a project page read as one sheet.
+   * of the light theme and what gives the dark one a legible ladder: band,
+   * ground, tile, inset, panel.
    */
-  --site-band: #020304;
+  --paper-band: #030509;
+
+  --site-signal: #ff8a3d;
 
   --site-lift-hover:
     0 1px 2px color-mix(in oklab, #000 40%, transparent),
-    0 22px 44px -14px color-mix(in oklab, #000 70%, transparent);
+    0 24px 48px -16px color-mix(in oklab, #000 72%, transparent);
   --site-float:
     0 1px 1px color-mix(in oklab, #000 50%, transparent),
-    0 16px 40px -10px color-mix(in oklab, #000 75%, transparent);
+    0 18px 44px -12px color-mix(in oklab, #000 78%, transparent);
   --site-rim: inset 0 1px 0 color-mix(in oklab, #fff 5%, transparent);
 
   /*
-   * ⚠️ In dark mode these have to stay clear of `--site-card`, not merely
-   * differ from `--site-bg`. The panel is the *lifted* surface here - two
-   * steps above the ground, one above a tile - which is what makes the header
-   * a capsule and the close a block rather than three more tiles.
+   * ⚠️ The panel is the *lifted* surface in the dark theme - two steps above
+   * the ground, one above a tile - which is what keeps the header a capsule
+   * and the close of a page a block rather than more tiles. It has to stay
+   * clear of `--paper-card`, not merely differ from the ground.
    */
-  --site-panel-bg: #191f2c;
-  --site-panel-card: #212838;
-  --site-panel-inset: #293144;
+  --site-panel-bg: #161c29;
+  --site-panel-card: #1e2433;
+  --site-panel-inset: #262d3e;
   --site-panel-fg: #f1f3f7;
   --site-panel-muted: #aab1bf;
-  --site-panel-hairline: #333b4e;
-  --site-panel-accent: #a9b6ff;
+  --site-panel-hairline: #323a4d;
+  --site-panel-accent: #aab6ff;
 
-  /* A shade brighter than the light theme's, so it still reads as blue rather
-     than as a hole in a near-black page. White on it is 7.9:1. */
-  --site-cobalt-bg: #2b39d6;
+  --site-stage: #020306;
+
+  /* A shade brighter, so it still reads as blue rather than as a hole in a
+     near-black page. White on it is 7.5:1. */
+  --site-cobalt-bg: #2d3be0;
+
+  --hue-cobalt: #93a1ff;
+  --hue-violet: #b69bff;
+  --hue-teal: #5ccfd6;
+  --hue-green: #7fd192;
 }
 
 /*
  * `inline` so utilities emit var(--site-*) directly and therefore follow the
- * .dark override, the .panel override and the .tile-cobalt override at
- * runtime, instead of being resolved at build time.
+ * .dark, .panel, .tile-cobalt and .surface overrides at runtime, instead of
+ * being resolved at build time - without it every utility freezes at the
+ * light value. The single most consequential word in the file.
  */
 @theme inline {
   --font-sans:
@@ -197,8 +262,7 @@
 
   /*
    * A column, so the footer reaches the bottom of the screen on a page shorter
-   * than it - the 404 used to end with its footer halfway up and a band of bare
-   * ground under it.
+   * than it.
    */
   body {
     display: flex;
@@ -216,8 +280,8 @@
   }
 
   /* 17px wherever there is the width for it, 16px on a phone. Both ends have
-     been tried and turned down: 16px everywhere read as everything too small,
-     18px as everything too big. */
+     been tried and turned down: 16px everywhere read as too small, 18px as too
+     big. */
   @media (min-width: 48rem) {
     body {
       font-size: 1.0625rem;
@@ -229,19 +293,15 @@
    * painted by `main` instead (below).
    *
    * Safari 26 ignores `theme-color` and paints the strip under its bottom bar,
-   * and the bounce past either end, in the page's background colour. WebKit
-   * takes that as the html background with the body's laid over it, so an
-   * opaque body decides it alone - an animation on `html` changed nothing on
-   * an iPhone, and the ink footer ended on a light band.
+   * and the bounce past either end, in the page's background colour, which
+   * WebKit takes from an opaque body. So the body turns to ink between 98% and
+   * 99% of the scroll - the footer is at least 480px, so on any page the turn
+   * happens with the footer at the bottom of the screen - and holds it, since
+   * a phone stops a fraction of a pixel short of 100%. Until then it is the
+   * ground, so the bar at the top still meets the page.
    *
-   * It turns between 98% and 99% of the scroll, and the footer is at least
-   * 480px, so on any page shorter than 24000px of scroll the turn happens with
-   * the footer at the bottom of the screen. The last 1% holds the ink, because
-   * a phone stops a fraction of a pixel short of the end and a turn that ran
-   * to 100% left the colour a shade off. Until then it is the ground, so the
-   * bar at the top and the pull past the top still meet the ground, as the
-   * header's capsule needs them to. Without scroll timelines, and on a page
-   * too short to scroll, it stays the ground.
+   * ⚠️ On `body`, never `html`: on `html` it changes the canvas in Chrome and
+   * nothing in Safari, so a check in Chrome alone passes either way.
    */
   @supports (animation-timeline: scroll()) {
     body {
@@ -264,9 +324,8 @@
     }
   }
 
-  /* The ground under every section. It is here rather than left to the body
-     because the body's own turns to ink at the end of the scroll (above), and
-     the gaps between the last tiles must not turn with it. */
+  /* The ground under every section, painted here rather than left to the body,
+     whose own colour turns to ink at the end of the scroll. */
   body > main {
     flex: 1 0 auto;
     background-color: var(--site-bg);
@@ -285,7 +344,7 @@
 
   /* Clearance under the floating header for in-page anchors. */
   :target {
-    scroll-margin-top: 6rem;
+    scroll-margin-top: calc(var(--head-h) + 1rem);
   }
 
   :focus-visible {
@@ -305,11 +364,9 @@
    * The measure. One width for every section and every page, with the gutter
    * added outside it, so changing the gutter never changes the measure.
    *
-   * ⚠️ It was a family of six widths - 68, 72 and 75rem - on the argument that
-   * a rhythm of edges reads better than one long trough. It read as
-   * misalignment instead: the hero, Skills and About started at three
-   * different x positions on one screen. One edge is what makes a page of
-   * tiles look built rather than assembled.
+   * ⚠️ It was a family of six widths once, and read as misalignment: the
+   * hero, Skills and About started at three x positions on one screen. One
+   * edge is what makes a page look built rather than assembled.
    */
   .shell {
     width: 100%;
@@ -318,17 +375,21 @@
     max-width: calc(var(--site-shell) + 2 * var(--site-pad));
   }
 
-  /* ---- The tile, which is the page's unit ----------------------------------
+  /* ---- Surfaces --------------------------------------------------------- */
+
+  /*
+   * The tile: an object on the page - a project, a role, a channel, a node of
+   * a diagram, a game. White on the paper with a hairline edge, and no shadow
+   * until the pointer arrives.
    *
-   * One class, used everywhere: a service, a role, a project, a channel, a
-   * group of technologies, a node of the request diagram. White on the paper
-   * ground with a hairline edge, one radius, and no shadow until the pointer
-   * arrives.
+   * Text that is only text is not put in a tile any more: a statement, a lead,
+   * a write-up sits on the ground at its own size. A tile is for something a
+   * reader can pick up.
    */
   .card {
     /* Named, so a block inside a tile can cancel it and bleed to the edges -
        see `.game-shot`. */
-    --card-pad: clamp(1.125rem, 1.8vw, 1.625rem);
+    --card-pad: clamp(1.125rem, 1.9vw, 1.75rem);
 
     position: relative;
     border: 1px solid var(--site-hairline);
@@ -339,21 +400,32 @@
     transition:
       border-color 300ms var(--site-ease),
       box-shadow 300ms var(--site-ease),
-      transform 300ms var(--site-ease-out),
+      transform 400ms var(--site-ease-out),
       background-color 300ms var(--site-ease);
   }
 
-  /* Only where the whole tile is a link. It rises 4px to meet the pointer -
-     far enough to see, and every hover on the site moves by `transform` so it
-     composes with the reveals, which move by `translate`. */
+  /* Only where the whole tile is a link. It rises to meet the pointer - by
+     `transform`, so it composes with the reveals, which move by `translate`. */
   .card-hover:hover {
     border-color: color-mix(in oklab, var(--site-accent) 45%, var(--site-hairline));
     box-shadow: var(--site-rim), var(--site-lift-hover);
     transform: translateY(-4px);
   }
 
-  /* A block inside a tile: a figure, a list, a stat. It goes back towards the
-     ground rather than further from it, so the nesting reads as depth. */
+  /* Keyboard focus on a tile whose title is stretched over it: the ring goes
+     round the tile, which is what a reader sees as the target, not round the
+     title's words. */
+  .card-hover:has(.stretch:focus-visible) {
+    outline: 2px solid var(--site-accent);
+    outline-offset: 3px;
+  }
+
+  .card-hover .stretch:focus-visible {
+    outline: none;
+  }
+
+  /* A block inside a tile, back towards the ground, so nesting reads as
+     depth. */
   .inset {
     border-radius: var(--site-radius-inner);
     background-color: var(--site-inset);
@@ -361,21 +433,18 @@
   }
 
   /*
-   * The ink panel: a block that re-declares the palette rather than styling
-   * its own contents.
+   * The ink: a block that re-declares the palette rather than styling its own
+   * contents. Because `@theme inline` maps every Tailwind colour to a
+   * var(--site-*), overriding the tokens here is enough: `.card`, `.link`,
+   * `.chip`, `.cta` and `text-muted` inside all come out right with no
+   * panel-specific rule anywhere.
    *
-   * Because `@theme inline` maps every Tailwind colour to a var(--site-*),
-   * overriding the tokens here is enough: `.card`, `.link`, `.chip`,
-   * `text-muted` and everything else inside come out correct with no
-   * panel-specific rules anywhere.
+   * ⚠️ `color-scheme: dark` is load-bearing: a technology mark picks its colour
+   * with `light-dark()` (tech.ts), and without it Express and Expo - near-black
+   * marks - were drawn near-black on the ink in the light theme.
    *
-   * `color-scheme: dark` is part of that: TechIcon picks a mark's colour with
-   * `light-dark()`, so without it Express and Expo - near-black marks - would be
-   * drawn near-black on the ink in the light theme.
-   *
-   * Spent on the header capsule, the hero, the close of a page, the footer, the
-   * core of a request diagram and Backend in Skills. ⚠️ Never nested, and
-   * never inside `.tile-cobalt`: the tokens would resolve to themselves.
+   * ⚠️ Never nested, and never inside `.tile-cobalt`: the tokens would resolve
+   * to the same values and the inner block would vanish into the outer.
    */
   .panel {
     color-scheme: dark;
@@ -388,17 +457,17 @@
     --site-muted: var(--site-panel-muted);
     --site-hairline: var(--site-panel-hairline);
     --site-accent: var(--site-panel-accent);
-    --site-rim: inset 0 1px 0 color-mix(in oklab, #fff 5%, transparent);
+    --site-rim: inset 0 1px 0 color-mix(in oklab, #fff 6%, transparent);
 
     background-color: var(--site-bg);
     color: var(--site-fg);
   }
 
   /*
-   * Cobalt, the same trick as the panel with the suit's blue as the ground.
-   * White is the text and the accent, so a link or a button inside it is white
-   * on blue and a `.cta` inverts to blue on white. One or two per page - it is
-   * the loudest surface the site has, and a third one points at nothing.
+   * Cobalt, the same trick with the suit's blue as the ground. White is its
+   * text and its accent, so a link inside is white on blue and a `.cta`
+   * inverts to blue on white. At most one or two a page - the loudest surface
+   * the site has.
    */
   .tile-cobalt {
     color-scheme: dark;
@@ -419,10 +488,67 @@
   }
 
   /*
-   * The small caption at the top of a tile: an icon in a rounded square and a
-   * few words in sentence case. It is the tile's name, not a shout - which is
-   * why it is not tracked-out capitals, the label style every generated page
-   * reaches for.
+   * Back to the theme's own paper inside a loud surface: a white tile on the
+   * ink stage of Projects, which carries a whole light page - a request drawn
+   * with its own ink core - inside it. It restores every token, so what is in
+   * it is drawn exactly as it would be on the ground.
+   */
+  .surface {
+    color-scheme: light;
+
+    --site-bg: var(--paper-bg);
+    --site-card: var(--paper-card);
+    --site-inset: var(--paper-inset);
+    --site-band: var(--paper-band);
+    --site-fg: var(--paper-fg);
+    --site-muted: var(--paper-muted);
+    --site-hairline: var(--paper-hairline);
+    --site-accent: var(--paper-accent);
+    --site-rim: 0 0 #0000;
+
+    color: var(--site-fg);
+  }
+
+  .dark .surface {
+    color-scheme: dark;
+
+    --site-rim: inset 0 1px 0 color-mix(in oklab, #fff 5%, transparent);
+  }
+
+  /*
+   * A project's own hue, as the accent of everything inside: `data-hue` on a
+   * card or a page. Both the ground's accent and the ink's are set, so a
+   * `.panel` inside - a diagram's core - takes the hue too rather than
+   * falling back to cobalt.
+   */
+  [data-hue='cobalt'] {
+    --paper-accent: var(--hue-cobalt);
+    --site-accent: var(--hue-cobalt);
+    --site-panel-accent: color-mix(in oklab, var(--hue-cobalt) 45%, #fff);
+  }
+
+  [data-hue='violet'] {
+    --paper-accent: var(--hue-violet);
+    --site-accent: var(--hue-violet);
+    --site-panel-accent: color-mix(in oklab, var(--hue-violet) 45%, #fff);
+  }
+
+  [data-hue='teal'] {
+    --paper-accent: var(--hue-teal);
+    --site-accent: var(--hue-teal);
+    --site-panel-accent: color-mix(in oklab, var(--hue-teal) 45%, #fff);
+  }
+
+  [data-hue='green'] {
+    --paper-accent: var(--hue-green);
+    --site-accent: var(--hue-green);
+    --site-panel-accent: color-mix(in oklab, var(--hue-green) 45%, #fff);
+  }
+
+  /*
+   * The caption at the top of a tile: an icon in a rounded square and a few
+   * words in sentence case. It is the tile's name, not a shout - which is why
+   * it is not tracked-out capitals, the label every generated page reaches for.
    */
   .tile-label {
     display: flex;
@@ -444,7 +570,10 @@
     border-radius: var(--site-radius);
     background-color: color-mix(in oklab, var(--site-accent) 12%, var(--site-card));
     color: var(--site-accent);
-    transition: transform 420ms var(--site-spring);
+    transition:
+      transform 420ms var(--site-spring),
+      background-color 250ms var(--site-ease),
+      color 250ms var(--site-ease);
   }
 
   .tile-icon svg {
@@ -459,10 +588,10 @@
 
   /*
    * The bento: twelve columns on a desktop, six on a tablet, one on a phone.
-   * A tile places itself with Tailwind's `sm:col-span-*` and `lg:col-span-*`,
-   * which land on the same 40rem and 64rem the columns change at. Every row a
-   * section sets has to add up to the full count - a row that stops short
-   * leaves exactly the empty cell this layout exists to avoid.
+   * A tile places itself with `sm:col-span-*` and `lg:col-span-*`, which land
+   * on the same 40rem and 64rem the columns change at. Every row has to add up
+   * to the full count - a row that stops short leaves the empty cell this
+   * exists to avoid.
    */
   .bento {
     display: grid;
@@ -485,15 +614,17 @@
   /* ---- Sections --------------------------------------------------------- */
 
   /*
-   * Vertical rhythm, kept tight on purpose: the air between two sections
-   * should read as a break rather than as the page having run out.
+   * A section is a scene: its own composition, told apart from the next by
+   * what it does rather than by a band of colour behind it. The air between two
+   * is a break, not the page running out - Vuk reads 130px and more of it as a
+   * CV, so it stays under 4.5rem.
    */
   .sec {
-    padding-block: clamp(2rem, 3.4vw, 3rem);
+    padding-block: clamp(2.5rem, 5vw, 4.25rem);
   }
 
   .sec-lite {
-    padding-block: clamp(1.5rem, 2.6vw, 2.25rem);
+    padding-block: clamp(1.75rem, 3vw, 2.75rem);
   }
 
   .section-band {
@@ -501,43 +632,125 @@
   }
 
   /*
-   * The section head: a real heading at real size, and whatever the section
-   * wants beside it - a link out - on the right. No rule under it: the tiles
-   * below start their own edge, and a hairline between the two was the last
-   * of the page's old document look.
+   * The section head: the title, and, where the section has something beside
+   * its title to go to, the trace into it.
+   *
+   * The trace is the request diagram's connector - a 2px line and a clip-path
+   * arrowhead - run out of the title along its baseline and straight into the
+   * link beside it, ending pointed at it: from "Projects" to All projects.
+   * That is the one place a section head has somewhere to send the reader, so
+   * it is the one place the line is drawn.
+   *
+   * ⚠️ It used to run out of every title, turn down at the edge of the measure
+   * and land on the corner of the section's first tile. Vuk asked twice what
+   * it pointed at, and the honest answer was nothing: the corner of a box is
+   * not a destination. A line on this site has to go somewhere a reader can
+   * name, or it is not drawn.
+   *
+   * Its line sits 0.2 of `--sec-size` above the foot of the title's box, which
+   * is about the baseline at this leading (both sizes are on `:root`).
    */
-  .sec-head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 1rem 2rem;
+  .sec-head[data-aside] {
+    display: grid;
+    grid-template-columns: auto minmax(2.75rem, 1fr) auto;
+    align-items: end;
+    column-gap: clamp(1rem, 2vw, 1.75rem);
   }
 
   .sec-label {
-    font-stretch: 120%;
-    font-weight: 700;
-    font-size: clamp(2rem, 4.2vw, 3.25rem);
+    font-stretch: 122%;
+    font-weight: 720;
+    font-size: var(--sec-size);
     line-height: 0.98;
-    letter-spacing: -0.045em;
+    letter-spacing: -0.05em;
     /* German compounds are long enough to overhang a phone at this size. The
-       limit keeps a break to words of ten letters or more, with four either
-       side, so "Verglei-chendes" becomes a whole word on its own line. */
+       limit keeps a break to words of ten letters or more, four either side. */
     hyphens: auto;
     hyphenate-limit-chars: 10 4 4;
     overflow-wrap: break-word;
   }
 
   .sec-body {
-    margin-top: clamp(1.125rem, 2vw, 1.75rem);
+    margin-top: var(--sec-gap);
+  }
+
+  /*
+   * The trace's box is the grid cell between the title and the link, as tall
+   * as the title. `.sec-trace-line` is the line, a box of no height whose top
+   * border is the run, positioned on the baseline; the head is its `::after`,
+   * its tip a pixel short of the link's edge.
+   */
+  .sec-trace {
+    position: relative;
+    align-self: stretch;
+    min-width: 0;
+    pointer-events: none;
+  }
+
+  .sec-trace-line {
+    --hl: 0.6875rem;
+    --hw: 0.75rem;
+
+    position: absolute;
+    left: 0;
+    right: 0.35rem;
+    top: calc(100% - var(--sec-size) * 0.2);
+    height: 0;
+    border-top: 2px solid var(--site-accent);
+    translate: 0 -1px;
+  }
+
+  .sec-trace-line::after {
+    content: '';
+    position: absolute;
+    top: calc(-1px - var(--hw) / 2);
+    right: calc(-1 * var(--hl) + 1px);
+    width: var(--hl);
+    height: var(--hw);
+    background-color: var(--site-accent);
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+  }
+
+  /* The link sits on the title's baseline row, level with the line. */
+  .sec-head[data-aside] > :last-child {
+    align-self: end;
+    margin-bottom: calc(var(--sec-size) * 0.2 - 1.45rem);
+  }
+
+  /*
+   * On a phone a two-line title leaves the trace a sliver beside its last
+   * line, so there the title takes a row of its own and the line and the link
+   * share the row under it.
+   */
+  @media (max-width: 39.99rem) {
+    .sec-head[data-aside] {
+      grid-template-columns: minmax(0, 1fr) auto;
+      row-gap: 0.9rem;
+    }
+
+    .sec-head[data-aside] .sec-label {
+      grid-column: 1 / -1;
+    }
+
+    .sec-head[data-aside] .sec-trace {
+      height: 1.25rem;
+    }
+
+    .sec-trace-line {
+      top: 50%;
+    }
+
+    .sec-head[data-aside] > :last-child {
+      margin-bottom: 0;
+      align-self: center;
+    }
   }
 
   /*
    * A heading line revealed from behind a mask: the outer span clips and the
-   * inner one rises into it. Used on section headings (on scroll), page titles
-   * and the hero name (on load). `display: block` on both halves so a heading
-   * that wraps to two lines is revealed as one block rather than breaking the
-   * clip.
+   * inner one rises into it. Section titles (on scroll), page titles and the
+   * hero's name (on load). `display: block` on both halves so a heading that
+   * wraps is revealed as one block rather than breaking the clip.
    */
   .line-mask {
     display: block;
@@ -554,11 +767,10 @@
   /* ---- Links, buttons, chips ------------------------------------------- */
 
   /*
-   * Content links. The faint rule is always present, so a link still looks like
-   * a link. Hover draws a solid one across it from the left - two stacked
+   * Content links. The faint rule is always there, so a link still looks like
+   * a link, and hover draws a solid one across it from the left. Two stacked
    * backgrounds rather than a border, because only background-size can be
-   * animated directionally. Nothing about it changes the box, so no line ever
-   * reflows on hover.
+   * animated directionally, and nothing about it changes the box.
    */
   .link {
     color: var(--site-accent);
@@ -576,7 +788,7 @@
     background-size:
       0% 2px,
       100% 1px;
-    transition: background-size 300ms var(--site-ease-out);
+    transition: background-size 350ms var(--site-ease-out);
   }
 
   .link:hover {
@@ -586,9 +798,10 @@
   }
 
   /*
-   * The call to action: a filled accent pill, big enough to be the obvious
-   * thing to press. It rises and deepens on hover rather than hollowing out -
-   * an outline on hover read as the button switching itself off.
+   * The call to action: a filled accent pill. On hover a darker fill sweeps in
+   * from the left under the words - a background-size, so nothing reflows - and
+   * the pill rises, rather than hollowing out: an outline on hover read as the
+   * button switching itself off.
    */
   .cta {
     display: inline-flex;
@@ -598,32 +811,44 @@
     border: 1px solid var(--site-accent);
     border-radius: var(--site-radius-pill);
     background-color: var(--site-accent);
+    background-image: linear-gradient(
+      color-mix(in oklab, var(--site-accent) 78%, var(--site-fg)),
+      color-mix(in oklab, var(--site-accent) 78%, var(--site-fg))
+    );
+    background-repeat: no-repeat;
+    background-size: 0% 100%;
     color: var(--site-bg);
-    padding: 0.85rem 1.5rem;
+    padding: 0.875rem 1.5rem;
     font-size: 1rem;
-    font-stretch: 108%;
-    font-weight: 620;
+    font-stretch: 110%;
+    font-weight: 640;
     line-height: 1.2;
+    letter-spacing: -0.01em;
     transition:
-      background-color 250ms var(--site-ease),
-      box-shadow 250ms var(--site-ease),
-      transform 250ms var(--site-ease-out);
+      background-size 450ms var(--site-ease-out),
+      box-shadow 300ms var(--site-ease),
+      transform 300ms var(--site-ease-out);
   }
 
   .cta:hover {
-    background-color: color-mix(in oklab, var(--site-accent) 86%, var(--site-fg));
-    box-shadow: 0 12px 28px -12px color-mix(in oklab, var(--site-accent) 70%, transparent);
+    background-size: 100% 100%;
+    box-shadow: 0 14px 30px -14px color-mix(in oklab, var(--site-accent) 75%, transparent);
     transform: translateY(-2px);
+  }
+
+  .cta:active,
+  .cta-ghost:active {
+    transform: translateY(0) scale(0.98);
   }
 
   .cta svg,
   .cta-ghost svg {
-    transition: transform 350ms var(--site-spring);
+    transition: transform 400ms var(--site-spring);
   }
 
   .cta:hover svg,
   .cta-ghost:hover svg {
-    transform: scale(1.15) rotate(-6deg);
+    transform: scale(1.15) rotate(-8deg);
   }
 
   /* The same shape, outlined: the secondary action beside it. */
@@ -637,16 +862,18 @@
     background-color: var(--site-card);
     padding: 0.75rem 1.25rem;
     font-size: 0.9375rem;
-    font-weight: 560;
+    font-weight: 580;
     line-height: 1.2;
     transition:
       border-color 250ms var(--site-ease),
       color 250ms var(--site-ease),
-      transform 250ms var(--site-ease-out);
+      background-color 250ms var(--site-ease),
+      transform 300ms var(--site-ease-out);
   }
 
   .cta-ghost:hover {
-    border-color: color-mix(in oklab, var(--site-accent) 55%, var(--site-hairline));
+    border-color: color-mix(in oklab, var(--site-accent) 60%, var(--site-hairline));
+    background-color: color-mix(in oklab, var(--site-accent) 7%, var(--site-card));
     color: var(--site-accent);
     transform: translateY(-2px);
   }
@@ -659,9 +886,9 @@
 
   /*
    * A chip: one technology name with its mark. The marks keep their own brand
-   * colours - the one place colour is allowed in beyond the accent, and it is
+   * colours - the one place colour comes in beyond the palette, and it is
    * borrowed rather than invented. On hover the edge takes the brand's colour,
-   * which is set on the chip itself by the component (`brandStyle` in tech.ts).
+   * which the component sets on the chip itself (`brandStyle` in tech.ts).
    */
   .chip {
     display: inline-flex;
@@ -690,13 +917,11 @@
     width: 1.25rem;
     height: 1.25rem;
     flex-shrink: 0;
-    /* --brand comes from the style attribute and is missing on the entries with
-       no brand, which then sit at the muted tone. */
+    /* --brand is missing on the entries with no brand, which then sit at the
+       muted tone. */
     color: var(--brand, var(--site-muted));
   }
 
-  /* Chips inside an inset, which is already a tone off the tile: they take the
-     tile tone back so they do not disappear into it. */
   .inset .chip {
     background-color: var(--site-card);
   }
@@ -711,7 +936,7 @@
     border-radius: var(--site-radius-pill);
     padding: 0.2rem 0.8rem;
     font-size: 0.875rem;
-    font-weight: 520;
+    font-weight: 540;
     line-height: 1.6;
     font-variant-numeric: tabular-nums;
     color: var(--site-muted);
@@ -726,12 +951,10 @@
 
   /*
    * A mark tile: one technology as a square with its mark large and its name
-   * under it. It is how a stack is shown wherever there is room for it - the
-   * hero's tray, Skills, a project's stack - because a mark at 36px is read
-   * before its name is, and eleven of them read as a picture of the work.
-   *
-   * `--brand` is on the tile itself (see MarkTile.astro), so the hover can tint
-   * the tile in the mark's own colour and the mark can jump.
+   * under it - the hero's tray, Skills, a project's stack. A mark at 36px is
+   * read before its name is, and eleven of them read as a picture of the work.
+   * `--brand` is on the tile itself (MarkTile.astro), so the hover tints the
+   * tile in the mark's own colour and the mark can jump.
    */
   .mark-tile {
     display: flex;
@@ -777,13 +1000,14 @@
   }
 
   /*
-   * Live or Beta, in sentence case on a pill. Only Beta takes the accent: the
-   * odd one out is the one worth pointing at.
+   * Live or Beta, in sentence case on a pill. Live is quiet with the signal's
+   * dot - the game is out and running - and Beta takes the accent, because
+   * the odd one out is the one worth pointing at.
    */
   .pill-status {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.45rem;
     border: 1px solid var(--site-hairline);
     border-radius: var(--site-radius-pill);
     padding: 0.2rem 0.75rem 0.2rem 0.6rem;
@@ -799,7 +1023,7 @@
     width: 0.45rem;
     height: 0.45rem;
     border-radius: 50%;
-    background-color: currentColor;
+    background-color: var(--site-signal);
   }
 
   .pill-status[data-status='beta'] {
@@ -808,11 +1032,15 @@
     color: var(--site-bg);
   }
 
+  .pill-status[data-status='beta']::before {
+    background-color: currentColor;
+  }
+
   /* A label above a value, inside a tile. The label is doing work - "2026" on
      its own could be anything. */
   .meta-label {
     font-size: 0.875rem;
-    font-weight: 520;
+    font-weight: 540;
     line-height: 1.4;
     color: var(--site-muted);
   }
@@ -827,8 +1055,8 @@
   }
 
   /*
-   * A title that is also a link. It stays at text colour rather than taking the
-   * accent and its rule, because a heading underlined in cobalt reads as a
+   * A title that is also a link. It stays at text colour rather than taking
+   * the accent and its rule, because a heading underlined in cobalt reads as a
    * button; the accent arrives on hover, with the tile's own border.
    */
   .entry-link {
@@ -844,25 +1072,24 @@
   /*
    * The whole tile is the target, not just the title: the link is stretched
    * over the tile with a pseudo-element, so a click anywhere on it navigates
-   * while the accessible name stays the title alone. Anything that has to stay
+   * while the accessible name stays the title alone. Anything that must stay
    * clickable inside a stretched tile - an outbound link - is lifted above it.
    */
   .stretch::after {
     content: '';
     position: absolute;
     inset: 0;
+    z-index: 1;
     border-radius: inherit;
   }
 
   .above {
     position: relative;
-    z-index: 1;
+    z-index: 2;
   }
 
-  /*
-   * Two tiles to a row from 52rem. Kept for the lists that are genuinely a set
-   * of equal pairs; a section with its own composition uses `.bento`.
-   */
+  /* Two tiles to a row from 52rem, for the lists that are genuinely a set of
+     equal pairs. */
   .svc-grid {
     display: grid;
     gap: var(--site-gap);
@@ -886,12 +1113,10 @@
 
   /*
    * A floating capsule rather than a bar. The header element is a transparent
-   * sticky strip the width of the page, and what is drawn is the ink capsule
-   * inside it, on the shell's measure - so its left edge is every section's
-   * left edge, and the page shows round it at the corners.
-   *
-   * The strip takes no clicks (`pointer-events: none`) and the capsule takes
-   * them back, so the ground either side of it is still the page under it.
+   * sticky strip, and what is drawn is the ink capsule inside it on the
+   * shell's measure - so its left edge is every section's left edge and the
+   * page shows round it. The strip takes no clicks and the capsule takes them
+   * back, so the ground either side of it is still the page under it.
    */
   .site-head {
     position: sticky;
@@ -910,11 +1135,38 @@
     border-radius: var(--site-radius-pill);
     /* The fallback is load-bearing: --head-pad is only ever set by the
        head-settle keyframes, so anywhere that animation does not run the
-       property is unset and the capsule would otherwise collapse. */
+       property is unset and the capsule would collapse. */
     padding: var(--head-pad, 0.45rem) 0.5rem var(--head-pad, 0.45rem) 0.6rem;
-    background-color: color-mix(in oklab, var(--site-bg) 97%, transparent);
+    background-color: color-mix(in oklab, var(--site-bg) 96%, transparent);
     box-shadow: var(--site-float);
     pointer-events: auto;
+  }
+
+  /*
+   * How far down the page the reader is, as a trace along the capsule's
+   * floor: the accent line drawn from the left as the page scrolls, inset from
+   * the round ends so it runs along the straight part. A reading gauge on a
+   * write-up and a map of the homepage's scenes, and it costs one element and
+   * a `scale` on the root scroller's timeline.
+   */
+  .head-progress {
+    position: absolute;
+    left: 1.75rem;
+    right: 1.75rem;
+    bottom: -1px;
+    height: 2px;
+    border-radius: 2px;
+    background-color: var(--site-accent);
+    transform-origin: 0 50%;
+    scale: 0 1;
+    pointer-events: none;
+  }
+
+  /* Where the page cannot report its scroll, no gauge rather than a full one. */
+  @supports not (animation-timeline: scroll()) {
+    .head-progress {
+      display: none;
+    }
   }
 
   /* The wordmark: Vuk's own V mark beside the name. */
@@ -936,10 +1188,10 @@
   }
 
   /*
-   * ⚠️ Between 64rem and 80rem the capsule carries the seven section links and
+   * ⚠️ Between 64rem and 80rem the capsule carries the six section links and
    * the name does not fit beside them: in German the rail ran over "Vuk
-   * Cvetković" at 1024. There the mark stands alone - it is Vuk's own mark and
-   * the link keeps the name as its accessible name, clipped rather than removed.
+   * Cvetković" at 1024. There the mark stands alone, and the link keeps the
+   * name as its accessible name, clipped rather than removed.
    */
   @media (min-width: 64rem) and (max-width: 79.99rem) {
     .site-head .brand > span {
@@ -965,11 +1217,11 @@
   }
 
   /*
-   * The seven section links, as pills in a row. Hover and the active-section
-   * state are the same device: the label's own pill fills in. The section you
-   * are actually in keeps it, filled with the accent - set by the observer in
-   * the layout as `aria-current="location"`, so the state is announced as well
-   * as drawn.
+   * The section links, as pills in a row. Hover and the active section are the
+   * same device: the label's own pill fills in. The section being read keeps
+   * it, filled with the accent - set by the observer in the layout as
+   * `aria-current="location"`, so the state is announced as well as drawn -
+   * and its dot is the signal, the same "now" as the hero's.
    */
   .nav-rail {
     display: flex;
@@ -978,17 +1230,20 @@
   }
 
   .nav-link {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
     border-radius: var(--site-radius-pill);
     padding: 0.5rem 0.7rem;
     font-size: 0.875rem;
-    font-weight: 520;
+    font-weight: 540;
     line-height: 1.2;
     color: var(--site-muted);
     white-space: nowrap;
     transition:
       color 200ms var(--site-ease),
-      background-color 200ms var(--site-ease);
+      background-color 200ms var(--site-ease),
+      padding 250ms var(--site-ease-out);
   }
 
   @media (min-width: 80rem) {
@@ -1016,8 +1271,8 @@
     gap: 0.75rem;
     border-radius: var(--site-radius-inner);
     padding: 0.8rem 1rem;
-    font-stretch: 112%;
-    font-weight: 620;
+    font-stretch: 114%;
+    font-weight: 640;
     font-size: 1.25rem;
     line-height: 1.2;
     letter-spacing: -0.02em;
@@ -1062,9 +1317,8 @@
 
   /*
    * The way into the games, from every page. It borrows `.head-btn`'s pill so
-   * it reads as one of the capsule's controls rather than as an eighth
-   * section: the seven in the rail are anchors on the homepage and this one is
-   * a page.
+   * it reads as one of the capsule's controls rather than as another section:
+   * the links in the rail are anchors on the homepage and this one is a page.
    */
   .head-game {
     gap: 0.5rem;
@@ -1075,7 +1329,15 @@
     color: var(--site-fg);
   }
 
-  /* The phone menu: a rounded ink card hanging under the capsule. */
+  .head-game svg {
+    transition: transform 450ms var(--site-spring);
+  }
+
+  .head-game:hover svg {
+    transform: rotate(-14deg) scale(1.12);
+  }
+
+  /* The phone menu: a rounded ink sheet hanging under the capsule. */
   .head-menu {
     position: absolute;
     inset-inline: 0;
@@ -1087,6 +1349,7 @@
     background-color: var(--site-bg);
     box-shadow: var(--site-float);
     padding: 0.6rem;
+    transform-origin: 50% 0;
   }
 
   @media (min-width: 30rem) {
@@ -1095,8 +1358,16 @@
     }
   }
 
-  /* Ruled off from the seven above it, because those jump within the current
-     page and this one leaves it. */
+  /* It unfolds from the capsule rather than appearing: an answer to the tap,
+     so it is quick. */
+  @media (prefers-reduced-motion: no-preference) {
+    details[open] > .head-menu {
+      animation: menu-in 260ms var(--site-ease-out);
+    }
+  }
+
+  /* Ruled off from the sections above it, because those jump within the
+     current page and this one leaves it. */
   .head-menu-game {
     grid-column: 1 / -1;
     margin-top: 0.35rem;
@@ -1116,13 +1387,25 @@
     color: var(--site-muted);
   }
 
+  /* The four autonyms on one row, spread across it: at the footer's padding
+     "Deutsch" fell onto a second line on a 390 phone, alone. */
+  .head-menu-langs .foot-langs {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 0.25rem;
+  }
+
+  .head-menu-langs .foot-langs a {
+    padding-inline: 0.6rem;
+  }
+
   /* ---- Page head ------------------------------------------------------- */
 
   /*
    * The head of every page that is not the homepage: a project, an index, a
-   * game, all in one voice. The title is set large - a page is about one thing
-   * and its name should be the first thing seen - and it still stops well short
-   * of the hero's name, which is the site's one masthead.
+   * game, in one voice. The title is set large - a page is about one thing and
+   * its name should be the first thing seen - and it still stops short of the
+   * hero's name, which is the site's one masthead.
    */
   .page-head {
     padding-block: clamp(2rem, 4vw, 3.5rem) clamp(1.5rem, 3vw, 2.5rem);
@@ -1138,7 +1421,7 @@
     background-color: var(--site-card);
     padding: 0.4rem 1rem 0.4rem 0.75rem;
     font-size: 0.9375rem;
-    font-weight: 540;
+    font-weight: 560;
     color: var(--site-muted);
     transition:
       color 200ms var(--site-ease),
@@ -1160,8 +1443,8 @@
 
   /*
    * The line the crumb sits on, where a game page also hangs the day it was
-   * written: the quietest spot in the head, already read as navigation rather
-   * than as content. `wrap` so a narrow screen drops the stamp under the crumb.
+   * written: the quietest spot in the head, already read as navigation. `wrap`
+   * so a narrow screen drops the stamp under the crumb.
    */
   .crumb-row {
     display: flex;
@@ -1174,10 +1457,10 @@
   .page-title {
     margin-top: clamp(1.25rem, 2.5vw, 2rem);
     font-stretch: 122%;
-    font-weight: 720;
-    font-size: clamp(2.5rem, 6.2vw, 4.75rem);
-    line-height: 0.96;
-    letter-spacing: -0.05em;
+    font-weight: 740;
+    font-size: clamp(2.625rem, 6.6vw, 5.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.052em;
     hyphens: auto;
     hyphenate-limit-chars: 10 4 4;
     overflow-wrap: break-word;
@@ -1186,14 +1469,13 @@
   /*
    * A status beside a page title. It sits inside the `<h1>` so a screen reader
    * hears "Accretion, Beta" as the whole claim, and it undoes everything the
-   * title does to its own letters - it is a label about the page, not a word in
-   * its name.
+   * title does to its own letters - it is a label about the page, not a word
+   * in its name.
    */
   .page-status {
     display: inline-flex;
     vertical-align: middle;
-    /* In rem, not em: an em here is the badge's own 1rem, which left "Cube"
-       and "Beta" 4px apart under a 76px title. */
+    /* In rem, not em: an em here is the badge's own 1rem. */
     margin-left: clamp(0.5rem, 1vw, 0.875rem);
     border-radius: var(--site-radius-pill);
     padding: 0.35rem 0.95rem;
@@ -1209,28 +1491,23 @@
   /*
    * ⚠️ **No `max-width`, deliberately.** Capped at a reading measure inside the
    * shell, the lead sat in the left half of the screen with the right half
-   * empty - the page reading as though it stopped halfway. The long line a
-   * full-width lead buys is the lesser problem, and it is the trade Vuk asked
-   * for. Where prose genuinely needs two columns, that is `.prose-columns`.
+   * empty - the page reading as though it stopped halfway. The long line is the
+   * lesser problem, and it is the trade Vuk asked for.
    */
   .page-lead {
     margin-top: clamp(1rem, 2vw, 1.5rem);
-    font-size: clamp(1.125rem, 1.6vw, 1.3125rem);
+    font-size: clamp(1.125rem, 1.6vw, 1.375rem);
     line-height: 1.45;
-    letter-spacing: -0.012em;
+    letter-spacing: -0.014em;
     color: var(--site-muted);
   }
 
   /*
    * Running prose across the full measure, in columns rather than one long
-   * line or one short one with a hole beside it.
+   * line or one short one with a hole beside it. `columns` rather than a grid,
+   * because the browser balances them.
    *
-   * `columns` rather than a grid, because the browser balances them: a grid
-   * puts one paragraph per cell and a row is as tall as its taller half, so a
-   * short paragraph beside a long one opens exactly the hole this is here to
-   * close.
-   *
-   * ⚠️ Spacing is `margin-bottom`, never `margin-top`. A top margin on the
+   * ⚠️ Spacing is `margin-bottom`, never `margin-top`: a top margin on the
    * paragraph that happens to begin the second column indents that column
    * against the first, and which paragraph that is changes with the viewport.
    */
@@ -1245,8 +1522,6 @@
   }
 
   .prose-columns > p {
-    /* A paragraph split across the break reads as two, and the second half
-       arrives with no subject. */
     break-inside: avoid;
     margin-bottom: clamp(1rem, 2vw, 1.5rem);
   }
@@ -1277,8 +1552,7 @@
   /*
    * A floating sheet near the top of the screen, like every command menu a
    * developer already knows: the field, then the options in their groups,
-   * scrolling inside the sheet. It floats, so it takes the floating shadow,
-   * over the ink at 45% that dims the page behind it.
+   * scrolling inside the sheet, over the ink at 45% that dims the page.
    */
   .cmdk {
     width: min(40rem, calc(100vw - 2rem));
@@ -1359,9 +1633,11 @@
     color: var(--site-muted);
   }
 
-  /* The option the arrows are on, and the pointer's: the accent, faintly. */
+  /* The option the arrows are on, and the pointer's: the accent, faintly, with
+     a trace down its left edge. */
   .cmdk-item[aria-selected='true'] {
     background-color: color-mix(in oklab, var(--site-accent) 12%, var(--site-card));
+    box-shadow: inset 2px 0 0 var(--site-accent);
     color: var(--site-accent);
   }
 
@@ -1395,47 +1671,63 @@
     color: var(--site-muted);
   }
 
-  /* It drops in a few pixels as it opens, and the dim fades in under it: an
-     answer to the key, so it is quick. */
   @media (prefers-reduced-motion: no-preference) {
     .cmdk[open] {
-      animation: cmdk-in 200ms var(--site-ease-out);
+      animation: cmdk-in 220ms var(--site-ease-out);
     }
 
     .cmdk[open]::backdrop {
-      animation: cmdk-dim 200ms var(--site-ease-out);
-    }
-  }
-
-  @keyframes cmdk-in {
-    from {
-      opacity: 0;
-      translate: 0 -8px;
-      scale: 0.98;
-    }
-  }
-
-  @keyframes cmdk-dim {
-    from {
-      opacity: 0;
+      animation: cmdk-dim 220ms var(--site-ease-out);
     }
   }
 
   /* ---- Footer ---------------------------------------------------------- */
 
   /*
-   * Every page ends on the same ink block, and it is a real one: the way back
-   * to every section, every project and every game, the channels, the four
-   * languages, and the name set as large as the page is wide. A footer that is
-   * one line of copyright made every page stop rather than finish.
+   * The last scene of every page, on the ink: on every page but the homepage
+   * it opens with the ask - the line from Contact at display size and the way
+   * to answer it - then the way back to every section, project and game, the
+   * languages, and the name set as wide as the page, rising out of its floor.
+   * On the homepage Contact is the section right above it and says the same,
+   * so the footer starts at its lists.
    *
    * Where a panelled section sits directly above it - Contact, a takeaway, a
    * game's build notes - the two share a ground and only the hairline between
-   * them separates them, which reads as one closing block.
+   * them parts them, which reads as one closing block.
    */
   .site-foot {
     border-top: 1px solid var(--site-hairline);
     overflow: clip;
+  }
+
+  /* The ask, on pages without a Contact section of their own. */
+  .foot-call {
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    border-bottom: 1px solid var(--site-hairline);
+    padding-block: clamp(3rem, 6vw, 5rem) clamp(2.5rem, 5vw, 4rem);
+  }
+
+  @media (min-width: 64rem) {
+    .foot-call {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      column-gap: clamp(2rem, 5vw, 5rem);
+    }
+  }
+
+  .foot-call-line {
+    font-stretch: 116%;
+    font-weight: 620;
+    font-size: clamp(1.75rem, 3.6vw, 3rem);
+    line-height: 1.08;
+    letter-spacing: -0.04em;
+  }
+
+  .foot-call-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
   }
 
   .foot-grid {
@@ -1480,18 +1772,38 @@
     gap: 0.55rem;
   }
 
+  /* A footer link slides towards where it goes, and a trace draws in ahead of
+     it - the same line the page is drawn in. */
   .foot-links a {
+    position: relative;
     display: inline-block;
-    font-weight: 520;
+    font-weight: 540;
     line-height: 1.35;
     transition:
       color 200ms var(--site-ease),
-      transform 300ms var(--site-ease-out);
+      transform 350ms var(--site-ease-out);
+  }
+
+  .foot-links a::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: calc(100% + 0.4rem);
+    width: 0.9rem;
+    height: 2px;
+    background-color: var(--site-accent);
+    transform-origin: 100% 50%;
+    scale: 0 1;
+    transition: scale 350ms var(--site-ease-out);
   }
 
   .foot-links a:hover {
     color: var(--site-accent);
-    transform: translateX(4px);
+    transform: translateX(1.2rem);
+  }
+
+  .foot-links a:hover::before {
+    scale: 1 1;
   }
 
   /* The copyright and the languages, above the name. */
@@ -1534,17 +1846,15 @@
   }
 
   /*
-   * On a phone the footer was 1,228px of one column: three lists stacked
-   * under the channels. Now LinkedIn and GitHub are their marks alone, on the
-   * name's line - their names stay for a screen reader - with the email under
-   * them, and the games and the projects share a row. The sections are left
-   * to the header's menu, which holds the same seven links and is on screen
-   * the whole way down, while the games and the projects are in no menu at
-   * all. Every gap is tighter.
+   * On a phone the footer was 1,228px of one column. LinkedIn and GitHub are
+   * their marks alone on the name's line - their names stay for a screen
+   * reader - with the email under them, and the games and the projects share
+   * a row. The sections are left to the header's menu, which holds the same
+   * links and is on screen the whole way down.
    *
    * ⚠️ **It comes after the footer's own rules**, which it overrides at the
-   * same specificity: above them, `.foot-channels` stayed `flex`, so the
-   * marks never joined the name's row and the email sat on the name.
+   * same specificity: above them, `.foot-channels` stayed `flex`, so the marks
+   * never joined the name's row and the email sat on the name.
    */
   @media (max-width: 39.99rem) {
     .foot-grid {
@@ -1605,15 +1915,18 @@
   }
 
   /*
-   * The name, as wide as the page, rising out of its bottom edge.
+   * The name, as wide as the page, rising out of its floor.
    *
    * Sized in `cqi` against the shell so it spans the measure exactly at every
-   * width - the ratio is measured, "Vuk Cvetković" at this stretch, weight and
-   * tracking is 8.06 times its font size wide, so 12.3cqi leaves it a hair
-   * inside the measure - and pulled down by its own descender
-   * space so the baseline sits on the page's last pixel. Decorative: the name
-   * is the brand at the top of every page and the title of the homepage, so
-   * this copy is hidden from assistive technology.
+   * width - "Vuk Cvetković" at this stretch, weight and tracking is 8.06 times
+   * its font size wide, so 12.3cqi leaves it a hair inside - and pulled down by
+   * its own descender space so the baseline sits on the page's last pixel.
+   * Decorative: the name is the brand at the top of every page, so this copy
+   * is hidden from assistive technology.
+   *
+   * The ink it is set in is a trace of the page's own text, and the accent
+   * sweeps across it once as it arrives - a request reaching the end of the
+   * line.
    */
   .foot-word-wrap {
     container-type: inline-size;
@@ -1628,9 +1941,30 @@
     line-height: 0.74;
     letter-spacing: -0.055em;
     white-space: nowrap;
-    color: color-mix(in oklab, var(--site-fg) 9%, var(--site-bg));
+    --word-ink: color-mix(in oklab, var(--site-fg) 10%, var(--site-bg));
+
+    color: var(--word-ink);
     margin-bottom: -0.02em;
     user-select: none;
+  }
+
+  /* The letters are painted by the background, so the sweep can cross them:
+     the ink either side of a band of the accent, parked off the right edge at
+     rest. Only where the clip is supported - elsewhere the colour above. */
+  @supports (background-clip: text) or (-webkit-background-clip: text) {
+    .foot-word {
+      background-image: linear-gradient(
+        100deg,
+        var(--word-ink) 42%,
+        color-mix(in oklab, var(--site-accent) 60%, var(--site-bg)) 50%,
+        var(--word-ink) 58%
+      );
+      background-size: 260% 100%;
+      background-position: 100% 0;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
   }
 
   /*
@@ -1638,25 +1972,18 @@
    * takes it out of that block and floats it at the bottom right for the whole
    * scroll. It stays a child of the footer because `.panel` re-declares the
    * palette, so `.cta-ghost` resolves to the panel's tile and hairline and the
-   * button is an ink pill on a light page - the header's surface, with no
-   * second set of colours to keep in step.
+   * button is an ink circle on a light page.
    */
   .to-top {
     position: fixed;
-    /*
-     * In the gutter wherever the gutter is wide enough to hold it: from about
-     * 1400px the circle's 3.1rem sits between the shell's edge and the window's,
-     * so it never covers the right-hand column of tiles. Narrower than that
-     * there is no gutter to hide in, and it takes the 0.9rem minimum.
-     */
+    /* In the gutter wherever the gutter is wide enough to hold it, so it never
+       covers the right-hand column of tiles. */
     right: max(0.9rem, calc((100vw - var(--site-shell)) / 2 - 3.9rem));
     bottom: clamp(0.9rem, 2.5vw, 1.75rem);
-    /* Under the header's 40. The two never meet, and if a short viewport ever
-       brought them together the sticky capsule is the one that should win. */
+    /* Under the header's 40. */
     z-index: 30;
     box-shadow: var(--site-float);
-    /* Equal padding, so the pill radius makes a 3.1rem circle around the
-       arrow - a real tap target with nothing to spare. */
+    /* Equal padding, so the pill radius makes a circle round the arrow. */
     padding: 0.95rem;
   }
 
@@ -1665,8 +1992,6 @@
     height: 1.15rem;
   }
 
-  /* Smaller on a phone, where there is no gutter to sit in and a 3.1rem circle
-     covered the right edge of every full-width tile it passed. */
   @media (max-width: 40rem) {
     .to-top {
       padding: 0.75rem;
@@ -1682,21 +2007,26 @@
 /*
  * Motion.
  *
- * Visible on purpose. A per-section reveal was built here and removed twice on
- * the grounds that an entrance on every section is a generated-page default,
- * and that was the wrong call: it is what Vuk asked for, several times, and the
- * page reads as a static sheet without it. Things rise 48px and scale up from
- * 96%, which is a distance a reader actually sees.
+ * A system rather than a set of effects, in three registers:
  *
- * Everything is CSS. Scroll position drives the reveals through view()
- * timelines, so there is no observer and no library, and a browser without
- * scroll-driven animations simply shows the content.
+ *   arrive     what is on screen at first paint runs a timed load sequence
+ *              (`.enter`, `.enter-line`), ordered by `--enter-delay`
+ *   scroll     what is below it is driven by where the page is (`.reveal`,
+ *              `.reveal-item`, `.reveal-line`, the traces), through view()
+ *              timelines - no observer and no library
+ *   answer     what a reader does is answered at once: hovers, presses, the
+ *              menus opening
  *
- * ⚠️ Every keyframe here moves things with `translate` and `scale`, never
- * `transform`. An animation beats a normal declaration in the cascade, so a
- * `transform` in these keyframes would hold at `none` for as long as the
- * element is on screen and eat every hover lift on the site, which is written
- * as `transform`. The individual properties compose with it instead.
+ * Durations are a short ladder: 200ms for a colour, 300-450ms for a hover or a
+ * press, 600-1000ms for an arrival. Arrivals ease out (`--site-ease-out`),
+ * anything tied to the scroll runs on the standard curve or linear, so a
+ * reader's thumb maps to it evenly.
+ *
+ * ⚠️ Every keyframe moves things with `translate`, `scale` and `rotate`, never
+ * `transform`. An animation beats a normal declaration in the cascade and
+ * `fill-mode: both` holds its last frame, so a `transform` in a reveal would
+ * hold at `none` and eat every hover lift on the site, which is written as
+ * `transform`. The individual properties compose with it instead.
  */
 @keyframes rise {
   from {
@@ -1724,8 +2054,8 @@
   }
 }
 
-/* A heading line rising into its mask. The skew is what makes it read as the
-   line being lifted rather than slid. */
+/* A heading line rising into its mask. The small turn is what makes it read as
+   the line being lifted rather than slid. */
 @keyframes line-up {
   from {
     translate: 0 105%;
@@ -1739,13 +2069,54 @@
 }
 
 /*
+ * A trace being drawn: the line uncovered from its start to its head by a
+ * clip that runs left to right. The polygon reaches past the box on every
+ * side, because the head hangs half its width outside the line's box and a
+ * clip at the box's own edge would shave it.
+ */
+@keyframes trace-draw {
+  from {
+    clip-path: polygon(-2rem -2rem, -2rem -2rem, -2rem calc(100% + 2rem), -2rem calc(100% + 2rem));
+  }
+
+  to {
+    clip-path: polygon(
+      -2rem -2rem,
+      calc(100% + 2rem) -2rem,
+      calc(100% + 2rem) calc(100% + 2rem),
+      -2rem calc(100% + 2rem)
+    );
+  }
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    translate: 0 -6px;
+    scale: 0.98;
+  }
+}
+
+@keyframes cmdk-in {
+  from {
+    opacity: 0;
+    translate: 0 -8px;
+    scale: 0.98;
+  }
+}
+
+@keyframes cmdk-dim {
+  from {
+    opacity: 0;
+  }
+}
+
+/*
  * The load sequence, for what is in view at first paint: the hero, every page
  * head, the 404. Time-based rather than scroll-driven, because a view()
- * timeline on something already in view would sit at 100%.
- *
- * The delay is a custom property set inline per element, so the order of the
- * sequence is readable in the markup instead of being spread across nth-child
- * rules here.
+ * timeline on something already in view would sit at 100%. The delay is a
+ * custom property set inline per element, so the order of the sequence is
+ * readable in the markup.
  */
 @media (prefers-reduced-motion: no-preference) {
   .enter {
@@ -1760,7 +2131,9 @@
   }
 }
 
-/* The header's own scroll-linked state, driven by the root scroller. */
+/* The header's own scroll-linked state, driven by the root scroller.
+   ⚠️ Registered, because an unregistered custom property jumps at the
+   midpoint instead of interpolating. */
 @property --head-pad {
   syntax: '<length>';
   inherits: true;
@@ -1777,12 +2150,16 @@
   }
 }
 
+@keyframes head-progress {
+  to {
+    scale: 1 1;
+  }
+}
+
 /*
- * The floating Back to top, arriving with the scroll.
- *
- * `visibility` is in the keyframes because opacity 0 alone still catches a
- * tap, so the hidden button would be a dead spot in the corner of the hero. It
- * steps to visible at the first fraction of progress.
+ * The floating Back to top, arriving with the scroll. `visibility` is in the
+ * keyframes because opacity 0 alone still catches a tap, so the hidden button
+ * would be a dead spot in the corner of the hero.
  */
 @keyframes to-top-in {
   from {
@@ -1800,37 +2177,44 @@
   }
 }
 
+/* The footer's name: the accent's sweep crossing it once, left to right. */
+@keyframes word-sweep {
+  from {
+    background-position: 100% 0;
+  }
+
+  to {
+    background-position: 0% 0;
+  }
+}
+
 /*
  * Scroll-driven rather than timed, because everything below the hero is below
- * the fold: a section rises as it arrives and the position in the scroll drives
- * the progress. Tiles inside a section stagger through animation-range rather
- * than a delay, since animation-delay has no meaning on a scroll timeline.
+ * the fold: a block rises as it arrives and the position in the scroll drives
+ * the progress. Tiles inside a section stagger through `animation-range`
+ * rather than a delay, since `animation-delay` has no meaning on a scroll
+ * timeline.
  *
- * ⚠️ Every range is measured in `cover`, and that is the whole reason these are
- * visible. The obvious phase is `entry`, but `entry` is measured in the
- * *element's own height*, so a 34px chip started and finished its reveal inside
- * 34 pixels of scrolling at the very bottom edge of the screen. `cover` spans
- * the element's height *plus* the viewport's, so a short tile gets a screen's
- * worth of runway.
- *
- * ⚠️ And the offsets are **pixels, not percentages**. A percentage of `cover`
- * grows with the viewport while the page below any element is a fixed pixel
- * quantity, so a percentage range that finishes on a laptop runs out of page on
- * a tall monitor and leaves the last element parked half-arrived.
+ * ⚠️ Every range is measured in `cover`, in pixels. `entry` is measured in the
+ * element's own height, so a 34px chip ran its whole reveal inside 34px of
+ * scrolling at the bottom edge of the screen, while `cover` spans the element plus
+ * the viewport. And pixels, because a percentage of `cover` grows with the
+ * viewport while the page below an element does not, so a range that finishes
+ * on a laptop runs out of page on a tall monitor.
  *
  * ⚠️ **The budget.** An element's reachable travel is `document height - its
- * own offset top`: once its top crosses the bottom of the screen, that is all
- * the scrolling left, and a range that ends past it leaves the element stopped
- * part way for as long as the page is open. The footer is a full block now -
- * at least 480px of ink under the last section of any page - so the tightest
- * element on the site has well over 500px of runway, where it had 159 when the
- * footer was one line. Ranges here end by `cover 290px`. To check a candidate,
- * scroll a page to the bottom and read getComputedStyle on the last `.reveal`:
- * opacity below 1 or a translate that is not `none` is the bug.
+ * own offset top`, and a range that ends past it leaves the element stopped
+ * part way for as long as the page is open. The footer is at least 480px of
+ * ink under the last section, so ranges here end by `cover 290px`. To check,
+ * scroll a page to the bottom and read getComputedStyle on the last `.reveal`.
  *
  * Longhands throughout: the `animation` shorthand resets animation-timeline and
  * animation-range to their initial values, so writing it here would silently
  * undo the timeline on the line below.
+ *
+ * Nothing is hidden by default. Every rule here is inside the motion and
+ * support guards, so a browser without scroll-driven animation, or a reader
+ * who asked for less motion, simply sees the page.
  */
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
@@ -1867,14 +2251,17 @@
      * ⚠️ The footer's name is the one element with no page under it: it is
      * flush with the bottom edge, so its whole runway is its own height - 40px
      * on a phone. `entry` is measured in that height and ends exactly when the
-     * name is fully on screen, which is the bottom of the scroll, so it always
-     * finishes. A `cover` range here would park it half-risen.
+     * name is fully on screen, which is the bottom of the scroll.
      */
     .foot-word.reveal {
-      animation-range: entry 0% entry 100%;
+      animation-name: rise-scale, word-sweep;
+      animation-timing-function: var(--site-ease-out), var(--site-ease);
+      animation-range:
+        entry 0% entry 100%,
+        entry 0% entry 100%;
     }
 
-    /* A section heading rises into its mask as it arrives. */
+    /* A section title rises into its mask as it arrives. */
     .reveal-line .line-in {
       animation-name: line-up;
       animation-timing-function: var(--site-ease-out);
@@ -1882,6 +2269,20 @@
       animation-timeline: view();
       animation-range: cover 10px cover 200px;
       transform-origin: 0 100%;
+    }
+
+    /*
+     * The trace runs out of the title just behind it, and reaches the link it
+     * points at as the title lands - on the head's own timeline, so the two are
+     * one gesture. The standard curve rather than an ease-out, so the line's
+     * front tracks the thumb.
+     */
+    .sec-trace-line {
+      animation-name: trace-draw;
+      animation-timing-function: var(--site-ease);
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: cover 60px cover 300px;
     }
 
     .head-capsule {
@@ -1893,12 +2294,9 @@
     }
 
     /*
-     * Back to top arrives with the scroll rather than sitting over the hero from
-     * first paint, where it would offer a reader at the top of the page a way to
-     * the top of the page. Out for the first half screen, in over the next third
-     * of one. Where there is no scroll timeline, or the reader asked for less
-     * motion, it is simply there from the start: nothing on this site is hidden
-     * by default.
+     * Back to top arrives with the scroll rather than sitting over the hero
+     * from first paint: out for the first half screen, in over the next third
+     * of one.
      */
     .to-top {
       animation-name: to-top-in;
@@ -1910,9 +2308,21 @@
   }
 }
 
+/* The gauge follows the scroll whatever the motion setting, since it reports
+   a position rather than decorating one: with less motion asked for it is a
+   bar that grows, not a movement. */
+@supports (animation-timeline: scroll()) {
+  .head-progress {
+    animation-name: head-progress;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: scroll(root);
+  }
+}
+
 /*
- * Cross-document view transitions: switching language reads as one page
- * changing rather than a reload. Chrome, and Safari from 18.2; everywhere
+ * Cross-document view transitions: moving between pages reads as the site
+ * changing scene rather than reloading. Chrome, and Safari from 18.2. Anywhere
  * else the navigation is simply instant.
  */
 @view-transition {
@@ -1920,34 +2330,48 @@
 }
 
 /*
+ * The page itself, on the way: the old one sinks a few pixels and fades, the
+ * new one rises into place over it. Short, because it is in the way of the
+ * next page, and on the standard curve so neither half stalls.
+ */
+::view-transition-old(root) {
+  animation: vt-out 240ms var(--site-ease) both;
+}
+
+::view-transition-new(root) {
+  animation: vt-in 380ms var(--site-ease-out) both;
+}
+
+@keyframes vt-out {
+  to {
+    opacity: 0;
+    translate: 0 -12px;
+  }
+}
+
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    translate: 0 16px;
+  }
+}
+
+/*
  * A project or a game keeps its name across the click that opens it: the
  * card's title grows into the page's title, and a game card's picture into
  * the board. Each pair shares a `view-transition-name` written inline from
  * the slug (`project-<slug>-title`, `game-<slug>-title`, `game-<slug>-board`)
- * and a `view-transition-class`, which is what these rules style. The same
- * pairs carry the way back, and a language switch, where the title changes
- * words in place.
+ * and a `view-transition-class`, which is what these rules style.
  *
  * ⚠️ A name may appear once per page - two, and the browser drops the whole
  * transition - and only on a box that is not split across lines. So it goes
  * on the heading, never on the link inside it.
  *
- * The page title's named box is its `.line-in`, the line that rises into its
- * mask. The group follows the named box as it moves, so the title flies
- * from the card onto the rising line and the two land together, and the
- * mask takes over only once the line is all but home.
- *
- * A title is scaled by its height, not its width: the card's heading is as
- * wide as the card and the page's as wide as the shell, and neither hugs its
- * words, while their heights are their lines. So on the same line breaks the
- * text grows by exactly the ratio of the two sizes.
- *
- * The standard ease, not the entrance's ease-out: the ease-out covers most
- * of the way in its first tenth, so the two renderings crossed at full size
- * and the words showed twice. Here the swap from the card's rendering to the
- * page's is over in the first 180ms, while the pair is still near the card's
- * size, and the rest of the way is the page's own title - drawn at its size
- * and scaled down, so sharp, where the card's would be stretched.
+ * A title is scaled by its height, not its width: neither heading hugs its
+ * words, while their heights are their lines, so on the same line breaks the
+ * text grows by exactly the ratio of the two sizes. The swap from the card's
+ * rendering to the page's is over in the first 180ms, while the pair is still
+ * near the card's size, so the rest of the way is the page's own title.
  */
 ::view-transition-group(.title),
 ::view-transition-group(.board) {
@@ -1963,15 +2387,12 @@
 }
 
 /*
- * The picture and the board are different shapes, so both fill the box as
- * it changes and the box clips them to a tile's corners. They cross over the
- * first 300ms, the picture making way for the board.
+ * The picture and the board are different shapes, so both fill the box as it
+ * changes and the box clips them to a tile's corners.
  *
- * ⚠️ The board lands at 750ms, later than the title, because of what it sits
- * in: the game's stage rises in from 0 opacity 240ms after load, and the
- * stage's fade is not part of the board's picture. The flight hides that
- * until it ends, and at 600ms the stage was at 94% - a dark board like
- * Accretion's visibly lightened for a frame. At 750ms it is at 98.5%.
+ * ⚠️ The board lands at 750ms, later than the title: the game's stage rises in
+ * from 0 opacity 240ms after load, and at 600ms a dark board like Accretion's
+ * visibly lightened for a frame when the flight ended.
  */
 ::view-transition-group(.board) {
   overflow: clip;
@@ -1989,14 +2410,13 @@
 /*
  * The theme toggle's change: the new theme spreads over the page as a circle
  * from the button. ThemeToggle.astro runs the flip inside a same-document
- * view transition, marks the root with `data-theme-flip` for its length, and
- * writes the button's centre and its distance to the farthest corner as
- * `--flip-x`, `--flip-y` and `--flip-r`. The old page stays whole underneath
- * and the new one is uncovered over it.
+ * view transition, marks the root with `data-theme-flip`, and writes the
+ * button's centre and its distance to the farthest corner as `--flip-x`,
+ * `--flip-y` and `--flip-r`.
  *
- * ⚠️ Every other name is dropped while it runs. A card's title or a board is
- * a layer of its own in a transition, above the page, so it would change
- * theme all at once while the circle was still on its way.
+ * ⚠️ Every other name is dropped while it runs. A card's title or a board is a
+ * layer of its own in a transition, above the page, so it would change theme
+ * all at once while the circle was still on its way.
  */
 :root[data-theme-flip] * {
   view-transition-name: none !important;
@@ -2020,9 +2440,9 @@
   }
 }
 
-/* A name with no partner on the other page - the other cards' titles, on
-   the way out - leaves with the rest of the page, at the page's own 250ms,
-   rather than hanging over the new one for the length of a flight. */
+/* A name with no partner on the other page - the other cards' titles, on the
+   way out - leaves with the rest of the page rather than hanging over the new
+   one for the length of a flight. */
 ::view-transition-old(.title):only-child,
 ::view-transition-new(.title):only-child,
 ::view-transition-old(.board):only-child,

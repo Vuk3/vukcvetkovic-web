@@ -24,20 +24,16 @@ const { lang } = Astro.props;
 ---
 
 {/*
-  Tone is spent twice on the page, not on every other section.
-
-  Strict alternation of ground and band turned out to be its own kind of
-  uniformity: eight blocks of equal weight, each starting and ending the same
-  way. What separates a section from its neighbour is what it puts in its
-  tiles, which leaves tone free to set a section apart from the rest.
-
-  So Projects is banded, because it is the section the page is for, and Contact
-  takes the ink panel - the page ending on the surface the hero opens on.
+  The page is a sequence of scenes, and tone is spent where a scene needs it
+  rather than in alternating bands: the hero is an ink stage, Projects - the
+  section the page is for - is the one full-width dark stage in the middle,
+  and Contact closes on the ink, running on into the footer. Everything else
+  stands on the paper and is told apart by what it does.
 */}
 <Hero lang={lang} />
 <About lang={lang} />
 <Skills lang={lang} />
 <Experience lang={lang} />
-<Projects lang={lang} tone="band" />
+<Projects lang={lang} tone="panel" />
 <Services lang={lang} />
 <Contact lang={lang} tone="panel" />

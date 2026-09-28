@@ -117,8 +117,8 @@ const structuredData = {
       follows the page and not the phone. They are above the script because it
       has to find them, and it runs before anything after it is parsed.
     */}
-    <meta name="theme-color" content="#eceef2" media="(prefers-color-scheme: light)" data-scheme="light" />
-    <meta name="theme-color" content="#090b10" media="(prefers-color-scheme: dark)" data-scheme="dark" />
+    <meta name="theme-color" content="#edeff3" media="(prefers-color-scheme: light)" data-scheme="light" />
+    <meta name="theme-color" content="#080b12" media="(prefers-color-scheme: dark)" data-scheme="dark" />
 
     {/* Must run before first paint, and must not be bundled, or it flashes. */}
     <script is:inline>
@@ -232,7 +232,9 @@ const structuredData = {
       <slot />
     </main>
 
-    <Footer lang={lang} />
+    {/* The homepage ends on its own Contact section, which says what the
+        footer's opening line would, so there the footer starts at its lists. */}
+    <Footer lang={lang} call={!isHome} />
 
     <CommandPalette lang={lang} />
 

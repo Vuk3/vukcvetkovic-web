@@ -1,10 +1,18 @@
 # Design system
 
-The look is **ink, paper and cobalt, set as a bento of tiles**: a cool paper ground, white
-tiles with hairline edges, headings set wide and heavy on Archivo's width axis, and two
-loud surfaces spent sparingly - ink (`.panel`) and cobalt (`.tile-cobalt`, the navy of
-the suit in the portrait). Every section is a grid of tiles that fills its row, and the
-motion is meant to be seen. All of it is CSS.
+The look is **the systems he builds, drawn: ink, paper and cobalt, and one line**. A cool
+paper ground, headings set wide and heavy on Archivo's width axis, two loud surfaces spent
+sparingly - ink (`.panel`) and cobalt (`.tile-cobalt`, the navy of the suit in the
+portrait) - and a single ornament, the **trace**: the request diagram's 2px connector with
+its arrowhead, run from "Projects" into All projects, along the header as a reading gauge,
+and down the Experience rail. A line is drawn only where it goes somewhere a reader can
+name.
+
+The homepage is a **sequence of scenes**, no two composed alike - a masthead, a statement
+that takes its ink as it is read, a drawing of the stack, a rail through a career, a deck of
+case studies on the one dark stage, a list of services, and the ask. Each project has its
+own **hue**, and its card and its page are drawn in it. Every row still fills its columns
+and the motion is meant to be seen. All of it is CSS.
 
 The rules live in one foundation stylesheet and a handful of page files, and almost every
 number in them carries a comment saying how it was arrived at:
@@ -28,7 +36,11 @@ number in them carries a comment saying how it was arrived at:
 
 | I need to change… | Touch |
 |---|---|
-| a colour | the `--site-*` block on `:root` **and** its counterpart in `.dark` - §1 |
+| a colour | the `--paper-*` and `--site-*` blocks on `:root` **and** their counterparts in `.dark` - §1 |
+| **a project's colour** | `hue` on the project in [site.ts](../src/site.ts), `--hue-*` and `[data-hue]` in global.css - §1 |
+| **the trace from a section title into its link** | `.sec-head[data-aside]`, `.sec-trace-line` and `--sec-size` in global.css, markup in [Section.astro](../src/components/Section.astro) - §3 |
+| a white tile on the ink | `.surface`, which maps `--site-*` back to `--paper-*` - §1 |
+| the "now" dot | `--site-signal` - §1 |
 | **a Tailwind colour utility's meaning** (`text-muted`, `bg-card`) | the `@theme inline` block - §1. Do not remove `inline` |
 | **the look of an ink or cobalt block** | the `--site-panel-*` or `--site-cobalt-bg` tokens, not the block - §1 |
 | the page gutter or the one measure | `--site-pad` or `--site-shell`, once, on `:root` - §2 |
@@ -36,11 +48,12 @@ number in them carries a comment saying how it was arrived at:
 | **a section's grid** | `.bento` and the `sm:col-span-*` / `lg:col-span-*` on its tiles, or the section's own grid in its page file - §3 |
 | a chip, a mark tile, a pill, a button | `.chip`, `.mark-tile` ([MarkTile.astro](../src/components/MarkTile.astro)), `.tag`, `.pill-status`, `.cta`, `.cta-ghost` - §3 |
 | a section's tone or rhythm | props on [Section.astro](../src/components/Section.astro) - §3 |
-| the display voice | `.sec-label`, `.page-title`, `.display-name` and the per-block rules - §4 |
+| the display voice | `.sec-label`, `.page-title`, `.hero-name` and the per-block rules - §4 |
 | **the load sequence** | `--enter-delay` on the elements, not the keyframes - §5 |
 | a scroll reveal | the `.reveal` / `.reveal-item` / `.reveal-line` block at the bottom of global.css - §5. **Longhands only** |
-| the header capsule | `.site-head`, `.head-capsule`, the `head-settle` keyframes and `--head-pad` - §5, §7 |
-| the footer, or the floating Back to top | `.site-foot`, `.foot-*`, `.to-top` - §5 and [Footer.astro](../src/components/Footer.astro) |
+| the header capsule, its reading gauge | `.site-head`, `.head-capsule`, `.head-progress`, the `head-settle` keyframes and `--head-pad` - §5, §7 |
+| the footer, its opening ask, or the floating Back to top | `.site-foot`, `.foot-call`, `.foot-*`, `.to-top` - §5 and [Footer.astro](../src/components/Footer.astro) |
+| **the project deck on the homepage** | `.deck` and `.case` in [project.css](../src/styles/project.css) - §5, §10 |
 | **the request diagram** | [ArchitectureDiagram.astro](../src/components/ArchitectureDiagram.astro), [flow.css](../src/styles/flow.css) - §6 |
 | which technology a diagram node shows | `flowTech` on the project in [site.ts](../src/site.ts) - §6 |
 | what the request diagram *says* | `flow` in the dictionaries and `flowShape` in [site.ts](../src/site.ts) - §6 |
@@ -81,21 +94,39 @@ There is no `tailwind.config`. The whole theme is these two blocks.
 
 | Token | Light | Dark | What it is for |
 |---|---|---|---|
-| `--site-bg` | #eceef2 | #090b10 | the page ground, a cool paper grey |
-| `--site-card` | #ffffff | #12161f | a tile. Pure white in light mode, so the step from the ground is the whole of its lift |
-| `--site-inset` | #f3f4f7 | #191e29 | a block *inside* a tile, going back **towards** the ground |
-| `--site-band` | #e3e6ec | #020304 | a banded section, set a step *into* the page. In dark mode it is all but black: at #06070a it was indistinguishable from the ground and the project pages read as one sheet |
+| `--site-bg` | #edeff3 | #080b12 | the page ground, a cool paper grey. In the dark theme night rather than black, a trace of the cobalt in it |
+| `--site-card` | #ffffff | #10141e | a tile. Pure white in light mode, so the step from the ground is the whole of its lift |
+| `--site-inset` | #f3f5f8 | #171c28 | a block *inside* a tile, going back **towards** the ground |
+| `--site-band` | #e3e6ec | #030509 | a banded section, set a step *into* the page |
 | `--site-fg` / `--site-muted` / `--site-hairline` | | | ink, secondary text, edges |
-| `--site-accent` | #2331c8 | #93a2ff | links, the CTA, the active section, the diagram's connectors |
+| `--site-accent` | #2432d1 | #93a1ff | links, the CTA, the active section, the traces, the diagram's connectors |
+| `--site-signal` | #f05a0a | #ff8a3d | safety orange, for what is live *now* and nothing else: the dot before "Software engineer", the role held today, a game that is Live. Never text (3.4:1 on white), never a second accent |
+| `--site-stage` | #0b0f18 | #020306 | the ground Projects is played on: the ink in the light theme, and a step *below* the ground in the dark one, so the tiles on it lift in both |
+
+⚠️ **Every value is declared twice, as `--paper-*` and as `--site-*`.** `--paper-*` is the
+theme's own ground and ink and nothing re-declares it. `--site-*` is what a component reads,
+and `.panel` and `.tile-cobalt` re-declare it. `.surface` maps `--site-*` back to
+`--paper-*`, which is the one way back to the theme's own paper from inside a loud surface -
+a white project card on the ink stage, carrying a request diagram with an ink core of its
+own.
+
+**The project hues.** `--hue-cobalt`, `--hue-violet`, `--hue-teal` and `--hue-green`, a
+light and a dark value each, picked by `hue` on the project in [site.ts](../src/site.ts)
+and applied by `[data-hue]`, which sets `--paper-accent`, `--site-accent` and a paler
+`--site-panel-accent` - so the card, the request drawn on it and, on the project page,
+every trace, step number and result bar are in the project's colour, and a `.panel` inside
+(a diagram's core) takes it too. Each is 5.1:1 or better as text on white and 8:1 or
+better on a dark tile.
 
 **The accent is cobalt, and it is borrowed rather than invented:** it is the navy of the
 suit in the portrait, which is the one photograph on the site. That is why it sits with the
 image instead of arguing with it.
 
-**Contrast, measured:** the tightest pair is muted text on the band, 5.57:1. Muted on a
-tile is 6.96:1, the accent is 7.7:1 on the light ground and 8.3:1 on the dark one, white on
-cobalt is 8.96:1, and cobalt's own muted text (white at 80%) is 6.27:1. Check a new pair
-against these before shipping it.
+**Contrast, measured:** the tightest pair of text is muted on the band, 5.55:1. Muted on
+the ground is 6.03:1 and on a tile 6.94:1, the accent is 7.44:1 on the light ground and
+8.23:1 on the dark one, white on cobalt is 8.56:1 (7.46:1 on the dark theme's brighter
+cobalt), and the ink's muted text on the ink is 8.21:1. Check a new pair against these
+before shipping it.
 
 **Dark mode is a ladder, and the order is the design:** band, ground, tile, inset, panel,
 panel tile - each a step above the last. A band **recesses** below the ground there while a
@@ -144,8 +175,8 @@ Where they are spent:
 
 | Surface | Used by |
 |---|---|
-| ink | the header capsule, the hero, the close of a page (Contact, a takeaway, a game's build notes), the footer, the core node of a request diagram, Backend in Skills, one digit of the 404 |
-| cobalt | the About tile that points at the games, the ask in Contact, one figure per game's HUD, one digit of the 404 |
+| ink | the header capsule, the hero, the Projects stage (on `--site-stage`), the close of a page (Contact, a takeaway, a game's build notes), the footer, the core node of a request diagram, Backend in Skills, one digit of the 404 |
+| cobalt | the About tile that points at the games, the ask in Contact, one figure per game's HUD, one digit of the 404, the studio light behind the hero's portrait |
 
 ⚠️ **Cobalt is at most one or two tiles a page.** It is the loudest surface the site has,
 and a third one points at nothing.
@@ -156,8 +187,11 @@ themselves.
 Other non-colour tokens on `:root`: three easing curves - `--site-ease` (general),
 `--site-ease-out` (arrivals, expo-out) and `--site-spring` (a small overshoot for hover
 pops); `--site-pad` (the gutter, once); `--site-shell` (the one measure); `--site-gap` (the
-space between two tiles, everywhere); and four radii - `--site-radius` 10px, `--site-radius-inner`
-16px for a card inside a tile, `--site-radius-card` 24px for a tile, `--site-radius-pill`.
+space between two tiles, everywhere), `--head-h` (what a sticky element clears under the
+header), `--sec-size` and `--sec-gap` (a section title's size and the space between a head
+and its content), and radii by rank - `--site-radius` 10px for a small control, `--site-radius-inner`
+14px for a block inside a tile, `--site-radius-card` 22px for a tile, `--site-radius-stage`
+32px for a stage (the hero, a game's stage), and `--site-radius-pill`.
 
 ---
 
@@ -191,37 +225,62 @@ shell leaves the right half of the screen empty, and Vuk rejects the page for it
 
 ### `Section.astro` is one shape
 
-A section is a heading, then content. [Section.astro](../src/components/Section.astro)
-takes `id`, `label`, `tone` (`base`, `band` or `panel`) and `space` (`full` or `lite`),
-plus an optional `aside` slot beside the heading - today only the link out to the project
-index.
+A section is a heading, then content.
+[Section.astro](../src/components/Section.astro) takes `id`, `label`, `tone` (`base`,
+`band` or `panel`), `space` (`full` or `lite`) and `class` (for a page area's stylesheet
+to compose the section - Projects is `theater`), plus an optional `aside` slot beside the
+heading - today only the link out to the project index.
 
-The heading is `.sec-label`, rising into a mask as the section arrives (§5). **There is no
-rule under it**: the tiles below start their own edge, and a hairline between the two was
-the last of the page's old document look. Four head shapes and a sticky label column were
-built and thrown out before that - they spent 12rem of every measure on a caption.
+The heading is `.sec-label`, rising into a mask as the section arrives (§5), at
+`--sec-size`. Four head shapes and a sticky label column were built and thrown out long
+ago - they spent 12rem of every measure on a caption.
 
-**`tone`** is spent twice on the homepage - `band` on Projects, the section the page is for,
-and `panel` on Contact - and on a project page `band` on the diagram and the features,
-`panel` on the takeaway. Every game page ends on `panel` for its build notes.
+### The trace
 
-Section padding is `clamp(2rem, 3.4vw, 3rem)`, so two sections are about 96px apart on a
-desktop. ⚠️ At 130-200px the page read as a CV, which is the one look Vuk rejects
-outright.
+Where a section has something beside its title - the `aside` slot, today only All
+projects beside "Projects" - the **trace** runs from the title into it: `.sec-trace-line`,
+the request diagram's connector, a 2px accent line along the title's baseline (0.2 of
+`--sec-size` above the foot of its box) ending in a clip-path arrowhead pointed at the
+link. Section.astro renders it only when the slot is filled, and sets `data-aside` on
+`.sec-head`. It is drawn left to right as the head scrolls in (§5).
+
+- ⚠️ **Nowhere else.** It ran out of every title once, turned down at the edge of the
+  measure and landed on the corner of the section's first tile. Vuk asked twice what it
+  pointed at, and the answer was nothing: the corner of a box is not a destination. A line
+  on this site is drawn only where it goes somewhere a reader can name.
+- ⚠️ **`--sec-size` and `--sec-gap` are on `:root`, not on the head.** The head and the
+  content are siblings and both read them. Declared on the head, the content's
+  `margin-top` resolved to nothing.
+- **On a phone** a two-line title left the trace a sliver beside its last line, so there the
+  title takes a row of its own and the line and the link share the row under it.
+
+**`tone`** is spent where a scene needs it, never in alternating bands: on the homepage
+`panel` on Projects (the stage, on `--site-stage`) and on Contact, and on a project page `band`
+on the diagram and the features and `panel` on the takeaway. Every game page ends on
+`panel` for its build notes.
+
+Section padding is `clamp(2.5rem, 5vw, 4.25rem)`. ⚠️ At 130-200px between sections the page
+read as a CV, which is the one look Vuk rejects outright, so it stays under 4.5rem.
 
 ### The tile is the unit
 
 ```css
-.card        /* white, hairline edge, 24px radius, --card-pad; no shadow at rest */
+.card        /* white, hairline edge, 22px radius, --card-pad, no shadow at rest */
 .card-hover  /* only where the whole tile is a link: lifts 4px, accent edge, lift shadow */
-.inset       /* a block inside a tile, back towards the ground, 16px radius */
+.inset       /* a block inside a tile, back towards the ground, 14px radius */
 .tile-label  /* the caption at the top of a tile: an icon square and a few words */
 .tile-icon   /* the 2rem square the icon sits in, tinted with the accent */
 ```
 
-`.card` is used for everything: a service, a role, a skill group, a project, a channel, a
-node of the diagram, a how-to-play list. `--card-pad` is named so a block inside can
+`.card` is an object on the page: a service, a role, a skill group, a project, a channel, a
+node of the diagram, a game, a how-to-play list. `--card-pad` is named so a block inside can
 cancel it and bleed to the edges (a game thumbnail does).
+
+**Text that is only text is not put in a tile.** The About statement, a project's overview
+and its dataset write-up stand on the ground at their own size - a statement across the
+measure, a lead beside a note on a trace, running columns - because a box round a
+paragraph made it one more card to read past. What stays a tile is something a reader can
+pick up.
 
 ⚠️ **A tile label is sentence case.** Tracked-out capitals over every block is the label
 style every generated page reaches for, and none is left anywhere on the site - not on the
@@ -266,9 +325,9 @@ outbound Live or Source link, for instance - or the pseudo-element covers it.
 | `.chip` | a technology name with its mark. On hover its edge takes the brand's colour |
 | `.mark-tile` | a technology as a square: the mark at 36px, its name under it. The hero's tray, Skills, a project's stack, the diagram's nodes |
 | `.tag` | a year or a short label, with no mark or a small one |
-| `.pill-status` | Live or Beta, sentence case, with a dot. Beta is filled with the accent, Live stays quiet |
+| `.pill-status` | Live or Beta, sentence case, with a dot. Beta is filled with the accent, Live stays quiet with the signal for its dot |
 | `.page-status` | the same word inside a page title's `<h1>`, so "Accretion, Beta" is read as the whole claim |
-| `.cta` | the filled accent pill. It rises and deepens on hover rather than hollowing out |
+| `.cta` | the filled accent pill. On hover a deeper fill sweeps in from the left under the words (a `background-size`) and it rises, rather than hollowing out |
 | `.cta-ghost` | the same pill outlined, for the secondary action beside it |
 | `.link` | an inline text link: a faint rule always, a solid one drawn across from the left on hover |
 
@@ -310,35 +369,43 @@ been tried: 16px everywhere read as everything too small, 18px as everything too
 service, a role's points, the About notes, a card's description - is 16px at 1.55 in the
 muted ink, a step under the page's text, while the title is 112% wide at weight 660. A row
 of tiles reads as its titles, and the detail is there for whoever stops on one. The leads
-and the display sizes above were taken down by about a sixth, and the card padding to
-`clamp(1.125rem, 1.8vw, 1.625rem)`: at their full size every page read as too big. `text-wrap: balance` on `h1`-`h4`,
+and the display sizes above were taken down by about a sixth, and the card padding is
+`clamp(1.125rem, 1.9vw, 1.75rem)`: at their full size every page read as too big. `text-wrap: balance` on `h1`-`h4`,
 `text-wrap: pretty` on `p`, tabular figures wherever numbers sit in columns.
 
 | Role | Size | Set by |
 |---|---|---|
-| the hero's name | 17.9cqi of its column | `.display-name` in home.css |
-| a page title | clamp(2.5rem, 6.2vw, 4.75rem), 122% | `.page-title` |
-| a section heading | clamp(2rem, 4.2vw, 3.25rem), 120% | `.sec-label` |
-| a large tile title | clamp(1.375rem, 2vw, 1.75rem), 114% | per rule (`.role-company`, `.game-card-title`) |
+| the hero's name, the masthead | 12.45cqi of the stage on one line, 17.7cqi on two on a phone | `.hero-name` in home.css |
+| a page title | clamp(2.625rem, 6.6vw, 5.5rem), 122%, 740 | `.page-title` |
+| a section heading | `--sec-size`, clamp(2.375rem, 5vw, 4.25rem), 122%, 720 | `.sec-label` |
+| a project's title on its card | clamp(1.875rem, 3.1vw, 2.875rem), 120% | `.case-title` in project.css |
+| the About statement | clamp(1.625rem, 3.4vw, 3rem), 106%, 540 | `.about-lead` in home.css |
+| a large tile title | clamp(1.375rem, 2vw, 1.75rem), 114% | per rule (`.role-company`, `.game-card-title`, a service's name a size up) |
 | a tile title | clamp(1.1875rem, 1.45vw, 1.3125rem), 112%, 660 | `.svc-title` and per rule |
-| a lead | clamp(1.125rem, 1.6vw, 1.3125rem) | `.page-lead`, and `.hero-lead` a step under |
+| a lead | clamp(1.125rem, 1.6vw, 1.375rem) | `.page-lead`, and `.hero-lead` a step over, to 1.5rem |
 | a tile's detail | 1rem at 1.55, muted | `.proj-text`, `.svc-body`, `.about-body` and per rule |
 
-### The name is sized by its column
+### The name is the masthead, sized by the stage
 
-⚠️ **`.display-name` is `17.9cqi` of `.hero-copy`, not a viewport clamp.** "Cvetković" at
-122% stretch, weight 720 and -0.05em tracking measures 5.42 times its font size, so 17.9cqi
-sets it at 97% of the column at every width: 131px beside the portrait on a desktop, 57px
-on a 390 phone. The column is a different fraction of the screen on either side of the
-60rem breakpoint, which is what a `vw` clamp could not follow - it set the name at 48px on
-a phone and left a quarter of the line empty. The 3% is for other engines' rounding: the
-line rises into a mask, and a mask clips what overhangs.
+⚠️ **`.hero-name` is sized in `cqi` of `.hero-stage`, not by a viewport clamp.** From 40rem
+the two words share one line across the whole stage, the masthead: "Vuk Cvetković" at 122%
+stretch, weight 740 and -0.05em tracking, with the 0.24em gap between the two masks,
+measures 7.79 times its font size, so 12.45cqi sets it at 97% of the stage - 147px at 1440.
+On a phone the words stack and "Cvetković" alone measures 5.46 times its size, so 17.7cqi.
+Both ratios were measured in Chrome with a range over each word. Change the stretch, the
+weight or the tracking and they have to be measured again. The 3% is for other engines'
+rounding: the words rise into masks, and a mask clips what overhangs.
 
-It sets on two lines, one word each, split off `site.name` in
-[Hero.astro](../src/components/Hero.astro) so the name is still stated in one place and
-stays one `<h1>`. Leading is 0.86 because the second line carries a `ć` whose accent meets
-the baseline above any tighter, and the masks the lines rise into get 0.14em of extra room
-at the top for the same accent.
+The two words are split off `site.name` in [Hero.astro](../src/components/Hero.astro), so
+the name is still stated in one place and stays one `<h1>`, each rising into its own mask a
+beat apart. Leading is 0.86 because "Cvetković" carries a `ć` whose accent meets the line
+above any tighter, and the masks get 0.14em of extra room at the top for the same accent.
+
+⚠️ **The width axis is set, never animated.** A heading whose `font-stretch` changed on
+scroll or on load reflows its line, and every glyph after the first moves: that counts as a
+layout shift on every frame it runs. Everything that moves on this site moves by
+`translate`, `scale`, `rotate`, `clip-path`, colour or opacity, and the pages measure a CLS
+of 0 on load at 1440 and 390.
 
 The footer's name uses the same method: `12.3cqi` of the shell, because "Vuk Cvetković" at
 125% and weight 800 measures 8.06 times its font size.
@@ -387,18 +454,21 @@ sit at 100% and never animate.
   makes it read as the line being lifted rather than slid. Both halves are `display: block`
   so a heading that wraps is revealed as one block.
 - The hero adds its own beats in home.css: the whole portrait, in colour, pulls back into
-  its frame out of a 1.22 zoom and a 14px blur, the tray's marks land one
-  after another with an overshoot, and the dot before "Software engineer" sends a ring out
-  every 2.4s. So does the current role's period.
-- **The hero steps back as the page leaves it.** The tile scales to 0.86 from its foot and
-  the portrait's frame to 0.8 from its middle, so the picture sits a step behind the tile.
-  Both run linear on the tile's own `--hero` view timeline over `exit-crossing` - from its
-  top reaching the top of the screen to its foot reaching it - so nothing moves before the
-  reader scrolls. From the foot, so the part still on screen stays put and the gap to
-  About does not open. On the frame, not the photograph, which already carries the
-  entrance's zoom and the hover's. ⚠️ **From 60rem only**, where the tile fits the screen.
-  Stacked it is 1.46 screens tall on a phone, its exit starts after 89px of scroll, and
-  the portrait and the tray shrank while they were still being read.
+  its frame out of a 1.22 zoom and a 14px blur, the tray's marks land one after another
+  with an overshoot, and once the last is down **a signal runs through them** in the order
+  they sit, lighting each one's edge and ground with the accent for a moment - the stack
+  read as a path (`tray-lit`, fill `none`, so a held last frame cannot outrank the hover's
+  tint). The dot before "Software engineer" is the signal colour and sends a ring out every
+  2.4s. So does the current role's period.
+- **The hero steps back as the page leaves it, in three depths.** The stage scales to 0.88
+  from its foot, the portrait's frame to 0.84 and rises 2.5rem, and the masthead drifts up
+  3.5rem and fades to 35%, so the three read as layers going away. All run linear on the
+  stage's own `--hero` view timeline over `exit-crossing` - from its top reaching the top of
+  the screen to its foot reaching it - so nothing moves before the reader scrolls. On the
+  frame, not the photograph, which already carries the entrance's zoom and the hover's.
+  ⚠️ **From 60rem only**, where the stage fits the screen. Stacked it is one and a half
+  screens tall on a phone, its exit starts after 89px of scroll, and the portrait and the
+  tray shrank while they were still being read.
 
 ⚠️ **Every keyframe moves with `translate`, `scale` and `rotate`, never `transform`.** An
 animation beats a normal declaration in the cascade, and `fill-mode: both` holds the last
@@ -432,19 +502,54 @@ for as long as the page is open.
 
 The footer is a full block now, at least 480px of ink under the last section of any page,
 so the tightest reveal on the site has well over 500px of runway (it had 159 when the footer
-was one line). Ranges end by `cover 290px`. To check a candidate, scroll a page to the
-bottom and read `getComputedStyle` on the last `.reveal`: `opacity` below 1 or a `translate`
-that is not `none` is the bug.
+was one line). Ranges end by `cover 300px` for the traces and `cover 290px` for the reveals. To check a
+candidate, scroll a page to the bottom and read `getComputedStyle` on the last `.reveal`:
+`opacity` below 1 or a `translate` that is not `none` is the bug.
 
 ⚠️ **The footer's own name is the exception.** It is flush with the page's bottom edge, so
 its whole runway is its own height - 40px on a phone. It reveals on `entry 0% entry 100%`,
 which ends exactly when the name is fully on screen, which is the bottom of the scroll. A
 `cover` range there parks it half risen.
 
+### The trace, the statement and the deck
+
+Three scroll-driven moments carry most of the homepage, all paint or compositing only:
+
+- **The trace draws itself** into All projects. `.sec-trace-line` runs `trace-draw` on its own `view()` over
+  `cover 60px` to `cover 300px`: a `polygon()` clip that uncovers the line from its start to
+  its head. The polygon reaches 2rem past the box on every side, because the head hangs half
+  its width outside the line's box and a clip at the box's edge shaved it. The standard
+  curve, so the line's front tracks the thumb.
+- **The About statement is said as it is read.** It is split into words at build
+  ([About.astro](../src/components/About.astro)), each carrying `--p`, how far through the
+  sentence it is. The paragraph is a named view timeline (`--statement`) and every word runs
+  `word-ink` - from a trace of the ink to the ink - over a window a sixteenth of the timeline
+  wide that starts `--p` of the way along, so the front moves through the sentence word by
+  word in reading order. ⚠️ **This one range is in percentages of `cover`, on purpose**: the
+  statement is the second thing on the page with thousands of pixels under it, so the budget
+  cannot bite, and a percentage is what finishes the sentence at the same point of the
+  screen on any height (its top about a fifth of the way down).
+- **The project deck stacks.** See §10. Each card's step back runs on the *next* card's view
+  timeline - named per card, shared through `timeline-scope` on `.deck` - over the run from
+  that card's top entering the screen to it reaching where it sticks, `cover 0px` to
+  `cover calc(100svh - var(--head-h) - 1.25rem - (i + 1) * 0.875rem)`. `scale` on the card
+  and `opacity` on a layer of the stage's colour over it, so the drawings keep running under
+  the dimming at no cost.
+
+**Pages change scene.** `::view-transition-old(root)` sinks 12px and fades over 240ms, the
+new page rises 16px into place over 380ms on the ease-out, and the named titles and boards
+still fly over both (below).
+
 ### The header and Back to top
 
 The capsule's padding settles as the page scrolls: `head-settle` animates `--head-pad` on a
 `scroll(root)` timeline over the first 8rem.
+
+**A reading gauge runs along its floor**: `.head-progress`, a 2px accent line inset from the
+capsule's round ends, scaled from 0 to 1 across the whole scroll on `scroll(root)`. It is
+outside the motion guard - it reports a position rather than decorating one, and with less
+motion asked for it is still a bar that grows - and it is `display: none` where scroll
+timelines are missing, so a browser without them shows no gauge rather than a full one.
 
 1. ⚠️ **`--head-pad` must stay `@property`-registered** (`<length>`, initial `0.45rem`),
    because an unregistered custom property jumps at the midpoint instead of interpolating.
@@ -466,9 +571,11 @@ button would be a dead spot in the corner of the hero.
 ### Hover
 
 Tiles lift 4px on `--site-ease-out`. Marks jump and turn on `--site-spring`, icons in their
-squares turn a few degrees, the crumb's arrow leans back, a footer link slides 4px, a
-school's crest turns, the portrait zooms 4% inside its frame. Nothing reflows: every hover
-is a transform, a colour or a `background-size`.
+squares turn a few degrees, the crumb's arrow leans back, a footer link slides in behind a
+trace that draws in ahead of it, a service's row draws a trace down its left edge and fills
+its icon, a button's darker fill sweeps in from the left, a game card leans a degree and
+glows in its game's colour, a school's crest turns, the portrait zooms 4% inside its frame.
+Nothing reflows: every hover is a transform, a colour or a `background-size`.
 
 ### Degradation
 
@@ -481,9 +588,9 @@ Under `prefers-reduced-motion: reduce`, durations collapse to `0.01ms` and
 `scroll-behavior` goes to `auto`. The view-transition pseudo-elements are named explicitly,
 because `*` does not reach them.
 
-`@view-transition { navigation: auto }` makes switching language read as one page changing
-rather than a reload. Cross-document, so Chrome, and Safari from 18.2. Firefox navigates
-as it always has.
+`@view-transition { navigation: auto }` makes moving between pages, and switching language,
+read as one site changing scene rather than a reload. Cross-document, so Chrome, and Safari
+from 18.2. Firefox navigates as it always has.
 
 ### A card opens into its page
 
@@ -545,7 +652,9 @@ the argument**: a run reaches a single address, fans out into services that do n
 about each other, and gathers back into one answer.
 
 It is HTML and CSS: real tiles, real chips and mark tiles, native text wrapping in four
-languages, and connectors that are borders. The rules are [flow.css](../src/styles/flow.css),
+languages, and connectors that are borders. Every colour in it is `--site-accent`, so on a
+project page it is drawn in the project's hue (`data-hue`, §1), and so is its miniature on
+the project's card. The rules are [flow.css](../src/styles/flow.css),
 imported by the component, so they are inlined into the project pages alone. An SVG composition with a per-character
 width estimator was here before, and it had to guess how wide "Ein Ordner, rekursiv in
 Bytes gelesen" would set; the browser now wraps it.
@@ -688,10 +797,10 @@ reader's language, and is as tall as its words need. Its rules are in its own sc
 `<style>`. It takes `project`, `lang`, `loop` (`hover`, `always` or `off`) and `class`.
 
 - **Two arrangements, chosen by `@container fm (min-width: 30rem)`**: a vertical spine below
-  30rem, which is every card in the row of three (246 to 366px), and left to right from
-  30rem, which is the featured card from a 1024 window up (501px) and the tablet's
-  full-width odd card. ⚠️ The featured card's 5 : 7 split is what gives the drawing its
-  501px at 1024; a wider text side drops it to the spine.
+  30rem, which is a case on a phone, and left to right from 30rem, which is every case from
+  a tablet up - stacked there, the drawing has the card's whole width, and beside the words
+  from 64rem it has 7 of 12. ⚠️ That 5 : 7 split is what gives the drawing its 30rem at a
+  1024 window. A wider text side drops it to the spine.
 - **Each node shows its title and its `flowTech` marks as icons.** A round trip writes its
   `entryLabel` and `exitLabel` beside its two lines; a service's badge appears only left to
   right; captions and the exit note stay on the page. Titles never set below 12px, labels
@@ -702,13 +811,11 @@ reader's language, and is as tall as its words need. Its rules are in its own sc
   entry to core, a fan into each service, then gathered into the exit, or down a rail into a
   channel under the lane and back up into the core on the round trip. ⚠️ The core does not
   lift on hover any more: it would pull away from the heads that touch it.
-- **The picture is sized by its content, never by an aspect ratio.** The featured card
-  stretches it to the text column with the drawing centred; the small cards share its row
-  through a two-row subgrid on `.work-card` (the words are in `.work-card-body`), so the
-  pictures match in height and the years line up. Only the picture row is shared: sharing
-  all five made every one-line title leave an empty line beside "Network Traffic Analyzer".
+- **The picture is sized by its content, never by an aspect ratio.** A case stretches it to
+  the height of the words beside it (`.case-flow`) with the drawing centred on its ground,
+  and in the deck, where the cards are one height, to the card's.
 - **The packets reuse the page's story** - its timings and its two cycles - always on the
-  featured card and on hover or focus on the others, behind
+  first case and on hover or focus on the others, behind
   `prefers-reduced-motion: no-preference`. The picture is `aria-hidden`: the card's words
   carry its meaning.
 
@@ -759,7 +866,7 @@ ground either side of it is still the page under it. The wordmark is Vuk's own V
 `/apple-touch-icon.png`, the file the favicon set already ships - beside his name.
 
 - ⚠️ **Between 64rem and 80rem the name is clipped to the accessible name only**, and the
-  mark stands alone: with the seven section links in the capsule, the German rail ran over
+  mark stands alone: with the six section links in the capsule, the German rail ran over
   "Vuk Cvetković" at 1024.
 - **Below lg the capsule holds the wordmark, the theme and the menu**, and nothing else
   fits beside the name at 360px. The language switcher moves into the menu as a row of the
@@ -859,7 +966,8 @@ imported by every game component after its own file:
 .page-head.game-head       crumb row (crumb + GameStamp), line-mask .page-title, .page-lead
 .game-play > .shell
   [data-game] .enter       the game's root, arriving at 240ms
-    .game-stage            one tile on the game's own ground (--game-ground)
+    .game-stage            one stage on the game's own ground (--game-ground), at
+                           --site-radius-stage, the rank of the hero's stage
       .game-hud            the figures (.game-stat) and the buttons (.game-actions)
       .game-board          the board itself
       .game-fill           optional: what uses the height the board leaves
@@ -960,7 +1068,22 @@ so adding a game means deciding the wall again.
 
 The head sets the title and the intro side by side from 64rem, aligned on the last
 baseline, so the intro is two full lines beside the title rather than one long line and a
-stray second one.
+stray second one. **The title's letters drop onto their line** one after another and
+bounce twice as they land, like discs into a Four in a Row board (`games-drop`, the 404's
+drop in small) - the one page that plays before it is asked to. The letters are
+`aria-hidden` boxes and the word is said once from an `sr-only` copy, so a screen reader
+hears "Games" and not five letters.
+
+**Each card is its game's cabinet.** `data-game` (the slug) picks `--game-hue`, taken from
+the board rather than chosen for it - 2048's amber tile, the minefield's red three,
+Memory's gold edge, Accretion's night, the sea, a cube face's green, the red disc - and a
+card picked up glows in it: an edge and a wash under it, the title tinted, and a lean of
+0.8 degrees, one way and the other along the wall, like cabinets not quite in a line
+(`rotate`, which composes with the lift's `transform`). A play mark in the hue appears in
+the screen's top right on hover or keyboard focus. ⚠️ **Not at rest on a touch screen**: in
+that corner it covered the minefield's flag and 2048's 256, the pieces those stills are
+composed around. The hues are the only hex values in index.css, and like every game's
+palette they live under styles/games/.
 
 **A card is a flex column**: the thumbnail, a title row with the name at large tile size
 and the status as a `.pill-status` at its right end, then the tagline. ⚠️ It is deliberately
@@ -2096,24 +2219,30 @@ every figure an inline-size container, and these two need a figure sized by its 
 
 ## 10. The pages
 
-Each page has one memorable thing, and everything else is a bento that fills its rows.
+Each page is a sequence of scenes, no two composed alike, with one memorable thing - and every
+row still fills its columns.
 
 ### The homepage
 
 [Home.astro](../src/components/Home.astro), styled by [home.css](../src/styles/home.css)
 (and project.css for the Projects section).
 
-- **The hero is one ink tile**: the role with its pulsing dot, the name as large as its
-  column allows (§4), the lead at the column's full width, the buttons, the portrait framed
-  at its own 3:4 beside them, and under both a tray of the eleven marks, landing one after
-  another. The tray is a wrapping row whose tiles grow (`flex: 1 1 5rem`), so every row is
-  full: eleven across on a desktop. On a phone the tiles are a size down and four to a row,
-  set 4, 4 and 3 in three rows where the full-size ones took four. Two rows would be six
-  across at about 48px, too narrow for "MongoDB" at the 11px floor.
+- **The hero is one ink stage set like the cover of a magazine**: the role with its signal
+  dot and the place ("Niš, Serbia", `hero.location`), then the name as the masthead, one
+  line across the whole stage (§4), and under it the lead, the buttons and the stack on the
+  left with the portrait framed at its own 3:4 on the right. The stage carries a studio
+  light - a cobalt glow behind the portrait falling off to the ink, and a faint wash where
+  the masthead starts - the one gradient on the page, there for the reason a photographer
+  puts one behind a sitter.
+- **The tray** is a wrapping row whose tiles grow, with a basis of a sixth of the row less
+  its gaps and a pixel, so eleven always set six and five from a tablet up and sit along the
+  foot of the left column, level with the portrait's foot. ⚠️ A basis in rem set eleven in
+  one row at 64px beside the portrait, where "MongoDB" broke in two, and eight and three on
+  a tablet. On a phone it is four to a row, 4, 4 and 3. Two rows would be six across at
+  about 48px, too narrow for "MongoDB" at the 11px floor.
 - ⚠️ **The portrait is never cropped in CSS.** Its frame is the photograph's own ratio to
   three decimal places, so `cover` crops nothing; framing it at any other ratio cuts the arm
-  off at the edge or the head in half on a phone. It is not stretched to the row's height,
-  and the copy column is centred on it instead.
+  off at the edge or the head in half on a phone. It is not stretched to the row's height.
 - **The portrait is the page's largest paint**, so two things about it are there for LCP.
   It is emitted at 360, 600 and 730 wide with a `sizes` that follows the layout, because a
   phone was sent the 730 for a frame 340px wide (the 600 is for the 1.75x phone Lighthouse
@@ -2122,8 +2251,9 @@ Each page has one memorable thing, and everything else is a bento that fills its
   does not count a paint it cannot see, and a reveal from fully clipped held the LCP back
   894ms, so a clip, a mask or an opacity fade on it costs the score. webp rather than AVIF,
   which came out larger at this quality.
-- **About** is the opening statement across the full measure at display size, then the
-  other two paragraphs, labelled Education and Games, at 4 and 8 columns. The Education tile names the master's and its thesis only: both theses are on the
+- **About** is the opening statement across the full measure at display size, straight on
+  the ground, taking its ink word by word as it is read (§5), then the other two
+  paragraphs as tiles, labelled Education and Games, at 4 and 8 columns. The Education tile names the master's and its thesis only: both theses are on the
   Experience rail, with their links. The Games tile is on cobalt, the tile a link to the
   games, and under its paragraph are the seven games drawn small
   ([GameMinis.astro](../src/components/GameMinis.astro)), each a link to its game that opens
@@ -2162,7 +2292,8 @@ Each page has one memorable thing, and everything else is a bento that fills its
   the period on the left, the bullets on the right at about 85 characters a line, the head
   at the top. A 2px rail runs from the first initial to the last, through the tiles and the
   gaps, and fills with the accent as the page scrolls; the current role's initial and
-  period take the accent, the period's dot pulses so "2024 -" reads as running, and an
+  period take the accent, the period's dot is the signal and pulses so "2024 -" reads as
+  running, and an
   initial the rail has reached takes an accent ring. Stacked, the bullets' checks sit on
   the rail as its stops.
   - ⚠️ **Each tile draws its own stretch**, because a tile paints over everything the tile
@@ -2186,51 +2317,80 @@ Each page has one memorable thing, and everything else is a bento that fills its
     project, with the label ("Master's thesis"), the project's title and its tagline.
     Which project each thesis was is `thesis` on the degree in site.ts. On a phone the
     thesis starts at the name's edge, clear of the rail, and drops its tagline.
-- **Projects** is banded: the first project as one wide card, its text beside a large
-  `FlowMini` that loops, then three cards with their `FlowMini` as a picture that runs on
-  hover (see "Project cards" below). A project with a measured result leads with it, after
-  its description: the figure in the display voice on an accent rule, and the words round
-  it with what it is compared with - `outcome` in site.ts, `projects.outcomes` in the
+- **Projects** is the one full-width dark stage in the middle of the page (`tone="panel"`
+  and `class="theater"`, on `--site-stage`), and on it the projects as a deck of case
+  studies (see "Project cards" below). A project with a measured result leads with it,
+  after its description: the figure large in the project's hue on a trace, and the words
+  round it with what it is compared with - `outcome` in site.ts, `projects.outcomes` in the
   dictionaries.
-- **Services** is four tiles, two by two from a tablet up, each opening with a large icon
-  that turns on hover, then its text, the technologies it is done in as tags, and at the
-  foot "In practice": the place on the site it is shown done, a project's page or the role
-  in Experience where no project is. The tags and the proof are `services` in site.ts, by
-  position, checked against the dictionaries at build. ⚠️ **Not four across**: in a row of
-  four the first description ran twice the others and the tiles beside it stood with up to
-  229px of nothing above their proof, and four equal icon-and-text columns were the
-  template look. On a phone the icon sits beside the title and the proof is one line.
-- **Contact** is the close, on ink: the intro at display size on cobalt with Contact me,
-  beside the three channels.
+- **Services** is a list, not a grid: four rows across the measure, each the service's icon
+  and name at a large tile-title size, then what it covers with the technologies it is done
+  in under it, and at the row's far end "In practice": the place on the site it is shown
+  done, a project's page or the role in Experience where no project is. Read down, the
+  names are the list, and read across, a row is the whole claim and its proof. Under the pointer
+  a trace draws down the row's left edge and the icon fills. The tags and the proof are
+  `services` in site.ts, by position, checked against the dictionaries at build. ⚠️ **Not
+  four across and not two by two**: in a row of four the first description ran twice the
+  others and the tiles beside it stood with up to 229px of nothing above their proof, and
+  four equal icon-and-text tiles were the template look. Stacked below 64rem, the icon
+  beside the name and everything else under the two.
+- **Contact** is the close, on ink: the intro at display size on cobalt with Contact me and
+  a white wash from the button's corner, beside the three channels as the rows of one tile,
+  each row the whole target.
 
 ### Project cards, on the homepage and the index
 
-The same two card shapes in [Projects.astro](../src/components/Projects.astro) and
+One card shape, the **case**, in [Projects.astro](../src/components/Projects.astro) and
 [ProjectIndex.astro](../src/components/ProjectIndex.astro), styled by
 [project.css](../src/styles/project.css). They repeat their markup rather than share a
 component: the heading level and the arrival differ, and two similar blocks are not
 duplication worth an abstraction.
 
-- The featured card is 5 : 7 from 64rem - text, then a frame drawn in `FlowMini`'s own
-  ground, stretched to the text's height with no visible seam, and the project's marks as
-  inset mark tiles under it.
-- A small card is its picture, the year, the title, the description, four technology tags and
-  "Read the write-up". ⚠️ **The tags are always two by two** (`flex: 1 1 35%`, no wrapping
-  inside a tag): three 35% bases cannot share a row, and a 50% basis split "Windows Forms"
-  from its pair on a phone.
+- **A case** is the project's request drawn large (`FlowMini`, in the project's hue) with
+  its technologies as tags under it, beside the year on a tint of the hue and the context,
+  the title, the tagline, the description, the measured result and "Read the write-up". 5 :
+  7 from 64rem, the words and then the drawing, which is what gives the drawing the 30rem it
+  is drawn left to right from. Stacked on anything narrower, the drawing comes first.
+- **On the homepage the cases are a deck.** From 64rem wide *and* 44rem tall, each card is
+  `position: sticky` under the header, 0.875rem lower than the one before it (`--i`, its
+  place, written inline), and as tall as the room under the header allows up to 40rem, so
+  the cards are one size. As the next card comes up over it, the one underneath steps back
+  to 0.94 and dims towards the stage (§5), and the strips of the ones before show above it
+  like a hand of cards. Past the last card the deck ends and the whole hand scrolls away.
+  Every card is in the normal flow: it is read and tabbed to in order, and stickiness only
+  decides where it waits.
+  - ⚠️ **The two guards are load-bearing.** A sticky card taller than the screen cannot be
+    scrolled to its foot while it is stuck, so below 44rem of height, or on a narrower screen
+    where a case is a column, the cases simply follow each other.
+  - ⚠️ **A card with keyboard focus comes to the front** (`z-index` on `:focus-within`).
+    Tabbing backwards lands on a card stuck under the next one, which the browser counts as
+    on screen and does not scroll to, so the ring was drawn under the card on top.
+  - ⚠️ **The deck names six timelines.** A seventh project would not step back when the one
+    after it came. The list in `timeline-scope` is where to add one.
+  - `.surface` puts each card back on the theme's own paper on the ink stage, so its
+    drawing - which has an ink core of its own - is drawn exactly as on the ground.
+- **On the index the cases are spreads**: one after another down the page, each with the
+  page's width to itself, the drawing alternating sides, coming in from its own side as
+  the card arrives. The first is in view at first paint, so it enters on load.
 - ⚠️ **"Read the write-up" is a styled span, not a link.** The card's title is the stretched
   link, and a second anchor would be announced twice; the span draws its full underline when
   the card is hovered or its title has keyboard focus.
-- Between 40rem and 64rem the odd third card spans the row, stacked. Laid out sideways, its
-  picture column was a mostly empty cell.
+- The first case's drawing runs its request from load, and the others run theirs when the card
+  is picked up.
 
 ### A project page
 
 [ProjectDetail.astro](../src/components/ProjectDetail.astro), styled by project.css and
 flow.css.
 
+- **The whole page is in the project's hue** (`data-hue` on the `<article>`): every trace,
+  the request diagram, the step numbers, the result bars. The header and the footer are
+  outside it and stay the site's own.
 - **The head**: the crumb, the title rising into its mask, the tagline, and Year, Context and
-  Domain as three tiles - Year on cobalt as a big figure, the page's one cobalt tile.
+  Domain as a **title block** - the boxed table in the corner of an engineering drawing that
+  says what the drawing is, when and for whom: one tile ruled into three cells (3 : 5 : 4
+  from 40rem), the year large in the hue on a tint of it with a trace down its edge. One
+  record, so one tile rather than three.
 - **The request diagram** on the band (§6).
 - **Demo**, where the project has one (`demo` in site.ts, Object Detection only): the
   screen recording in a tile with a narrow frame, controls, no autoplay and
@@ -2241,9 +2401,8 @@ flow.css.
   (routing-and-deploy.md §5).
 - ⚠️ **Tile rows are split at build, per locale.** `place()` scores every split of a row's
   columns by the estimated height of the text in each tile, and keeps the split whose shortest
-  and tallest tiles come closest - so Overview's lead and its second paragraph, the features,
-  the dataset's three paragraphs and the results notes finish level in German as well as in
-  English. The rows run on 24 columns from 64rem and 12 from 40rem, twice the bento's count,
+  and tallest tiles come closest - so the steps, the features and the results notes finish
+  level in German as well as in English. The rows run on 24 columns from 64rem and 12 from 40rem, twice the bento's count,
   so a split can land between twelfths while every outer edge still lines up. No tile gets
   less than 7 of 24. The estimate's assumptions (a tile's detail 16px at 0.43em a character, and so on)
   are beside the function; change the type and they have to move with it.
@@ -2263,14 +2422,34 @@ flow.css.
 - ⚠️ **The bars sit inside the table's own scroller**, so an anonymous `view()` would
   measure against that box and never run: the tile names its timeline (`--proj-results`) and
   the bars use it.
+- **Overview** is text on the ground, not tiles: the opening paragraph across 7 of 12
+  columns at a spoken size, and the rest beside it in the other 5 as a note on a trace in
+  the hue, the way a margin note sits beside the text it qualifies.
+- **Dataset and training** is a write-up in balanced columns on the ground, the paragraphs
+  free to run from the foot of one column to the head of the next, indented where they
+  start, so the columns end level. Not on the band: What it does right above takes it, and
+  two bands in a row run together into one.
 - **Technologies**, straight after the overview on every project page, is one tile per
   service, each a row of mark tiles, packed in order into rows and spanned so every mark in
   a row comes out the same width. A mark tile wider than 15rem sets its mark beside its
   name.
-- **The takeaway** is on ink, its two paragraphs in columns, with All projects.
+- **The takeaway** is on ink, its two paragraphs in columns, with All projects, and the
+  footer's ask follows it on the same ink.
 - The copy's spaced hyphen and the French space before `:` `;` `!` `?` are made
   non-breaking at render by `keep()`, the words unchanged, so no line starts with "- which"
   or a lone colon.
+
+### The footer
+
+The last scene of every page, on ink ([Footer.astro](../src/components/Footer.astro)). On
+every page but the homepage it opens on **the ask**, `.foot-call`: Contact's intro at display
+size with Contact me beside it (`call`, passed by [Base.astro](../src/layouts/Base.astro) as
+"not the homepage", where Contact itself is the section right above and says the same).
+Then the way back to every section, project and game - a link slides towards where it goes
+behind a trace that draws in ahead of it - the channels, the languages, and the name as
+wide as the page rising out of its floor, the accent sweeping across it once as it arrives
+(a `background-clip: text` gradient moved by `word-sweep`, the letters' fill transparent
+only where the clip is supported).
 
 ### The games index and the game pages
 
@@ -2309,11 +2488,28 @@ centred in the space between the capsule and the footer on a tall screen.
 | 1 | **The hero repeats the full stack.** Eleven marks in the hero's tray answer what he works with immediately, and then Skills sets out the same eleven grouped a screen further down. It is deliberate - the hero should not need the reader to scroll to learn the domain - but the two are the same content twice and worth revisiting if the stack grows. | judgement call |
 | 2 | **The games wall is composed for seven games.** The spans in [index.css](../src/styles/games/index.css) are set by position (6 + 6, 4 + 4 + 4, 6 + 6); an eighth game would sit alone at half width. | known limit |
 | 3 | **Some boards are not whole on load.** Battleship's two waters and their fleets end at 1109 at 1440x900, so they need about 210px of scroll (54px squares were chosen over 39px ones that would fit). On a phone the head of every game page ends 350 to 400px down, so a board is whole once the stage is scrolled under the header. | known limit |
+| 4 | **The project deck is written for up to six projects.** Each card's step back runs on the next card's named view timeline, and `timeline-scope` on `.deck` lists six names. A seventh project would stack but not step back when the eighth arrived. | known limit |
+| 5 | **A project's hue is one of four.** `ProjectHue` in site.ts and `--hue-*` in global.css hold cobalt, violet, teal and green, one per project today. A fifth project repeats one or adds a fifth hue, with a light and a dark value checked against the contrast figures in §1. | known limit |
 
 ---
 
 ## Changelog
 
+- 2026-09-29 - the trace is drawn only from "Projects" into All projects. Run out of every
+  section title and down onto the first tile, it pointed at nothing a reader could name
+  (§3, §5).
+- 2026-09-29 - the site redrawn as the systems it is about: the trace (the request
+  diagram's connector) runs out of every section title and down onto its first tile, along
+  the header as a reading gauge, and into a footer link. The homepage is a sequence of
+  scenes - a masthead hero with the stack lit by a passing signal, the About statement taking
+  its ink word by word, the projects as a deck of case studies on a dark stage that stack as
+  they are read, Services as rows, and Contact. Every project has a hue its card and its page
+  are drawn in. A project page opens on a title block and sets its overview and dataset as
+  text on the ground. The footer opens on the ask on every page but the homepage. The games
+  index drops its title's letters in and each card glows in its game's colour. Pages change
+  scene with a root view transition. New: `--paper-*`, `.surface`, `--site-signal`,
+  `--site-stage`, `--site-radius-stage`. The width axis is never animated, and CLS is 0
+  (§1-§5, §9, §10, §11).
 - 2026-09-28 - the hero steps back from 60rem only, and the phone footer's rules come after
   the footer's own, which had kept the email over the name (§5, §10).
 - 2026-09-28 - the site a size smaller: display type, leads and card padding down about a

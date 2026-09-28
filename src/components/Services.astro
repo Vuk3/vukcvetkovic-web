@@ -51,15 +51,15 @@ const proofOf = (proof: (typeof site.services)[number]['proof']) => {
 ---
 
 {/*
-  Four tiles, two by two from a tablet up. Each opens with a
-  large icon, which is what gives four blocks of text something to be read by
-  at a glance - four identical title-and-paragraph cards were the plainest thing
-  on the old page. Under the text, what the service is done in, and at the foot
-  the place on the site it is shown done, so each tile ends on proof rather than
-  on a promise.
+  Four rows across the measure, one per service: its icon and name, what it
+  covers, and at the far end what it is done in and the place on the site it
+  is shown done, so each row ends on proof rather than on a promise. Read down,
+  the names are the list, and read across, a row is the whole claim. Rows rather
+  than tiles in a grid, because four equal icon-and-text tiles were the
+  plainest, most template thing the page had.
 */}
 <Section id="services" label={dict.services.label} tone={tone}>
-  <ul class="svc-bento">
+  <ul class="svc-list">
     {
       dict.services.items.map((item, index) => {
         const Icon = icons[index];
@@ -67,25 +67,27 @@ const proofOf = (proof: (typeof site.services)[number]['proof']) => {
         const proof = proofOf(service.proof);
 
         return (
-          <li class="card svc-card reveal-item">
+          <li class="card svc-row reveal-item">
             {Icon && (
               <span class="svc-icon" aria-hidden="true">
                 <Icon />
               </span>
             )}
             <h3 class="svc-title">{item.title}</h3>
-            <p class="svc-body">{item.description}</p>
 
-            {service.tech.length > 0 && (
-              <ul class="svc-tags">
-                {service.tech.map((tech) => (
-                  <li class="tag">
-                    <TechIcon name={tech} class="tag-icon" />
-                    {tech}
-                  </li>
-                ))}
-              </ul>
-            )}
+            <div class="svc-copy">
+              <p class="svc-body">{item.description}</p>
+              {service.tech.length > 0 && (
+                <ul class="svc-tags">
+                  {service.tech.map((tech) => (
+                    <li class="tag">
+                      <TechIcon name={tech} class="tag-icon" />
+                      {tech}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
 
             <a href={proof.href} class="svc-proof">
               <span class="tile-label">

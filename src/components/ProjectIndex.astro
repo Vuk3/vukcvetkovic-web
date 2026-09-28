@@ -2,12 +2,12 @@
 /**
  * The /projects/ index, shared by the four locales.
  *
- * The same two card shapes as the homepage's Projects section, on purpose, so
- * a project looks the same wherever it is listed: the first project large and
- * horizontal with its request drawn beside it, the rest in a row of three,
- * each with its own flow as the picture. The whole card is the link, so the
- * page needs no separate call to action per card. Rules in
- * src/styles/project.css.
+ * The same cases as the homepage's deck, on purpose, so a project looks the
+ * same wherever it is listed - its request drawn large in its own hue beside
+ * its name, what it is and what it measured - but in full, one after another
+ * down the page, with the drawing on alternating sides so four in a column
+ * read as a run of spreads. The whole card is the link, so the page needs no
+ * separate call to action per card. Rules in src/styles/project.css.
  *
  * The markup repeats Projects.astro's rather than sharing a component: the
  * two differ in heading level and in how they arrive (the index's first card
@@ -18,7 +18,6 @@ import type { Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
 import { site, type Project } from '../site';
 import FlowMini from './FlowMini.astro';
-import MarkTile from './MarkTile.astro';
 import TechIcon from './TechIcon.astro';
 import '../styles/project.css';
 
@@ -30,9 +29,6 @@ const { lang } = Astro.props;
 const dict = getDict(lang);
 const index = dict.projects.index;
 
-const [featured, ...rest] = site.projects;
-const featuredCopy = dict.projects.items[featured.id];
-
 /* The spaced hyphen the copy uses as a dash, kept on the line with the word
    before it - see `keep` in ProjectDetail.astro. */
 const keep = (text: string) => text.replace(/ ([:;!?]|-(?= ))/g, '\u00a0$1');
@@ -43,8 +39,6 @@ const outboundLinks = (links: { live?: string; source?: string }) =>
     { href: links.live, label: dict.projects.liveLabel },
     { href: links.source, label: dict.projects.sourceLabel },
   ].filter((link): link is { href: string; label: string } => Boolean(link.href));
-
-const featuredLinks = outboundLinks(featured.links);
 
 /**
  * A card's measured result, where its project has one (`outcome` in
@@ -60,7 +54,6 @@ const outcomeOf = (project: Project) => {
   return { figure: number.format(value) + unit, label: words.replace('{from}', number.format(from) + unit) };
 };
 
-const featuredOutcome = outcomeOf(featured);
 const page = (slug: string) => localizePath(`/projects/${slug}/`, lang);
 ---
 
@@ -83,62 +76,42 @@ const page = (slug: string) => localizePath(`/projects/${slug}/`, lang);
 
 <div class="sec-lite work-index">
   <div class="shell">
-    <article class="card card-hover work-feature enter" style="--enter-delay:260ms">
-      <FlowMini lang={lang} project={featured} loop="always" class="work-pic" />
-
-      <div class="work-feature-text">
-        <p class="work-year">{featured.year}</p>
-
-        <h2
-          class="work-feature-title"
-          style={`view-transition-name:project-${featured.slug}-title;view-transition-class:title`}
-        >
-          <a href={page(featured.slug)} class="entry-link stretch">{featuredCopy.title}</a>
-        </h2>
-
-        <p class="work-tagline">{keep(featuredCopy.tagline)}</p>
-
-        <p class="work-desc">{keep(featuredCopy.description)}</p>
-        {featuredOutcome && (
-          <p class="work-outcome">
-            <span class="work-outcome-figure">{featuredOutcome.figure}</span>
-            <span class="work-outcome-label">{featuredOutcome.label}</span>
-          </p>
-        )}
-
-        <p class="work-more">
-          <span class="link">{dict.projects.view}</span>
-          {
-            featuredLinks.map((link) => (
-              <a href={link.href} target="_blank" rel="noopener" class="link above">
-                {link.label}
-              </a>
-            ))
-          }
-        </p>
-      </div>
-
-      <ul class="work-marks">
-        {featured.tech.map((tech) => <MarkTile name={tech} as="li" />)}
-      </ul>
-    </article>
-
-    <ol class="work-row">
+    <ol class="cases">
       {
-        rest.map((project) => {
+        site.projects.map((project, i) => {
           const copy = dict.projects.items[project.id];
           const links = outboundLinks(project.links);
           const outcome = outcomeOf(project);
 
           return (
-            <li class="card card-hover work-card reveal-item">
-              <FlowMini lang={lang} project={project} />
+            <li
+              class:list={['card card-hover case', i === 0 ? 'enter' : 'reveal']}
+              data-hue={project.hue}
+              style={i === 0 ? '--enter-delay:260ms' : undefined}
+            >
+              <div class="case-pic">
+                <FlowMini lang={lang} project={project} loop={i === 0 ? 'always' : 'hover'} class="case-flow" />
 
-              <div class="work-card-body">
-                <p class="work-year">{project.year}</p>
+                {project.tech.length > 0 && (
+                  <ul class="case-tags" aria-label={dict.projects.detail.stack}>
+                    {project.tech.map((tech) => (
+                      <li class="tag">
+                        <TechIcon name={tech} class="tag-icon" />
+                        {tech}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <div class="case-text">
+                <p class="case-meta">
+                  <span class="case-year">{project.year}</span>
+                  <span>{keep(copy.context)}</span>
+                </p>
 
                 <h2
-                  class="work-card-title"
+                  class="case-title"
                   style={`view-transition-name:project-${project.slug}-title;view-transition-class:title`}
                 >
                   <a href={page(project.slug)} class="entry-link stretch">
@@ -146,35 +119,24 @@ const page = (slug: string) => localizePath(`/projects/${slug}/`, lang);
                   </a>
                 </h2>
 
-                <p class="work-desc">{keep(copy.description)}</p>
+                <p class="case-tagline">{keep(copy.tagline)}</p>
+                <p class="case-desc">{keep(copy.description)}</p>
+
                 {outcome && (
-                  <p class="work-outcome">
-                    <span class="work-outcome-figure">{outcome.figure}</span>
-                    <span class="work-outcome-label">{outcome.label}</span>
+                  <p class="case-outcome">
+                    <span class="case-outcome-figure">{outcome.figure}</span>
+                    <span class="case-outcome-label">{outcome.label}</span>
                   </p>
                 )}
 
-                <div class="work-foot">
-                  {project.tech.length > 0 && (
-                    <ul class="work-tags">
-                      {project.tech.map((tech) => (
-                        <li class="tag">
-                          <TechIcon name={tech} class="tag-icon" />
-                          {tech}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-
-                  <p class="work-more">
-                    <span class="link">{dict.projects.view}</span>
-                    {links.map((link) => (
-                      <a href={link.href} target="_blank" rel="noopener" class="link above">
-                        {link.label}
-                      </a>
-                    ))}
-                  </p>
-                </div>
+                <p class="case-more">
+                  <span class="link">{dict.projects.view}</span>
+                  {links.map((link) => (
+                    <a href={link.href} target="_blank" rel="noopener" class="link above">
+                      {link.label}
+                    </a>
+                  ))}
+                </p>
               </div>
             </li>
           );

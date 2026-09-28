@@ -35,56 +35,57 @@ const profiles = [
 
 {/*
   The close, on the ink panel, and the one section where the page asks for
-  something - so the ask is the largest tile in it: the intro at display size on
-  cobalt with the one button that matters, beside the three channels. Email
-  leads the channels and is the only address in the accent.
+  something - so the ask is the largest thing in it: the intro at display size
+  on cobalt with the one button that matters, beside the three channels as
+  the rows of one tile. Email leads the channels and is the only address in
+  the accent.
 
-  ⚠️ The address stays at 1.25rem. It has been set at 2.875rem, 2.25rem and
-  1.75rem and every one of them was too big: an address is a thing you read,
-  copy and type, and past this size it stops looking like one. The scale here
-  belongs to the intro and the button.
+  ⚠️ The address stays at 1.25rem (see `.mail` in home.css): an address is a
+  thing you read, copy and type, and every larger setting was turned down.
 
   Nothing in here knows it is on dark: `.panel` re-declares the palette and
   `.tile-cobalt` re-declares it again for its own tile.
 */}
 <Section id="contact" label={dict.contact.label} tone={tone}>
-  <div class="bento contact-bento">
-    <div class="card tile-cobalt contact-call reveal-item sm:col-span-6 lg:col-span-6">
+  <div class="contact-grid">
+    <div class="card tile-cobalt contact-call reveal-item">
       <p class="contact-intro">{dict.contact.intro}</p>
 
       <a href={`mailto:${site.email}`} class="cta">
-        <Mail class="size-[1.1rem]" aria-hidden="true" />
+        <Mail class="size-[1.15rem]" aria-hidden="true" />
         {dict.hero.cta}
       </a>
     </div>
 
-    <div class="card card-hover channel channel-mail reveal-item sm:col-span-6 lg:col-span-6">
-      <span class="tile-icon channel-icon">
-        <Mail aria-hidden="true" />
-      </span>
+    <ul class="card channels reveal-item">
+      <li class="channel">
+        <span class="tile-icon channel-icon">
+          <Mail aria-hidden="true" />
+        </span>
 
-      <span class="min-w-0">
-        <span class="meta-label block">{dict.contact.emailLabel}</span>
-        {/* The whole tile is the target; the accessible name stays the address. */}
-        <a href={`mailto:${site.email}`} class="mail stretch">{site.email}</a>
-      </span>
-    </div>
+        <span class="min-w-0">
+          <span class="meta-label block">{dict.contact.emailLabel}</span>
+          {/* The whole row is the target, and the accessible name stays the address. */}
+          <a href={`mailto:${site.email}`} class="mail stretch">{site.email}</a>
+        </span>
+      </li>
 
-    {
-      profiles.map((profile) => (
-        <div class="card card-hover channel reveal-item sm:col-span-3 lg:col-span-3">
-          <span class="tile-icon channel-icon">
-            <BrandIcon name={profile.brand} />
-          </span>
+      {
+        profiles.map((profile) => (
+          <li class="channel">
+            <span class="tile-icon channel-icon">
+              <BrandIcon name={profile.brand} />
+            </span>
 
-          <span class="min-w-0">
-            <span class="meta-label block">{profile.label}</span>
-            <a href={profile.href} target="_blank" rel="me noopener" class="channel-value entry-link stretch">
-              {profile.text}
-            </a>
-          </span>
-        </div>
-      ))
-    }
+            <span class="min-w-0">
+              <span class="meta-label block">{profile.label}</span>
+              <a href={profile.href} target="_blank" rel="me noopener" class="channel-value entry-link stretch">
+                {profile.text}
+              </a>
+            </span>
+          </li>
+        ))
+      }
+    </ul>
   </div>
 </Section>

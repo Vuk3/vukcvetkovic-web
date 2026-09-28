@@ -34,6 +34,7 @@ const de: Dict = {
   hero: {
     // English, as German tech writes it: "Ingenieur" is a protected title in Germany.
     role: 'Software Engineer',
+    location: 'Niš, Serbien',
     positioning:
       'Ich arbeite am ganzen Produkt, vom Datenmodell bis in die Produktion. Das Backend schreibe ich in Node.js (NestJS, Express) und .NET. Auf AWS kümmere ich mich um das Deployment und die ereignisgetriebene Kommunikation zwischen den Services, und alles, was der Nutzer sieht, baue ich in React.',
     cta: 'Kontakt aufnehmen',

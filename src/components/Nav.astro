@@ -68,6 +68,10 @@ const languages = locales.map((locale) => ({
 <header class="site-head">
   <div class="shell">
     <div class="head-capsule panel">
+      {/* How far down the page the reader is, drawn along the capsule's floor
+          by the root scroller's timeline - see `.head-progress`. */}
+      <span class="head-progress" aria-hidden="true"></span>
+
       {/*
         Vuk's own V mark, the file the favicon set already ships, shown at the
         size of the controls beside it. Decorative: the name next to it is the

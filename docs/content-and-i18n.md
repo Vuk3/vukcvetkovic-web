@@ -184,7 +184,7 @@ string rather than an object.
 ## 5. Adding a project
 
 A project is one entry in [src/site.ts](../src/site.ts) plus its copy in four dictionaries.
-No layout changes: the homepage row, the index row and the detail page are all frames that
+No layout changes: the homepage deck, the index and the detail page are all frames that
 take whatever is in the array.
 
 **In [src/site.ts](../src/site.ts)**, append to `projects`:
@@ -193,8 +193,9 @@ take whatever is in the array.
 |---|---|
 | `id` | the key under `projects.items` in the dictionaries. Must exist there first, or it is a type error (§3) |
 | `slug` | last path segment under `/projects/`. Drives `getStaticPaths` in all four project routes |
-| `year` | shown in the left column of the index row |
-| `tech` | the short identifying list, for the homepage row and the index row |
+| `year` | shown on the project's card and as the figure in its page's title block |
+| `hue` | `cobalt`, `violet`, `teal` or `green` - the colour its card and its page are drawn in (`[data-hue]` in global.css). Four projects use the four, and a fifth repeats one or adds a hue to `ProjectHue` and `--hue-*`, a light and a dark value each |
+| `tech` | the short identifying list, as tags under the drawing on the project's card |
 | `stack` | the full list, grouped by **service** rather than category. Only the detail page shows it |
 | `flowShape` | `roundTrip` or `pipeline` - the topology of the request diagram, see below |
 | `flowTech` | which technologies each node of the request diagram runs on: `{ entry, core, branches, exit }`, each a list of `TechName`. An empty list is a real answer - the node runs on nothing and shows no marks. ⚠️ The diagram **throws at build** if `branches` has a different length from the dictionary's `flow.branches`, or if a name is not in this project's `stack` |
@@ -418,6 +419,8 @@ anybody as protection - see
 
 ## Changelog
 
+- 2026-09-29 - a project carries a `hue` in site.ts, the colour its card and its page are
+  drawn in, and `hero.location` is new copy in all four dictionaries (§5).
 - 2026-09-28 - a project can carry a `demo`, a clip on R2 with its poster in src/assets,
   and the dictionaries gain `projects.detail.demo`.
 - 2026-09-28 - a project can carry a measured `outcome`, worded under `projects.outcomes`

@@ -91,11 +91,12 @@ const links = [
  * twice the bento's count. The even spans land exactly on the bento's twelve,
  * so every outer edge still lines up with the rest of the site; the odd ones
  * are what let a split come out at 7 : 9 : 8 rather than being forced to the
- * nearest twelfth, which on the dataset's three paragraphs was the difference
- * between four lines of hole under two of them and none.
+ * nearest twelfth, which on a row of three paragraphs (the dataset's, when it
+ * was set in tiles) was the difference between four lines of hole under two
+ * of them and none.
  *
  * The widths are the page where each breakpoint spends most of its time: the
- * 80rem shell with a 1rem gap and a 1.625rem card padding, and a 50rem one
+ * 80rem shell with a 1rem gap and a 1.75rem card padding, and a 50rem one
  * with 0.75rem and 1.125rem. The rest is measured off the rendered page: Archivo's
  * average advance is 0.43em in body text, 0.45em in the lead and 0.52em in the
  * expanded titles, and a line loses about six characters to where the words
@@ -111,7 +112,7 @@ interface Grid {
 }
 
 const TILES = {
-  lg: { width: 1280, columns: 24, gap: 16, pad: 26 },
+  lg: { width: 1280, columns: 24, gap: 16, pad: 28 },
   sm: { width: 800, columns: 12, gap: 12, pad: 18 },
 } satisfies Record<string, Grid>;
 
@@ -241,16 +242,6 @@ function place(tiles: Tile[], perLg: number, perSm: number, grids: { lg: Grid; s
 
 const spanStyle = (placed: Placed) => `--lg:${placed.lg};--sm:${placed.sm}`;
 
-/* The overview's first paragraph is set as a lead - 26px on 35 at a desktop's
-   width, see `.proj-lead`. */
-const overview = place(
-  copy.overview.map((p, i) => ({
-    runs: [i === 0 ? { chars: p.length, size: 23, line: 31, advance: 0.45 } : body(p)],
-  })),
-  2,
-  1,
-);
-
 /* A step is its number row (a 2.75rem disc and the gap under it), its title
    and its body at 17px. */
 const steps = place(
@@ -268,7 +259,6 @@ const features = place(
   2,
 );
 
-const dataset = place(copy.dataset.map((p) => ({ runs: [body(p)] })), 3, 1);
 const notes = place(copy.results.notes.map((p) => ({ runs: [body(p)] })), 3, 1);
 
 const takeaway = place(
@@ -374,16 +364,21 @@ const grouped = results ? new Set(copy.results.rows).size < copy.results.rows.le
 const tableLabel = `${copy.title} - ${labels.results}`;
 
 const meta = [
-  { label: labels.context, value: copy.context, Icon: GraduationCap, span: 'proj-meta-context' },
-  { label: labels.domain, value: copy.domain, Icon: Target, span: 'proj-meta-domain' },
+  { label: labels.context, value: copy.context, Icon: GraduationCap },
+  { label: labels.domain, value: copy.domain, Icon: Target },
 ];
 ---
 
-<article>
+{/*
+  The whole page is in the project's hue (`data-hue`, global.css): the trace
+  under every section title, the request diagram, the step numbers, the result
+  bars. The header and the footer are outside it and stay the site's own.
+*/}
+<article data-hue={project.hue}>
   {/*
     The page head. In view at first paint, so it runs the load sequence rather
     than a scroll reveal: the crumb, the title rising out of its mask, the
-    tagline, then the three facts as tiles.
+    tagline, then the three facts as a title block.
   */}
   <header class="page-head">
     <div class="shell">
@@ -407,13 +402,13 @@ const meta = [
       <p class="page-lead enter" style="--enter-delay:180ms">{keep(copy.tagline)}</p>
 
       {/*
-        Three labelled tiles rather than one line of values joined by dots:
-        the label is doing work, and a dotted string makes the reader guess
-        which value is which. The year is four characters, so it is set as a
-        figure on the cobalt rather than as a value lost in a white tile.
+        The title block: one tile ruled into three labelled cells rather than
+        a line of values joined by dots, because the label is doing work and a
+        dotted string makes the reader guess which value is which. The year is
+        four characters, so it is set as a figure in the project's hue.
       */}
-      <dl class="bento proj-meta">
-        <div class="card tile-cobalt proj-meta-year enter" style="--enter-delay:260ms">
+      <dl class="proj-spec enter" style="--enter-delay:260ms">
+        <div class="proj-spec-year">
           <dt class="tile-label">
             <span class="tile-icon"><CalendarDays aria-hidden="true" /></span>
             {labels.year}
@@ -422,8 +417,8 @@ const meta = [
         </div>
 
         {
-          meta.map((item, i) => (
-            <div class:list={['card enter', item.span]} style={`--enter-delay:${340 + i * 80}ms`}>
+          meta.map((item) => (
+            <div>
               <dt class="tile-label">
                 <span class="tile-icon">
                   <item.Icon aria-hidden="true" />
@@ -438,7 +433,7 @@ const meta = [
 
       {
         links.length > 0 && (
-          <ul class="proj-links enter" style="--enter-delay:500ms">
+          <ul class="proj-links enter" style="--enter-delay:360ms">
             {links.map((link) => (
               <li>
                 <a href={link.href} target="_blank" rel="noopener" class="cta-ghost">
@@ -498,13 +493,21 @@ const meta = [
   {
     copy.overview.length > 0 && (
       <Section id="overview" label={labels.overview}>
-        {/* The opening paragraph as a lead, the second beside it. */}
-        <div class="proj-fit">
-          {copy.overview.map((paragraph, i) => (
-            <div class="card reveal-item" style={spanStyle(overview[i])}>
-              <p class={i === 0 ? 'proj-lead' : 'proj-text'}>{keep(paragraph)}</p>
+        {/*
+          Text that is only text, so it stands on the ground rather than in a
+          tile: the opening paragraph as the page's spoken sentence across
+          seven columns, and the rest beside it as a note on a trace, the way
+          a margin note sits beside the text it qualifies.
+        */}
+        <div class="proj-overview">
+          <p class="proj-lead reveal">{keep(copy.overview[0])}</p>
+          {copy.overview.length > 1 && (
+            <div class="proj-note reveal">
+              {copy.overview.slice(1).map((paragraph) => (
+                <p>{keep(paragraph)}</p>
+              ))}
             </div>
-          ))}
+          )}
         </div>
       </Section>
     )
@@ -590,11 +593,15 @@ const meta = [
   {
     copy.dataset.length > 0 && (
       <Section id="dataset" label={labels.dataset}>
-        <div class="proj-fit">
-          {copy.dataset.map((paragraph, index) => (
-            <div class="card reveal-item" style={spanStyle(dataset[index])}>
-              <p class="proj-text">{keep(paragraph)}</p>
-            </div>
+        {/*
+          A write-up, set as one: running text in balanced columns on the
+          ground, where three tiles of paragraphs read as three cards with
+          nothing to pick up. Not on the band, which What it does right above
+          already takes, and two bands in a row run together into one.
+        */}
+        <div class="proj-prose reveal">
+          {copy.dataset.map((paragraph) => (
+            <p>{keep(paragraph)}</p>
           ))}
         </div>
       </Section>

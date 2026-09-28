@@ -1,29 +1,29 @@
 ---
 /**
- * A showcase, not a list: the first project takes a card of its own, the rest
- * share a row of three.
+ * The projects, as a deck of case studies on the page's one dark stage.
  *
- * Every card has a picture, and it is an honest one: the project's own request
- * drawn small (FlowMini.astro) - the same flow its page opens on, every node
- * named in the reader's language with its real marks beside it - rather than
- * a screenshot of an upload form. The featured card sets it large beside the
- * title, the tagline and the description, left to right with its packets
- * running from load; the three smaller cards draw it as a vertical spine and
- * run theirs when the card is picked up.
+ * Every card is a case: the project's own request drawn large (FlowMini.astro)
+ * - the same flow its page opens on, every node named in the reader's language
+ * with its real marks - beside its year and context, its name, what it is,
+ * what it does and the one measured result it leads with. Each is in its own
+ * hue (`hue` in site.ts), so the four read as four products of one studio.
  *
- * Order comes from `site.projects`, so which project is featured is decided
- * where the projects are, not here. Each card links to the project's own page
+ * On a desktop the deck stacks as it is read: each card sticks under the
+ * header as it arrives and the next slides up over it while it steps back.
+ * The mechanics are in project.css, and on anything smaller the cards simply
+ * follow each other.
+ *
+ * Order comes from `site.projects`. Each card links to the project's own page
  * under /projects/, where the architecture, the results and the grouped stack
- * live. The project index (ProjectIndex.astro) repeats these two card shapes
- * on purpose, so a project looks the same wherever it is listed; the rules for
- * both are in src/styles/project.css.
+ * live. The project index (ProjectIndex.astro) lays the same cases out in
+ * full. The markup is repeated rather than shared, because the heading level
+ * and the arrival differ, and two similar blocks are not worth an abstraction.
  */
 import { LayoutGrid } from '@lucide/astro';
 import type { Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
 import { site, type Project } from '../site';
 import FlowMini from './FlowMini.astro';
-import MarkTile from './MarkTile.astro';
 import Section, { type SectionTone } from './Section.astro';
 import TechIcon from './TechIcon.astro';
 import '../styles/project.css';
@@ -36,13 +36,9 @@ interface Props {
 const { lang, tone } = Astro.props;
 const dict = getDict(lang);
 
-const [featured, ...rest] = site.projects;
-const featuredCopy = dict.projects.items[featured.id];
-const featuredPage = localizePath(`/projects/${featured.slug}/`, lang);
-
 /* The spaced hyphen the copy uses as a dash, kept on the line with the word
    before it - see `keep` in ProjectDetail.astro. */
-const keep = (text: string) => text.replace(/ ([:;!?]|-(?= ))/g, '\u00a0$1');
+const keep = (text: string) => text.replace(/ ([:;!?]|-(?= ))/g, ' $1');
 
 /** Live and source, dropping whichever has no URL yet. */
 const outboundLinks = (links: { live?: string; source?: string }) =>
@@ -50,8 +46,6 @@ const outboundLinks = (links: { live?: string; source?: string }) =>
     { href: links.live, label: dict.projects.liveLabel },
     { href: links.source, label: dict.projects.sourceLabel },
   ].filter((link): link is { href: string; label: string } => Boolean(link.href));
-
-const featuredLinks = outboundLinks(featured.links);
 
 /**
  * A card's measured result, where its project has one (`outcome` in
@@ -66,80 +60,58 @@ const outcomeOf = (project: Project) => {
   const number = new Intl.NumberFormat(lang, { minimumFractionDigits: digits, maximumFractionDigits: digits });
   return { figure: number.format(value) + unit, label: words.replace('{from}', number.format(from) + unit) };
 };
-
-const featuredOutcome = outcomeOf(featured);
 ---
 
-<Section id="projects" label={dict.projects.label} tone={tone}>
+<Section id="projects" label={dict.projects.label} tone={tone} class="theater">
   <a slot="aside" href={localizePath('/projects/', lang)} class="cta-ghost">
     <LayoutGrid class="size-[1rem] shrink-0" aria-hidden="true" />
     {dict.projects.all}
   </a>
 
   {/*
-    `stretch` makes the whole card the target while the accessible name stays
-    the title alone; the outbound links inside are lifted above it with
-    `above`, or they would be covered by it. The picture comes first in the
-    markup so a phone shows it at the top of the card; it is `aria-hidden`
-    whole, so the order changes nothing a screen reader hears.
+    `surface` puts each card back on the theme's own paper, so a white case
+    stands on the ink stage with its drawing - which has an ink core of its
+    own - drawn exactly as it would be on the ground. `stretch` makes the whole
+    card the target while the accessible name stays the title alone, and outbound
+    links are lifted above it with `above`. `--i` is the card's place in the
+    deck, which sets where it sticks.
+
+    The first card's drawing runs its request from load, and the others run theirs
+    when the card is picked up.
   */}
-  <article class="card card-hover work-feature reveal">
-    <FlowMini lang={lang} project={featured} loop="always" class="work-pic" />
-
-    <div class="work-feature-text">
-      <p class="work-year">{featured.year}</p>
-
-      <h3
-        class="work-feature-title"
-        style={`view-transition-name:project-${featured.slug}-title;view-transition-class:title`}
-      >
-        <a href={featuredPage} class="entry-link stretch">{featuredCopy.title}</a>
-      </h3>
-
-      <p class="work-tagline">{keep(featuredCopy.tagline)}</p>
-
-      <p class="work-desc">{keep(featuredCopy.description)}</p>
-      {featuredOutcome && (
-        <p class="work-outcome">
-          <span class="work-outcome-figure">{featuredOutcome.figure}</span>
-          <span class="work-outcome-label">{featuredOutcome.label}</span>
-        </p>
-      )}
-
-      <p class="work-more">
-        <span class="link">{dict.projects.view}</span>
-        {
-          featuredLinks.map((link) => (
-            <a href={link.href} target="_blank" rel="noopener" class="link above">
-              {link.label}
-            </a>
-          ))
-        }
-      </p>
-    </div>
-
-    <ul class="work-marks">
-      {featured.tech.map((tech) => <MarkTile name={tech} as="li" />)}
-    </ul>
-  </article>
-
-  <ul class="work-row">
+  <ol class="deck">
     {
-      rest.map((project) => {
+      site.projects.map((project, index) => {
         const copy = dict.projects.items[project.id];
         const page = localizePath(`/projects/${project.slug}/`, lang);
         const links = outboundLinks(project.links);
         const outcome = outcomeOf(project);
 
         return (
-          <li class="card card-hover work-card reveal-item">
-            <FlowMini lang={lang} project={project} />
+          <li class="card card-hover surface case reveal-item" data-hue={project.hue} style={`--i:${index}`}>
+            <div class="case-pic">
+              <FlowMini lang={lang} project={project} loop={index === 0 ? 'always' : 'hover'} class="case-flow" />
 
-            <div class="work-card-body">
-              <p class="work-year">{project.year}</p>
+              {project.tech.length > 0 && (
+                <ul class="case-tags" aria-label={dict.projects.detail.stack}>
+                  {project.tech.map((tech) => (
+                    <li class="tag">
+                      <TechIcon name={tech} class="tag-icon" />
+                      {tech}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div class="case-text">
+              <p class="case-meta">
+                <span class="case-year">{project.year}</span>
+                <span>{keep(copy.context)}</span>
+              </p>
 
               <h3
-                class="work-card-title"
+                class="case-title"
                 style={`view-transition-name:project-${project.slug}-title;view-transition-class:title`}
               >
                 <a href={page} class="entry-link stretch">
@@ -147,39 +119,28 @@ const featuredOutcome = outcomeOf(featured);
                 </a>
               </h3>
 
-              <p class="work-desc">{keep(copy.description)}</p>
+              <p class="case-tagline">{keep(copy.tagline)}</p>
+              <p class="case-desc">{keep(copy.description)}</p>
+
               {outcome && (
-                <p class="work-outcome">
-                  <span class="work-outcome-figure">{outcome.figure}</span>
-                  <span class="work-outcome-label">{outcome.label}</span>
+                <p class="case-outcome">
+                  <span class="case-outcome-figure">{outcome.figure}</span>
+                  <span class="case-outcome-label">{outcome.label}</span>
                 </p>
               )}
 
-              <div class="work-foot">
-                {project.tech.length > 0 && (
-                  <ul class="work-tags">
-                    {project.tech.map((tech) => (
-                      <li class="tag">
-                        <TechIcon name={tech} class="tag-icon" />
-                        {tech}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-
-                <p class="work-more">
-                  <span class="link">{dict.projects.view}</span>
-                  {links.map((link) => (
-                    <a href={link.href} target="_blank" rel="noopener" class="link above">
-                      {link.label}
-                    </a>
-                  ))}
-                </p>
-              </div>
+              <p class="case-more">
+                <span class="link">{dict.projects.view}</span>
+                {links.map((link) => (
+                  <a href={link.href} target="_blank" rel="noopener" class="link above">
+                    {link.label}
+                  </a>
+                ))}
+              </p>
             </div>
           </li>
         );
       })
     }
-  </ul>
+  </ol>
 </Section>

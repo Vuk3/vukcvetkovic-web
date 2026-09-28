@@ -143,7 +143,9 @@
     grid-template-columns: minmax(0, 1fr);
     gap: var(--stage-gap);
     border: 1px solid var(--site-hairline);
-    border-radius: var(--site-radius-card);
+    /* A stage, the rank the hero and the project cards are: the frame the
+       game is played in rather than a tile on the page. */
+    border-radius: var(--site-radius-stage);
     background-color: var(--game-ground, var(--site-card));
     box-shadow: var(--site-rim);
     padding: var(--stage-pad);

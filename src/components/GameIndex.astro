@@ -9,6 +9,7 @@
  * plays a small piece of its own game when the card is hovered. All of that is
  * CSS, in styles/games/index.css, and the page ships no script.
  */
+import { Play } from '@lucide/astro';
 import type { Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
 import { site, type Game } from '../site';
@@ -63,13 +64,28 @@ const entries = Object.entries(site.games) as [GameId, Game][];
   title is one short word in all four languages, and stacked, the lead ran the
   full measure as one long line and a stray three-word second one. See
   `.games-head` in styles/games/index.css.
+
+  The title's letters drop onto the line one after another and bounce as they
+  land, like discs into a Four in a Row board - the one page on the site that
+  is allowed to play before it is asked to. They are drawn apart from the
+  word, which is said once from a hidden copy, so a screen reader hears
+  "Games" and not five letters.
 */}
 <div class="page-head">
   <div class="shell games-head">
-    <h1 class="page-title enter-line">
-      <span class="line-mask"><span class="line-in">{copy.index.heading}</span></span>
+    <h1 class="page-title games-title">
+      <span class="sr-only">{copy.index.heading}</span>
+      <span class="games-letters" aria-hidden="true">
+        {
+          Array.from(copy.index.heading).map((letter, index) => (
+            <span class="games-letter" style={`--i:${index}`}>
+              {letter}
+            </span>
+          ))
+        }
+      </span>
     </h1>
-    <p class="page-lead enter" style="--enter-delay:160ms">{copy.index.intro}</p>
+    <p class="page-lead enter" style="--enter-delay:320ms">{copy.index.intro}</p>
   </div>
 </div>
 
@@ -81,7 +97,7 @@ const entries = Object.entries(site.games) as [GameId, Game][];
           const Art = art[id];
 
           return (
-            <li class="card card-hover game-card reveal-item">
+            <li class="card card-hover game-card reveal-item" data-game={game.slug}>
               {/*
                 The frame is a separate element from the art because it clips:
                 the hover zoom scales the art inside it, and the corners have to
@@ -93,6 +109,11 @@ const entries = Object.entries(site.games) as [GameId, Game][];
                 style={`view-transition-name:game-${game.slug}-board;view-transition-class:board`}
               >
                 <Art />
+                {/* The way in, drawn on the screen when the card is picked
+                    up: decoration over a card that is already the link. */}
+                <span class="game-go" aria-hidden="true">
+                  <Play />
+                </span>
               </div>
 
               <div class="game-card-head">

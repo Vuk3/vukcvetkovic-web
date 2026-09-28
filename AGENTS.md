@@ -103,10 +103,13 @@ not need the map to change a dictionary, add a project, or touch the stylesheet.
 - Reach for an existing component before writing a new one. Sections go through
   [Section.astro](./src/components/Section.astro), which owns the heading and the tone.
   There is one measure (`.shell`, 80rem) for every section and page - no width variants.
-- **The look is tiles on a bento grid**, and three of the owner's rules decide most
-  layouts: every row fills its columns (never a mostly empty cell or a lonely tile), a text
-  block never stops halfway across its container, and there are no tracked-out capitals
-  and no arrows appended to link text. See
+- **The look is the systems he builds, drawn**: ink, paper and cobalt, one ornament - the
+  trace, the request diagram's 2px connector, drawn only where it leads somewhere (from
+  "Projects" into All projects, down the Experience rail) - a hue per project, and a homepage that is a sequence of scenes, no two composed alike. Three of the
+  owner's rules decide most layouts: every row fills its columns (never a mostly empty cell
+  or a lonely tile), a text block never stops halfway across its container, and there are
+  no tracked-out capitals and no arrows appended to link text. The width axis is set, never
+  animated - it reflows the line and costs layout shift. See
   [docs/design-system.md](./docs/design-system.md#3-sections-tiles-and-the-bento).
 
 ### Abstractions and dependencies

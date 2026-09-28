@@ -32,6 +32,7 @@ const fr: Dict = {
 
   hero: {
     role: "Ingénieur logiciel",
+    location: "Niš, Serbie",
     positioning:
       "Je travaille sur l’ensemble du produit, du modèle de données jusqu’à la mise en production. J’écris le backend en Node.js (NestJS, Express) et en .NET. Sur AWS, je m’occupe du déploiement et de la communication événementielle entre les services, et tout ce que voit l’utilisateur, je le construis en React.",
     cta: "Me contacter",

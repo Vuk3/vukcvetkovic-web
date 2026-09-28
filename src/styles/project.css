@@ -1,5 +1,5 @@
 /*
- * The projects: the homepage's Projects section, the /projects/ index and the
+ * The projects: the deck on the homepage, the /projects/ index and the
  * project pages - everything but the request diagram, which brings its own
  * (flow.css), and the small flow picture on the cards, which is scoped to
  * FlowMini.astro.
@@ -8,315 +8,322 @@
  * it is inlined into the home pages, the index and the project pages and
  * nothing else.
  *
+ * Every project is drawn in its own hue (`hue` in site.ts, `[data-hue]` in
+ * global.css): its card, its drawing, its page. The rules here only ever say
+ * `--site-accent`, and the hue is what that is wherever a project is.
+ *
  * The layer order, the same line global.css opens with. See the note there:
  * this file can land in a page ahead of global.css, and whichever stylesheet
  * names the layers first is the one that orders them.
  *
  * ⚠️ For the same reason, a rule here that overrides a foundation class *on
  * the same element* - a tile's padding, a mark tile's ground - is written
- * with a compound selector (`.card.proj-group`, `.proj-mark > .mark-tile`).
- * Both files put their rules in `components`, so at equal specificity the
- * winner is whichever file the page happens to inline last.
+ * with a compound selector (`.card.case`, `.proj-mark > .mark-tile`). Both
+ * files put their rules in `components`, so at equal specificity the winner
+ * is whichever file the page happens to inline last.
  */
 @layer properties, theme, base, components, games, utilities;
 
 @layer components {
-  /* ==== The cards: homepage and index ==================================== */
+  /* ==== The case: one project as a card ================================== */
 
   /*
-   * The featured project: one wide tile, the words on the left and the
-   * project's request drawn large on the right, with its stack under the
-   * drawing. On a phone it stacks in markup order - picture, words, stack.
+   * A case study on a card: the project's request drawn large on one side, and
+   * on the other its year and context, its name, the line that says what it
+   * is, what it does, the one measured result it leads with, and the way into
+   * the write-up. The same anatomy on the homepage's deck and on the index,
+   * and only how the cards are laid out differs.
    *
-   * The split is 5:7 because the drawing needs the width: its row - four
-   * columns of words and the gutters between them - is drawn from 30rem of
-   * picture (FlowMini.astro), and 7 of 12 is 501px at a 1024 window, just
-   * over it. A wider text side would drop the featured card to the tall
-   * spine the cards of the row draw. The picture is its own frame, stretched
-   * to the text beside it with the drawing centred on its ground.
+   * The picture is first in the markup, so a phone shows it at the top of the
+   * card. It is `aria-hidden` whole, so the order changes nothing a screen
+   * reader hears. From 64rem the two sit side by side, the words at 5 of 12
+   * and the drawing at 7, which is what gives the drawing the 30rem it is
+   * drawn left to right from (FlowMini.astro).
    */
-  .work-feature {
+  .card.case {
+    --card-pad: clamp(1rem, 2vw, 1.75rem);
+
     display: grid;
-    gap: clamp(1.25rem, 2.4vw, 2rem);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'pic'
+      'text';
+    gap: clamp(1.25rem, 2.4vw, 2.25rem);
   }
 
   @media (min-width: 64rem) {
-    .work-feature {
+    .card.case {
       grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-      grid-template-areas:
-        'text pic'
-        'text chips';
-      grid-template-rows: 1fr auto;
-      column-gap: clamp(2rem, 3.5vw, 3rem);
-    }
-
-    .work-feature > .work-feature-text {
-      grid-area: text;
-    }
-
-    .work-feature > .work-pic {
-      grid-area: pic;
-    }
-
-    .work-feature > .work-marks {
-      grid-area: chips;
+      grid-template-areas: 'text pic';
+      column-gap: clamp(2rem, 3.5vw, 3.5rem);
     }
   }
 
-  .work-feature-text {
+  .case-text {
+    grid-area: text;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    min-width: 0;
+  }
+
+  /* The drawing on its ground, stretched to the height the words take with
+     the drawing centred in it, and the project's marks under it. */
+  .case-pic {
+    grid-area: pic;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  .case-flow {
+    min-height: 100%;
   }
 
   /*
-   * The stack under the drawing, as mark tiles rather than chips: a wrapping
-   * row whose tiles grow, so every row is full - six in one line beside the
-   * text on a desktop, and on a phone the last row widens to meet the edge
-   * instead of leaving ML.NET alone on a line of its own.
+   * The year and the context, the card's first line. The year is the
+   * project's hue on a tint of it, the context muted beside it - two facts,
+   * set as a line, never joined by a dot.
    */
-  .work-marks {
+  .case-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.6rem;
-  }
-
-  .work-marks > .mark-tile {
-    flex: 1 1 6rem;
-    border-color: transparent;
-    background-color: var(--site-inset);
-  }
-
-  /* The year: a date, not a technology, so it is not dressed as one of the
-     tags - the accent's tint, where the tags are hairline and muted. */
-  .work-year {
-    display: inline-flex;
-    align-self: flex-start;
-    border-radius: var(--site-radius-pill);
-    background-color: color-mix(in oklab, var(--site-accent) 11%, var(--site-card));
-    padding: 0.25rem 0.85rem;
+    align-items: center;
+    gap: 0.5rem 0.9rem;
     font-size: 0.9375rem;
-    font-weight: 620;
-    line-height: 1.5;
+    line-height: 1.4;
+    color: var(--site-muted);
+  }
+
+  .case-year {
+    display: inline-flex;
+    border-radius: var(--site-radius-pill);
+    background-color: color-mix(in oklab, var(--site-accent) 12%, var(--site-card));
+    padding: 0.25rem 0.85rem;
+    font-weight: 660;
     font-variant-numeric: tabular-nums;
     color: var(--site-accent);
   }
 
-  .work-feature-title {
-    margin-top: 1rem;
-    font-stretch: 118%;
-    font-weight: 700;
-    font-size: clamp(1.75rem, 2.7vw, 2.375rem);
-    line-height: 1.02;
-    letter-spacing: -0.04em;
+  .case-title {
+    margin-top: clamp(1rem, 1.8vw, 1.5rem);
+    font-stretch: 120%;
+    font-weight: 720;
+    font-size: clamp(1.875rem, 3.1vw, 2.875rem);
+    line-height: 1;
+    letter-spacing: -0.045em;
     hyphens: auto;
+    hyphenate-limit-chars: 10 4 4;
     overflow-wrap: break-word;
   }
 
-  .work-tagline {
+  .case-tagline {
     margin-top: 0.9rem;
     font-stretch: 104%;
-    font-weight: 500;
+    font-weight: 520;
     font-size: clamp(1.125rem, 1.4vw, 1.25rem);
     line-height: 1.4;
     letter-spacing: -0.015em;
   }
 
-  .work-desc {
+  .case-desc {
     margin-top: 0.9rem;
+    font-size: 1rem;
+    line-height: 1.55;
     color: var(--site-muted);
   }
 
   /*
-   * The measured result, where a project has one: the figure in the display
-   * voice, the words round it under it, on an accent rule - read before the
-   * stack, because an outcome is what a reader of a card is looking for. It
-   * sits after the description, so on a small card it is the last thing above
-   * the tags and on the featured one the last thing above its links.
+   * The measured result, where a project has one: the figure large in the
+   * project's hue, and the words round it with what it is compared with, on
+   * a trace down its left edge - read before the stack, because an outcome
+   * is what a reader of a card is looking for.
    */
-  .work-outcome {
+  .case-outcome {
     display: grid;
-    gap: 0.2rem;
-    margin-top: 1.1rem;
+    gap: 0.25rem;
+    margin-top: 1.25rem;
     border-left: 2px solid var(--site-accent);
-    padding-left: 0.9rem;
+    padding-left: 1rem;
   }
 
-  .work-outcome-figure {
-    font-stretch: 112%;
-    font-weight: 700;
-    font-size: clamp(1.5rem, 2.2vw, 1.875rem);
-    line-height: 1.05;
-    letter-spacing: -0.03em;
+  .case-outcome-figure {
+    font-stretch: 118%;
+    font-weight: 740;
+    font-size: clamp(2rem, 3.2vw, 2.75rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
     font-variant-numeric: tabular-nums;
+    color: var(--site-accent);
   }
 
-  .work-outcome-label {
+  .case-outcome-label {
     font-size: 0.9375rem;
     line-height: 1.4;
     color: var(--site-muted);
   }
 
   /*
-   * "Read the write-up", and the outbound links when a project has them. The
-   * write-up is a span, not a link: the whole card is already the link, and a
-   * second one to the same page would be announced twice.
+   * "Read the write-up", and the outbound links when a project has them, at
+   * the foot of the words. The write-up is a span, not a link: the whole card
+   * is already the link, and a second one to the same page would be announced
+   * twice. The title's stretched link lies over it, so the span never sees a
+   * hover of its own: its rule is drawn when the card is picked up - by the
+   * pointer or by the keyboard reaching the title - as a link's would be.
    */
-  .work-more {
+  .case-more {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 0.25rem 1.5rem;
-    margin-top: 1.25rem;
-    font-weight: 600;
-  }
-
-  .work-feature .work-more {
     margin-top: auto;
     padding-top: 1.5rem;
+    font-weight: 620;
   }
 
-  /* The title's stretched link lies over the span, so the span never sees a
-     hover of its own: its rule is drawn when the card is picked up - by the
-     pointer or by the keyboard reaching the title - as a link's would be. */
-  .card-hover:hover .work-more > span.link,
-  .card-hover:has(.stretch:focus-visible) .work-more > span.link {
+  .card-hover:hover .case-more > span.link,
+  .card-hover:has(.stretch:focus-visible) .case-more > span.link {
     background-size:
       100% 2px,
       100% 1px;
   }
 
-  /*
-   * The other three, a row of them. Two to a row on a tablet would leave the
-   * third alone with a hole beside it, so there the odd one out spans the row
-   * (see below).
-   */
-  .work-row {
-    display: grid;
-    gap: var(--site-gap);
-    margin-top: var(--site-gap);
-  }
-
-  @media (min-width: 40rem) {
-    .work-row {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .work-row {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-  }
-
-  /*
-   * A card is two rows it shares with the cards beside it: the picture, and
-   * the words under it. The pictures are as tall as their words need
-   * (FlowMini.astro) and those differ - Easy Breathe draws two services where
-   * the others draw three, and a German title takes a line more - so on
-   * tracks of its own each card's year started at a different height. On a
-   * shared track the shorter drawing is centred on a ground as tall as the
-   * tallest, and every card's words start on one line.
-   *
-   * Only the picture is shared. All five parts on shared rows was tried: it
-   * aligned the descriptions too, and left a line of nothing under every
-   * one-line title in a row with a two-line one.
-   *
-   * The row's gap is the space between cards, and inside one there is none.
-   */
-  .work-card {
-    display: grid;
-    grid-row: span 2;
-    grid-template-rows: subgrid;
-    row-gap: 0;
-  }
-
-  .work-card-body {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .work-card-body > .work-year {
-    margin-top: 1.25rem;
-  }
-
-  .work-card-title {
-    margin-top: 0.75rem;
-    font-stretch: 114%;
-    font-weight: 660;
-    font-size: clamp(1.375rem, 1.9vw, 1.625rem);
-    line-height: 1.08;
-    letter-spacing: -0.035em;
-    hyphens: auto;
-    overflow-wrap: break-word;
-  }
-
-  .work-card .work-desc {
-    font-size: 1rem;
-    line-height: 1.55;
-  }
-
-  /* The tags and the link sit on the floor of the card, so across a row they
-     line up however long each description runs. */
-  .work-foot {
-    margin-top: auto;
-    padding-top: 1.25rem;
-  }
-
-  /*
-   * The tags, two to a row, each row full. Every project lists four, so this
-   * is a 2 x 2 block on every card rather than three and then one stretched
-   * across the card - which is what growing tags on their own natural widths
-   * gave Encryptix, with Windows Forms alone on a pill the card's width.
-   *
-   * The basis is 35% rather than half because a tag's floor is its own text
-   * (`nowrap`, and a flex item never shrinks under its content): Windows Forms
-   * sets at 161px, and a 50% basis would push it and its partner onto a row
-   * each on a phone, where the card has 316px (390) or 286px (360) inside.
-   * At 35% the pair is 100 + 161 plus the gap, which fits both; three can
-   * never share a row, since three bases are already over 100%. Growth then
-   * shares out what is left, so every row meets both edges.
-   */
-  .work-tags {
+  /* The project's technologies as tags with their marks, a row that fills. */
+  .case-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.4rem;
   }
 
-  .work-tags > .tag {
-    flex: 1 1 35%;
+  .case-tags > .tag {
+    flex: 1 1 auto;
     justify-content: center;
     white-space: nowrap;
-  }
-
-  .work-card .tag {
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
     color: var(--site-fg);
   }
 
-  .work-card .tag-icon {
-    width: 1.05rem;
-    height: 1.05rem;
+  .case-tags .tag-icon {
+    width: 1rem;
+    height: 1rem;
   }
 
+  /* ==== The deck: the homepage's cases, stacked ========================== */
+
   /*
-   * The odd card out on a tablet takes the whole row, stacked like the
-   * featured card above it: its drawing across the full width, which is
-   * enough for it to be drawn left to right as the featured one is, and its
-   * four tags on one line.
+   * The cases one after another down the dark stage, and on a desktop tall
+   * enough for one whole card, a deck: each card sticks under the header as
+   * it arrives, a little lower than the one before it, and the next slides up
+   * over it while it steps back - smaller, and dimmed towards the stage - so
+   * the edges of the ones before show above it like the cards of a hand. It is
+   * how a reader moves from one project to the next: nothing leaves, the next
+   * one arrives on top.
    *
-   * ⚠️ Not laid out sideways. With the picture in a column beside the words,
-   * that column was as tall as the text - some 480px - around a drawing 110px
-   * tall: a cell of empty dot grid, which is the one thing a tile here may
-   * not be.
+   * Scrolling stays the page's own. Every card is in the normal flow and is
+   * reached, read and tabbed to in order, and stickiness only decides where it
+   * waits while the next one comes. Past the last card the deck ends and the
+   * whole hand scrolls away together.
+   *
+   * ⚠️ **Only from 64rem wide and 44rem tall.** A sticky card taller than the
+   * screen cannot be scrolled to its foot while it is stuck, so below that,
+   * where a card no longer fits the room under the header, the cases simply
+   * follow each other.
    */
-  @media (min-width: 40rem) and (max-width: 63.99rem) {
-    .work-card:last-child:nth-child(odd) {
-      grid-column: 1 / -1;
+  .deck {
+    display: grid;
+    gap: clamp(1.25rem, 2.4vw, 2rem);
+  }
+
+  @media (min-width: 64rem) and (min-height: 44rem) {
+    /*
+     * A card's step back runs on the *next* card's arrival, so each card
+     * names its own view timeline and the one before it reads it. Siblings
+     * cannot see each other's timelines without `timeline-scope` on their
+     * parent. Six names, for a deck of up to six. A seventh project would
+     * simply not step back when the one after it comes.
+     */
+    .deck {
+      timeline-scope: --deck-2, --deck-3, --deck-4, --deck-5, --deck-6;
     }
 
-    .work-card:last-child:nth-child(odd) .work-tags > .tag {
-      flex-basis: 20%;
+    /*
+     * `--i` is the card's place in the deck, written inline. Each sticks
+     * 0.875rem lower than the last, which is the strip of it that stays in
+     * view, and is as tall as the room under the header allows, up to 40rem,
+     * so the cards are one size and the strips even.
+     */
+    .deck > .card.case {
+      --stick: calc(var(--head-h) + 1.25rem + var(--i, 0) * 0.875rem);
+
+      position: sticky;
+      top: var(--stick);
+      min-height: min(40rem, calc(100svh - var(--stick) - 2rem));
+      transform-origin: 50% 0;
+    }
+
+    .deck > .case:nth-child(2) {
+      view-timeline-name: --deck-2;
+    }
+
+    .deck > .case:nth-child(3) {
+      view-timeline-name: --deck-3;
+    }
+
+    .deck > .case:nth-child(4) {
+      view-timeline-name: --deck-4;
+    }
+
+    .deck > .case:nth-child(5) {
+      view-timeline-name: --deck-5;
+    }
+
+    .deck > .case:nth-child(6) {
+      view-timeline-name: --deck-6;
+    }
+
+    /*
+     * ⚠️ A card that takes keyboard focus comes to the front. Tabbing
+     * backwards lands on a card that is stuck under the next one, which the
+     * browser sees as on screen and does not scroll to, so without this the
+     * focus ring was drawn under the card on top.
+     */
+    .deck > .case:focus-within {
+      z-index: 4;
+    }
+
+    /* The dimming, as a layer of the stage's own colour over the card rather
+       than a filter on it, so the drawing's packets keep running under it at
+       no cost. */
+    .deck > .case::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      z-index: 3;
+      border-radius: inherit;
+      background-color: var(--site-stage);
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+
+  /* ==== The index: the cases in full ===================================== */
+
+  /*
+   * On the index each case has the page's width to itself, and they alternate
+   * which side the drawing is on, so four in a column read as a sequence of
+   * spreads rather than one card repeated. The drawing comes in from its own
+   * side as the card arrives (see the foot of this file).
+   */
+  .cases {
+    display: grid;
+    gap: clamp(1.25rem, 2.4vw, 2rem);
+  }
+
+  @media (min-width: 64rem) {
+    .cases > .card.case:nth-child(even) {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      grid-template-areas: 'pic text';
     }
   }
 
@@ -328,6 +335,10 @@
       grid-template-columns: auto minmax(0, 1fr);
       align-items: end;
       column-gap: clamp(2.5rem, 5vw, 5rem);
+    }
+
+    .work-index-head .page-title {
+      margin-top: 0;
     }
 
     .work-index-head .page-lead {
@@ -343,76 +354,78 @@
 
   /* ==== A project page ==================================================== */
 
-  /* ---- Head: the three facts --------------------------------------------- */
-
-  .proj-meta {
+  /*
+   * The head: the crumb, the title rising into its mask, the tagline, and the
+   * three facts as a title block - the boxed table in the corner of an
+   * engineering drawing that says what the drawing is, when it was made and
+   * for whom. One tile ruled into cells rather than three tiles, because the
+   * three are one record: the year large in the project's hue, then the
+   * context and the domain.
+   */
+  .proj-spec {
+    display: grid;
     margin-top: clamp(1.5rem, 3vw, 2.25rem);
+    overflow: hidden;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-card);
+    background-color: var(--site-card);
   }
 
-  /* Label over value, and the value at the tile's floor, so three tiles of
-     different lengths still read as one row. */
-  .proj-meta > .card {
+  @media (min-width: 40rem) {
+    .proj-spec {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 5fr) minmax(0, 4fr);
+    }
+  }
+
+  .proj-spec > div {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     gap: 0.9rem;
+    padding: clamp(1rem, 1.8vw, 1.5rem) clamp(1.125rem, 2vw, 1.75rem);
   }
 
-  /*
-   * On a phone the year's label and figure share a line, so the four
-   * characters do not cost a whole tile's height. From 40rem the three go
-   * side by side: 2 + 4 over the full-width domain on a tablet, and 3 + 5 + 4
-   * on a desktop, which is what lets the longest context ("Seminar paper on
-   * e-government systems, ...") set in two lines beside a one-line domain.
-   */
-  .proj-meta > .proj-meta-year {
-    flex-direction: row;
-    align-items: center;
+  .proj-spec > div + div {
+    border-top: 1px solid var(--site-hairline);
   }
 
   @media (min-width: 40rem) {
-    .proj-meta > .proj-meta-year {
-      flex-direction: column;
-      align-items: stretch;
-      grid-column: span 2;
-    }
-
-    .proj-meta-context {
-      grid-column: span 4;
-    }
-
-    .proj-meta-domain {
-      grid-column: span 6;
+    .proj-spec > div + div {
+      border-top: 0;
+      border-left: 1px solid var(--site-hairline);
     }
   }
 
-  @media (min-width: 64rem) {
-    .proj-meta > .proj-meta-year {
-      grid-column: span 3;
-    }
+  /* The year's cell on a tint of the hue, with a trace of it down the left
+     edge: the one cell of the block that says which project this is. */
+  .proj-spec > .proj-spec-year {
+    box-shadow: inset 3px 0 0 var(--site-accent);
+    background-color: color-mix(in oklab, var(--site-accent) 7%, var(--site-card));
+  }
 
-    .proj-meta-context {
-      grid-column: span 5;
-    }
-
-    .proj-meta-domain {
-      grid-column: span 4;
+  /* On a phone the year's label and figure share a line, so the four
+     characters do not cost a whole cell's height. */
+  @media (max-width: 39.99rem) {
+    .proj-spec > .proj-spec-year {
+      flex-direction: row;
+      align-items: center;
     }
   }
 
   .proj-meta-figure {
     font-stretch: 120%;
-    font-weight: 720;
-    font-size: clamp(2.25rem, 3.4vw, 3rem);
+    font-weight: 740;
+    font-size: clamp(2.25rem, 3.6vw, 3.25rem);
     line-height: 0.9;
     letter-spacing: -0.045em;
     font-variant-numeric: tabular-nums;
+    color: var(--site-accent);
   }
 
   /* No `hyphens: auto`: Chrome hyphenates to fill a line, not only to stop an
      overflow, so a two-line value came out as "Fakultät für Elektro- / nik".
-     Every value is a phrase of ordinary words that fits any of these tiles;
-     the break-word is only the floor under a compound that one day does not. */
+     The break-word is only the floor under a compound that one day does not
+     fit. */
   .proj-meta-value {
     font-stretch: 110%;
     font-weight: 620;
@@ -487,14 +500,70 @@
     }
   }
 
-  /* The overview's opening paragraph, set as a spoken sentence rather than as
-     copy - the size the span estimate in ProjectDetail assumes (26px on 35). */
+  /*
+   * The overview, as text on the ground: the opening paragraph across seven
+   * of twelve columns at a spoken size, and the rest beside it in the other
+   * five as a note, on a trace down its left edge in the project's hue - the
+   * way a margin note sits beside the text it qualifies. Stacked on anything
+   * narrower, the note under the lead.
+   */
+  .proj-overview {
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 2.5rem) clamp(2rem, 4vw, 4rem);
+  }
+
+  @media (min-width: 64rem) {
+    .proj-overview {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: start;
+    }
+  }
+
   .proj-lead {
-    font-stretch: 104%;
-    font-weight: 470;
-    font-size: clamp(1.1875rem, 1.6vw, 1.4375rem);
-    line-height: 1.35;
-    letter-spacing: -0.022em;
+    font-stretch: 106%;
+    font-weight: 520;
+    font-size: clamp(1.375rem, 2.3vw, 2rem);
+    line-height: 1.24;
+    letter-spacing: -0.03em;
+  }
+
+  .proj-note {
+    display: grid;
+    gap: 1rem;
+    border-left: 2px solid var(--site-accent);
+    padding-left: clamp(1rem, 2vw, 1.5rem);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--site-muted);
+  }
+
+  /*
+   * A write-up in balanced columns: two from 60rem, the paragraphs free to
+   * run on from the foot of one column to the head of the next, indented
+   * rather than spaced where they start, so the columns end level instead of
+   * leaving a hole under the shorter one.
+   */
+  .proj-prose {
+    column-gap: clamp(2rem, 4vw, 3.5rem);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: color-mix(in oklab, var(--site-fg) 82%, var(--site-bg));
+  }
+
+  @media (min-width: 60rem) {
+    .proj-prose {
+      columns: 2;
+    }
+
+    .proj-prose > p + p {
+      text-indent: 1.5em;
+    }
+  }
+
+  @media (max-width: 59.99rem) {
+    .proj-prose > p + p {
+      margin-top: 1rem;
+    }
   }
 
   /* A tile's detail: a step under the page's text and in the muted ink, so a
@@ -944,9 +1013,10 @@
   }
 
   .proj-take > p {
-    font-size: clamp(1.0625rem, 1.3vw, 1.1875rem);
+    font-size: clamp(1.0625rem, 1.35vw, 1.25rem);
     line-height: 1.55;
-    letter-spacing: -0.008em;
+    letter-spacing: -0.01em;
+    color: color-mix(in oklab, var(--site-fg) 84%, var(--site-bg));
   }
 
   .proj-close {
@@ -993,6 +1063,106 @@
       animation-fill-mode: both;
       animation-timeline: --proj-results;
       animation-range: cover 40px cover 280px;
+    }
+  }
+}
+
+/*
+ * The deck stepping back: as the next card comes up the screen, the one under
+ * it shrinks from its top edge and its dimming layer darkens, over exactly the
+ * run from the next card's top entering the screen to it reaching the place it
+ * sticks - `100svh` less the header and its own step down. Linear, so it
+ * follows the thumb. On the next card's timeline, named in the rules above.
+ * The last card has none after it and stays as it is.
+ *
+ * `scale` and `opacity`, so it is composited: nothing reflows and the
+ * drawings keep running.
+ */
+@keyframes deck-recede {
+  to {
+    scale: 0.94;
+  }
+}
+
+@keyframes deck-dim {
+  to {
+    opacity: 0.62;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) and (min-width: 64rem) and (min-height: 44rem) {
+  @supports (animation-timeline: view()) {
+    .deck > .case:has(+ .case),
+    .deck > .case:has(+ .case)::before {
+      animation-name: deck-recede;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-range: cover 0px cover calc(100svh - var(--head-h) - 1.25rem - (var(--i, 0) + 1) * 0.875rem);
+    }
+
+    .deck > .case:has(+ .case)::before {
+      animation-name: deck-dim;
+    }
+
+    .deck > .case:nth-child(1),
+    .deck > .case:nth-child(1)::before {
+      animation-timeline: --deck-2;
+    }
+
+    .deck > .case:nth-child(2),
+    .deck > .case:nth-child(2)::before {
+      animation-timeline: --deck-3;
+    }
+
+    .deck > .case:nth-child(3),
+    .deck > .case:nth-child(3)::before {
+      animation-timeline: --deck-4;
+    }
+
+    .deck > .case:nth-child(4),
+    .deck > .case:nth-child(4)::before {
+      animation-timeline: --deck-5;
+    }
+
+    .deck > .case:nth-child(5),
+    .deck > .case:nth-child(5)::before {
+      animation-timeline: --deck-6;
+    }
+  }
+}
+
+/*
+ * The index's drawings coming in from their own side of the page as each case
+ * arrives: from the right where the drawing is on the right, from the left on
+ * the cases turned the other way. On the drawing only, so the card itself -
+ * the thing the reader is aiming at - is where it will be.
+ */
+@keyframes case-in-right {
+  from {
+    opacity: 0;
+    translate: 3rem 0;
+  }
+}
+
+@keyframes case-in-left {
+  from {
+    opacity: 0;
+    translate: -3rem 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) and (min-width: 64rem) {
+  @supports (animation-timeline: view()) {
+    .cases > .case > .case-pic {
+      animation-name: case-in-right;
+      animation-timing-function: var(--site-ease-out);
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: cover 40px cover 320px;
+    }
+
+    .cases > .case:nth-child(even) > .case-pic {
+      animation-name: case-in-left;
     }
   }
 }

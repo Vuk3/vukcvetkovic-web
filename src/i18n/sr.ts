@@ -34,6 +34,7 @@ const sr: Dict = {
   hero: {
     // Left in English, as the job titles are: "softverski inženjer" reads as the academic title.
     role: "Software engineer",
+    location: "Niš, Srbija",
     positioning:
       "Radim ceo proizvod, od modela podataka do produkcije. Backend pišem u Node.js-u (NestJS, Express) i u .NET-u. Na AWS-u radim deployment i event-driven komunikaciju između servisa, a sve što korisnik vidi pravim u React-u.",
     cta: "Kontaktirajte me",

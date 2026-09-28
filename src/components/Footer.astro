@@ -10,9 +10,14 @@ import vMark from '../../public/apple-touch-icon.png';
 
 interface Props {
   lang: Lang;
+  /**
+   * Open on the ask - Contact's line at display size and the way to answer
+   * it. Every page but the homepage, which has Contact itself right above.
+   */
+  call?: boolean;
 }
 
-const { lang } = Astro.props;
+const { lang, call = false } = Astro.props;
 const dict = getDict(lang);
 
 const year = new Date().getFullYear();
@@ -58,9 +63,10 @@ const channels = [
 ---
 
 {/*
-  Every page ends on this ink block: the way back to every section, every
-  project and every game, the channels, the languages, and the name as wide as
-  the page. Where a panelled section sits directly above it - Contact, a
+  Every page ends on this ink block, the last scene: on every page but the
+  homepage the ask first, then the way back to every section, every project
+  and every game, the channels, the languages, and the name as wide as the
+  page. Where a panelled section sits directly above it - Contact, a
   takeaway, a game's build notes - the two share a ground and read as one
   closing block.
 
@@ -73,6 +79,20 @@ const channels = [
 */}
 <footer class="panel site-foot">
   <div class="shell">
+    {
+      call && (
+        <div class="foot-call">
+          <p class="foot-call-line reveal">{dict.contact.intro}</p>
+          <div class="foot-call-actions reveal">
+            <a href={`mailto:${site.email}`} class="cta">
+              <Mail class="size-[1.05rem]" aria-hidden="true" />
+              {dict.hero.cta}
+            </a>
+          </div>
+        </div>
+      )
+    }
+
     <div class="foot-grid">
       <div class="foot-lead">
         <a href={home} class="brand">
