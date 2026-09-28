@@ -24,6 +24,7 @@ rather than rendering a gap.
 | a service's tags, or where the site shows it done | `services` in [src/site.ts](../src/site.ts), by position against `services.items` in the dictionaries: `tech` and a `proof`, either `{ project }` or `{ role }` |
 | which project a degree's thesis was | `thesis` on the degree in `education` in [src/site.ts](../src/site.ts), with the thesis's label as `education.degrees.<id>.thesis` in every dictionary |
 | a project's measured result on its card | `outcome` on the project in [src/site.ts](../src/site.ts) (the figure, what it is compared with, the digits and a unit), with its words as `projects.outcomes.<id>` in every dictionary, `{from}` where the compared figure goes |
+| a project's demo clip | `demo` on the project in [src/site.ts](../src/site.ts): the clip's URL on media.vukcvetkovic.com, its poster imported from src/assets, and the clip's width and height. The section's name is `projects.detail.demo` in every dictionary. Hosting: [routing-and-deploy.md §5](./routing-and-deploy.md#5-cloudflare-and-what-actually-ships) |
 | a project, its stack, its results table | `projects` in [src/site.ts](../src/site.ts) + `projects.items` in every dictionary - §5 |
 | **add or remove a language** | five places, every one checked by the compiler - §6 |
 | how a locale prefix is put onto a path | `localizePath` in [src/i18n/utils.ts](../src/i18n/utils.ts) - and read [routing-and-deploy.md](./routing-and-deploy.md) first, it is coupled to `build.format` |
@@ -417,6 +418,8 @@ anybody as protection - see
 
 ## Changelog
 
+- 2026-09-28 - a project can carry a `demo`, a clip on R2 with its poster in src/assets,
+  and the dictionaries gain `projects.detail.demo`.
 - 2026-09-28 - a project can carry a measured `outcome`, worded under `projects.outcomes`
   and checked at build. The dictionaries gain `palette` and `games.all`, and lose
   `nav.education`.

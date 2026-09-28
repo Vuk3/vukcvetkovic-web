@@ -122,6 +122,7 @@ const de: Dict = {
 
     detail: {
       year: 'Jahr',
+      demo: 'Demo',
       context: 'Rahmen',
       domain: 'Domäne',
       flow: 'Der Weg einer Anfrage',

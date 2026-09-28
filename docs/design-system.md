@@ -2224,6 +2224,13 @@ flow.css.
 - **The head**: the crumb, the title rising into its mask, the tagline, and Year, Context and
   Domain as three tiles - Year on cobalt as a big figure, the page's one cobalt tile.
 - **The request diagram** on the band (§6).
+- **Demo**, where the project has one (`demo` in site.ts, Object Detection only): the
+  screen recording in a tile with a narrow frame, controls, no autoplay and
+  `preload="none"`, so the page pays for the 153 KB webp poster and nothing else until
+  the reader presses play. After the diagram, which names what the recording shows side
+  by side, so every project page opens on the same two things. The poster is a frame
+  with the pointer taken out. The clip is on R2, not in the repo
+  (routing-and-deploy.md §5).
 - ⚠️ **Tile rows are split at build, per locale.** `place()` scores every split of a row's
   columns by the estimated height of the text in each tile, and keeps the split whose shortest
   and tallest tiles come closest - so Overview's lead and its second paragraph, the features,
@@ -2298,6 +2305,8 @@ centred in the space between the capsule and the footer on a tall screen.
 
 ## Changelog
 
+- 2026-09-28 - a project page shows a Demo section after its request diagram where the
+  project has a recording, Object Detection's (§10).
 - 2026-09-28 - the Games tile in About draws the seven games small, each playing a move,
   Education is the Experience rail's second chapter, a project card leads with its
   measured result, the ⌘K command menu opens anywhere, and the footer on a phone leaves

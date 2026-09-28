@@ -429,6 +429,29 @@
     margin-top: 1.25rem;
   }
 
+  /* ---- Demo: the project running ----------------------------------------- */
+
+  /*
+   * The clip in a tile, the tile a narrow frame round it, so the recording
+   * reads as a screen set into the page rather than a picture pasted on it.
+   * The frame's own padding is small and the video's corners a step inside
+   * the tile's, the way a tile's inner blocks are.
+   */
+  .card.proj-demo {
+    padding: clamp(0.4rem, 0.9vw, 0.75rem);
+  }
+
+  /* `height: auto` with the width and height attributes is what gives the
+     frame its shape before the poster has arrived. The inset ground is what
+     shows in that moment, and round the picture if a browser letterboxes it. */
+  .proj-demo-video {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--site-radius-inner);
+    background-color: var(--site-inset);
+  }
+
   /* ---- Rows of tiles sized by their text --------------------------------- */
 
   /*

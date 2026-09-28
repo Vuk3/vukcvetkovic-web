@@ -122,6 +122,7 @@ const sr: Dict = {
 
     detail: {
       year: "Godina",
+      demo: "Demo",
       context: "Kontekst",
       domain: "Domen",
       flow: "Kako prolazi jedan zahtev",

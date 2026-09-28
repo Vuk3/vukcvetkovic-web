@@ -140,6 +140,7 @@ const en = {
     /** Section headings on a project page. */
     detail: {
       year: "Year",
+      demo: "Demo",
       context: "Context",
       domain: "Domain",
       flow: "How one request runs",

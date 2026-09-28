@@ -1,5 +1,6 @@
 import type { Dict, Lang } from "./i18n/types";
 import type { TechName } from "./tech";
+import objectDetectionPoster from "./assets/object-detection-demo.jpg";
 
 /**
  * Facts, not copy.
@@ -159,6 +160,15 @@ export interface Project {
    * at build that the two come together.
    */
   outcome?: { value: number; from: number; digits: number; unit?: string };
+  /**
+   * A screen recording of the project running, shown as its page's Demo
+   * section. `src` is the clip, an H.264 MP4 with no sound, served from the
+   * R2 bucket behind media.vukcvetkovic.com rather than from the repo (see
+   * docs/routing-and-deploy.md), and `poster` a frame of it, in src/assets so
+   * the build sizes it. `width` and `height` are the clip's own, which hold
+   * the frame's shape before anything has loaded.
+   */
+  demo?: { src: string; poster: ImageMetadata; width: number; height: number };
   /** Omit or leave empty to hide a link. */
   links: { live?: string; source?: string };
 }
@@ -331,6 +341,15 @@ const projects: Project[] = [
     /* Reannotated, YOLOv8m against ML.NET: the results table's second and
        fourth rows. */
     outcome: { value: 0.916, from: 0.748, digits: 3 },
+    /* The poster is the frame at 1:09, both results side by side, with the
+       pointer taken out: the patch where it was is the same spot at 1:04,
+       where the page had not moved. */
+    demo: {
+      src: "https://media.vukcvetkovic.com/object-detection-demo.mp4",
+      poster: objectDetectionPoster,
+      width: 3182,
+      height: 1936,
+    },
     links: {},
   },
   {
