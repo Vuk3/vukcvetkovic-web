@@ -530,9 +530,18 @@ both payload labels and "multipart/form-data" has to fit unbroken.
 ### Connectors are borders
 
 ⚠️ **Every connector is a CSS border, never a filled box.** A straight line is a box with
-one 2px side, and a branch is a box with two or three sides and one rounded corner. Each
-line is its own `container-type: size`, so a packet crosses it with `translate: 100cqi`
-(or `100cqb`) and nothing is measured. Arrowheads are `clip-path` triangles.
+one 2px side, and a branch is a box with two or three sides and one rounded corner.
+Arrowheads are `clip-path` triangles.
+
+⚠️ **A packet runs its line's own outline, by `offset-path`.** A branch's path is
+`inset(1px round …)`, the middle of its border round the border's own corner, and
+`--pk-from` / `--pk-to` pick the stretch that is the line, written from the branch's own
+size (each line is a `container-type: size`, so `100cqi` and `100cqb` are its width and
+height) and `--rm`, the corner's radius at the middle of the border. A straight line is a
+two-point `polygon()`, run 0% to 50%. So the dot turns every corner on the curve at one
+speed: a `translate` between the corner points cut across each curve and, eased per
+keyframe, stopped dead at every corner. ⚠️ Not `inset()` for a straight line: a box with
+no width is an outline of no area, and WebKit moves nothing along it.
 
 ⚠️ **Everything leaves and lands on one axis**, the middle of the service stack. On a
 pipeline the lane's caption pushes the stack down, so the axis is half a caption below the
@@ -575,12 +584,31 @@ the lane opens, labels fade.
 **Then a request runs through it, on a loop.** Packets - 12px accent dots with a soft ring,
 not a glow - travel entry to core, fan out into every service at once, and go on to the
 exit or back through the core to the entry, and each tile lights with a ring as its packet
-arrives. One cycle per shape (6s for a round trip, 4.8s for a pipeline); each segment starts
+arrives. One cycle per shape (6s for a round trip, 4.8s for a pipeline); each line starts
 at its own fraction of it, written inline from a story table in the component. ⚠️ Each
-start is the previous leg's start plus its window, so changing one means moving the rest.
+start is the previous line's start plus its window, so changing one means moving the rest.
 
-Both halves sit behind `prefers-reduced-motion: no-preference`, and the assembly also
-behind `@supports (animation-timeline: view())`, so without either the diagram is simply
+A run from one tile to the next is often several lines - the trunk out of the core and a
+branch into a service, or a service's answer, the channel and the back leg - so the
+keyframes are named for the part a line plays, not its direction: `solo` tile to tile,
+`depart` from a tile to a join (it gathers speed, then runs on), `arrive` from a join to a
+tile (it runs on, then settles), `settle` and `gather` for the middle service of three,
+whose line runs straight on from the trunk, and `channel` and `back` join to join. ⚠️ **At
+a join the packet neither fades nor slows**: the one arriving is whole until its window
+closes and the next is whole from the instant its own opens, at the same point. Eased to
+a stop and faded there, the two read as a dot that stalled, blinked out and started
+again. The windows are split by the lines' typical lengths so the speed carries across -
+4% of the cycle for a trunk and 14% for a branch, 9.5%, 13.5% and 9.5% for the row's way
+back - and a round trip's core lights as the packet passes under its floor, at 0.63 of
+the cycle, before the back leg's window closes under the tile. Sampled every 5ms in
+Chrome and WebKit, every hand-over on all four projects at 390, 820, 1106, 1280 and 1440
+happens at one instant and within 2px, and every half millisecond across a join, Chrome,
+WebKit and Firefox all overlap the two packets by under a millisecond, never showing
+neither.
+
+Both halves sit behind `prefers-reduced-motion: no-preference`, the packets also behind
+`@supports (offset-path: inset(0))`, and the assembly behind
+`@supports (animation-timeline: view())`, so without either the diagram is simply
 there, finished.
 
 ### The card thumbnail
@@ -2148,6 +2176,9 @@ centred in the space between the capsule and the footer on a tall screen.
 
 ## Changelog
 
+- 2026-09-28 - the request diagrams' packets run their lines by `offset-path`, round every
+  corner on the curve at one speed, and hand over at a join without fading or slowing;
+  the keyframes are by role and the story tables' windows are split by line length (§6).
 - 2026-09-28 - Skills is a diagram of the stack: Frontend, Backend and Data in a row over
   Cloud & DevOps, joined by double-headed lines that a packet runs out and back along on a
   loop, Backend on ink, and the marks a size smaller (§1, §3, §10).

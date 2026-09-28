@@ -94,17 +94,41 @@ const services = copy.branches.map((branch, i) => ({
 /*
  * When each packet leaves, as a fraction of one cycle: the page's own story
  * table, so a card and its page run the same request at the same pace. The
- * fractions pair with the travel windows in the keyframes below - 12% of the
- * cycle for a leg, 6% for a trunk - so each is the previous leg's start plus
- * its window.
+ * fractions pair with the windows in the keyframes below - 12% of the cycle
+ * for a line from tile to tile, 4% for a trunk and 14% for the branch it
+ * hands over to - so each is the previous line's start plus its window.
  *
- * `wide` is how much later the round trip's answer reaches the entry in the
- * row, where it comes back the long way: along the channel under the lane
- * and up into the core, one leg more than the spine draws.
+ * `outRow` and `ansRow` are the round trip's two beats in the row, where the
+ * answer comes back the long way - down the rail, along the channel under
+ * the lane and up into the core, over three lines of 9.5%, 13.5% and 9.5% -
+ * so the channel starts sooner than the spine's trunk and the answer's line
+ * later. A pipeline runs the same in both.
  */
 const story = roundTrip
-  ? { cycle: '6s', req: 0.02, fan: 0.14, branchIn: 0.2, branchOut: 0.34, out: 0.46, back: 0.58, ans: 0.53 }
-  : { cycle: '4.8s', req: 0.02, fan: 0.14, branchIn: 0.2, branchOut: 0.34, out: 0.46, back: 0, ans: 0 };
+  ? {
+      cycle: '6s',
+      req: 0.02,
+      fan: 0.14,
+      branchIn: 0.18,
+      branchOut: 0.34,
+      out: 0.48,
+      outRow: 0.435,
+      back: 0.57,
+      ans: 0.53,
+      ansRow: 0.65,
+    }
+  : {
+      cycle: '4.8s',
+      req: 0.02,
+      fan: 0.14,
+      branchIn: 0.18,
+      branchOut: 0.34,
+      out: 0.48,
+      outRow: 0.48,
+      back: 0,
+      ans: 0,
+      ansRow: 0,
+    };
 ---
 
 <div
@@ -141,7 +165,7 @@ const story = roundTrip
       </span>
       {
         roundTrip && (
-          <span class="fm-line fm-ans" style={`--at:${story.ans};--wide:0.12`}>
+          <span class="fm-line fm-ans" style={`--at:${story.ans};--row:${story.ansRow}`}>
             <span class="fm-head"></span>
             <span class="fm-pk"></span>
           </span>
@@ -216,7 +240,7 @@ const story = roundTrip
 
         {/* A pipeline's gathered line to the exit, or a round trip's way
             back towards the core. */}
-        <span class="fm-line fm-out" style={`--at:${story.out}`}>
+        <span class="fm-line fm-out" style={`--at:${story.out};--row:${story.outRow}`}>
           <span class="fm-head"></span>
           <span class="fm-pk"></span>
         </span>
@@ -299,6 +323,8 @@ const story = roundTrip
      *            back on). Only true because every service is the same
      *            height - `grid-auto-rows: 1fr` on the stack is load-bearing
      *   --r      the radius a branch turns its corner on
+     *   --rm     the radius a packet turns it on, the middle of the border,
+     *            and `--turn` the length of that quarter turn
      *   --hl/hw  an arrowhead's length and width: 8 by 9 on a 2px line, so
      *            the head is four and a half lines wide and reads as a head.
      *            At 7 by 8 it read as a nub on the line at a card's size
@@ -318,6 +344,8 @@ const story = roundTrip
       --lp: 0.5rem;
       --pitch: calc(100% + var(--sg) + 2px);
       --r: 0.375rem;
+      --rm: calc(var(--r) - 1px);
+      --turn: calc(pi * var(--rm) / 2);
       --hl: 0.5rem;
       --hw: 0.5625rem;
       --sx: 0.875rem;
@@ -501,13 +529,21 @@ const story = roundTrip
      * three) and a rounded corner, so a branch is one element with one turn
      * in it rather than two lines meeting at a seam. The centre of a top or
      * left border is 1px outside the padding box, which is where every `1px`
-     * below comes from, and why a packet at `-1px - half` sits on its line.
+     * below comes from.
      *
-     * Each line is its own size container, which is how a packet crosses
-     * it: it travels `100cqi` or `100cqb`, the length of its own line.
+     * A packet runs its line's outline, the page's way (see the note there
+     * in src/styles/flow.css): `offset-path` 1px inside the box, which is the
+     * middle of the border, round the border's own corners, from `--pk-from`
+     * to `--pk-to`. A straight line is a two-point polygon, 0% to 50%, and a
+     * branch's distances come from its own size - it is a size container, so
+     * `100cqi` and `100cqb` inside it are its width and height less its
+     * borders.
      */
     .fm-line,
     .fm-branch {
+      --pk-from: 0%;
+      --pk-to: 50%;
+
       position: absolute;
       container-type: size;
       border: 0 solid var(--fm-ink);
@@ -519,17 +555,17 @@ const story = roundTrip
     }
 
     /* A packet: a solid dot with a soft ring, hidden at rest - it is
-       decoration, and only the loop below shows it. */
+       decoration, and only the loop below shows it. Its path places it. */
     .fm-pk {
       position: absolute;
-      top: calc(-1px - 0.25rem);
-      left: calc(-1px - 0.25rem);
       width: 0.5rem;
       height: 0.5rem;
       border-radius: 50%;
       background-color: var(--fm-ink);
       box-shadow: 0 0 0 3px color-mix(in oklab, var(--fm-ink) 22%, transparent);
       opacity: 0;
+      offset-path: var(--pk-path);
+      offset-rotate: 0deg;
     }
 
     /* Only the row takes the answer under the core. */
@@ -573,10 +609,14 @@ const story = roundTrip
     }
 
     .fm-req {
+      --pk-path: polygon(1px 0, 1px 100%);
+
       left: calc(var(--sx) - 1px);
     }
 
     .fm-ans {
+      --pk-path: polygon(1px 100%, 1px 0);
+
       right: calc(var(--sx) - 1px);
     }
 
@@ -608,6 +648,8 @@ const story = roundTrip
      * lane's side, which is where both offsets come from.
      */
     .fm-fan {
+      --pk-path: polygon(1px 0, 1px 100%);
+
       top: calc(-1 * (var(--gv) + var(--lp) + 1px));
       left: calc(var(--sx) - var(--lpx) - 2px);
       width: 0;
@@ -617,8 +659,12 @@ const story = roundTrip
 
     /* A branch into a service: down the rail from the lane's top edge, then
        along a stub into its left side. Each service draws its own from its
-       own box, and the rail is the overlap of all of them. */
+       own box, and the rail is the overlap of all of them. Its packet runs
+       the path backwards from where it starts, at the top-left. */
     .fm-branch-in {
+      --pk-path: inset(1px round 0 0 0 var(--rm));
+      --pk-to: calc(-1 * (100cqi + 100cqb - 2 * var(--rm) + var(--turn)));
+
       top: calc(-1 * (var(--lp) + 2px + var(--i) * var(--pitch)));
       right: calc(100% + 1px);
       bottom: calc(50% - 1px);
@@ -638,6 +684,9 @@ const story = roundTrip
     /* A pipeline's output: out of the right side, down the right spine to
        the lane's floor, then on down to the exit. */
     .fm[data-shape='pipeline'] .fm-branch-out {
+      --pk-path: inset(1px round 0 var(--rm) 0 0);
+      --pk-to: calc(100cqi + 100cqb - 2 * var(--rm) + var(--turn));
+
       top: calc(50% - 1px);
       right: calc(var(--sx) - var(--lpx) - 3px);
       bottom: calc(-1 * (var(--j) * var(--pitch) + var(--lp) + 2px));
@@ -647,6 +696,8 @@ const story = roundTrip
     }
 
     .fm[data-shape='pipeline'] .fm-out {
+      --pk-path: polygon(1px 0, 1px 100%);
+
       top: calc(100% + var(--lp) + 1px);
       right: calc(var(--sx) - var(--lpx) - 2px);
       width: 0;
@@ -655,8 +706,14 @@ const story = roundTrip
     }
 
     /* A round trip's answer: out of the right side and back up the right
-       spine, past the lane's top edge and into the core. */
+       spine, past the lane's top edge and into the core. Its packet runs the
+       path backwards, from the bottom-left corner - reached by the top, the
+       right side and the foot - to the top-right. */
     .fm[data-shape='roundTrip'] .fm-branch-out {
+      --pk-path: inset(1px round 0 0 var(--rm) 0);
+      --pk-from: calc(200cqi + 100cqb - 2 * var(--rm) + var(--turn));
+      --pk-to: 100cqi;
+
       top: calc(-1 * (var(--lp) + 2px + var(--i) * var(--pitch)));
       right: calc(var(--sx) - var(--lpx) - 3px);
       bottom: calc(50% - 1px);
@@ -666,6 +723,8 @@ const story = roundTrip
     }
 
     .fm[data-shape='roundTrip'] .fm-out {
+      --pk-path: polygon(1px 100%, 1px 0);
+
       top: calc(-1 * (var(--gv) + var(--lp) + 1px));
       right: calc(var(--sx) - var(--lpx) - 2px);
       width: 0;
@@ -863,10 +922,14 @@ const story = roundTrip
       }
 
       .fm-req {
+        --pk-path: polygon(0 1px, 100% 1px);
+
         top: calc(var(--axis) - var(--d) - 1px);
       }
 
       .fm-ans {
+        --pk-path: polygon(100% 1px, 0 1px);
+
         top: calc(var(--axis) + var(--d) - 1px);
       }
 
@@ -899,6 +962,8 @@ const story = roundTrip
        * so the core's edge is that plus the whole gutter to its left.
        */
       .fm-fan {
+        --pk-path: polygon(0 1px, 100% 1px);
+
         top: calc(50% - 1px);
         left: calc(-1 * (var(--g2) + var(--lp) + 1px));
         width: calc(var(--g2) / 2 + 1px);
@@ -912,12 +977,20 @@ const story = roundTrip
        * so each branch turns its one corner between that and its own
        * middle: down from above, up from below, or - the middle one of
        * three - straight across.
+       *
+       * From below, corner and route are the spine's. From above, the
+       * packet comes up through the corner the path starts behind, so it
+       * starts at a negative distance: back round the curve and down.
        */
       .fm-branch-in {
         left: calc(-1 * (var(--lp) + var(--g2) / 2 + 3px));
       }
 
       .fm-svc[data-side='above'] > .fm-branch-in {
+        --pk-path: inset(1px round var(--rm) 0 0 0);
+        --pk-from: calc(var(--rm) - 100cqb - var(--turn));
+        --pk-to: calc(100cqi - var(--rm));
+
         top: calc(50% - 1px);
         bottom: calc(100% - var(--k) * var(--pitch) + var(--sg) / 2);
         border-width: 2px 0 0 2px;
@@ -933,6 +1006,10 @@ const story = roundTrip
 
       .fm-svc[data-side='level'] > .fm-branch-in,
       .fm[data-shape='pipeline'] .fm-svc[data-side='level'] > .fm-branch-out {
+        --pk-path: polygon(0 1px, 100% 1px);
+        --pk-from: 0%;
+        --pk-to: 50%;
+
         top: calc(50% - 1px);
         bottom: auto;
         height: 0;
@@ -953,7 +1030,13 @@ const story = roundTrip
         border-radius: 0 var(--r) 0 0;
       }
 
+      /* Corner and route as the spine's round-trip answer: along the foot,
+         round, and up. */
       .fm[data-shape='pipeline'] .fm-svc[data-side='below'] > .fm-branch-out {
+        --pk-path: inset(1px round 0 0 var(--rm) 0);
+        --pk-from: calc(200cqi + 100cqb - 2 * var(--rm) + var(--turn));
+        --pk-to: 100cqi;
+
         top: calc(var(--k) * var(--pitch) - var(--sg) / 2 - 2px);
         bottom: calc(50% - 1px);
         border-width: 0 2px 2px 0;
@@ -961,6 +1044,8 @@ const story = roundTrip
       }
 
       .fm[data-shape='pipeline'] .fm-out {
+        --pk-path: polygon(0 1px, 100% 1px);
+
         top: calc(50% - 1px);
         right: calc(-1 * (var(--lp) + 1px + var(--g3)));
         left: calc(100% + var(--lp) + var(--g3) / 2);
@@ -974,9 +1059,15 @@ const story = roundTrip
        * the answer rail into the channel under the lane, and turn back along
        * it - a loop with no crossing in it. Each branch is three sides of a
        * box: the stub, the rail, and the channel back to its own right edge,
-       * where the channel line below takes over.
+       * where the channel line below takes over. Its packet runs the path
+       * clockwise from its start, round both corners, and the `+ 2px` is the
+       * third border.
        */
       .fm[data-shape='roundTrip'] .fm-branch-out {
+        --pk-path: inset(1px round 0 var(--rm) var(--rm) 0);
+        --pk-from: 0%;
+        --pk-to: calc(200cqi + 100cqb + 2px - 4 * var(--rm) + 2 * var(--turn));
+
         top: calc(50% - 1px);
         right: calc(-1 * (var(--lp) + var(--g3) / 2 + 3px));
         bottom: calc(-1 * (var(--j) * var(--pitch) + var(--lp) + var(--ch) / 2 + 3px));
@@ -988,6 +1079,8 @@ const story = roundTrip
          the core's column, where the back leg takes it on. The corner the
          two make is the back leg's, so this one carries no head. */
       .fm[data-shape='roundTrip'] .fm-out {
+        --pk-path: polygon(100% 1px, 0 1px);
+
         top: calc(100% + var(--lp) + var(--ch) / 2);
         right: 0;
         left: calc(-1 * (var(--g2) + var(--lp) + 1px));
@@ -1007,9 +1100,15 @@ const story = roundTrip
        * behind the tile. `right: -1px` laps the channel line by a pixel so
        * the join has no seam; the line runs up the core's centre. Its
        * column names both lines for the reason its row does (see
-       * `.fm-grid > *`).
+       * `.fm-grid > *`). Its packet picks the channel up at the bottom-right
+       * corner, reached by the top and the right side, and runs round to
+       * where the path closes, under the core.
        */
       .fm-back {
+        --pk-path: inset(1px round 0 0 0 var(--rm));
+        --pk-from: calc(100cqi + 100cqb);
+        --pk-to: calc(200cqi + 200cqb - 2 * var(--rm) + var(--turn));
+
         display: block;
         grid-column: core / fan;
         top: var(--axis);
@@ -1033,122 +1132,102 @@ const story = roundTrip
 
     /* ---- The packets --------------------------------------------------------
      *
-     * One request at a time, in the page's order: the entry's line, the fan
-     * into every service at once, then on to the exit or back through the
-     * core to the entry. One cycle for all of it and each line's packet
-     * leaving at its own `--at` fraction of it, so every packet stays in
-     * phase with every other however long the page is open.
+     * One request at a time, in the page's order and at its pace: the
+     * entry's line, the fan into every service at once, then on to the exit
+     * or back through the core to the entry. One cycle for all of it and each
+     * line's packet leaving at its own `--at` fraction of it, so every packet
+     * stays in phase with every other however long the page is open.
+     *
+     * The keyframes are the page's, named for the part a line plays in its
+     * run - `solo` tile to tile, `depart` from a tile to a join, `arrive`
+     * from a join to a tile, `channel` and `back` join to join - and a packet
+     * hands over whole at every join, without fading or slowing. The note on
+     * the packets in src/styles/flow.css has the reasoning.
      *
      * It runs while the card is hovered or holds focus - `.card-hover` is
      * the site's whole-tile link - or always, if asked. Only the duration is
      * gated: the animation itself starts at load either way, so a card
      * picked up mid-cycle joins the run in step rather than restarting it.
-     * Behind reduced motion like everything else.
+     * Behind reduced motion like everything else, and behind `offset-path`,
+     * without which a packet would blink where its line starts.
      */
     @media (prefers-reduced-motion: no-preference) {
-      .fm-pk {
-        animation-timing-function: var(--site-ease);
-        animation-delay: calc(var(--at) * var(--cycle));
-      }
-
-      .fm[data-loop='always'] .fm-pk,
-      :global(.card-hover:hover) .fm[data-loop='hover'] .fm-pk,
-      :global(.card-hover:focus-within) .fm[data-loop='hover'] .fm-pk,
-      .fm[data-loop='hover']:hover .fm-pk {
-        animation-duration: var(--cycle);
-        animation-iteration-count: infinite;
-      }
-
-      .fm-req .fm-pk {
-        animation-name: fm-pk-down;
-      }
-
-      .fm-ans .fm-pk {
-        animation-name: fm-pk-up;
-      }
-
-      .fm-fan .fm-pk,
-      .fm[data-shape='pipeline'] .fm-out .fm-pk {
-        animation-name: fm-pk-down-short;
-      }
-
-      .fm[data-shape='roundTrip'] .fm-out .fm-pk {
-        animation-name: fm-pk-up-short;
-      }
-
-      .fm-branch-in .fm-pk {
-        animation-name: fm-pk-rail-in;
-      }
-
-      .fm[data-shape='pipeline'] .fm-branch-out .fm-pk {
-        animation-name: fm-pk-rail-down;
-      }
-
-      .fm[data-shape='roundTrip'] .fm-branch-out .fm-pk {
-        animation-name: fm-pk-rail-up;
-      }
-
-      @container fm (min-width: 30rem) {
+      @supports (offset-path: inset(0)) {
         .fm-pk {
-          animation-delay: calc((var(--at) + var(--wide, 0)) * var(--cycle));
+          animation-timing-function: var(--site-ease);
+          animation-delay: calc(var(--at) * var(--cycle));
         }
 
-        .fm-back .fm-pk {
-          animation-name: fm-pk-back;
+        .fm[data-loop='always'] .fm-pk,
+        :global(.card-hover:hover) .fm[data-loop='hover'] .fm-pk,
+        :global(.card-hover:focus-within) .fm[data-loop='hover'] .fm-pk,
+        .fm[data-loop='hover']:hover .fm-pk {
+          animation-duration: var(--cycle);
+          animation-iteration-count: infinite;
         }
 
         .fm-req .fm-pk,
-        .fm-svc[data-side='level'] > .fm-branch-in .fm-pk,
-        .fm[data-shape='pipeline'] .fm-svc[data-side='level'] > .fm-branch-out .fm-pk {
-          animation-name: fm-pk-right;
+        .fm-ans .fm-pk {
+          animation-name: fm-pk-solo;
         }
 
-        .fm-ans .fm-pk,
-        .fm[data-shape='roundTrip'] .fm-out .fm-pk {
-          animation-name: fm-pk-left;
+        .fm-fan .fm-pk {
+          animation-name: fm-pk-depart-short;
         }
 
-        .fm-fan .fm-pk,
-        .fm[data-shape='pipeline'] .fm-out .fm-pk {
-          animation-name: fm-pk-right-short;
+        .fm-branch-in .fm-pk {
+          animation-name: fm-pk-arrive;
         }
 
-        .fm-svc[data-side='above'] > .fm-branch-in .fm-pk {
-          animation-name: fm-pk-up-right;
+        .fm-branch-out .fm-pk {
+          animation-name: fm-pk-depart;
         }
 
-        .fm-svc[data-side='below'] > .fm-branch-in .fm-pk {
-          animation-name: fm-pk-down-right;
+        .fm-out .fm-pk {
+          animation-name: fm-pk-arrive-short;
         }
 
-        .fm[data-shape='pipeline'] .fm-svc[data-side='above'] > .fm-branch-out .fm-pk {
-          animation-name: fm-pk-right-down;
-        }
+        @container fm (min-width: 30rem) {
+          .fm-pk {
+            animation-delay: calc(var(--row, var(--at)) * var(--cycle));
+          }
 
-        .fm[data-shape='pipeline'] .fm-svc[data-side='below'] > .fm-branch-out .fm-pk {
-          animation-name: fm-pk-right-up;
-        }
+          /* The middle one of three runs straight on from the trunk, and
+             eases over its whole window, in or out, to keep its speed. */
+          .fm-svc[data-side='level'] > .fm-branch-in .fm-pk {
+            animation-name: fm-pk-settle;
+          }
 
-        .fm[data-shape='roundTrip'] .fm-branch-out .fm-pk {
-          animation-name: fm-pk-loop;
+          .fm[data-shape='pipeline'] .fm-svc[data-side='level'] > .fm-branch-out .fm-pk {
+            animation-name: fm-pk-gather;
+          }
+
+          .fm[data-shape='roundTrip'] .fm-branch-out .fm-pk {
+            animation-name: fm-pk-loop;
+          }
+
+          .fm[data-shape='roundTrip'] .fm-out .fm-pk {
+            animation-name: fm-pk-channel;
+          }
+
+          .fm-back .fm-pk {
+            animation-name: fm-pk-back;
+          }
         }
       }
     }
   }
 
   /*
-   * A packet's journey along one line, inside the first 12% of the cycle (6%
-   * for a trunk) and invisible for the rest, fading in as it leaves and out
-   * as it lands so it reads as arriving rather than vanishing. `translate`,
-   * never `transform`, the site's rule for keyframes.
-   *
-   * Along a bottom or a right border the path is 2px further out than the
-   * padding box, which is where the `+ 2px` comes from.
+   * The page's keyframes under names of their own, since flow.css is not on
+   * the pages the cards are: the windows, the curves and the reasoning are
+   * in the note above them there. The curves are written out because Chrome
+   * drops a `var()` given as a keyframe's timing function.
    */
-  @keyframes fm-pk-right {
+  @keyframes fm-pk-solo {
     0% {
       opacity: 0;
-      translate: 0 0;
+      offset-distance: var(--pk-from);
     }
 
     1.5%,
@@ -1159,330 +1238,224 @@ const story = roundTrip
     12%,
     100% {
       opacity: 0;
-      translate: 100cqi 0;
+      offset-distance: var(--pk-to);
     }
   }
 
-  @keyframes fm-pk-right-short {
+  @keyframes fm-pk-depart {
     0% {
       opacity: 0;
-      translate: 0 0;
+      offset-distance: var(--pk-from);
+      animation-timing-function: cubic-bezier(0.333, 0, 0.667, 0.333);
     }
 
-    1%,
-    5% {
+    1.5% {
       opacity: 1;
     }
 
-    6%,
+    4.667% {
+      offset-distance: calc(var(--pk-from) + (var(--pk-to) - var(--pk-from)) / 5);
+      animation-timing-function: linear;
+    }
+
+    14% {
+      opacity: 1;
+      offset-distance: var(--pk-to);
+    }
+
+    14.01%,
     100% {
       opacity: 0;
-      translate: 100cqi 0;
+      offset-distance: var(--pk-to);
     }
   }
 
-  @keyframes fm-pk-left {
+  @keyframes fm-pk-depart-short {
     0% {
       opacity: 0;
-      translate: 100cqi 0;
+      offset-distance: var(--pk-from);
+      animation-timing-function: cubic-bezier(0.333, 0, 0.667, 0.333);
     }
 
-    1.5%,
-    10.5% {
+    1% {
       opacity: 1;
     }
 
-    12%,
+    1.333% {
+      offset-distance: calc(var(--pk-from) + (var(--pk-to) - var(--pk-from)) / 5);
+      animation-timing-function: linear;
+    }
+
+    4% {
+      opacity: 1;
+      offset-distance: var(--pk-to);
+    }
+
+    4.01%,
     100% {
       opacity: 0;
-      translate: 0 0;
+      offset-distance: var(--pk-to);
     }
   }
 
-  @keyframes fm-pk-down {
+  @keyframes fm-pk-arrive {
     0% {
-      opacity: 0;
-      translate: 0 0;
+      opacity: 1;
+      offset-distance: var(--pk-from);
+      animation-timing-function: linear;
     }
 
-    1.5%,
-    10.5% {
+    9.333% {
+      offset-distance: calc(var(--pk-to) - (var(--pk-to) - var(--pk-from)) / 5);
+      animation-timing-function: cubic-bezier(0.333, 0.667, 0.667, 1);
+    }
+
+    12.5% {
       opacity: 1;
     }
 
-    12%,
+    14%,
     100% {
       opacity: 0;
-      translate: 0 100cqb;
+      offset-distance: var(--pk-to);
     }
   }
 
-  @keyframes fm-pk-down-short {
+  @keyframes fm-pk-arrive-short {
     0% {
-      opacity: 0;
-      translate: 0 0;
-    }
-
-    1%,
-    5% {
       opacity: 1;
+      offset-distance: var(--pk-from);
+      animation-timing-function: linear;
     }
 
-    6%,
-    100% {
-      opacity: 0;
-      translate: 0 100cqb;
-    }
-  }
-
-  @keyframes fm-pk-up {
-    0% {
-      opacity: 0;
-      translate: 0 100cqb;
-    }
-
-    1.5%,
-    10.5% {
-      opacity: 1;
-    }
-
-    12%,
-    100% {
-      opacity: 0;
-      translate: 0 0;
-    }
-  }
-
-  @keyframes fm-pk-up-short {
-    0% {
-      opacity: 0;
-      translate: 0 100cqb;
-    }
-
-    1%,
-    5% {
-      opacity: 1;
-    }
-
-    6%,
-    100% {
-      opacity: 0;
-      translate: 0 0;
-    }
-  }
-
-  /* The spine's rails. Down the long rail from the lane's top edge, then
-     the short stub into the service. */
-  @keyframes fm-pk-rail-in {
-    0% {
-      opacity: 0;
-      translate: 0 0;
-    }
-
-    1.5%,
-    10.5% {
-      opacity: 1;
-    }
-
-    9% {
-      translate: 0 calc(100cqb + 2px);
-    }
-
-    12%,
-    100% {
-      opacity: 0;
-      translate: 100cqi calc(100cqb + 2px);
-    }
-  }
-
-  /* Out along the stub, then down the long right rail to the lane's floor. */
-  @keyframes fm-pk-rail-down {
-    0% {
-      opacity: 0;
-      translate: 0 0;
-    }
-
-    1.5%,
-    10.5% {
-      opacity: 1;
+    2.667% {
+      offset-distance: calc(var(--pk-to) - (var(--pk-to) - var(--pk-from)) / 5);
+      animation-timing-function: cubic-bezier(0.333, 0.667, 0.667, 1);
     }
 
     3% {
-      translate: calc(100cqi + 2px) 0;
-    }
-
-    12%,
-    100% {
-      opacity: 0;
-      translate: calc(100cqi + 2px) 100cqb;
-    }
-  }
-
-  /* Out along the stub, then up the long right rail to the lane's top edge. */
-  @keyframes fm-pk-rail-up {
-    0% {
-      opacity: 0;
-      translate: 0 calc(100cqb + 2px);
-    }
-
-    1.5%,
-    10.5% {
       opacity: 1;
     }
 
-    3% {
-      translate: calc(100cqi + 2px) calc(100cqb + 2px);
-    }
-
-    12%,
+    4%,
     100% {
       opacity: 0;
-      translate: calc(100cqi + 2px) 0;
+      offset-distance: var(--pk-to);
     }
   }
 
-  /* The row's fan: from the middle of the stack along the rail, round the
-     corner and into the service. */
-  @keyframes fm-pk-up-right {
+  /* The middle service of three in the row, whose line is the trunk's straight
+     continuation: one curve over the whole window, in or out. */
+  @keyframes fm-pk-settle {
     0% {
-      opacity: 0;
-      translate: 0 100cqb;
+      opacity: 1;
+      offset-distance: var(--pk-from);
+      animation-timing-function: cubic-bezier(0.333, 0.667, 0.667, 1);
     }
 
-    1.5%,
-    10.5% {
+    12.5% {
       opacity: 1;
     }
 
-    6% {
-      translate: 0 0;
-    }
-
-    12%,
+    14%,
     100% {
       opacity: 0;
-      translate: 100cqi 0;
+      offset-distance: var(--pk-to);
     }
   }
 
-  @keyframes fm-pk-down-right {
+  @keyframes fm-pk-gather {
     0% {
       opacity: 0;
-      translate: 0 0;
+      offset-distance: var(--pk-from);
+      animation-timing-function: cubic-bezier(0.333, 0, 0.667, 0.333);
     }
 
-    1.5%,
-    10.5% {
+    1.5% {
       opacity: 1;
     }
 
-    6% {
-      translate: 0 calc(100cqb + 2px);
-    }
-
-    12%,
-    100% {
-      opacity: 0;
-      translate: 100cqi calc(100cqb + 2px);
-    }
-  }
-
-  /* The row's gather: out of the service, round the corner, along the rail
-     to the middle of the stack. */
-  @keyframes fm-pk-right-down {
-    0% {
-      opacity: 0;
-      translate: 0 0;
-    }
-
-    1.5%,
-    10.5% {
+    14% {
       opacity: 1;
+      offset-distance: var(--pk-to);
     }
 
-    6% {
-      translate: calc(100cqi + 2px) 0;
-    }
-
-    12%,
+    14.01%,
     100% {
       opacity: 0;
-      translate: calc(100cqi + 2px) 100cqb;
+      offset-distance: var(--pk-to);
     }
   }
 
-  @keyframes fm-pk-right-up {
-    0% {
-      opacity: 0;
-      translate: 0 calc(100cqb + 2px);
-    }
-
-    1.5%,
-    10.5% {
-      opacity: 1;
-    }
-
-    6% {
-      translate: calc(100cqi + 2px) calc(100cqb + 2px);
-    }
-
-    12%,
-    100% {
-      opacity: 0;
-      translate: calc(100cqi + 2px) 0;
-    }
-  }
-
-  /* A round trip's answer in the row: out, down the answer rail, and back
-     along the channel to where the channel line takes it on. */
+  /* A round trip's answer in the row: out of a service, down the answer rail
+     and back along the top of the channel, gathering speed as `depart` does. */
   @keyframes fm-pk-loop {
     0% {
       opacity: 0;
-      translate: 0 0;
+      offset-distance: var(--pk-from);
+      animation-timing-function: cubic-bezier(0.333, 0, 0.667, 0.333);
     }
 
-    1.5%,
-    10.5% {
+    1.5% {
       opacity: 1;
     }
 
-    3.5% {
-      translate: calc(100cqi + 2px) 0;
+    3.167% {
+      offset-distance: calc(var(--pk-from) + (var(--pk-to) - var(--pk-from)) / 5);
+      animation-timing-function: linear;
     }
 
-    8.5% {
-      translate: calc(100cqi + 2px) calc(100cqb + 2px);
+    9.5% {
+      opacity: 1;
+      offset-distance: var(--pk-to);
     }
 
-    12%,
+    9.51%,
     100% {
       opacity: 0;
-      translate: 0 calc(100cqb + 2px);
+      offset-distance: var(--pk-to);
     }
   }
 
-  /* The back leg: along the channel under the core, then up into its floor -
-     the last stretch runs on behind the tile, which is what makes the packet
-     read as arriving. A trunk's 6%. */
-  @keyframes fm-pk-back {
+  /* The channel under the lane, from the rail to the core's column. */
+  @keyframes fm-pk-channel {
     0% {
-      opacity: 0;
-      translate: 100cqi calc(100cqb + 2px);
-    }
-
-    1%,
-    5% {
       opacity: 1;
+      offset-distance: var(--pk-from);
+      animation-timing-function: linear;
     }
 
-    3.5% {
-      translate: 0 calc(100cqb + 2px);
+    13.5% {
+      opacity: 1;
+      offset-distance: var(--pk-to);
     }
 
-    6%,
+    13.51%,
     100% {
       opacity: 0;
-      translate: 0 0;
+      offset-distance: var(--pk-to);
+    }
+  }
+
+  /* The back leg: on along the channel under the core and up into its floor,
+     at the channel's speed. It settles nowhere - its last stretch runs on
+     behind the tile, which is what makes the packet read as arriving. */
+  @keyframes fm-pk-back {
+    0% {
+      opacity: 1;
+      offset-distance: var(--pk-from);
+      animation-timing-function: linear;
+    }
+
+    9.5% {
+      opacity: 1;
+      offset-distance: var(--pk-to);
+    }
+
+    9.51%,
+    100% {
+      opacity: 0;
+      offset-distance: var(--pk-to);
     }
   }
 </style>

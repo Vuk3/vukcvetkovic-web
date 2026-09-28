@@ -1125,8 +1125,11 @@
 }
 
 /*
- * The Skills diagram's assembly and its loop, the request diagram's keyframes
- * under names of their own, since flow.css is not on this page.
+ * The Skills diagram's assembly and its loop. The rise, the draw and the ring
+ * are the request diagram's keyframes under names of their own, since
+ * flow.css is not on this page. Its packets are simpler than that diagram's:
+ * every line runs straight from one group to the next, with no corner and no
+ * join, so a translate eased end to end is the whole run.
  *
  * A group rising along the flow. `translate` and `scale`, never `transform`,
  * for the reason in global.css: the mark tiles inside move on hover by

@@ -98,16 +98,20 @@ if (stray.length > 0) {
  * so every packet stays in step with every other for as long as the page is
  * open.
  *
- * The fractions are paired with the travel windows in flow.css: a long leg
- * takes 12% of the cycle and a trunk 6%, so each `at` below is the previous
- * leg's start plus its window. Change one and the rest have to move with it.
+ * The fractions are paired with the windows in flow.css: 12% of the cycle for
+ * a line from tile to tile, and a run over two lines - the trunk and a
+ * branch - split 4% to the trunk and 14% to the branch, so the packet keeps
+ * its speed across the join. Each `at` below is the previous line's start
+ * plus its window. Change one and the rest have to move with it.
  *
- * `wide` is how much later a beat lands in the horizontal arrangement, and
- * only a round trip has one: there the answer takes one leg more - along the
- * channel under the lane and up into the core's floor (`back`, which the
- * vertical spine does not draw) - so the core's second light, the answer's
- * line and the entry's light all move on by that leg's 6%, plus the 6% the
- * channel's long leg takes over the spine's short trunk.
+ * `row` is a beat's time in the horizontal arrangement where it differs, and
+ * only a round trip has any: there the answer comes back the long way round,
+ * down the rail, along the channel under the lane and up into the core's
+ * floor (`back`, which the vertical spine does not draw), over three lines
+ * of 9.5%, 13.5% and 9.5%. So the channel starts sooner than the spine's
+ * trunk does, and the core's second light, the answer's line and the entry's
+ * light all come later. The core lights as the packet passes under its
+ * floor, a little before the back leg's window closes under the tile.
  *
  * A round trip's cycle is longer because its run is: it comes all the way
  * back, and the core lights twice - once for the request, once for the answer.
@@ -116,7 +120,7 @@ interface Beat {
   step?: number;
   at?: number;
   ping?: number;
-  wide?: number;
+  row?: number;
 }
 
 interface Story {
@@ -139,18 +143,18 @@ interface Story {
 const story: Story = roundTrip
   ? {
       cycle: '6s',
-      entry: { step: 0, ping: 0.65, wide: 0.12 },
+      entry: { step: 0, ping: 0.65, row: 0.77 },
       req: { step: 1, at: 0.02 },
       core: { step: 2, ping: 0.14 },
       fan: { step: 3, at: 0.14 },
       lane: { step: 3 },
-      branchIn: { step: 4, at: 0.2 },
+      branchIn: { step: 4, at: 0.18 },
       service: { step: 4, ping: 0.32 },
       branchOut: { step: 5, at: 0.34 },
-      out: { step: 5, at: 0.46 },
-      back: { step: 5.5, at: 0.58 },
-      answered: { ping: 0.52, wide: 0.12 },
-      ans: { step: 6, at: 0.53, wide: 0.12 },
+      out: { step: 5, at: 0.48, row: 0.435 },
+      back: { step: 5.5, at: 0.57 },
+      answered: { ping: 0.52, row: 0.63 },
+      ans: { step: 6, at: 0.53, row: 0.65 },
     }
   : {
       cycle: '4.8s',
@@ -159,10 +163,10 @@ const story: Story = roundTrip
       core: { step: 2, ping: 0.14 },
       fan: { step: 3, at: 0.14 },
       lane: { step: 3 },
-      branchIn: { step: 4, at: 0.2 },
+      branchIn: { step: 4, at: 0.18 },
       service: { step: 4, ping: 0.32 },
       branchOut: { step: 5, at: 0.34 },
-      out: { step: 5, at: 0.46 },
+      out: { step: 5, at: 0.48 },
       exit: { step: 6, ping: 0.52 },
     };
 
