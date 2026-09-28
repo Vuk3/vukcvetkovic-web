@@ -23,6 +23,7 @@ rather than rendering a gap.
 | **a technology's icon or brand colour** | [src/tech.ts](../src/tech.ts) - §4 |
 | a service's tags, or where the site shows it done | `services` in [src/site.ts](../src/site.ts), by position against `services.items` in the dictionaries: `tech` and a `proof`, either `{ project }` or `{ role }` |
 | which project a degree's thesis was | `thesis` on the degree in `education` in [src/site.ts](../src/site.ts), with the thesis's label as `education.degrees.<id>.thesis` in every dictionary |
+| a project's measured result on its card | `outcome` on the project in [src/site.ts](../src/site.ts) (the figure, what it is compared with, the digits and a unit), with its words as `projects.outcomes.<id>` in every dictionary, `{from}` where the compared figure goes |
 | a project, its stack, its results table | `projects` in [src/site.ts](../src/site.ts) + `projects.items` in every dictionary - §5 |
 | **add or remove a language** | five places, every one checked by the compiler - §6 |
 | how a locale prefix is put onto a path | `localizePath` in [src/i18n/utils.ts](../src/i18n/utils.ts) - and read [routing-and-deploy.md](./routing-and-deploy.md) first, it is coupled to `build.format` |
@@ -391,7 +392,10 @@ anybody as protection - see
   [ArchitectureDiagram.astro](../src/components/ArchitectureDiagram.astro) checks both
 - `services` in site.ts with a different length from the dictionary's `services.items`, or
   a proof naming a project or a role that is not there - [Services.astro](../src/components/Services.astro)
-- a degree whose `thesis` names no project - [Education.astro](../src/components/Education.astro)
+- a degree whose `thesis` names no project - [Experience.astro](../src/components/Experience.astro)
+- a project with an `outcome` and no `projects.outcomes.<id>` in the page's dictionary -
+  [Projects.astro](../src/components/Projects.astro) and
+  [ProjectIndex.astro](../src/components/ProjectIndex.astro)
 
 **Silently degrades:**
 
@@ -413,6 +417,9 @@ anybody as protection - see
 
 ## Changelog
 
+- 2026-09-28 - a project can carry a measured `outcome`, worded under `projects.outcomes`
+  and checked at build. The dictionaries gain `palette` and `games.all`, and lose
+  `nav.education`.
 - 2026-09-28 - `services` in site.ts gives each service its tags and its proof, and a
   degree names its thesis's project, both checked at build.
 - 2026-09-27 - a project gains `flowTech`, the technologies each node of its request

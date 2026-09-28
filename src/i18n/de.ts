@@ -23,7 +23,6 @@ const de: Dict = {
     about: 'Über mich',
     skills: 'Kenntnisse',
     experience: 'Erfahrung',
-    education: 'Ausbildung',
     projects: 'Projekte',
     services: 'Leistungen',
     contact: 'Kontakt',
@@ -104,6 +103,12 @@ const de: Dict = {
     sourceLabel: 'Quellcode',
     all: 'Alle Projekte',
     view: 'Ausführlich lesen',
+    /** The words round a card's measured result, `outcome` in src/site.ts:
+        `{from}` is what the figure is compared with, printed in this locale. */
+    outcomes: {
+      objectDetection: 'mAP@0.5 für YOLOv8m, gegenüber {from} bei ML.NET',
+      encryptix: '150 Dateien parallel, statt {from}',
+    },
     back: 'Projekte',
 
     index: {
@@ -552,6 +557,7 @@ const de: Dict = {
 
   games: {
     label: 'Spiele',
+    all: 'Alle Spiele',
 
     /** "Erstellt" rather than "Gebaut": it is what German says of a piece of
      *  software that was written, not of a thing that was assembled. See the
@@ -1335,6 +1341,18 @@ const de: Dict = {
     },
   },
 
+
+  /** The command menu, opened with ⌘K or Ctrl+K from any page. Its groups
+      reuse the labels the header and the sections already have. */
+  palette: {
+    label: 'Befehlsmenü',
+    open: 'Suchen',
+    placeholder: 'Zu einem Abschnitt, Projekt oder Spiel',
+    empty: 'Nichts auf der Seite passt dazu.',
+    actions: 'Aktionen',
+    copy: 'E-Mail-Adresse kopieren',
+    copied: 'Kopiert',
+  },
   services: {
     label: 'Womit ich helfen kann',
     proof: 'In der Praxis',

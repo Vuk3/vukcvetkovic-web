@@ -27,7 +27,6 @@ const sections = [
   { id: 'about', label: dict.nav.about },
   { id: 'skills', label: dict.nav.skills },
   { id: 'experience', label: dict.nav.experience },
-  { id: 'education', label: dict.nav.education },
   { id: 'projects', label: dict.nav.projects },
   { id: 'services', label: dict.nav.services },
   { id: 'contact', label: dict.nav.contact },
@@ -91,28 +90,28 @@ const channels = [
             channels.map((channel) => (
               <a href={channel.href} target="_blank" rel="me noopener" class="cta-ghost">
                 <BrandIcon name={channel.brand} class="size-[1rem] shrink-0" />
-                {channel.label}
+                <span class="foot-channel-name">{channel.label}</span>
               </a>
             ))
           }
         </div>
       </div>
 
-      <div>
+      <div class="foot-sections">
         <p class="foot-title">{dict.nav.sections}</p>
         <ul class="foot-links">
           {sections.map((section) => <li><a href={`${home}#${section.id}`}>{section.label}</a></li>)}
         </ul>
       </div>
 
-      <div>
+      <div class="foot-projects">
         <p class="foot-title">{dict.projects.label}</p>
         <ul class="foot-links">
           {projects.map((project) => <li><a href={project.href}>{project.label}</a></li>)}
         </ul>
       </div>
 
-      <div>
+      <div class="foot-games">
         <p class="foot-title">{dict.games.label}</p>
         <ul class="foot-links">
           {games.map((game) => <li><a href={game.href}>{game.label}</a></li>)}

@@ -22,7 +22,6 @@ const en = {
     about: "About",
     skills: "Skills",
     experience: "Experience",
-    education: "Education",
     projects: "Projects",
     services: "Services",
     contact: "Contact",
@@ -120,6 +119,12 @@ const en = {
     all: "All projects",
     /** A row to the project's own page. */
     view: "Read the write-up",
+    /** The words round a card's measured result, `outcome` in src/site.ts:
+        `{from}` is what the figure is compared with, printed in this locale. */
+    outcomes: {
+      objectDetection: "mAP@0.5 for YOLOv8m, against {from} for ML.NET",
+      encryptix: "150 files in parallel, down from {from}",
+    },
     /** And back out of it. */
     back: "Projects",
 
@@ -610,6 +615,7 @@ const en = {
    */
   games: {
     label: "Games",
+    all: "All games",
 
     /**
      * What the date on a game's own page is called. The day itself is a fact
@@ -1522,6 +1528,18 @@ const en = {
     },
   },
 
+
+  /** The command menu, opened with ⌘K or Ctrl+K from any page. Its groups
+      reuse the labels the header and the sections already have. */
+  palette: {
+    label: "Command menu",
+    open: "Search",
+    placeholder: "Go to a section, a project or a game",
+    empty: "Nothing on the site matches that.",
+    actions: "Actions",
+    copy: "Copy email",
+    copied: "Copied",
+  },
   services: {
     label: "What I can help with",
     proof: "In practice",

@@ -23,7 +23,6 @@ const sr: Dict = {
     about: "O meni",
     skills: "Veštine",
     experience: "Iskustvo",
-    education: "Obrazovanje",
     projects: "Projekti",
     services: "Usluge",
     contact: "Kontakt",
@@ -104,6 +103,12 @@ const sr: Dict = {
     sourceLabel: "Kod",
     all: "Svi projekti",
     view: "Pročitaj ceo tekst",
+    /** The words round a card's measured result, `outcome` in src/site.ts:
+        `{from}` is what the figure is compared with, printed in this locale. */
+    outcomes: {
+      objectDetection: "mAP@0.5 za YOLOv8m, naspram {from} za ML.NET",
+      encryptix: "150 fajlova paralelno, umesto {from}",
+    },
     back: "Projekti",
 
     index: {
@@ -549,6 +554,7 @@ const sr: Dict = {
 
   games: {
     label: "Igre",
+    all: "Sve igre",
 
     /** The colon is doing grammatical work here: the date Intl prints is
      *  nominative, and "Napravljeno" running into it would want the genitive.
@@ -1339,6 +1345,18 @@ const sr: Dict = {
     },
   },
 
+
+  /** The command menu, opened with ⌘K or Ctrl+K from any page. Its groups
+      reuse the labels the header and the sections already have. */
+  palette: {
+    label: "Meni komandi",
+    open: "Pretraga",
+    placeholder: "Idi na sekciju, projekat ili igru",
+    empty: "Ništa na sajtu ne odgovara tome.",
+    actions: "Radnje",
+    copy: "Kopiraj email",
+    copied: "Kopirano",
+  },
   services: {
     label: "U čemu mogu da pomognem",
     proof: "U praksi",

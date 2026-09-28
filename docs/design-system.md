@@ -457,8 +457,8 @@ button would be a dead spot in the corner of the hero.
 ### Hover
 
 Tiles lift 4px on `--site-ease-out`. Marks jump and turn on `--site-spring`, icons in their
-squares turn a few degrees, the crumb's arrow leans back, a footer link slides 4px, the
-education crest turns, the portrait zooms 4% inside its frame. Nothing reflows: every hover
+squares turn a few degrees, the crumb's arrow leans back, a footer link slides 4px, a
+school's crest turns, the portrait zooms 4% inside its frame. Nothing reflows: every hover
 is a transform, a colour or a `background-size`.
 
 ### Degradation
@@ -714,8 +714,22 @@ the caption, the title, then the badge and marks.
 
 ## 7. The active-section indicator, and the site's script budget
 
-Every page but the seven games ships **no JavaScript file**. Four inline blocks cover the
-pre-paint theme script, the theme toggle, the dismissal of every disclosure, and this.
+Every page but the seven games ships **no JavaScript file**. Five inline blocks cover the
+pre-paint theme script, the theme toggle, the dismissal of every disclosure, this, and the
+command menu.
+
+### The command menu
+
+⌘K or Ctrl+K on any page, the Search button in the header from lg, or the first row of the
+phone menu opens [CommandPalette.astro](../src/components/CommandPalette.astro): a native
+modal `<dialog>` near the top of the screen with a field and the options in groups - the
+homepage's sections, the projects, the games, the page in the other languages, and the
+actions (the theme, through the header's own toggle so it still spreads from its button;
+copying the email, which says so on the row; LinkedIn and GitHub). Every option is rendered
+at build in the page's language, so the script only filters (case and accents ignored),
+moves with the arrows and acts on Enter or a click. ⚠️ **It stops every key at the dialog**,
+or a game listening on the window - 2048, the cube, Accretion - would move its board while
+the reader moves through the list. The key hint reads ⌘K on a Mac and Ctrl K elsewhere.
 
 A nav link cannot be styled from the section it points at: the two are in different
 subtrees, and `:target` only knows what was clicked, not what is on screen. So the second
@@ -2100,10 +2114,19 @@ Each page has one memorable thing, and everything else is a bento that fills its
   894ms, so a clip, a mask or an opacity fade on it costs the score. webp rather than AVIF,
   which came out larger at this quality.
 - **About** is the opening statement across the full measure at display size, then the
-  other two paragraphs at 7 and 5 columns, labelled Education and Games, which finish within
-  a line of each other in all four languages. The Education tile names the master's and its
-  thesis only: both theses are in Education, with their links. The Games tile is the whole
-  tile a link, on cobalt.
+  other two paragraphs, labelled Education and Games, at 5 and 7 columns, and 4 and 8 from
+  80rem. The Education tile names the master's and its thesis only: both theses are on the
+  Experience rail, with their links. The Games tile is on cobalt, the tile a link to the
+  games, and under its paragraph are the seven games drawn small
+  ([GameMinis.astro](../src/components/GameMinis.astro)), each a link to its game that opens
+  into the board. Each plays one move of its game - two tiles merge, a field opens round a
+  flag, a pair turns up, a moon falls in, a shot lands, the cube half turns, a disc
+  completes a row - one after the next along the row on a shared 8s cycle, then the row
+  rests: an arcade's attract mode. The wider column is the Games tile's so the boards can
+  take the height between its paragraph and Education's, so the two tiles end level. The
+  split is chosen for that (the measurements are in About.astro). On a phone the boards
+  are four and three. They are drawings rather than the games index's thumbnails, which
+  bring every game's CSS with them.
 - **Skills is a diagram of the stack**, drawn with the request diagram's method (§6) but
   written in home.css, because flow.css is on the project pages alone. Frontend, Backend
   and Data sit in a row with a line through each gap, and Cloud & DevOps runs across the foot
@@ -2148,14 +2171,19 @@ Each page has one memorable thing, and everything else is a bento that fills its
     timeline, so the line stays put and the tile comes in under it.
   - At rest, or without scroll-driven animation, the rail is whole and every initial it
     reaches is lit.
-- **Education** is two tiles with the crest at 4rem on its white disc, and across the foot
-  of each its thesis: a recessed tile that is the whole of it a link to the project, with the
-  label ("Master's thesis"), the project's title and its tagline. Which project each thesis
-  was is `thesis` on the degree in site.ts. On a phone the tagline is left out: with it the
-  two tiles added 566px to the longest page on the site.
+  - **The degrees are the rail's second chapter**, not a section of their own: under an
+    "Education" caption on the rail, in a wider gap (`--chapter`), each with the school's
+    crest at the initial's size and place, lit with an outline as the rail reaches it, and
+    its thesis where a role has its points - a recessed tile, the whole of it a link to the
+    project, with the label ("Master's thesis"), the project's title and its tagline.
+    Which project each thesis was is `thesis` on the degree in site.ts. On a phone the
+    thesis starts at the name's edge, clear of the rail, and drops its tagline.
 - **Projects** is banded: the first project as one wide card, its text beside a large
   `FlowMini` that loops, then three cards with their `FlowMini` as a picture that runs on
-  hover (see "Project cards" below).
+  hover (see "Project cards" below). A project with a measured result leads with it, after
+  its description: the figure in the display voice on an accent rule, and the words round
+  it with what it is compared with - `outcome` in site.ts, `projects.outcomes` in the
+  dictionaries.
 - **Services** is four tiles, two by two from a tablet up, each opening with a large icon
   that turns on hover, then its text, the technologies it is done in as tags, and at the
   foot "In practice": the place on the site it is shown done, a project's page or the role
@@ -2270,6 +2298,10 @@ centred in the space between the capsule and the footer on a tall screen.
 
 ## Changelog
 
+- 2026-09-28 - the Games tile in About draws the seven games small, each playing a move,
+  Education is the Experience rail's second chapter, a project card leads with its
+  measured result, the ⌘K command menu opens anywhere, and the footer on a phone leaves
+  the sections to the header's menu (§7, §10).
 - 2026-09-28 - the Skills diagram arrives whole with its stage's reveal instead of building
   group by group, which let a packet run to a group not yet there (§10).
 - 2026-09-28 - Education carries each thesis as a link to its project, and About no longer

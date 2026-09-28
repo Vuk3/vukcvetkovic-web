@@ -128,6 +128,36 @@
   }
 
   /*
+   * The measured result, where a project has one: the figure in the display
+   * voice, the words round it under it, on an accent rule - read before the
+   * stack, because an outcome is what a reader of a card is looking for. It
+   * sits after the description, so on a small card it is the last thing above
+   * the tags and on the featured one the last thing above its links.
+   */
+  .work-outcome {
+    display: grid;
+    gap: 0.2rem;
+    margin-top: 1.1rem;
+    border-left: 2px solid var(--site-accent);
+    padding-left: 0.9rem;
+  }
+
+  .work-outcome-figure {
+    font-stretch: 112%;
+    font-weight: 700;
+    font-size: clamp(1.5rem, 2.2vw, 1.875rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .work-outcome-label {
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    color: var(--site-muted);
+  }
+
+  /*
    * "Read the write-up", and the outbound links when a project has them. The
    * write-up is a span, not a link: the whole card is already the link, and a
    * second one to the same page would be announced twice.

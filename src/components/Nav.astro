@@ -1,5 +1,5 @@
 ---
-import { Gamepad2, Menu, X } from '@lucide/astro';
+import { Gamepad2, Menu, Search, X } from '@lucide/astro';
 import { Image } from 'astro:assets';
 import type { Lang } from '../i18n/types';
 import { locales } from '../i18n/types';
@@ -37,7 +37,6 @@ const sections = [
   { id: 'about', label: dict.nav.about },
   { id: 'skills', label: dict.nav.skills },
   { id: 'experience', label: dict.nav.experience },
-  { id: 'education', label: dict.nav.education },
   { id: 'projects', label: dict.nav.projects },
   { id: 'services', label: dict.nav.services },
   { id: 'contact', label: dict.nav.contact },
@@ -111,6 +110,21 @@ const languages = locales.map((locale) => ({
           <span class="hidden xl:inline">{dict.nav.games}</span>
         </a>
 
+        {/*
+          The command menu (CommandPalette.astro, in the layout). Desktop
+          only, where ⌘K means something; a phone has the same way in as the
+          first row of its menu. The key it shows is set by the menu's script:
+          ⌘K on a Mac, Ctrl K elsewhere.
+        */}
+        <button
+          type="button"
+          class="head-btn head-search hidden lg:inline-flex"
+          aria-label={dict.palette.open}
+          data-palette-open
+        >
+          <Search class="size-[1.05rem] shrink-0" aria-hidden="true" />
+          <kbd class="hidden xl:inline" data-palette-key>⌘K</kbd>
+        </button>
         <ThemeToggle lang={lang} />
 
         {/*
@@ -144,6 +158,12 @@ const languages = locales.map((locale) => ({
           </summary>
 
           <ul class="head-menu">
+            <li>
+              <button type="button" class="nav-row w-full" data-palette-open>
+                <Search class="size-5 shrink-0" aria-hidden="true" />
+                {dict.palette.open}
+              </button>
+            </li>
             {
               sections.map((section) => (
                 <li>

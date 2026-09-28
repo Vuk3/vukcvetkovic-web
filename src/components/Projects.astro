@@ -21,7 +21,7 @@
 import { LayoutGrid } from '@lucide/astro';
 import type { Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
-import { site } from '../site';
+import { site, type Project } from '../site';
 import FlowMini from './FlowMini.astro';
 import MarkTile from './MarkTile.astro';
 import Section, { type SectionTone } from './Section.astro';
@@ -52,6 +52,22 @@ const outboundLinks = (links: { live?: string; source?: string }) =>
   ].filter((link): link is { href: string; label: string } => Boolean(link.href));
 
 const featuredLinks = outboundLinks(featured.links);
+
+/**
+ * A card's measured result, where its project has one (`outcome` in
+ * src/site.ts): the figure, and the words round it with the figure it is
+ * compared with, both printed in this locale - "0,916" in three of the four.
+ */
+const outcomeOf = (project: Project) => {
+  if (!project.outcome) return undefined;
+  const { value, from, digits, unit = '' } = project.outcome;
+  const words = (dict.projects.outcomes as Partial<Record<string, string>>)[project.id];
+  if (!words) throw new Error(`${project.id}: an outcome with no projects.outcomes.${project.id}.`);
+  const number = new Intl.NumberFormat(lang, { minimumFractionDigits: digits, maximumFractionDigits: digits });
+  return { figure: number.format(value) + unit, label: words.replace('{from}', number.format(from) + unit) };
+};
+
+const featuredOutcome = outcomeOf(featured);
 ---
 
 <Section id="projects" label={dict.projects.label} tone={tone}>
@@ -83,6 +99,12 @@ const featuredLinks = outboundLinks(featured.links);
       <p class="work-tagline">{keep(featuredCopy.tagline)}</p>
 
       <p class="work-desc">{keep(featuredCopy.description)}</p>
+      {featuredOutcome && (
+        <p class="work-outcome">
+          <span class="work-outcome-figure">{featuredOutcome.figure}</span>
+          <span class="work-outcome-label">{featuredOutcome.label}</span>
+        </p>
+      )}
 
       <p class="work-more">
         <span class="link">{dict.projects.view}</span>
@@ -107,6 +129,7 @@ const featuredLinks = outboundLinks(featured.links);
         const copy = dict.projects.items[project.id];
         const page = localizePath(`/projects/${project.slug}/`, lang);
         const links = outboundLinks(project.links);
+        const outcome = outcomeOf(project);
 
         return (
           <li class="card card-hover work-card reveal-item">
@@ -125,6 +148,12 @@ const featuredLinks = outboundLinks(featured.links);
               </h3>
 
               <p class="work-desc">{keep(copy.description)}</p>
+              {outcome && (
+                <p class="work-outcome">
+                  <span class="work-outcome-figure">{outcome.figure}</span>
+                  <span class="work-outcome-label">{outcome.label}</span>
+                </p>
+              )}
 
               <div class="work-foot">
                 {project.tech.length > 0 && (

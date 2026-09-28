@@ -151,6 +151,14 @@ export interface Project {
   tech: TechName[];
   stack: ProjectStackGroup[];
   results?: ProjectResults;
+  /**
+   * The one measured result a card leads with, where a project has one: the
+   * figure, what it is compared with (`from`), the decimals both are printed
+   * to, and a unit. The words round it are `projects.outcomes.<id>` in the
+   * dictionaries, with `{from}` where the comparison goes, and a card checks
+   * at build that the two come together.
+   */
+  outcome?: { value: number; from: number; digits: number; unit?: string };
   /** Omit or leave empty to hide a link. */
   links: { live?: string; source?: string };
 }
@@ -320,6 +328,9 @@ const projects: Project[] = [
         { values: [17942, 0.862, 0.709, 0.778, 0.748, null] },
       ],
     },
+    /* Reannotated, YOLOv8m against ML.NET: the results table's second and
+       fourth rows. */
+    outcome: { value: 0.916, from: 0.748, digits: 3 },
     links: {},
   },
   {
@@ -354,6 +365,8 @@ const projects: Project[] = [
       formats: ["count", "seconds", "seconds"],
       rows: [{ values: [150, 68.91, 70.13] }, { values: [150, 44.16, 40.39] }],
     },
+    /* A 150-file pass, sequential against parallel. */
+    outcome: { value: 44.16, from: 68.91, digits: 2, unit: " s" },
     links: {},
   },
   {

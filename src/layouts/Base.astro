@@ -1,5 +1,6 @@
 ---
 import Footer from '../components/Footer.astro';
+import CommandPalette from '../components/CommandPalette.astro';
 import Nav from '../components/Nav.astro';
 import { locales, ogLocales, type Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
@@ -232,6 +233,8 @@ const structuredData = {
     </main>
 
     <Footer lang={lang} />
+
+    <CommandPalette lang={lang} />
 
     <script>
       // A native <details> has no light dismiss: it stays open when you click

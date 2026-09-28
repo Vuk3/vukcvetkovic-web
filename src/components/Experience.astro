@@ -1,7 +1,9 @@
 ---
-import { Check } from '@lucide/astro';
+import { Check, FileText, GraduationCap } from '@lucide/astro';
+import { Image } from 'astro:assets';
+import elfak from '../assets/elfak.webp';
 import type { Lang } from '../i18n/types';
-import { getDict } from '../i18n/utils';
+import { getDict, localizePath } from '../i18n/utils';
 import { site } from '../site';
 import Section, { type SectionTone } from './Section.astro';
 
@@ -12,27 +14,38 @@ interface Props {
 
 const { lang, tone } = Astro.props;
 const dict = getDict(lang);
+
+/* Every stop on the rail, the roles and then the degrees, so the first and
+   the last can be told from the rest whichever list they come from. */
+const stops = site.experience.length + site.education.length;
+
+// The crest's displayed size in CSS pixels, the initial's: 1x, 2x and 3x are
+// emitted from the 597px source.
+const crestSize = 56;
 ---
 
 {/*
-  One wide tile per role, in two columns: who and when on the left, what on the
-  right. Side by side the two roles came out 100px apart in height, because
+  One wide tile per stop, in two columns: who and when on the left, what on
+  the right. Side by side the two roles came out 100px apart in height, because
   one has three points and the other two, and a stacked tile with its bullets
   across the full measure ran to 150 characters a line - so each tile is as tall
   as its own content and its bullets sit at a readable width.
 
-  Employment is a sequence, and the rail joining the initials is what says so:
-  one line from the first initial to the last, through the tiles and the gaps
-  between them, which fills with the accent as the page scrolls past it. The
-  role he holds now takes the accent on its initial and on its period, which
-  is the one place the accent marks a fact rather than a link; the period also
-  carries a pulsing dot, so "2024 -" reads as running rather than cut off.
+  A career is a sequence, and the rail joining the stops is what says so: one
+  line from the first to the last, through the tiles and the gaps between them,
+  which fills with the accent as the page scrolls past it. The roles come
+  first, then the degrees, a chapter of their own under an "Education" caption
+  on the rail, each with the school's crest where a role has its initial and
+  its thesis where a role has its points. The role he holds now takes the
+  accent on its initial and on its period, which is the one place the accent
+  marks a fact rather than a link; the period also carries a pulsing dot, so
+  "2024 -" reads as running rather than cut off.
 
   A tile paints over whatever the tile above it draws, so the rail cannot be
   one element: each tile draws its own stretch - in from the tile above, across
-  the gap, to its initial, and out from its initial to its own bottom edge -
-  and the first has no way in and the last no way out. See the Experience
-  block in home.css.
+  the gap, to its mark, and out from its mark to its own bottom edge - and the
+  first has no way in and the last no way out. See the Experience block in
+  home.css.
 */}
 <Section id="experience" label={dict.experience.label} tone={tone}>
   <ol class="role-list">
@@ -44,9 +57,7 @@ const dict = getDict(lang);
              data-current="false", which [data-current] would still match. */
           <li class="card role" data-current={role.current ? '' : undefined}>
             {index > 0 && <span class="role-rail role-rail-in" aria-hidden="true" />}
-            {index < site.experience.length - 1 && (
-              <span class="role-rail role-rail-out" aria-hidden="true" />
-            )}
+            {index < stops - 1 && <span class="role-rail role-rail-out" aria-hidden="true" />}
             <div class="role-head">
               <span class="role-mark" aria-hidden="true">{role.company.charAt(0)}</span>
 
@@ -68,6 +79,69 @@ const dict = getDict(lang);
                 </li>
               ))}
             </ul>
+          </li>
+        );
+      })
+    }
+
+    {
+      site.education.map((degree, index) => {
+        const stop = site.experience.length + index;
+        const copy = dict.education.degrees[degree.id];
+        const thesis = site.projects.find((project) => project.id === degree.thesis);
+        if (!thesis) throw new Error(`${degree.id}: no project "${degree.thesis}" for its thesis.`);
+        const thesisCopy = dict.projects.items[thesis.id];
+
+        return (
+          <li class="card role role-degree" data-chapter={index === 0 ? '' : undefined}>
+            {stop > 0 && <span class="role-rail role-rail-in" aria-hidden="true" />}
+            {stop < stops - 1 && <span class="role-rail role-rail-out" aria-hidden="true" />}
+            {/* The chapter's caption, on the rail in the gap above the first
+                degree. Visible text, so a screen reader hears where the
+                degrees start as well. */}
+            {index === 0 && (
+              <p class="tile-label role-chapter">
+                <span class="tile-icon">
+                  <GraduationCap aria-hidden="true" />
+                </span>
+                {dict.education.label}
+              </p>
+            )}
+            <div class="role-head">
+              {/*
+                Decorative, so the alt is empty: the school is named in the
+                line beside it. The crest is navy on transparent, which
+                disappears against the dark theme, so it sits on its own white
+                disc, and the artwork is a circle already, so the disc reads as
+                part of the seal rather than as a plate put behind it.
+              */}
+              <Image
+                src={elfak}
+                alt=""
+                width={crestSize}
+                densities={[1, 2, 3]}
+                loading="lazy"
+                class="role-crest"
+              />
+
+              <div class="min-w-0">
+                <h3 class="role-company">{copy.degree}</h3>
+                <p class="role-title">{copy.school}</p>
+              </div>
+
+              <p class="role-period">{degree.period}</p>
+            </div>
+
+            <a href={localizePath(`/projects/${thesis.slug}/`, lang)} class="role-thesis">
+              <span class="tile-label">
+                <span class="tile-icon">
+                  <FileText aria-hidden="true" />
+                </span>
+                {copy.thesis}
+              </span>
+              <span class="role-thesis-title">{thesisCopy.title}</span>
+              <span class="role-thesis-line">{thesisCopy.tagline}</span>
+            </a>
           </li>
         );
       })

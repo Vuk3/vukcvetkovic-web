@@ -1,0 +1,265 @@
+---
+/**
+ * The command menu: ⌘K or Ctrl+K on any page, or the Search button in the
+ * header, opens a box that goes anywhere on the site by typing - a section, a
+ * project, a game, the page in another language - and does the two things a
+ * visitor comes back for: switching the theme and copying the email.
+ *
+ * Everything in it is rendered here, at build, in the page's language, so the
+ * script below does no more than show the options that match what is typed
+ * and act on the one chosen. A native modal `<dialog>`: the browser traps the
+ * focus in it, closes it on Escape and gives the focus back where it was.
+ *
+ * ⚠️ It is one of the site's five inline scripts - the budget and the reason
+ * a new one is asked for first are in AGENTS.md.
+ */
+import { Copy, FolderOpen, Gamepad2, Hash, Languages, LayoutGrid, Search, SunMoon } from '@lucide/astro';
+import { locales, type Lang } from '../i18n/types';
+import { getDict, localizePath } from '../i18n/utils';
+import { languageNames, site, type Game } from '../site';
+import BrandIcon from './BrandIcon.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = getDict(lang);
+const home = localizePath('/', lang);
+
+type GameId = keyof typeof dict.games.items;
+
+/*
+ * The options, by group: the homepage's sections in the page's own order, the
+ * projects, the games led by their index, and the page in the other languages.
+ */
+const sectionIds = [
+  ['about', dict.nav.about],
+  ['skills', dict.nav.skills],
+  ['experience', dict.nav.experience],
+  ['projects', dict.nav.projects],
+  ['services', dict.nav.services],
+  ['contact', dict.nav.contact],
+] as const;
+
+const groups = [
+  {
+    label: dict.nav.sections,
+    options: sectionIds.map(([id, label]) => ({ Icon: Hash, label, href: `${home}#${id}` })),
+  },
+  {
+    label: dict.projects.label,
+    options: site.projects.map((project) => ({
+      Icon: FolderOpen,
+      label: dict.projects.items[project.id].title,
+      href: localizePath(`/projects/${project.slug}/`, lang),
+    })),
+  },
+  {
+    label: dict.games.label,
+    options: [
+      { Icon: LayoutGrid, label: dict.games.all, href: localizePath('/games/', lang) },
+      ...(Object.entries(site.games) as [GameId, Game][]).map(([id, game]) => ({
+        Icon: Gamepad2,
+        label: dict.games.items[id].name,
+        href: localizePath(`/games/${game.slug}/`, lang),
+      })),
+    ],
+  },
+  {
+    label: dict.nav.language,
+    options: locales
+      .filter((locale) => locale !== lang)
+      .map((locale) => ({
+        Icon: Languages,
+        label: languageNames[locale],
+        href: localizePath(Astro.url.pathname, locale),
+      })),
+  },
+];
+---
+
+<dialog class="cmdk" aria-label={dict.palette.label} data-palette>
+  <div class="cmdk-field">
+    <Search class="cmdk-search" aria-hidden="true" />
+    <input
+      type="text"
+      role="combobox"
+      aria-expanded="true"
+      aria-controls="cmdk-list"
+      aria-autocomplete="list"
+      aria-label={dict.palette.open}
+      placeholder={dict.palette.placeholder}
+      autocomplete="off"
+      spellcheck="false"
+    />
+    <kbd class="cmdk-kbd">Esc</kbd>
+  </div>
+
+  {/* A listbox of groups of options, each group named by its heading. */}
+  <ul id="cmdk-list" class="cmdk-list" role="listbox" aria-label={dict.palette.label}>
+    {
+      groups.map((group, g) => (
+        <li role="presentation" data-group>
+          <p id={`cmdk-g${g}`} class="cmdk-heading">
+            {group.label}
+          </p>
+          <ul role="group" aria-labelledby={`cmdk-g${g}`}>
+            {group.options.map((option, i) => (
+              <li id={`cmdk-${g}-${i}`} role="option" class="cmdk-item" data-href={option.href}>
+                <option.Icon aria-hidden="true" />
+                <span>{option.label}</span>
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))
+    }
+
+    {/* The actions: the theme through the header's own toggle, so the new
+        theme spreads from its button as it always does, then the email and
+        the two profiles. */}
+    <li role="presentation" data-group>
+      <p id="cmdk-ga" class="cmdk-heading">{dict.palette.actions}</p>
+      <ul role="group" aria-labelledby="cmdk-ga">
+        <li id="cmdk-a-0" role="option" class="cmdk-item" data-action="theme">
+          <SunMoon aria-hidden="true" />
+          <span>{dict.nav.themeToggle}</span>
+        </li>
+        <li id="cmdk-a-1" role="option" class="cmdk-item" data-action="copy" data-value={site.email}>
+          <Copy aria-hidden="true" />
+          <span class="cmdk-label">{dict.palette.copy}</span>
+          <span class="cmdk-done">{dict.palette.copied}</span>
+          <span class="cmdk-hint">{site.email}</span>
+        </li>
+        <li id="cmdk-a-2" role="option" class="cmdk-item" data-href={site.links.linkedin} data-external>
+          <BrandIcon name="linkedin" />
+          <span>{dict.contact.linkedinLabel}</span>
+        </li>
+        <li id="cmdk-a-3" role="option" class="cmdk-item" data-href={site.links.github} data-external>
+          <BrandIcon name="github" />
+          <span>{dict.contact.githubLabel}</span>
+        </li>
+      </ul>
+    </li>
+  </ul>
+
+  <p class="cmdk-empty" hidden data-empty>{dict.palette.empty}</p>
+</dialog>
+
+<script>
+  // Opens on ⌘K / Ctrl+K and from any [data-palette-open] button, filters the
+  // options as the reader types, moves through them with the arrow keys and
+  // acts on Enter or a click. Matching ignores case and accents, so "vestine"
+  // finds "Veštine".
+  const dialog = document.querySelector<HTMLDialogElement>('[data-palette]');
+
+  if (dialog) {
+    const input = dialog.querySelector('input')!;
+    const options = [...dialog.querySelectorAll<HTMLElement>('[role="option"]')];
+    const groups = [...dialog.querySelectorAll<HTMLElement>('[data-group]')];
+    const empty = dialog.querySelector<HTMLElement>('[data-empty]')!;
+    const fold = (text: string) => text.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+    let shown = options;
+    let active = -1;
+
+    const select = (index: number) => {
+      shown[active]?.removeAttribute('aria-selected');
+      active = index;
+      const option = shown[index];
+      if (!option) return input.removeAttribute('aria-activedescendant');
+      option.setAttribute('aria-selected', 'true');
+      input.setAttribute('aria-activedescendant', option.id);
+      option.scrollIntoView({ block: 'nearest' });
+    };
+
+    const filter = () => {
+      const query = fold(input.value.trim());
+      shown[active]?.removeAttribute('aria-selected');
+      shown = options.filter((option) => {
+        const match = fold(option.textContent ?? '').includes(query);
+        option.hidden = !match;
+        return match;
+      });
+      groups.forEach((group) => (group.hidden = !group.querySelector('[role="option"]:not([hidden])')));
+      empty.hidden = shown.length > 0;
+      active = -1;
+      select(shown.length > 0 ? 0 : -1);
+    };
+
+    const open = () => {
+      // The phone menu holds a way in, and would otherwise stay open under it.
+      document.querySelectorAll<HTMLDetailsElement>('details[data-menu][open]').forEach((menu) => (menu.open = false));
+      input.value = '';
+      filter();
+      dialog.showModal();
+    };
+
+    const run = (option: HTMLElement) => {
+      const { href, action, value } = option.dataset;
+      if (action === 'copy' && value) {
+        // Says "Copied" on the row for a moment, then gets out of the way.
+        navigator.clipboard?.writeText(value).then(() => {
+          option.dataset.done = '';
+          setTimeout(() => {
+            delete option.dataset.done;
+            dialog.close();
+          }, 700);
+        });
+        return;
+      }
+      dialog.close();
+      if (action === 'theme') document.querySelector<HTMLElement>('[data-theme-toggle]')?.click();
+      else if (href && 'external' in option.dataset) window.open(href, '_blank', 'noopener');
+      else if (href) location.href = href;
+    };
+
+    document.addEventListener('keydown', (event) => {
+      if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== 'k') return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (dialog.open) dialog.close();
+      else open();
+    });
+
+    document.querySelectorAll('[data-palette-open]').forEach((button) => button.addEventListener('click', open));
+
+    // A Mac says ⌘K, everything else Ctrl K.
+    if (!/Mac|iPhone|iPad/.test(navigator.platform)) {
+      document.querySelectorAll('[data-palette-key]').forEach((key) => (key.textContent = 'Ctrl K'));
+    }
+
+    input.addEventListener('input', filter);
+
+    // Kept from the page: a game listening for arrow keys on the window would
+    // otherwise move its board while the reader moves through the list.
+    dialog.addEventListener('keydown', (event) => {
+      event.stopPropagation();
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        dialog.close();
+      } else if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && shown.length > 0) {
+        event.preventDefault();
+        const step = event.key === 'ArrowDown' ? 1 : shown.length - 1;
+        select((active + step) % shown.length);
+      } else if (event.key === 'Enter' && shown[active]) {
+        event.preventDefault();
+        run(shown[active]);
+      }
+    });
+
+    options.forEach((option) => {
+      option.addEventListener('click', () => run(option));
+      option.addEventListener('pointermove', () => {
+        const index = shown.indexOf(option);
+        if (index !== active) select(index);
+      });
+    });
+
+    // A click on the backdrop lands on the dialog itself, which has no
+    // padding, so anything that is not a child is outside the box.
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+  }
+</script>

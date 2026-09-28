@@ -29,7 +29,7 @@ not need the map to change a dictionary, add a project, or touch the stylesheet.
 ## Working rules
 
 - **`npm run check` is the only gate this project has.** There is no test runner and no
-  linter - nothing to run but `astro check`, which reports 0 errors, 0 warnings and 0 hints across 98 files. Do
+  linter - nothing to run but `astro check`, which reports 0 errors, 0 warnings and 0 hints across 99 files. Do
   not add Vitest, ESLint or Prettier without asking.
 - **`npm run build` runs `astro check` first**, so a failed build is usually a type error
   rather than a build error. Read the first failure, not the last line.
@@ -76,10 +76,10 @@ not need the map to change a dictionary, add a project, or touch the stylesheet.
   [src/styles/global.css](./src/styles/global.css). A raw hex in a component is a bug -
   the only two in the codebase are the `theme-color` meta tags, and they are a known
   duplication.
-- **Every page but the seven games ships no JavaScript file.** Four inline blocks, about 2.6 KB in
-  total, cover the pre-paint theme script, the theme toggle (both also point the browser's
+- **Every page but the seven games ships no JavaScript file.** Five inline blocks, about 4.8 KB in
+  total (1.9 KB gz), cover the pre-paint theme script, the theme toggle (both also point the browser's
   `theme-color` at the chosen theme, and the toggle spreads the new theme from the button),
-  disclosure dismissal and the active-section indicator. Anything new should be CSS first. If it genuinely
+  disclosure dismissal, the active-section indicator and the ⌘K command menu. Anything new should be CSS first. If it genuinely
   needs script, ask before adding it.
 - **The exceptions are the seven games**, which cannot be: 2.9 KB gz for
   [2048](./src/games/2048/game.ts), 3.6 KB for

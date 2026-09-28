@@ -22,7 +22,6 @@ const fr: Dict = {
     about: "À propos",
     skills: "Compétences",
     experience: "Expérience",
-    education: "Formation",
     projects: "Projets",
     services: "Services",
     contact: "Contact",
@@ -102,6 +101,12 @@ const fr: Dict = {
     sourceLabel: "Code source",
     all: "Tous les projets",
     view: "Voir le détail",
+    /** The words round a card's measured result, `outcome` in src/site.ts:
+        `{from}` is what the figure is compared with, printed in this locale. */
+    outcomes: {
+      objectDetection: "mAP@0.5 pour YOLOv8m, contre {from} pour ML.NET",
+      encryptix: "150 fichiers en parallèle, contre {from} avant",
+    },
     back: "Projets",
 
     index: {
@@ -551,6 +556,7 @@ const fr: Dict = {
 
   games: {
     label: "Jeux",
+    all: "Tous les jeux",
 
     /** The space before the colon is French typography and therefore part of
      *  the string, which is why the label carries its own punctuation. See the
@@ -1335,6 +1341,18 @@ const fr: Dict = {
     },
   },
 
+
+  /** The command menu, opened with ⌘K or Ctrl+K from any page. Its groups
+      reuse the labels the header and the sections already have. */
+  palette: {
+    label: "Menu de commandes",
+    open: "Rechercher",
+    placeholder: "Aller à une section, un projet ou un jeu",
+    empty: "Rien sur le site ne correspond.",
+    actions: "Actions",
+    copy: "Copier l’adresse e-mail",
+    copied: "Copiée",
+  },
   services: {
     label: "Comment je peux vous aider",
     proof: "En pratique",

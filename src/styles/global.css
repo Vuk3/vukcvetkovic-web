@@ -1254,6 +1254,172 @@
     margin-bottom: 0;
   }
 
+  /* ---- The command menu ------------------------------------------------ */
+
+  /* The header's way in: the search mark, and the key beside it from xl. */
+  .head-search {
+    gap: 0.5rem;
+    padding-inline: 0.7rem;
+  }
+
+  .head-search kbd,
+  .cmdk-kbd {
+    border: 1px solid var(--site-hairline);
+    border-radius: 6px;
+    padding: 0.05rem 0.4rem;
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 560;
+    color: var(--site-muted);
+  }
+
+  /*
+   * A floating sheet near the top of the screen, like every command menu a
+   * developer already knows: the field, then the options in their groups,
+   * scrolling inside the sheet. It floats, so it takes the floating shadow,
+   * over the ink at 45% that dims the page behind it.
+   */
+  .cmdk {
+    width: min(40rem, calc(100vw - 2rem));
+    max-height: min(34rem, calc(100dvh - 6rem));
+    margin: 12vh auto auto;
+    overflow: hidden;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-card);
+    background-color: var(--site-card);
+    padding: 0;
+    color: var(--site-fg);
+    box-shadow: var(--site-float);
+  }
+
+  .cmdk[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cmdk::backdrop {
+    background-color: color-mix(in oklab, var(--site-panel-bg) 45%, transparent);
+  }
+
+  .cmdk-field {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 1px solid var(--site-hairline);
+    padding: 0.95rem 1.15rem;
+  }
+
+  .cmdk-search {
+    width: 1.15rem;
+    height: 1.15rem;
+    flex-shrink: 0;
+    color: var(--site-muted);
+  }
+
+  .cmdk-field input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    font-size: 1.0625rem;
+    outline: none;
+  }
+
+  .cmdk-field input::placeholder {
+    color: var(--site-muted);
+  }
+
+  .cmdk-list {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0.4rem 0.5rem 0.6rem;
+  }
+
+  .cmdk-heading {
+    padding: 0.75rem 0.7rem 0.35rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--site-muted);
+  }
+
+  .cmdk-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: var(--site-radius-inner);
+    padding: 0.6rem 0.7rem;
+    font-weight: 540;
+    cursor: pointer;
+  }
+
+  .cmdk-item > svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex-shrink: 0;
+    color: var(--site-muted);
+  }
+
+  /* The option the arrows are on, and the pointer's: the accent, faintly. */
+  .cmdk-item[aria-selected='true'] {
+    background-color: color-mix(in oklab, var(--site-accent) 12%, var(--site-card));
+    color: var(--site-accent);
+  }
+
+  .cmdk-item[aria-selected='true'] > svg {
+    color: var(--site-accent);
+  }
+
+  .cmdk-hint {
+    margin-left: auto;
+    overflow: hidden;
+    font-size: 0.875rem;
+    font-weight: 450;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--site-muted);
+  }
+
+  /* "Copied" in place of "Copy email", while the row says so. */
+  .cmdk-done,
+  .cmdk-item[data-done] .cmdk-label {
+    display: none;
+  }
+
+  .cmdk-item[data-done] .cmdk-done {
+    display: inline;
+  }
+
+  .cmdk-empty {
+    padding: 1.5rem 1.15rem 1.75rem;
+    text-align: center;
+    color: var(--site-muted);
+  }
+
+  /* It drops in a few pixels as it opens, and the dim fades in under it: an
+     answer to the key, so it is quick. */
+  @media (prefers-reduced-motion: no-preference) {
+    .cmdk[open] {
+      animation: cmdk-in 200ms var(--site-ease-out);
+    }
+
+    .cmdk[open]::backdrop {
+      animation: cmdk-dim 200ms var(--site-ease-out);
+    }
+  }
+
+  @keyframes cmdk-in {
+    from {
+      opacity: 0;
+      translate: 0 -8px;
+      scale: 0.98;
+    }
+  }
+
+  @keyframes cmdk-dim {
+    from {
+      opacity: 0;
+    }
+  }
+
   /* ---- Footer ---------------------------------------------------------- */
 
   /*
@@ -1275,6 +1441,73 @@
     display: grid;
     gap: clamp(2rem, 4vw, 3rem) var(--site-gap);
     padding-top: clamp(2.75rem, 5vw, 4.5rem);
+  }
+
+  /*
+   * On a phone the footer was 1,228px of one column: three lists stacked
+   * under the channels. Now LinkedIn and GitHub are their marks alone, on the
+   * name's line - their names stay for a screen reader - with the email under
+   * them, and the games and the projects share a row. The sections are left
+   * to the header's menu, which holds the same seven links and is on screen
+   * the whole way down, while the games and the projects are in no menu at
+   * all. Every gap is tighter.
+   */
+  @media (max-width: 39.99rem) {
+    .foot-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-areas:
+        'lead lead'
+        'games projects';
+      gap: 1.75rem var(--site-gap);
+      padding-top: 2.25rem;
+    }
+
+    .foot-lead {
+      grid-area: lead;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      align-items: center;
+      gap: 1rem 0.5rem;
+    }
+
+    .foot-channels {
+      display: contents;
+    }
+
+    .foot-channels > .cta {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      justify-self: start;
+    }
+
+    .foot-sections {
+      display: none;
+    }
+
+    .foot-games {
+      grid-area: games;
+    }
+
+    .foot-projects {
+      grid-area: projects;
+    }
+
+    .foot-links {
+      margin-top: 0.75rem;
+      gap: 0.4rem;
+    }
+
+    .foot-channel-name {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .foot-base {
+      margin-top: 2rem;
+    }
   }
 
   @media (min-width: 40rem) {

@@ -6,8 +6,8 @@ reference: **[docs/design-system.md](../../docs/design-system.md)**.
 ## Every page but the games ships no JavaScript file
 
 Three woff2 faces, a handful of webp variants, and no CSS file either: every stylesheet is
-inlined into the documents that use it. The four `<script>` blocks that exist are small
-enough that Astro inlines them into each page too - about 2.6 KB total, no extra request.
+inlined into the documents that use it. The five `<script>` blocks that exist are small
+enough that Astro inlines them into each page too - about 4.8 KB total, no extra request.
 
 ⚠️ **The exceptions are the seven games**, [Game2048.astro](./Game2048.astro),
 [Minesweeper.astro](./Minesweeper.astro), [Memory.astro](./Memory.astro),
@@ -25,9 +25,9 @@ cite them - the rules below are unchanged for every other component.
   elements. The header capsule's settle is a `scroll(root)` timeline. The section reveals
   and the request diagram's assembly are `view()` timelines, and its packets' loop is a
   CSS animation. None of that costs script.
-- **If something genuinely needs a script, ask before adding it.** Three exist outside the
-  games: the theme toggle, the layout's single dismissal listener and the active-section
-  observer.
+- **If something genuinely needs a script, ask before adding it.** Four exist outside the
+  games: the theme toggle, the layout's single dismissal listener, the active-section
+  observer and the command menu ([CommandPalette.astro](./CommandPalette.astro), ⌘K).
 - **Dismissal is already solved.** A disclosure gets `data-menu` and
   [Base.astro](../layouts/Base.astro) handles Escape, pointer-down outside and clicking a
   link inside, for every disclosure on the page at once. Do not add a second listener.
@@ -142,6 +142,10 @@ card-to-page flight; the rules are at the foot of global.css.
 - ⚠️ **Name the heading, never the link inside it.** A link wraps across lines, and a
   named box that is split across lines also drops the transition.
 - A new game page names its title and board the same way, from `site.games.<id>.slug`.
+- The homepage's Games tile draws each game small ([GameMinis.astro](./GameMinis.astro)) and
+  names each drawing `game-<slug>-board`, so it opens into the board as a card does. A new
+  game needs a drawing there too: `drawn` in that file is keyed by game, so the build says
+  so.
 
 Details and timings: [docs/design-system.md §5](../../docs/design-system.md#a-card-opens-into-its-page).
 
@@ -151,8 +155,8 @@ Details and timings: [docs/design-system.md §5](../../docs/design-system.md#a-c
   stage is `aria-hidden` and the run is announced from a `sr-only` ordered list in the order
   the request takes it; the 404's digit tiles are `aria-hidden` and the status is read once
   from a `sr-only` line.
-- The Education crest has `alt=""` - the school is named in the line next to it, and
-  announcing the crest as well reads the same thing twice. So does the header's V mark,
+- A degree's crest on the Experience rail has `alt=""` - the school is named in the line
+  next to it, and announcing the crest as well reads the same thing twice. So does the header's V mark,
   beside the name.
 - The phone menu carries **no landmark**. The desktop `<nav>` already has one named
   "Sections", and a second with the same name gives a screen reader two identical entries.

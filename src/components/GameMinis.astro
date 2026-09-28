@@ -1,0 +1,971 @@
+---
+/**
+ * The seven games, drawn small for the Games tile in About: a row of little
+ * boards in the cobalt tile's own white, each a link to its game, each playing
+ * one move of it - two tiles merge, a field opens round a flag, a pair turns
+ * up, a moon falls in, a shot lands, the cube turns, a disc drops into a row
+ * of four.
+ *
+ * The moves run as a wave along the row, one board after the next, and the
+ * row rests before it starts again: an arcade's attract mode, not seven
+ * things moving at once. Every board shares one cycle and starts `--i` steps
+ * later than the one before it, so the wave keeps its shape for as long as
+ * the page is open. Each move is set up again just before its turn comes -
+ * the tiles spawn, the cover comes back, the card turns back over - so the
+ * reset reads as part of the move rather than a jump.
+ *
+ * They are drawings rather than the /games/ index's thumbnails on purpose.
+ * A thumbnail is built from its game's own pieces and brings the game's
+ * stylesheet with it, and seven of those cost the homepage 25 KB gz of CSS.
+ * These are a few shapes each, in the tile's tokens, and cost under 3 KB gz,
+ * markup and rules together.
+ *
+ * A board carries its game's `view-transition-name`, the one the game page
+ * gives its board, so the drawing opens into the real thing. The /games/
+ * cards carry the same names, which is fine: they are on another page.
+ *
+ * ⚠️ The drawings are `aria-hidden`: each link is named by its game, and
+ * that is all a screen reader needs from a picture of a move.
+ */
+import type { Lang } from '../i18n/types';
+import { getDict, localizePath } from '../i18n/utils';
+import { site, type Game } from '../site';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const copy = getDict(lang).games;
+
+type GameId = keyof typeof copy.items;
+
+/*
+ * Every game the registry holds has a drawing below, and this is what says
+ * so: a game added to site.ts without an entry here is a type error, where
+ * the markup alone would render an empty board and pass.
+ */
+const drawn: Record<GameId, true> = {
+  twentyFortyEight: true,
+  minesweeper: true,
+  memory: true,
+  accretion: true,
+  battleship: true,
+  cube: true,
+  fourInARow: true,
+};
+
+const entries = (Object.entries(site.games) as [GameId, Game][]).filter(([id]) => drawn[id]);
+---
+
+<ul class="gm" role="list">
+  {
+    entries.map(([id, game], i) => (
+      <li style={`--i:${i}`}>
+        <a
+          href={localizePath(`/games/${game.slug}/`, lang)}
+          class="gm-cab above"
+          aria-label={copy.items[id].name}
+          style={`view-transition-name:game-${game.slug}-board;view-transition-class:board`}
+        >
+          {id === 'twentyFortyEight' && (
+            <svg class="gm-art" viewBox="0 0 48 48" aria-hidden="true">
+              <rect class="gm-dim" x="3" y="3" width="42" height="42" rx="7" />
+              <rect class="gm-dim" x="6" y="6" width="17" height="17" rx="3.5" />
+              <rect class="gm-dim" x="25" y="6" width="17" height="17" rx="3.5" />
+              <rect class="gm-dim" x="6" y="25" width="17" height="17" rx="3.5" />
+              <rect class="gm-dim" x="25" y="25" width="17" height="17" rx="3.5" />
+              <g>
+                <rect class="gm-ink" x="6" y="25" width="17" height="17" rx="3.5" />
+                <text class="gm-num" x="14.5" y="33.5">8</text>
+              </g>
+              <g class="gm-2048-b">
+                <rect class="gm-ink" x="25" y="6" width="17" height="17" rx="3.5" />
+                <text class="gm-num gm-2048-two" x="33.5" y="14.5">2</text>
+                <text class="gm-num gm-2048-four" x="33.5" y="14.5">4</text>
+              </g>
+              {/* Drawn last, so it slides over the tile it merges into. */}
+              <g class="gm-2048-a">
+                <rect class="gm-ink" x="6" y="6" width="17" height="17" rx="3.5" />
+                <text class="gm-num" x="14.5" y="14.5">2</text>
+              </g>
+            </svg>
+          )}
+
+          {id === 'minesweeper' && (
+            <svg class="gm-art" viewBox="0 0 48 48" aria-hidden="true">
+              {/* One mine, in the top right corner, so the three cells
+                  round it read 1 and the rest are open ground. */}
+              <rect class="gm-dim" x="5" y="5" width="12" height="12" rx="2.5" />
+              <rect class="gm-dim" x="19" y="5" width="12" height="12" rx="2.5" />
+              <rect class="gm-dim" x="5" y="19" width="12" height="12" rx="2.5" />
+              <rect class="gm-dim" x="19" y="19" width="12" height="12" rx="2.5" />
+              <rect class="gm-dim" x="33" y="19" width="12" height="12" rx="2.5" />
+              <rect class="gm-dim" x="5" y="33" width="12" height="12" rx="2.5" />
+              <rect class="gm-dim" x="19" y="33" width="12" height="12" rx="2.5" />
+              <rect class="gm-dim" x="33" y="33" width="12" height="12" rx="2.5" />
+              <text class="gm-num gm-num-light" x="25" y="11">1</text>
+              <text class="gm-num gm-num-light" x="25" y="25">1</text>
+              <text class="gm-num gm-num-light" x="39" y="25">1</text>
+              {/* The covers, opened from the bottom left corner out, a step
+                  of `--d` for each cell further from the click. */}
+              <rect class="gm-cover" x="5" y="5" width="12" height="12" rx="2.5" style="--d:0.16s" />
+              <rect class="gm-cover" x="19" y="5" width="12" height="12" rx="2.5" style="--d:0.24s" />
+              <rect class="gm-cover" x="5" y="19" width="12" height="12" rx="2.5" style="--d:0.08s" />
+              <rect class="gm-cover" x="19" y="19" width="12" height="12" rx="2.5" style="--d:0.16s" />
+              <rect class="gm-cover" x="33" y="19" width="12" height="12" rx="2.5" style="--d:0.24s" />
+              <rect class="gm-cover" x="5" y="33" width="12" height="12" rx="2.5" style="--d:0s" />
+              <rect class="gm-cover" x="19" y="33" width="12" height="12" rx="2.5" style="--d:0.08s" />
+              <rect class="gm-cover" x="33" y="33" width="12" height="12" rx="2.5" style="--d:0.16s" />
+              <rect class="gm-mid" x="33" y="5" width="12" height="12" rx="2.5" />
+              <g class="gm-mine-flag">
+                {/* The pennant a good deal wider than the pole: at this size a
+                    narrow one on its base reads as a 1 among the 1s. */}
+                <rect class="gm-ink" x="40" y="6.4" width="1.5" height="8" />
+                <path class="gm-ink" d="M41 6.4 34.4 9.7 41 13Z" />
+                <rect class="gm-ink" x="36.4" y="13.8" width="8.4" height="1.9" rx="0.95" />
+              </g>
+            </svg>
+          )}
+
+          {id === 'memory' && (
+            <svg class="gm-art" viewBox="0 0 48 48" aria-hidden="true">
+              <g class="gm-mem-pair">
+                <rect class="gm-ink" x="6" y="9" width="16" height="30" rx="3" />
+                <path class="gm-on-ink" d="M14 18.5 15.6 22.4 19.5 24 15.6 25.6 14 29.5 12.4 25.6 8.5 24 12.4 22.4Z" />
+                <g class="gm-mem-front">
+                  <rect class="gm-ink" x="26" y="9" width="16" height="30" rx="3" />
+                  <path class="gm-on-ink" d="M34 18.5 35.6 22.4 39.5 24 35.6 25.6 34 29.5 32.4 25.6 28.5 24 32.4 22.4Z" />
+                </g>
+                <g class="gm-mem-back">
+                  <rect class="gm-mid" x="26" y="9" width="16" height="30" rx="3" />
+                  <rect class="gm-line" x="29" y="12" width="10" height="24" rx="1.5" />
+                </g>
+              </g>
+            </svg>
+          )}
+
+          {id === 'accretion' && (
+            <svg class="gm-art" viewBox="0 0 48 48" aria-hidden="true">
+              <circle class="gm-orbit" cx="24" cy="24" r="16" />
+              <circle class="gm-mid" cx="13.7" cy="36.3" r="1.1" />
+              <circle class="gm-mid" cx="10.1" cy="16" r="1.1" />
+              <circle class="gm-mid" cx="32" cy="10.1" r="1.1" />
+              <circle class="gm-ink gm-acc-core" cx="24" cy="24" r="6.5" />
+              <g class="gm-acc-orbit">
+                <circle class="gm-ink gm-acc-body" cx="40" cy="24" r="3" />
+              </g>
+            </svg>
+          )}
+
+          {id === 'battleship' && (
+            <svg class="gm-art" viewBox="0 0 48 48" aria-hidden="true">
+              {
+                [3.75, 14.25, 24.75, 35.25].flatMap((y) =>
+                  [3.75, 14.25, 24.75, 35.25].map((x) => (
+                    <rect class="gm-dim" x={x} y={y} width="9" height="9" rx="2" />
+                  )),
+                )
+              }
+              <circle class="gm-mid" cx="39.75" cy="8.25" r="1.5" />
+              <circle class="gm-mid" cx="29.25" cy="39.75" r="1.5" />
+              <circle class="gm-mid" cx="8.25" cy="29.25" r="1.5" />
+              <g class="gm-bs-ship">
+                <rect class="gm-ship" x="4.5" y="15" width="28.5" height="7.5" rx="3.75" />
+                <path class="gm-bs-hit" d="M16.25 16.25 21.25 21.25M21.25 16.25 16.25 21.25" />
+              </g>
+              <circle class="gm-bs-ring" cx="18.75" cy="18.75" r="4.5" />
+            </svg>
+          )}
+
+          {id === 'cube' && (
+            <span class="gm-cube" aria-hidden="true">
+              <span class="gm-cube-body">
+                <span class="gm-face gm-face-top" />
+                <span class="gm-face gm-face-bottom" />
+                <span class="gm-face gm-face-front" />
+                <span class="gm-face gm-face-back" />
+                <span class="gm-face gm-face-right" />
+                <span class="gm-face gm-face-left" />
+              </span>
+            </span>
+          )}
+
+          {id === 'fourInARow' && (
+            <svg class="gm-art" viewBox="0 0 48 48" aria-hidden="true">
+              <rect class="gm-dim" x="3" y="15" width="42" height="30" rx="5" />
+              {
+                [20, 30, 40].flatMap((cy) =>
+                  [8.25, 18.75, 29.25, 39.75].map((cx) => <circle class="gm-hole" cx={cx} cy={cy} r="3.9" />),
+                )
+              }
+              <circle class="gm-ring" cx="8.25" cy="30" r="2.9" />
+              <circle class="gm-ring" cx="18.75" cy="30" r="2.9" />
+              <circle class="gm-ring" cx="18.75" cy="20" r="2.9" />
+              <circle class="gm-ink gm-four-win" cx="8.25" cy="40" r="3.9" style="--d:0s" />
+              <circle class="gm-ink gm-four-win" cx="18.75" cy="40" r="3.9" style="--d:0.06s" />
+              <circle class="gm-ink gm-four-win" cx="29.25" cy="40" r="3.9" style="--d:0.12s" />
+              <g class="gm-four-drop">
+                <circle class="gm-ink gm-four-win" cx="39.75" cy="40" r="3.9" style="--d:0.18s" />
+              </g>
+            </svg>
+          )}
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  @layer properties, theme, base, components, games, utilities;
+
+  @layer components {
+    /*
+     * The row. The Games tile is a flex column stretched to its row by the
+     * Education tile beside it, so the row takes what height the paragraph
+     * leaves (`flex: 1`) and the boards grow into it: the two tiles end
+     * level in every language without a gap under either.
+     *
+     * On a phone, four and three, the second row's boards widening to the
+     * edge the way the hero's tray does: seven across a phone is 40px a
+     * board, too small to see a move in. From 40rem the tile is the full
+     * measure and the seven are one row of squares.
+     */
+    .gm {
+      --gm-gap: 0.5rem;
+
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--gm-gap);
+      margin-top: clamp(1.25rem, 2vw, 1.75rem);
+    }
+
+    .gm > li {
+      display: grid;
+      flex: 1 1 calc((100% - 3 * var(--gm-gap)) / 4);
+      height: 4.75rem;
+    }
+
+    @media (min-width: 40rem) {
+      .gm {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+      }
+
+      .gm > li {
+        height: auto;
+        aspect-ratio: 1;
+      }
+    }
+
+    /* Beside Education, the height the row gives (see About.astro for what
+       that comes to). 4rem is the least a board is drawn at, for a language
+       whose paragraph beside it runs only a line longer. */
+    @media (min-width: 64rem) {
+      .gm {
+        flex: 1 0 auto;
+        grid-template-rows: minmax(4rem, 1fr);
+      }
+
+      .gm > li {
+        aspect-ratio: auto;
+      }
+    }
+
+    /*
+     * A board: a recessed square in the tile's lighter cobalt, the drawing
+     * centred in it at three quarters of its shorter side. It is the container
+     * the drawing is sized against, which is why it is `size`: a board in a
+     * stretched row is taller than it is wide, and the drawing has to fit
+     * the smaller of the two.
+     */
+    .gm-cab {
+      container-type: size;
+      display: grid;
+      place-items: center;
+      border-radius: var(--site-radius-inner);
+      background-color: var(--site-card);
+      box-shadow: var(--site-rim);
+      transition:
+        translate 300ms var(--site-spring),
+        background-color 250ms var(--site-ease);
+    }
+
+    .gm-cab:hover {
+      translate: 0 -3px;
+      background-color: var(--site-inset);
+    }
+
+    .gm-cab:focus-visible {
+      outline: 2px solid var(--site-fg);
+      outline-offset: 2px;
+    }
+
+    .gm-art {
+      width: 76cqmin;
+      height: 76cqmin;
+      overflow: visible;
+    }
+
+    /* The palette every drawing is made of: the tile's white at four
+       strengths, and the tile's own cobalt for what sits on the white. */
+    .gm-dim {
+      fill: color-mix(in oklab, var(--site-fg) 14%, transparent);
+    }
+
+    .gm-mid {
+      fill: color-mix(in oklab, var(--site-fg) 42%, transparent);
+    }
+
+    .gm-ink {
+      fill: var(--site-fg);
+    }
+
+    .gm-on-ink {
+      fill: var(--site-bg);
+    }
+
+    .gm-line {
+      fill: none;
+      stroke: color-mix(in oklab, var(--site-fg) 50%, transparent);
+      stroke-width: 1.2;
+    }
+
+    .gm-num {
+      font-size: 10px;
+      font-weight: 750;
+      text-anchor: middle;
+      dominant-baseline: central;
+      fill: var(--site-bg);
+    }
+
+    .gm-num-light {
+      font-size: 8.5px;
+      fill: var(--site-fg);
+    }
+
+    .gm-cover {
+      fill: color-mix(in oklab, var(--site-fg) 42%, var(--site-card));
+    }
+
+    .gm-orbit {
+      fill: none;
+      stroke: color-mix(in oklab, var(--site-fg) 24%, transparent);
+      stroke-width: 1.2;
+      stroke-dasharray: 2 3;
+    }
+
+    .gm-ship {
+      fill: color-mix(in oklab, var(--site-fg) 82%, transparent);
+    }
+
+    .gm-bs-hit {
+      fill: none;
+      stroke: var(--site-bg);
+      stroke-width: 2;
+      stroke-linecap: round;
+    }
+
+    .gm-bs-ring {
+      fill: none;
+      stroke: var(--site-fg);
+      stroke-width: 1.3;
+      opacity: 0;
+    }
+
+    .gm-hole {
+      fill: var(--site-bg);
+    }
+
+    .gm-ring {
+      fill: none;
+      stroke: var(--site-fg);
+      stroke-width: 1.6;
+    }
+
+    /*
+     * The still picture, which is what a reader who asks for less motion
+     * sees and what every board rests on: each board's fullest moment - the
+     * pair of 2s before they merge, the field open round its flag, one card
+     * up and one down, the moon still out, the hit, the row of four.
+     */
+    .gm-2048-four,
+    .gm-mem-front,
+    .gm-cover {
+      opacity: 0;
+    }
+
+    /*
+     * The cube, in CSS 3D rather than drawn, because a turn is what it does
+     * and a drawing cannot turn. Tilted 30 degrees and turned 45, the view a
+     * cube is always drawn from. The four sides alternate two shades, so
+     * after a half turn it looks as it did before it and the loop cannot be
+     * seen; the stickers are the cobalt showing between them.
+     */
+    /* 42cqmin is the edge that makes the drawn cube as tall as the other
+       drawings: tilted and turned, a cube stands about 1.57 edges high. */
+    .gm-cube {
+      --s: 42cqmin;
+
+      width: var(--s);
+      height: var(--s);
+      transform: rotateX(-30deg);
+      transform-style: preserve-3d;
+    }
+
+    .gm-cube-body {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 100%;
+      rotate: y 45deg;
+      transform-style: preserve-3d;
+    }
+
+    .gm-face {
+      --gm-stickers: var(--site-bg);
+
+      position: absolute;
+      inset: 0;
+      border-radius: 2px;
+      background:
+        linear-gradient(
+          90deg,
+          transparent 31%,
+          var(--gm-stickers) 31% 36%,
+          transparent 36% 64%,
+          var(--gm-stickers) 64% 69%,
+          transparent 69%
+        ),
+        linear-gradient(
+          transparent 31%,
+          var(--gm-stickers) 31% 36%,
+          transparent 36% 64%,
+          var(--gm-stickers) 64% 69%,
+          transparent 69%
+        ),
+        var(--gm-shade);
+      box-shadow: inset 0 0 0 1.5px var(--gm-stickers);
+      backface-visibility: hidden;
+    }
+
+    .gm-face-top,
+    .gm-face-bottom {
+      --gm-shade: color-mix(in oklab, var(--site-fg) 94%, var(--site-bg));
+    }
+
+    .gm-face-front,
+    .gm-face-back {
+      --gm-shade: color-mix(in oklab, var(--site-fg) 64%, var(--site-bg));
+    }
+
+    .gm-face-right,
+    .gm-face-left {
+      --gm-shade: color-mix(in oklab, var(--site-fg) 40%, var(--site-bg));
+    }
+
+    .gm-face-top {
+      transform: rotateX(90deg) translateZ(calc(var(--s) / 2));
+    }
+
+    .gm-face-bottom {
+      transform: rotateX(-90deg) translateZ(calc(var(--s) / 2));
+    }
+
+    .gm-face-front {
+      transform: translateZ(calc(var(--s) / 2));
+    }
+
+    .gm-face-back {
+      transform: rotateY(180deg) translateZ(calc(var(--s) / 2));
+    }
+
+    .gm-face-right {
+      transform: rotateY(90deg) translateZ(calc(var(--s) / 2));
+    }
+
+    .gm-face-left {
+      transform: rotateY(-90deg) translateZ(calc(var(--s) / 2));
+    }
+
+    /*
+     * The wave. One cycle of 8s for every board, each starting 0.9s after
+     * the one before it: seven moves take 6.3s and the row rests for the
+     * rest. In every keyframe set, 3% to about 15% is the move, the hold
+     * after it runs to 93%, and 93% to 100% sets the move up again - so the
+     * set-up comes just before the board's turn, not just after it.
+     *
+     * `--d` staggers the parts of one move - the cells a click opens, the
+     * discs of the row of four. Scales and turns are about each part's own
+     * centre, except the moon's orbit, which is about the board's.
+     */
+    @media (prefers-reduced-motion: no-preference) {
+      .gm-art *,
+      .gm-cube-body {
+        transform-box: fill-box;
+        transform-origin: center;
+        animation-duration: 8s;
+        animation-delay: calc(var(--i) * 0.9s + var(--d, 0s));
+        animation-iteration-count: infinite;
+        animation-fill-mode: both;
+        animation-timing-function: var(--site-ease);
+      }
+
+      .gm-2048-a {
+        animation-name: gm-2048-a;
+      }
+
+      .gm-2048-b {
+        animation-name: gm-2048-b;
+      }
+
+      .gm-2048-two {
+        animation-name: gm-2048-two;
+      }
+
+      .gm-2048-four {
+        animation-name: gm-2048-four;
+      }
+
+      .gm-cover {
+        animation-name: gm-mine-cover;
+      }
+
+      /* Two classes, to outrank the origin set on every part above. */
+      .gm-art .gm-mine-flag {
+        transform-origin: 50% 100%;
+        animation-name: gm-mine-flag;
+      }
+
+      .gm-mem-pair {
+        animation-name: gm-mem-pair;
+      }
+
+      .gm-mem-back {
+        animation-name: gm-mem-back;
+      }
+
+      .gm-mem-front {
+        animation-name: gm-mem-front;
+      }
+
+      .gm-art .gm-acc-orbit {
+        transform-box: view-box;
+        transform-origin: 50% 50%;
+        animation-name: gm-acc-orbit;
+      }
+
+      .gm-acc-body {
+        animation-name: gm-acc-body;
+      }
+
+      .gm-acc-core {
+        animation-name: gm-acc-core;
+      }
+
+      .gm-bs-ship {
+        animation-name: gm-bs-ship;
+      }
+
+      .gm-bs-hit {
+        animation-name: gm-bs-hit;
+      }
+
+      .gm-bs-ring {
+        animation-name: gm-bs-ring;
+      }
+
+      .gm-cube-body {
+        animation-name: gm-cube-turn;
+      }
+
+      .gm-four-drop {
+        animation-name: gm-four-drop;
+      }
+
+      .gm-four-win {
+        animation-name: gm-four-win;
+      }
+    }
+  }
+
+  /* 2048: the 2 slides over the other 2, which becomes a 4 with a pop. Set
+     up again as the game would, by the two tiles spawning. */
+  @keyframes gm-2048-a {
+    0%,
+    3% {
+      translate: 0 0;
+      scale: 1;
+    }
+
+    8% {
+      translate: 19px 0;
+      scale: 1;
+    }
+
+    8.01%,
+    95.5% {
+      translate: 0 0;
+      scale: 0;
+      animation-timing-function: var(--site-spring);
+    }
+
+    100% {
+      translate: 0 0;
+      scale: 1;
+    }
+  }
+
+  @keyframes gm-2048-b {
+    0%,
+    8% {
+      scale: 1;
+    }
+
+    10% {
+      scale: 1.18;
+    }
+
+    13%,
+    93% {
+      scale: 1;
+    }
+
+    95.5% {
+      scale: 0;
+      animation-timing-function: var(--site-spring);
+    }
+
+    100% {
+      scale: 1;
+    }
+  }
+
+  @keyframes gm-2048-two {
+    0%,
+    8% {
+      opacity: 1;
+    }
+
+    8.01%,
+    95.5% {
+      opacity: 0;
+    }
+
+    95.51%,
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes gm-2048-four {
+    0%,
+    8% {
+      opacity: 0;
+    }
+
+    8.01%,
+    95.5% {
+      opacity: 1;
+    }
+
+    95.51%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  /* Minesweeper: a click in the corner opens the field out to the numbers,
+     then the flag goes on the one cell they point to. */
+  @keyframes gm-mine-cover {
+    0%,
+    3% {
+      opacity: 1;
+    }
+
+    4.5%,
+    93% {
+      opacity: 0;
+    }
+
+    97%,
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes gm-mine-flag {
+    0%,
+    7.5% {
+      scale: 0;
+      animation-timing-function: var(--site-spring);
+    }
+
+    11%,
+    93% {
+      scale: 1;
+    }
+
+    96%,
+    100% {
+      scale: 0;
+    }
+  }
+
+  /* Memory: the face-down card turns over onto the same picture, and the
+     pair jumps. A turn is a squeeze to nothing and out again. */
+  @keyframes gm-mem-back {
+    0%,
+    3% {
+      scale: 1 1;
+    }
+
+    5%,
+    95% {
+      scale: 0 1;
+    }
+
+    97%,
+    100% {
+      scale: 1 1;
+    }
+  }
+
+  @keyframes gm-mem-front {
+    0%,
+    5% {
+      opacity: 1;
+      scale: 0 1;
+    }
+
+    7%,
+    93% {
+      opacity: 1;
+      scale: 1 1;
+    }
+
+    95%,
+    100% {
+      opacity: 1;
+      scale: 0 1;
+    }
+  }
+
+  @keyframes gm-mem-pair {
+    0%,
+    8% {
+      scale: 1;
+    }
+
+    10% {
+      scale: 1.08;
+    }
+
+    13%,
+    100% {
+      scale: 1;
+    }
+  }
+
+  /* Accretion: the moon spirals in, faster as it falls, and the planet
+     takes it in with a swell. The orbit comes back round while the moon is
+     gone, so it reappears where it started. */
+  @keyframes gm-acc-orbit {
+    0%,
+    3% {
+      rotate: 0deg;
+      animation-timing-function: cubic-bezier(0.5, 0, 0.85, 0.6);
+    }
+
+    13% {
+      rotate: 300deg;
+    }
+
+    13.01%,
+    100% {
+      rotate: 0deg;
+    }
+  }
+
+  @keyframes gm-acc-body {
+    0%,
+    3% {
+      translate: 0 0;
+      scale: 1;
+      opacity: 1;
+      animation-timing-function: cubic-bezier(0.5, 0, 0.85, 0.6);
+    }
+
+    13% {
+      translate: -12px 0;
+      scale: 0.35;
+      opacity: 1;
+    }
+
+    13.01%,
+    95% {
+      translate: 0 0;
+      scale: 0;
+      opacity: 0;
+      animation-timing-function: var(--site-spring);
+    }
+
+    100% {
+      translate: 0 0;
+      scale: 1;
+      opacity: 1;
+    }
+  }
+
+  @keyframes gm-acc-core {
+    0%,
+    12.5% {
+      scale: 1;
+    }
+
+    15% {
+      scale: 1.32;
+    }
+
+    18%,
+    93% {
+      scale: 1.14;
+    }
+
+    100% {
+      scale: 1;
+    }
+  }
+
+  /* Battleship: the shot lands on the ship, a ring goes out from it and the
+     ship shudders. */
+  @keyframes gm-bs-hit {
+    0%,
+    4.5% {
+      scale: 0;
+      animation-timing-function: var(--site-spring);
+    }
+
+    7.5%,
+    93% {
+      scale: 1;
+    }
+
+    96%,
+    100% {
+      scale: 0;
+    }
+  }
+
+  @keyframes gm-bs-ring {
+    0%,
+    4% {
+      scale: 0.4;
+      opacity: 0;
+    }
+
+    4.5% {
+      scale: 0.5;
+      opacity: 1;
+      animation-timing-function: var(--site-ease-out);
+    }
+
+    12%,
+    100% {
+      scale: 2.4;
+      opacity: 0;
+    }
+  }
+
+  @keyframes gm-bs-ship {
+    0%,
+    4.5% {
+      translate: 0 0;
+    }
+
+    5.5% {
+      translate: 1px 0;
+    }
+
+    6.5% {
+      translate: -1px 0;
+    }
+
+    7.5% {
+      translate: 0.5px 0;
+    }
+
+    8.5%,
+    100% {
+      translate: 0 0;
+    }
+  }
+
+  /* Cube: a half turn, on the spring. */
+  @keyframes gm-cube-turn {
+    0%,
+    3% {
+      rotate: y 45deg;
+      animation-timing-function: var(--site-spring);
+    }
+
+    12%,
+    100% {
+      rotate: y 225deg;
+    }
+  }
+
+  /* Four in a row: the disc falls in from above, on gravity's curve, lands
+     with a bounce, and the four it completes jump in turn. */
+  @keyframes gm-four-drop {
+    0%,
+    2.5% {
+      translate: 0 -34px;
+      opacity: 0;
+    }
+
+    3.5% {
+      translate: 0 -34px;
+      opacity: 1;
+      animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+    }
+
+    8% {
+      translate: 0 0;
+      animation-timing-function: var(--site-ease-out);
+    }
+
+    9.5% {
+      translate: 0 -3.5px;
+      animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+    }
+
+    11%,
+    93% {
+      translate: 0 0;
+      opacity: 1;
+    }
+
+    96%,
+    100% {
+      translate: 0 0;
+      opacity: 0;
+    }
+  }
+
+  @keyframes gm-four-win {
+    0%,
+    11.5% {
+      scale: 1;
+    }
+
+    13.5% {
+      scale: 1.3;
+    }
+
+    16%,
+    100% {
+      scale: 1;
+    }
+  }
+</style>

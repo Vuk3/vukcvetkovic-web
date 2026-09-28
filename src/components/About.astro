@@ -2,6 +2,7 @@
 import { Gamepad2, GraduationCap } from '@lucide/astro';
 import type { Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
+import GameMinis from './GameMinis.astro';
 import Section, { type SectionTone } from './Section.astro';
 
 interface Props {
@@ -18,15 +19,23 @@ const [lead, education, site] = dict.about.paragraphs;
 
 {/*
   Three tiles: the opening statement across the full measure at display size,
-  then the other two paragraphs side by side at 7 and 5 columns, which is the
-  split that makes their two lengths finish within a line of each other in all
-  four languages, measured at 1024, 1280 and 1440 (6 and 6 is as close the
-  other way round).
+  then the other two paragraphs side by side, Education at 5 columns and Games
+  at 7, and at 4 and 8 from 80rem.
 
   They are labelled with names the page already uses for what they are about -
   the degrees are Education, and the site with its seven games is Games - and
-  the Games tile is the whole tile a link to the games, on cobalt, because it is
-  the one paragraph on the page that points somewhere a reader can go and try.
+  the Games tile is on cobalt, the tile a link to the games and each of the
+  seven boards under its paragraph a link to its own, because it is the one
+  paragraph on the page that points somewhere a reader can go and try.
+
+  The wider column is the Games tile's so the boards have the room, and the
+  split is what lets them fill it: the Games paragraph ends above Education's,
+  and the boards take the height between (see GameMinis.astro), so the two
+  tiles end level. Measured in all four languages, the room under the Games
+  paragraph is 58 to 87px at 1024 on 5 and 7, where the boards are 64px wide,
+  and 87 to 145px at 1280 and 1440 on 4 and 8, where they are 97 to 105px -
+  boards about as tall as they are wide at every width. 5 and 7 at 1280 left
+  30px, a strip, and 4 and 8 at 1024 boards twice as tall as wide.
 */}
 <Section id="about" label={dict.about.label} tone={tone}>
   <div class="bento">
@@ -34,7 +43,7 @@ const [lead, education, site] = dict.about.paragraphs;
       <p class="about-lead">{lead}</p>
     </div>
 
-    <div class="card about-note reveal-item sm:col-span-6 lg:col-span-7">
+    <div class="card about-note reveal-item sm:col-span-6 lg:col-span-5 xl:col-span-4">
       <p class="tile-label">
         <span class="tile-icon"><GraduationCap aria-hidden="true" /></span>
         {dict.education.label}
@@ -42,12 +51,13 @@ const [lead, education, site] = dict.about.paragraphs;
       <p class="about-body">{education}</p>
     </div>
 
-    <div class="card card-hover tile-cobalt about-note reveal-item sm:col-span-6 lg:col-span-5">
+    <div class="card card-hover tile-cobalt about-note reveal-item sm:col-span-6 lg:col-span-7 xl:col-span-8">
       <p class="tile-label">
         <span class="tile-icon"><Gamepad2 aria-hidden="true" /></span>
         <a href={localizePath('/games/', lang)} class="stretch">{dict.nav.games}</a>
       </p>
       <p class="about-body">{site}</p>
+      <GameMinis lang={lang} />
     </div>
   </div>
 </Section>
