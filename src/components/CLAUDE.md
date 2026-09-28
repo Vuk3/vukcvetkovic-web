@@ -117,6 +117,7 @@ Decided by one question: is the element in view at first paint?
 | a block arriving on scroll | `reveal` |
 | a repeated tile that should stagger within its grid | `reveal-item` |
 | the request diagram, the Skills diagram | none of them - each assembles against its own stage's `view()` timeline, and a `reveal` on top would fade the block in and then assemble it inside itself |
+| an Experience tile | none - it slides in off the rail on its own `--role` timeline, which the rail inside it uses to stay put (see home.css) |
 
 `reveal-item` staggers by `nth-child`, so it goes on the element directly inside the grid.
 Wrapping the items in another element resets the count.

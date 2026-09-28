@@ -748,9 +748,12 @@
 
   /* ---- Experience ------------------------------------------------------ */
 
+  /* `--role-gap` is named because the rail crosses it. */
   .role-list {
+    --role-gap: clamp(1.5rem, 2.5vw, 2rem);
+
     display: grid;
-    row-gap: clamp(1.5rem, 2.5vw, 2rem);
+    row-gap: var(--role-gap);
   }
 
   /*
@@ -762,13 +765,16 @@
     gap: 1.5rem;
   }
 
-  /* The head is centred on the bullets beside it, so a role with three points
-     does not leave its name at the top of an empty column. */
+  /*
+   * The head sits at the top, where the rail leaves its initial, and the rail
+   * runs down the column under it. Centred on the bullets instead, the head
+   * put the initial at a height the rail could not know.
+   */
   @media (min-width: 60rem) {
     .role {
       grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
       column-gap: clamp(2rem, 4vw, 3.5rem);
-      align-items: center;
+      align-items: start;
     }
   }
 
@@ -779,9 +785,12 @@
     align-items: center;
   }
 
-  /* The company's initial, in the display voice: what sits at each end of the
-     line that says employment is a sequence. */
+  /* The company's initial, in the display voice: what sits at each stop of the
+     rail that says employment is a sequence. Above the rail, so it covers the
+     rail's ends wherever inside it they fall. */
   .role-mark {
+    position: relative;
+    z-index: 1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -845,23 +854,59 @@
   }
 
   /*
-   * The line between two roles, in the gap, from one initial to the next. It
-   * starts under the previous tile's edge and ends at this one's, aligned on
-   * the initials' centre line.
+   * The rail, on the initials' centre line. Each tile draws its own stretch
+   * (see Experience.astro): `-out` from its initial down to its bottom edge,
+   * and `-in` from the bottom edge of the tile above, across the gap, down to
+   * its initial. Both end at the middle of an initial, `--card-pad + 1.75rem`
+   * down, and the initial covers the rest, so the ends need not be exact to
+   * the pixel. The `1px`s take each stretch over a tile's border, which would
+   * otherwise break the line at every edge.
+   *
+   * ⚠️ The gap is the lower tile's, not the upper one's. The lower tile comes
+   * in later, and drawn by the upper one the stretch hung into empty space
+   * below it, joined to nothing, until the tile it leads to arrived.
+   *
+   * At rest the rail is drawn whole, and an initial it has reached takes an
+   * accent ring and letter - the current one keeps its filled tile, so the
+   * two still read apart. The scroll below only decides when.
    */
-  .role + .role::before {
-    content: '';
+  .role-rail {
     position: absolute;
     left: calc(var(--card-pad) + 1.75rem - 1px);
-    bottom: 100%;
     width: 2px;
-    height: clamp(1.5rem, 2.5vw, 2rem);
     background-color: var(--site-accent);
+  }
+
+  .role-rail-in {
+    top: calc(-1px - var(--role-gap));
+    height: calc(1px + var(--role-gap) + var(--card-pad) + 1.75rem);
+  }
+
+  .role-rail-out {
+    top: calc(var(--card-pad) + 1.75rem);
+    bottom: -1px;
+  }
+
+  .role:not([data-current]) .role-mark {
+    box-shadow: inset 0 0 0 2px var(--site-accent);
+    color: var(--site-accent);
   }
 
   .role-points {
     display: grid;
     gap: 0.9rem;
+  }
+
+  /*
+   * Stacked, the rail runs down through the bullets, so each check sits on it
+   * as a stop: moved in until its centre is the initial's (1.75rem, less half
+   * its own 1.6rem), and above the rail. Moving the bullets past the rail to
+   * the name's edge instead left their text 206px wide on a 390 phone.
+   */
+  @media (max-width: 59.99rem) {
+    .role-points {
+      padding-inline-start: calc(1.75rem - 0.8rem);
+    }
   }
 
   .role-points > li {
@@ -873,6 +918,8 @@
   }
 
   .role-check {
+    position: relative;
+    z-index: 1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -888,6 +935,68 @@
     width: 0.95rem;
     height: 0.95rem;
     stroke-width: 2.6;
+  }
+
+  /*
+   * The rail fills as the page scrolls, and the tiles come in off it.
+   *
+   * ⚠️ Each stretch fills on its own timeline, and they still read as one
+   * line: `view(50% 50%)` shrinks the viewport a stretch is measured against
+   * to a single line across the middle of the screen, so a stretch runs from
+   * empty to full exactly while that line crosses it, top to bottom. Every
+   * stretch above the middle is full, every one below it empty, and the one
+   * the middle is on is full down to the middle - one front, wherever the
+   * stretches begin and end, with nothing measured. Linear, or the front
+   * would drift off the middle. An initial lights as the same line crosses it.
+   *
+   * A tile slides in from the rail's side rather than rising like the tiles
+   * of other sections, on its own timeline and range, since `.reveal-item`
+   * is unlayered and would win over anything written here. The rail inside
+   * it does not slide: `rail-hold` moves it back by exactly what the tile
+   * moves it, on the tile's own timeline (`--role`) with the same range and
+   * ease, so the line stays put and the tile - its initial with it - comes
+   * in under it. Carried along, the rail stood off the line above it for the
+   * whole slide.
+   *
+   * Inside both guards, as everywhere on the site: without scroll-driven
+   * animation, or with reduced motion asked for, the rail is drawn whole and
+   * every initial it reaches is lit.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .role-rail {
+        background-color: var(--site-hairline);
+        background-image: linear-gradient(var(--site-accent), var(--site-accent));
+        background-repeat: no-repeat;
+        animation-name: rail-fill, rail-hold;
+        animation-timing-function: linear, var(--site-ease-out);
+        animation-fill-mode: both;
+        animation-timeline: view(50% 50%), --role;
+        animation-range: normal, cover 150px cover 400px;
+      }
+
+      .role:not([data-current]) .role-mark {
+        animation-name: role-lit;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: view(50% 50%);
+      }
+
+      /*
+       * Later than a section's other tiles, which start 20px in: at those
+       * ranges a tile was in place before anyone looked at it. From 150px to
+       * 400px it slides in well inside the screen, and is home just before
+       * the middle, where the rail's front is, reaches it.
+       */
+      .role {
+        view-timeline-name: --role;
+        animation-name: role-in;
+        animation-timing-function: var(--site-ease-out);
+        animation-fill-mode: both;
+        animation-timeline: --role;
+        animation-range: cover 150px cover 400px;
+      }
+    }
   }
 
   /* ---- Education ------------------------------------------------------- */
@@ -1254,6 +1363,52 @@
   100% {
     opacity: 0;
     scale: 1.01;
+  }
+}
+
+/*
+ * Experience: a tile coming in off the rail, a stretch of the rail filling
+ * from its top, and an initial lighting as the rail reaches it - from unlit to
+ * its resting state, which is lit. `translate`, never `transform`, for the
+ * reason in global.css.
+ */
+@keyframes role-in {
+  from {
+    opacity: 0;
+    translate: -2rem 0;
+  }
+
+  to {
+    opacity: 1;
+    translate: none;
+  }
+}
+
+@keyframes rail-fill {
+  from {
+    background-size: 100% 0%;
+  }
+
+  to {
+    background-size: 100% 100%;
+  }
+}
+
+/* The rail's half of the slide: `role-in`'s translate, turned round. */
+@keyframes rail-hold {
+  from {
+    translate: 2rem 0;
+  }
+
+  to {
+    translate: none;
+  }
+}
+
+@keyframes role-lit {
+  from {
+    box-shadow: inset 0 0 0 2px transparent;
+    color: var(--site-fg);
   }
 }
 

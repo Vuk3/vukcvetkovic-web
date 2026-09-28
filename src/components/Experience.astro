@@ -21,20 +21,32 @@ const dict = getDict(lang);
   across the full measure ran to 150 characters a line - so each tile is as tall
   as its own content and its bullets sit at a readable width.
 
-  Employment is a sequence, and the line joining the two initials is what says
-  so. The role he holds now takes the accent on its initial and on its period,
-  which is the one place the accent marks a fact rather than a link; the period
-  also carries a pulsing dot, so "2024 -" reads as running rather than cut off.
+  Employment is a sequence, and the rail joining the initials is what says so:
+  one line from the first initial to the last, through the tiles and the gaps
+  between them, which fills with the accent as the page scrolls past it. The
+  role he holds now takes the accent on its initial and on its period, which
+  is the one place the accent marks a fact rather than a link; the period also
+  carries a pulsing dot, so "2024 -" reads as running rather than cut off.
+
+  A tile paints over whatever the tile above it draws, so the rail cannot be
+  one element: each tile draws its own stretch - in from the tile above, across
+  the gap, to its initial, and out from its initial to its own bottom edge -
+  and the first has no way in and the last no way out. See the Experience
+  block in home.css.
 */}
 <Section id="experience" label={dict.experience.label} tone={tone}>
   <ol class="role-list">
     {
-      site.experience.map((role) => {
+      site.experience.map((role, index) => {
         const copy = dict.experience.roles[role.id];
         return (
           /* Empty string rather than the boolean: Astro renders `false` as
              data-current="false", which [data-current] would still match. */
-          <li class="card role reveal-item" data-current={role.current ? '' : undefined}>
+          <li class="card role" data-current={role.current ? '' : undefined}>
+            {index > 0 && <span class="role-rail role-rail-in" aria-hidden="true" />}
+            {index < site.experience.length - 1 && (
+              <span class="role-rail role-rail-out" aria-hidden="true" />
+            )}
             <div class="role-head">
               <span class="role-mark" aria-hidden="true">{role.company.charAt(0)}</span>
 

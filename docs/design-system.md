@@ -2116,8 +2116,25 @@ Each page has one memorable thing, and everything else is a bento that fills its
     spine does.
 - **Experience** is one wide tile per role: the company's initial, the name, the title and
   the period on the left, the bullets on the right at about 85 characters a line, the head
-  centred on them. A 2px accent line joins the two initials; the current role's initial and
-  period take the accent, and the period's dot pulses so "2024 -" reads as running.
+  at the top. A 2px rail runs from the first initial to the last, through the tiles and the
+  gaps, and fills with the accent as the page scrolls; the current role's initial and
+  period take the accent, the period's dot pulses so "2024 -" reads as running, and an
+  initial the rail has reached takes an accent ring. Stacked, the bullets' checks sit on
+  the rail as its stops.
+  - ⚠️ **Each tile draws its own stretch**, because a tile paints over everything the tile
+    above it draws: `-out` from its initial to its bottom edge, `-in` from the tile above,
+    across the gap, to its initial. The gap is the lower tile's - drawn by the upper one it
+    hung into empty space until the lower tile came in.
+  - **One front, with nothing measured.** Every stretch fills on its own
+    `view(50% 50%)` timeline, which shrinks the viewport to one line across the middle of
+    the screen, so each runs empty to full exactly while that line crosses it, and
+    together they read as one line filled to the middle. Linear, or the front drifts.
+  - **The tiles slide in off the rail**, from `cover 150px` to `cover 400px` - later than
+    other tiles, which were in place before anyone looked at them - and the rail does not
+    slide with them: `rail-hold` undoes the tile's translate on the tile's own `--role`
+    timeline, so the line stays put and the tile comes in under it.
+  - At rest, or without scroll-driven animation, the rail is whole and every initial it
+    reaches is lit.
 - **Education** is two tiles with the crest at 4rem on its white disc.
 - **Projects** is banded: the first project as one wide card, its text beside a large
   `FlowMini` that loops, then three cards with their `FlowMini` as a picture that runs on
@@ -2227,6 +2244,8 @@ centred in the space between the capsule and the footer on a tall screen.
 
 ## Changelog
 
+- 2026-09-28 - Experience is a timeline: a rail from initial to initial that fills to the
+  middle of the screen as the page scrolls, with the tiles sliding in under it (§10).
 - 2026-09-28 - the theme toggle uncovers the new theme as a circle growing from the button,
   through a same-document view transition (§5).
 - 2026-09-28 - a project or game card opens into its page: the title grows into the page
