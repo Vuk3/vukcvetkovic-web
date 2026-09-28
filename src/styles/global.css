@@ -1674,11 +1674,88 @@
 
 /*
  * Cross-document view transitions: switching language reads as one page
- * changing rather than a reload. Chrome-only for now; everywhere else the
- * navigation is simply instant.
+ * changing rather than a reload. Chrome, and Safari from 18.2; everywhere
+ * else the navigation is simply instant.
  */
 @view-transition {
   navigation: auto;
+}
+
+/*
+ * A project or a game keeps its name across the click that opens it: the
+ * card's title grows into the page's title, and a game card's picture into
+ * the board. Each pair shares a `view-transition-name` written inline from
+ * the slug (`project-<slug>-title`, `game-<slug>-title`, `game-<slug>-board`)
+ * and a `view-transition-class`, which is what these rules style. The same
+ * pairs carry the way back, and a language switch, where the title changes
+ * words in place.
+ *
+ * ⚠️ A name may appear once per page - two, and the browser drops the whole
+ * transition - and only on a box that is not split across lines. So it goes
+ * on the heading, never on the link inside it.
+ *
+ * The page title's named box is its `.line-in`, the line that rises into its
+ * mask. The group follows the named box as it moves, so the title flies
+ * from the card onto the rising line and the two land together, and the
+ * mask takes over only once the line is all but home.
+ *
+ * A title is scaled by its height, not its width: the card's heading is as
+ * wide as the card and the page's as wide as the shell, and neither hugs its
+ * words, while their heights are their lines. So on the same line breaks the
+ * text grows by exactly the ratio of the two sizes.
+ *
+ * The standard ease, not the entrance's ease-out: the ease-out covers most
+ * of the way in its first tenth, so the two renderings crossed at full size
+ * and the words showed twice. Here the swap from the card's rendering to the
+ * page's is over in the first 180ms, while the pair is still near the card's
+ * size, and the rest of the way is the page's own title - drawn at its size
+ * and scaled down, so sharp, where the card's would be stretched.
+ */
+::view-transition-group(.title),
+::view-transition-group(.board) {
+  animation-duration: 600ms;
+  animation-timing-function: var(--site-ease);
+}
+
+::view-transition-old(.title),
+::view-transition-new(.title) {
+  width: auto;
+  height: 100%;
+  animation-duration: 180ms;
+}
+
+/*
+ * The picture and the board are different shapes, so both fill the box as
+ * it changes and the box clips them to a tile's corners. They cross over the
+ * first 300ms, the picture making way for the board.
+ *
+ * ⚠️ The board lands at 750ms, later than the title, because of what it sits
+ * in: the game's stage rises in from 0 opacity 240ms after load, and the
+ * stage's fade is not part of the board's picture. The flight hides that
+ * until it ends, and at 600ms the stage was at 94% - a dark board like
+ * Accretion's visibly lightened for a frame. At 750ms it is at 98.5%.
+ */
+::view-transition-group(.board) {
+  overflow: clip;
+  border-radius: var(--site-radius-inner);
+  animation-duration: 750ms;
+}
+
+::view-transition-old(.board),
+::view-transition-new(.board) {
+  height: 100%;
+  object-fit: cover;
+  animation-duration: 300ms;
+}
+
+/* A name with no partner on the other page - the other cards' titles, on
+   the way out - leaves with the rest of the page, at the page's own 250ms,
+   rather than hanging over the new one for the length of a flight. */
+::view-transition-old(.title):only-child,
+::view-transition-new(.title):only-child,
+::view-transition-old(.board):only-child,
+::view-transition-new(.board):only-child {
+  animation-duration: 250ms;
 }
 
 @media (prefers-reduced-motion: reduce) {

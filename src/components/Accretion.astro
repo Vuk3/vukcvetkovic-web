@@ -184,7 +184,9 @@ const [notesLead, ...notes] = copy.close.paragraphs;
         screen reader hears "Accretion, Beta" as one heading. */}
     <h1 class="page-title">
       <span class="line-mask enter-line" style="--enter-delay:80ms"
-        ><span class="line-in"
+        ><span
+          class="line-in"
+          style={`view-transition-name:game-${site.games.accretion.slug}-title;view-transition-class:title`}
           >{copy.name}{status !== "live" && <span class="page-status">{dict.games.status[status]}</span>}</span
         ></span
       >
@@ -241,7 +243,11 @@ const [notesLead, ...notes] = copy.close.paragraphs;
           </div>
         </div>
 
-        <div class="game-board acc-field" style={shape} data-field>
+        <div
+          class="game-board acc-field"
+          style={`${shape};view-transition-name:game-${site.games.accretion.slug}-board;view-transition-class:board`}
+          data-field
+        >
           {/*
             The sky, back to front, each layer at its depth. See the note in the
             frontmatter. The nebulae are fractal noise, each confined to its own

@@ -465,7 +465,41 @@ Under `prefers-reduced-motion: reduce`, durations collapse to `0.01ms` and
 because `*` does not reach them.
 
 `@view-transition { navigation: auto }` makes switching language read as one page changing
-rather than a reload. Cross-document, so Chrome only for now.
+rather than a reload. Cross-document, so Chrome, and Safari from 18.2. Firefox navigates
+as it always has.
+
+### A card opens into its page
+
+A project or a game keeps its name across the click that opens it: the card's title grows
+into the page's title, and a game card's picture into the board. Each pair shares a
+`view-transition-name` written inline from the slug - `project-<slug>-title`,
+`game-<slug>-title`, `game-<slug>-board` - and a `view-transition-class` (`title` or
+`board`), which the rules at the foot of global.css style. The same pairs carry the way
+back and a language switch, where the title changes words in place.
+
+- ⚠️ **A name may appear once per page.** Two, and the browser drops the whole transition,
+  not just that pair. A page that ever lists the same project twice needs one of the two
+  unnamed.
+- ⚠️ **A name goes on a box that is never split across lines** - the heading, not the link
+  inside it, which wraps. A fragmented named box also drops the transition.
+- **The page title's named box is its `.line-in`**, the line that rises into its mask. The
+  group follows it as it rises, so the title flies onto the rising line and lands with it,
+  and the mask takes over once the line is all but home.
+- **A title scales by its height, not its width.** Neither heading hugs its words - the
+  card's is as wide as the card, the page's as wide as the shell - but their heights are
+  their lines, so on the same line breaks the words grow by exactly the ratio of the two
+  sizes.
+- **600ms on the standard ease, and the swap from the card's rendering to the page's is
+  over in 180ms**, while the pair is still near the card's size. On the entrance's ease-out
+  the pair covered most of the way at once and the words showed twice at full size.
+- **The board lands at 750ms.** The game's stage rises in from 0 opacity 240ms after load,
+  and that fade is not part of the board's picture: at 600ms the stage was at 94%, and a
+  dark board like Accretion's lightened for a frame when the flight ended.
+- **A name with no partner** - the other cards' titles, on the way out - leaves at the
+  page's own 250ms (`:only-child`), rather than hanging over the new page for a flight.
+- **Not the request diagram.** The page's diagram starts 809 to 978px down, below the fold
+  at 1280x800, 1440x900 and on a phone, and it assembles as it scrolls in, so the card's
+  small one would have flown off the screen into an empty frame.
 
 ---
 
@@ -2176,6 +2210,8 @@ centred in the space between the capsule and the footer on a tall screen.
 
 ## Changelog
 
+- 2026-09-28 - a project or game card opens into its page: the title grows into the page
+  title and a game's picture into its board, by paired `view-transition-name`s (§5).
 - 2026-09-28 - the request diagrams' packets run their lines by `offset-path`, round every
   corner on the curve at one speed, and hand over at a join without fading or slowing;
   the keyframes are by role and the story tables' windows are split by line length (§6).

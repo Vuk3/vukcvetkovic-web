@@ -75,7 +75,10 @@ const [notesLead, ...notes] = copy.close.paragraphs;
 
     <h1 class="page-title">
       <span class="line-mask enter-line" style="--enter-delay:80ms"
-        ><span class="line-in">{copy.name}</span></span
+        ><span
+          class="line-in"
+          style={`view-transition-name:game-${site.games.twentyFortyEight.slug}-title;view-transition-class:title`}
+          >{copy.name}</span></span
       >
     </h1>
 
@@ -134,7 +137,12 @@ const [notesLead, ...notes] = copy.close.paragraphs;
           no order a listener could hold on to.
         */
         }
-        <div class="game-board g2048-board" data-board aria-hidden="true">
+        <div
+          class="game-board g2048-board"
+          style={`view-transition-name:game-${site.games.twentyFortyEight.slug}-board;view-transition-class:board`}
+          data-board
+          aria-hidden="true"
+        >
           <div class="g2048-cells">
             {cells.map(() => <div class="g2048-cell" />)}
           </div>

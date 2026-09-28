@@ -73,7 +73,10 @@ const featuredLinks = outboundLinks(featured.links);
     <div class="work-feature-text">
       <p class="work-year">{featured.year}</p>
 
-      <h3 class="work-feature-title">
+      <h3
+        class="work-feature-title"
+        style={`view-transition-name:project-${featured.slug}-title;view-transition-class:title`}
+      >
         <a href={featuredPage} class="entry-link stretch">{featuredCopy.title}</a>
       </h3>
 
@@ -112,7 +115,10 @@ const featuredLinks = outboundLinks(featured.links);
             <div class="work-card-body">
               <p class="work-year">{project.year}</p>
 
-              <h3 class="work-card-title">
+              <h3
+                class="work-card-title"
+                style={`view-transition-name:project-${project.slug}-title;view-transition-class:title`}
+              >
                 <a href={page} class="entry-link stretch">
                   {copy.title}
                 </a>

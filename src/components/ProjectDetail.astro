@@ -381,9 +381,15 @@ const meta = [
         {dict.projects.back}
       </a>
 
+      {/* The title the card's heading grows into when the page is opened
+          from it: the pair's name is in the card too. */}
       <h1 class="page-title">
         <span class="line-mask enter-line" style="--enter-delay:80ms"
-          ><span class="line-in">{copy.title}</span></span
+          ><span
+            class="line-in"
+            style={`view-transition-name:project-${project.slug}-title;view-transition-class:title`}
+            >{copy.title}</span
+          ></span
         >
       </h1>
 

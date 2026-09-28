@@ -126,6 +126,23 @@ the held last frame eats every hover lift. Full mechanics, including the `@prope
 registrations and the longhands-only rule:
 [docs/design-system.md §Motion](../../docs/design-system.md#5-motion).
 
+## A card that opens a page shares names with it
+
+A project card's heading and the project page's title `.line-in` carry the same inline
+`view-transition-name` (`project-<slug>-title`), and so do a game card's heading and
+picture and the game page's title and `.game-board` (`game-<slug>-title`,
+`game-<slug>-board`), each with its `view-transition-class`. That pairing is the whole
+card-to-page flight; the rules are at the foot of global.css.
+
+- ⚠️ **A name appears once per page.** A duplicate drops the entire transition. A new
+  place that lists a project or a game a second time on the same page leaves its copy
+  unnamed.
+- ⚠️ **Name the heading, never the link inside it.** A link wraps across lines, and a
+  named box that is split across lines also drops the transition.
+- A new game page names its title and board the same way, from `site.games.<id>.slug`.
+
+Details and timings: [docs/design-system.md §5](../../docs/design-system.md#a-card-opens-into-its-page).
+
 ## Accessibility details already decided
 
 - Icons are `aria-hidden="true"` when a text label sits beside them. The request diagram's

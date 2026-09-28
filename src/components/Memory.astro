@@ -86,7 +86,10 @@ const [notesLead, ...notes] = copy.close.paragraphs;
 
     <h1 class="page-title">
       <span class="line-mask enter-line" style="--enter-delay:80ms"
-        ><span class="line-in">{copy.name}</span></span
+        ><span
+          class="line-in"
+          style={`view-transition-name:game-${site.games.memory.slug}-title;view-transition-class:title`}
+          >{copy.name}</span></span
       >
     </h1>
 
@@ -241,7 +244,10 @@ const [notesLead, ...notes] = copy.close.paragraphs;
           </div>
         </div>
 
-        <div class="game-board mem-frame">
+        <div
+          class="game-board mem-frame"
+          style={`view-transition-name:game-${site.games.memory.slug}-board;view-transition-class:board`}
+        >
           <div class="mem-table">
             <div class="mem-fit">
               <div

@@ -90,7 +90,10 @@ const [notesLead, ...notes] = copy.close.paragraphs;
 
     <h1 class="page-title">
       <span class="line-mask enter-line" style="--enter-delay:80ms"
-        ><span class="line-in">{copy.name}</span></span
+        ><span
+          class="line-in"
+          style={`view-transition-name:game-${site.games.minesweeper.slug}-title;view-transition-class:title`}
+          >{copy.name}</span></span
       >
     </h1>
 
@@ -214,7 +217,10 @@ const [notesLead, ...notes] = copy.close.paragraphs;
           </div>
         </div>
 
-        <div class="game-board ms-frame">
+        <div
+          class="game-board ms-frame"
+          style={`view-transition-name:game-${site.games.minesweeper.slug}-board;view-transition-class:board`}
+        >
           {/* The burst over a cleared field, above the panel that says so. */}
           <div class="game-burst" aria-hidden="true" data-burst></div>
 

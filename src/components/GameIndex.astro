@@ -88,12 +88,18 @@ const entries = Object.entries(site.games) as [GameId, Game][];
                 stay put while it does. The art itself carries `aria-hidden`,
                 so nothing a reader needs may go inside it.
               */}
-              <div class="game-shot">
+              <div
+                class="game-shot"
+                style={`view-transition-name:game-${game.slug}-board;view-transition-class:board`}
+              >
                 <Art />
               </div>
 
               <div class="game-card-head">
-                <h2 class="game-card-title">
+                <h2
+                  class="game-card-title"
+                  style={`view-transition-name:game-${game.slug}-title;view-transition-class:title`}
+                >
                   <a href={localizePath(`/games/${game.slug}/`, lang)} class="entry-link stretch">
                     {copy.items[id].name}
                   </a>

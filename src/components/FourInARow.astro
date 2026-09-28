@@ -79,7 +79,10 @@ const [notesLead, ...notes] = copy.close.paragraphs;
 
     <h1 class="page-title">
       <span class="line-mask enter-line" style="--enter-delay:80ms"
-        ><span class="line-in">{copy.name}</span></span
+        ><span
+          class="line-in"
+          style={`view-transition-name:game-${site.games.fourInARow.slug}-title;view-transition-class:title`}
+          >{copy.name}</span></span
       >
     </h1>
 
@@ -165,7 +168,11 @@ const [notesLead, ...notes] = copy.close.paragraphs;
           with the space above it for the disc in hand. The burst is thrown
           over it when a game is won.
         */}
-        <div class="game-board four-scene" data-frame>
+        <div
+          class="game-board four-scene"
+          style={`view-transition-name:game-${site.games.fourInARow.slug}-board;view-transition-class:board`}
+          data-frame
+        >
           <div class="game-burst" aria-hidden="true" data-burst></div>
 
           <div class="four-well">

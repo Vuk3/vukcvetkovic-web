@@ -97,7 +97,9 @@ const [notesLead, ...notes] = copy.close.paragraphs;
 
     <h1 class="page-title">
       <span class="line-mask enter-line" style="--enter-delay:80ms"
-        ><span class="line-in"
+        ><span
+          class="line-in"
+          style={`view-transition-name:game-${site.games.battleship.slug}-title;view-transition-class:title`}
           >{copy.name}{status !== "live" && <span class="page-status">{dict.games.status[status]}</span>}</span
         ></span
       >
@@ -265,7 +267,11 @@ const [notesLead, ...notes] = copy.close.paragraphs;
           against it rather than against either one - a shot leaves your water
           and lands in theirs, so it belongs to neither.
         */}
-        <div class="game-board bs-frame" data-frame>
+        <div
+          class="game-board bs-frame"
+          style={`view-transition-name:game-${site.games.battleship.slug}-board;view-transition-class:board`}
+          data-frame
+        >
           {/* The burst over a won table, above both boards and the panel. */}
           <div class="game-burst" aria-hidden="true" data-burst></div>
 

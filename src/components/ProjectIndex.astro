@@ -73,7 +73,10 @@ const page = (slug: string) => localizePath(`/projects/${slug}/`, lang);
       <div class="work-feature-text">
         <p class="work-year">{featured.year}</p>
 
-        <h2 class="work-feature-title">
+        <h2
+          class="work-feature-title"
+          style={`view-transition-name:project-${featured.slug}-title;view-transition-class:title`}
+        >
           <a href={page(featured.slug)} class="entry-link stretch">{featuredCopy.title}</a>
         </h2>
 
@@ -111,7 +114,10 @@ const page = (slug: string) => localizePath(`/projects/${slug}/`, lang);
               <div class="work-card-body">
                 <p class="work-year">{project.year}</p>
 
-                <h2 class="work-card-title">
+                <h2
+                  class="work-card-title"
+                  style={`view-transition-name:project-${project.slug}-title;view-transition-class:title`}
+                >
                   <a href={page(project.slug)} class="entry-link stretch">
                     {copy.title}
                   </a>
