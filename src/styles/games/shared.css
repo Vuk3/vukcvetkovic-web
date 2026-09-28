@@ -38,7 +38,7 @@
 
   .game-head .page-title {
     margin-top: clamp(0.6rem, 1.2vw, 1rem);
-    font-size: clamp(2.5rem, 4.6vw, 3.75rem);
+    font-size: clamp(2.25rem, 4vw, 3.25rem);
   }
 
   .game-head .page-lead {
@@ -600,7 +600,7 @@
     grid-area: title;
     font-stretch: 112%;
     font-weight: 640;
-    font-size: clamp(1.25rem, 1.6vw, 1.4rem);
+    font-size: clamp(1.1875rem, 1.45vw, 1.3125rem);
     line-height: 1.2;
     letter-spacing: -0.025em;
   }
@@ -625,7 +625,7 @@
    * 2000 pixels tall with nothing to enter it by.
    */
   .game-notes-lead {
-    font-size: clamp(1.3125rem, 2.2vw, 1.75rem);
+    font-size: clamp(1.1875rem, 1.8vw, 1.5rem);
     line-height: 1.42;
     letter-spacing: -0.015em;
     color: var(--site-fg);
@@ -635,7 +635,7 @@
     margin-top: clamp(1.5rem, 3vw, 2.5rem);
     border-top: 1px solid var(--site-hairline);
     padding-top: clamp(1.5rem, 3vw, 2.5rem);
-    font-size: clamp(1.0625rem, 1.3vw, 1.1875rem);
+    font-size: clamp(1rem, 1.2vw, 1.0625rem);
     line-height: 1.68;
     color: var(--site-muted);
   }

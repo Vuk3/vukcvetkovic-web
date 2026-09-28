@@ -111,7 +111,7 @@
    */
   .hero-lead {
     margin-top: clamp(1.25rem, 2.2vw, 1.75rem);
-    font-size: clamp(1.125rem, 1.6vw, 1.375rem);
+    font-size: clamp(1.0625rem, 1.4vw, 1.25rem);
     line-height: 1.5;
     color: var(--site-muted);
   }
@@ -248,7 +248,7 @@
   .about-lead {
     font-stretch: 104%;
     font-weight: 480;
-    font-size: clamp(1.375rem, 2.6vw, 2.25rem);
+    font-size: clamp(1.25rem, 2.2vw, 1.875rem);
     line-height: 1.28;
     letter-spacing: -0.028em;
   }
@@ -258,8 +258,12 @@
     flex-direction: column;
   }
 
+  /* The tile's detail, a step under the page's text and in the muted ink, so
+     the label and the statement above carry the tile. */
   .about-body {
-    margin-top: 1rem;
+    margin-top: 0.85rem;
+    font-size: 1rem;
+    line-height: 1.55;
     color: var(--site-muted);
   }
 
@@ -790,7 +794,7 @@
   .role-company {
     font-stretch: 116%;
     font-weight: 680;
-    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    font-size: clamp(1.375rem, 2vw, 1.75rem);
     line-height: 1.1;
     letter-spacing: -0.035em;
   }
@@ -995,6 +999,8 @@
     grid-template-columns: auto minmax(0, 1fr);
     gap: 0.85rem;
     align-items: start;
+    font-size: 1rem;
+    line-height: 1.55;
     color: var(--site-muted);
   }
 
@@ -1135,6 +1141,8 @@
   }
 
   .svc-body {
+    font-size: 1rem;
+    line-height: 1.55;
     color: var(--site-muted);
   }
 
@@ -1238,7 +1246,7 @@
   .contact-intro {
     font-stretch: 104%;
     font-weight: 500;
-    font-size: clamp(1.375rem, 2.4vw, 2rem);
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
     line-height: 1.3;
     letter-spacing: -0.025em;
   }

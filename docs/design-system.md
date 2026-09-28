@@ -205,8 +205,8 @@ built and thrown out before that - they spent 12rem of every measure on a captio
 and `panel` on Contact - and on a project page `band` on the diagram and the features,
 `panel` on the takeaway. Every game page ends on `panel` for its build notes.
 
-Section padding is `clamp(2.25rem, 3.8vw, 3.5rem)`, so two sections are about 110px apart
-on a desktop. ⚠️ At 130-200px the page read as a CV, which is the one look Vuk rejects
+Section padding is `clamp(2rem, 3.4vw, 3rem)`, so two sections are about 96px apart on a
+desktop. ⚠️ At 130-200px the page read as a CV, which is the one look Vuk rejects
 outright.
 
 ### The tile is the unit
@@ -303,18 +303,26 @@ handful of letters (the ć in the name among them), and preloading both put two 
 of the portrait on a slow phone. The 404's digits go to the other end of the
 same axis, 62% at weight 900, because an expanded 4 is too wide for a portrait tile.
 
-Body copy is 17px on a phone and **18px from 48rem** - "everything on the site is too
-small" was said about exactly this - at 1.6 line-height. `text-wrap: balance` on `h1`-`h4`,
+Body copy is 16px on a phone and **17px from 48rem**, at 1.6 line-height. Both ends have
+been tried: 16px everywhere read as everything too small, 18px as everything too big.
+
+**A tile is read by its title.** The detail under a tile's title - a feature, a step, a
+service, a role's points, the About notes, a card's description - is 16px at 1.55 in the
+muted ink, a step under the page's text, while the title is 112% wide at weight 660. A row
+of tiles reads as its titles, and the detail is there for whoever stops on one. The leads
+and the display sizes above were taken down by about a sixth, and the card padding to
+`clamp(1.125rem, 1.8vw, 1.625rem)`: at their full size every page read as too big. `text-wrap: balance` on `h1`-`h4`,
 `text-wrap: pretty` on `p`, tabular figures wherever numbers sit in columns.
 
 | Role | Size | Set by |
 |---|---|---|
 | the hero's name | 17.9cqi of its column | `.display-name` in home.css |
-| a page title | clamp(2.75rem, 7.5vw, 6rem), 122% | `.page-title` |
-| a section heading | clamp(2.25rem, 5vw, 4rem), 120% | `.sec-label` |
-| a large tile title | clamp(1.5rem, 2.4vw, 2rem), 114% | per rule (`.role-company`, `.game-card-title`) |
-| a tile title | clamp(1.25rem, 1.6vw, 1.4rem), 112% | `.svc-title` and per rule |
-| a lead | clamp(1.1875rem, 1.9vw, 1.5rem) | `.page-lead`, `.hero-lead` |
+| a page title | clamp(2.5rem, 6.2vw, 4.75rem), 122% | `.page-title` |
+| a section heading | clamp(2rem, 4.2vw, 3.25rem), 120% | `.sec-label` |
+| a large tile title | clamp(1.375rem, 2vw, 1.75rem), 114% | per rule (`.role-company`, `.game-card-title`) |
+| a tile title | clamp(1.1875rem, 1.45vw, 1.3125rem), 112%, 660 | `.svc-title` and per rule |
+| a lead | clamp(1.125rem, 1.6vw, 1.3125rem) | `.page-lead`, and `.hero-lead` a step under |
+| a tile's detail | 1rem at 1.55, muted | `.proj-text`, `.svc-body`, `.about-body` and per rule |
 
 ### The name is sized by its column
 
@@ -2114,8 +2122,7 @@ Each page has one memorable thing, and everything else is a bento that fills its
   894ms, so a clip, a mask or an opacity fade on it costs the score. webp rather than AVIF,
   which came out larger at this quality.
 - **About** is the opening statement across the full measure at display size, then the
-  other two paragraphs, labelled Education and Games, at 5 and 7 columns, and 4 and 8 from
-  80rem. The Education tile names the master's and its thesis only: both theses are on the
+  other two paragraphs, labelled Education and Games, at 4 and 8 columns. The Education tile names the master's and its thesis only: both theses are on the
   Experience rail, with their links. The Games tile is on cobalt, the tile a link to the
   games, and under its paragraph are the seven games drawn small
   ([GameMinis.astro](../src/components/GameMinis.astro)), each a link to its game that opens
@@ -2237,7 +2244,7 @@ flow.css.
   the dataset's three paragraphs and the results notes finish level in German as well as in
   English. The rows run on 24 columns from 64rem and 12 from 40rem, twice the bento's count,
   so a split can land between twelfths while every outer edge still lines up. No tile gets
-  less than 7 of 24. The estimate's assumptions (body 18px at 0.43em a character, and so on)
+  less than 7 of 24. The estimate's assumptions (a tile's detail 16px at 0.43em a character, and so on)
   are beside the function; change the type and they have to move with it.
 - **Architecture** is the five steps as a numbered sequence, 3 + 2 on a desktop and 2 + 2 + 1
   on a tablet, never two columns with a lonely fifth. Each step's accent disc has a line that
@@ -2255,9 +2262,10 @@ flow.css.
 - ⚠️ **The bars sit inside the table's own scroller**, so an anonymous `view()` would
   measure against that box and never run: the tile names its timeline (`--proj-results`) and
   the bars use it.
-- **Technologies** is one tile per service, each a row of mark tiles, packed in order into
-  rows and spanned so every mark in a row comes out the same width. A mark tile wider than
-  15rem sets its mark beside its name.
+- **Technologies**, straight after the overview on every project page, is one tile per
+  service, each a row of mark tiles, packed in order into rows and spanned so every mark in
+  a row comes out the same width. A mark tile wider than 15rem sets its mark beside its
+  name.
 - **The takeaway** is on ink, its two paragraphs in columns, with All projects.
 - The copy's spaced hyphen and the French space before `:` `;` `!` `?` are made
   non-breaking at render by `keep()`, the words unchanged, so no line starts with "- which"
@@ -2305,6 +2313,10 @@ centred in the space between the capsule and the footer on a tall screen.
 
 ## Changelog
 
+- 2026-09-28 - the site a size smaller: display type, leads and card padding down about a
+  sixth, body 16/17px, and a tile's detail a step under the page's text in the muted ink so
+  a row reads as its titles. A project page lists its technologies straight after the
+  overview (§2, §10).
 - 2026-09-28 - a project page shows a Demo section after its request diagram where the
   project has a recording, Object Detection's (§10).
 - 2026-09-28 - the Games tile in About draws the seven games small, each playing a move,

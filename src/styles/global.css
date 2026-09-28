@@ -207,7 +207,7 @@
     background-color: var(--site-bg);
     color: var(--site-fg);
     font-family: var(--font-sans);
-    font-size: 1.0625rem;
+    font-size: 1rem;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
@@ -215,11 +215,12 @@
     overflow-x: hidden;
   }
 
-  /* A step up from 17px wherever there is the width for it: "everything on the
-     site is too small" was said about exactly this. */
+  /* 17px wherever there is the width for it, 16px on a phone. Both ends have
+     been tried and turned down: 16px everywhere read as everything too small,
+     18px as everything too big. */
   @media (min-width: 48rem) {
     body {
-      font-size: 1.125rem;
+      font-size: 1.0625rem;
     }
   }
 
@@ -327,7 +328,7 @@
   .card {
     /* Named, so a block inside a tile can cancel it and bleed to the edges -
        see `.game-shot`. */
-    --card-pad: clamp(1.25rem, 2.2vw, 2rem);
+    --card-pad: clamp(1.125rem, 1.8vw, 1.625rem);
 
     position: relative;
     border: 1px solid var(--site-hairline);
@@ -488,11 +489,11 @@
    * should read as a break rather than as the page having run out.
    */
   .sec {
-    padding-block: clamp(2.25rem, 3.8vw, 3.5rem);
+    padding-block: clamp(2rem, 3.4vw, 3rem);
   }
 
   .sec-lite {
-    padding-block: clamp(1.75rem, 3vw, 2.75rem);
+    padding-block: clamp(1.5rem, 2.6vw, 2.25rem);
   }
 
   .section-band {
@@ -516,7 +517,7 @@
   .sec-label {
     font-stretch: 120%;
     font-weight: 700;
-    font-size: clamp(2.25rem, 5vw, 4rem);
+    font-size: clamp(2rem, 4.2vw, 3.25rem);
     line-height: 0.98;
     letter-spacing: -0.045em;
     /* German compounds are long enough to overhang a phone at this size. The
@@ -528,7 +529,7 @@
   }
 
   .sec-body {
-    margin-top: clamp(1.25rem, 2.4vw, 2rem);
+    margin-top: clamp(1.125rem, 2vw, 1.75rem);
   }
 
   /*
@@ -598,8 +599,8 @@
     border-radius: var(--site-radius-pill);
     background-color: var(--site-accent);
     color: var(--site-bg);
-    padding: 0.95rem 1.7rem;
-    font-size: 1.0625rem;
+    padding: 0.85rem 1.5rem;
+    font-size: 1rem;
     font-stretch: 108%;
     font-weight: 620;
     line-height: 1.2;
@@ -634,8 +635,8 @@
     border: 1px solid var(--site-hairline);
     border-radius: var(--site-radius-pill);
     background-color: var(--site-card);
-    padding: 0.85rem 1.4rem;
-    font-size: 1rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9375rem;
     font-weight: 560;
     line-height: 1.2;
     transition:
@@ -669,8 +670,8 @@
     border: 1px solid var(--site-hairline);
     border-radius: var(--site-radius-pill);
     background-color: var(--site-card);
-    padding: 0.5rem 1rem 0.5rem 0.8rem;
-    font-size: 1rem;
+    padding: 0.45rem 0.9rem 0.45rem 0.75rem;
+    font-size: 0.9375rem;
     font-weight: 540;
     line-height: 1.35;
     letter-spacing: -0.005em;
@@ -820,7 +821,7 @@
     margin-top: 0.3rem;
     font-stretch: 108%;
     font-weight: 620;
-    font-size: 1.125rem;
+    font-size: 1.0625rem;
     line-height: 1.35;
     letter-spacing: -0.015em;
   }
@@ -875,8 +876,8 @@
 
   .svc-title {
     font-stretch: 112%;
-    font-weight: 640;
-    font-size: clamp(1.25rem, 1.6vw, 1.4rem);
+    font-weight: 660;
+    font-size: clamp(1.1875rem, 1.45vw, 1.3125rem);
     line-height: 1.2;
     letter-spacing: -0.025em;
   }
@@ -1174,7 +1175,7 @@
     margin-top: clamp(1.25rem, 2.5vw, 2rem);
     font-stretch: 122%;
     font-weight: 720;
-    font-size: clamp(2.75rem, 7.5vw, 6rem);
+    font-size: clamp(2.5rem, 6.2vw, 4.75rem);
     line-height: 0.96;
     letter-spacing: -0.05em;
     hyphens: auto;
@@ -1192,7 +1193,7 @@
     display: inline-flex;
     vertical-align: middle;
     /* In rem, not em: an em here is the badge's own 1rem, which left "Cube"
-       and "Beta" 5px apart under a 96px title. */
+       and "Beta" 4px apart under a 76px title. */
     margin-left: clamp(0.5rem, 1vw, 0.875rem);
     border-radius: var(--site-radius-pill);
     padding: 0.35rem 0.95rem;
@@ -1214,7 +1215,7 @@
    */
   .page-lead {
     margin-top: clamp(1rem, 2vw, 1.5rem);
-    font-size: clamp(1.1875rem, 1.9vw, 1.5rem);
+    font-size: clamp(1.125rem, 1.6vw, 1.3125rem);
     line-height: 1.45;
     letter-spacing: -0.012em;
     color: var(--site-muted);

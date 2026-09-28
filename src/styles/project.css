@@ -106,7 +106,7 @@
     margin-top: 1rem;
     font-stretch: 118%;
     font-weight: 700;
-    font-size: clamp(1.875rem, 3.2vw, 2.75rem);
+    font-size: clamp(1.75rem, 2.7vw, 2.375rem);
     line-height: 1.02;
     letter-spacing: -0.04em;
     hyphens: auto;
@@ -117,7 +117,7 @@
     margin-top: 0.9rem;
     font-stretch: 104%;
     font-weight: 500;
-    font-size: clamp(1.1875rem, 1.6vw, 1.375rem);
+    font-size: clamp(1.125rem, 1.4vw, 1.25rem);
     line-height: 1.4;
     letter-spacing: -0.015em;
   }
@@ -244,7 +244,7 @@
     margin-top: 0.75rem;
     font-stretch: 114%;
     font-weight: 660;
-    font-size: clamp(1.5rem, 2.2vw, 1.875rem);
+    font-size: clamp(1.375rem, 1.9vw, 1.625rem);
     line-height: 1.08;
     letter-spacing: -0.035em;
     hyphens: auto;
@@ -252,8 +252,8 @@
   }
 
   .work-card .work-desc {
-    font-size: 1.0625rem;
-    line-height: 1.6;
+    font-size: 1rem;
+    line-height: 1.55;
   }
 
   /* The tags and the link sit on the floor of the card, so across a row they
@@ -403,7 +403,7 @@
   .proj-meta-figure {
     font-stretch: 120%;
     font-weight: 720;
-    font-size: clamp(2.5rem, 4vw, 3.5rem);
+    font-size: clamp(2.25rem, 3.4vw, 3rem);
     line-height: 0.9;
     letter-spacing: -0.045em;
     font-variant-numeric: tabular-nums;
@@ -416,7 +416,7 @@
   .proj-meta-value {
     font-stretch: 110%;
     font-weight: 620;
-    font-size: clamp(1.125rem, 1.5vw, 1.375rem);
+    font-size: clamp(1.0625rem, 1.3vw, 1.25rem);
     line-height: 1.3;
     letter-spacing: -0.02em;
     overflow-wrap: break-word;
@@ -492,12 +492,17 @@
   .proj-lead {
     font-stretch: 104%;
     font-weight: 470;
-    font-size: clamp(1.3125rem, 1.9vw, 1.625rem);
+    font-size: clamp(1.1875rem, 1.6vw, 1.4375rem);
     line-height: 1.35;
     letter-spacing: -0.022em;
   }
 
+  /* A tile's detail: a step under the page's text and in the muted ink, so a
+     row of tiles reads as its titles first and the detail is there for whoever
+     stops on one. */
   .proj-text {
+    font-size: 1rem;
+    line-height: 1.55;
     color: var(--site-muted);
   }
 
@@ -601,22 +606,23 @@
   .proj-step-title,
   .proj-trait-title {
     font-stretch: 112%;
-    font-weight: 640;
-    font-size: clamp(1.25rem, 1.6vw, 1.4rem);
+    font-weight: 660;
+    font-size: clamp(1.1875rem, 1.45vw, 1.3125rem);
     line-height: 1.2;
     letter-spacing: -0.025em;
   }
 
   .proj-step-body {
-    margin-top: 0.6rem;
-    font-size: 1.0625rem;
+    margin-top: 0.5rem;
+    font-size: 1rem;
+    line-height: 1.55;
     color: var(--site-muted);
   }
 
   /* ---- What it does ------------------------------------------------------- */
 
   .proj-trait .proj-text {
-    margin-top: 0.6rem;
+    margin-top: 0.5rem;
   }
 
   /* ---- Results ------------------------------------------------------------ */
@@ -938,7 +944,7 @@
   }
 
   .proj-take > p {
-    font-size: clamp(1.125rem, 1.4vw, 1.25rem);
+    font-size: clamp(1.0625rem, 1.3vw, 1.1875rem);
     line-height: 1.55;
     letter-spacing: -0.008em;
   }

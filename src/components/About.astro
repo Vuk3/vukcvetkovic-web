@@ -19,8 +19,8 @@ const [lead, education, site] = dict.about.paragraphs;
 
 {/*
   Three tiles: the opening statement across the full measure at display size,
-  then the other two paragraphs side by side, Education at 5 columns and Games
-  at 7, and at 4 and 8 from 80rem.
+  then the other two paragraphs side by side, Education at 4 columns and Games
+  at 8.
 
   They are labelled with names the page already uses for what they are about -
   the degrees are Education, and the site with its seven games is Games - and
@@ -32,10 +32,11 @@ const [lead, education, site] = dict.about.paragraphs;
   split is what lets them fill it: the Games paragraph ends above Education's,
   and the boards take the height between (see GameMinis.astro), so the two
   tiles end level. Measured in all four languages, the room under the Games
-  paragraph is 58 to 87px at 1024 on 5 and 7, where the boards are 64px wide,
-  and 87 to 145px at 1280 and 1440 on 4 and 8, where they are 97 to 105px -
-  boards about as tall as they are wide at every width. 5 and 7 at 1280 left
-  30px, a strip, and 4 and 8 at 1024 boards twice as tall as wide.
+  paragraph on 4 and 8 is 71 to 121px at 1024, where the boards are 77px wide,
+  71px at 1280 (98px wide) and 46 to 96px at 1440 (107px wide), where English
+  falls under the boards' 4rem floor and Education ends 18px short of the row.
+  5 and 7 left 22 to 46px, a strip, and 3 and 9 boards nearly twice as tall as
+  wide in German at 1280.
 */}
 <Section id="about" label={dict.about.label} tone={tone}>
   <div class="bento">
@@ -43,7 +44,7 @@ const [lead, education, site] = dict.about.paragraphs;
       <p class="about-lead">{lead}</p>
     </div>
 
-    <div class="card about-note reveal-item sm:col-span-6 lg:col-span-5 xl:col-span-4">
+    <div class="card about-note reveal-item sm:col-span-6 lg:col-span-4">
       <p class="tile-label">
         <span class="tile-icon"><GraduationCap aria-hidden="true" /></span>
         {dict.education.label}
@@ -51,7 +52,7 @@ const [lead, education, site] = dict.about.paragraphs;
       <p class="about-body">{education}</p>
     </div>
 
-    <div class="card card-hover tile-cobalt about-note reveal-item sm:col-span-6 lg:col-span-7 xl:col-span-8">
+    <div class="card card-hover tile-cobalt about-note reveal-item sm:col-span-6 lg:col-span-8">
       <p class="tile-label">
         <span class="tile-icon"><Gamepad2 aria-hidden="true" /></span>
         <a href={localizePath('/games/', lang)} class="stretch">{dict.nav.games}</a>

@@ -95,8 +95,8 @@ const links = [
  * between four lines of hole under two of them and none.
  *
  * The widths are the page where each breakpoint spends most of its time: the
- * 80rem shell with a 1rem gap and a 2rem card padding, and a 50rem one with
- * 0.75rem and 1.25rem. The rest is measured off the rendered page: Archivo's
+ * 80rem shell with a 1rem gap and a 1.625rem card padding, and a 50rem one
+ * with 0.75rem and 1.125rem. The rest is measured off the rendered page: Archivo's
  * average advance is 0.43em in body text, 0.45em in the lead and 0.52em in the
  * expanded titles, and a line loses about six characters to where the words
  * happen to break, which matters most in the narrowest tiles. An estimate,
@@ -111,8 +111,8 @@ interface Grid {
 }
 
 const TILES = {
-  lg: { width: 1280, columns: 24, gap: 16, pad: 32 },
-  sm: { width: 800, columns: 12, gap: 12, pad: 20 },
+  lg: { width: 1280, columns: 24, gap: 16, pad: 26 },
+  sm: { width: 800, columns: 12, gap: 12, pad: 18 },
 } satisfies Record<string, Grid>;
 
 /* The takeaway: two columns of text straight on the ink, no padding, a 3rem
@@ -182,8 +182,8 @@ interface Run {
   advance: number;
 }
 
-const body = (text: string): Run => ({ chars: text.length, size: 18, line: 28.8, advance: 0.43 });
-const title = (text: string): Run => ({ chars: text.length, size: 22.4, line: 27, advance: 0.52 });
+const body = (text: string): Run => ({ chars: text.length, size: 16, line: 24.8, advance: 0.43 });
+const title = (text: string): Run => ({ chars: text.length, size: 21, line: 25.2, advance: 0.52 });
 
 /* Lines as a fraction rather than rounded up, so two splits a line apart
    still score differently. A run that fits on one line loses nothing to
@@ -245,7 +245,7 @@ const spanStyle = (placed: Placed) => `--lg:${placed.lg};--sm:${placed.sm}`;
    width, see `.proj-lead`. */
 const overview = place(
   copy.overview.map((p, i) => ({
-    runs: [i === 0 ? { chars: p.length, size: 26, line: 35, advance: 0.45 } : body(p)],
+    runs: [i === 0 ? { chars: p.length, size: 23, line: 31, advance: 0.45 } : body(p)],
   })),
   2,
   1,
@@ -256,7 +256,7 @@ const overview = place(
 const steps = place(
   copy.steps.map((step) => ({
     fixed: 64,
-    runs: [title(step.title), { ...body(step.body), size: 17, line: 27.2 }],
+    runs: [title(step.title), body(step.body)],
   })),
   3,
   2,
@@ -272,7 +272,7 @@ const dataset = place(copy.dataset.map((p) => ({ runs: [body(p)] })), 3, 1);
 const notes = place(copy.results.notes.map((p) => ({ runs: [body(p)] })), 3, 1);
 
 const takeaway = place(
-  copy.takeaway.map((p) => ({ runs: [{ chars: p.length, size: 20, line: 31, advance: 0.43 }] })),
+  copy.takeaway.map((p) => ({ runs: [{ chars: p.length, size: 19, line: 29.5, advance: 0.43 }] })),
   2,
   1,
   COLUMNS,
@@ -510,6 +510,35 @@ const meta = [
     )
   }
 
+  {/*
+    The stack, grouped by service rather than by category, so the list doubles
+    as a map of what runs where - a tile per service holding its marks, sized
+    by `stackSpans` above so every row is full. Straight after the overview:
+    what it is built with is the next thing a reader looks for after what it
+    is, and every project has one, so every page reads the same way down.
+  */}
+  <Section id="stack" label={labels.stack}>
+    <dl class="proj-stack">
+      {
+        project.stack.map((group, index) => (
+          <div
+            class="card proj-group reveal-item"
+            style={`--xs:${stackSpans[index].xs};--sm:${stackSpans[index].sm};--lg:${stackSpans[index].lg}`}
+          >
+            <dt class="proj-group-name">{dict.projects.stackGroups[group.id]}</dt>
+            <dd class="proj-marks">
+              {group.items.map((item) => (
+                <div class="proj-mark">
+                  <MarkTile name={item} />
+                </div>
+              ))}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+  </Section>
+
   {
     copy.steps.length > 0 && (
       <Section id="architecture" label={labels.architecture}>
@@ -644,33 +673,6 @@ const meta = [
       </Section>
     )
   }
-
-  {/*
-    The stack, grouped by service rather than by category, so the list doubles
-    as a map of what runs where - a tile per service holding its marks, sized
-    by `stackSpans` above so every row is full.
-  */}
-  <Section id="stack" label={labels.stack}>
-    <dl class="proj-stack">
-      {
-        project.stack.map((group, index) => (
-          <div
-            class="card proj-group reveal-item"
-            style={`--xs:${stackSpans[index].xs};--sm:${stackSpans[index].sm};--lg:${stackSpans[index].lg}`}
-          >
-            <dt class="proj-group-name">{dict.projects.stackGroups[group.id]}</dt>
-            <dd class="proj-marks">
-              {group.items.map((item) => (
-                <div class="proj-mark">
-                  <MarkTile name={item} />
-                </div>
-              ))}
-            </dd>
-          </div>
-        ))
-      }
-    </dl>
-  </Section>
 
   {
     copy.takeaway.length > 0 && (
