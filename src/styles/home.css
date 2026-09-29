@@ -47,9 +47,9 @@
   /*
    * The studio light: a cobalt glow behind the portrait, the colour of the
    * suit, falling off to the ink, and a faint wash from the top left where the
-   * masthead starts. It is the one gradient on the page and it is there for
-   * the reason a photographer puts one behind a sitter - it separates the
-   * subject from the black.
+   * masthead starts. It is there for the reason a photographer puts one
+   * behind a sitter - it separates the subject from the black. Skills lights
+   * its Backend with the same cobalt.
    */
   .hero-stage::before {
     content: '';
@@ -415,7 +415,8 @@
    * alone and is 1,600 lines - the homepage takes the handful it needs.
    *
    * The stage is one large tile on a dot grid in the ink at 13%, which is what
-   * says "a drawing" without a frame of lines round it. Its width, not the
+   * says "a drawing" without a frame of lines round it, with a faint light of
+   * the accent over the middle, where Backend sits. Its width, not the
    * viewport's, picks the arrangement.
    *
    * `--sk-ink` captures the accent once, where it is declared, so the lines,
@@ -430,12 +431,18 @@
 
     container: skills / inline-size;
     padding: clamp(0.875rem, 2.4vw, 2.25rem);
-    background-image: radial-gradient(
-      circle,
-      color-mix(in oklab, var(--site-fg) 13%, transparent) 1px,
-      transparent 1.5px
-    );
-    background-size: 1.5rem 1.5rem;
+    background-image:
+      radial-gradient(
+        45% 60% at 50% 42%,
+        color-mix(in oklab, var(--site-accent) 8%, transparent),
+        transparent 72%
+      ),
+      radial-gradient(
+        circle,
+        color-mix(in oklab, var(--site-fg) 13%, transparent) 1px,
+        transparent 1.5px
+      );
+    background-size: 100% 100%, 1.5rem 1.5rem;
     background-position: center;
   }
 
@@ -449,6 +456,11 @@
    *   --sg     between Data and Cloud: wider than the site's gap, because
    *            both light up at once and their rings reach 9px out
    *   --hl/hw  an arrowhead's length and width, for a 2px line
+   *   --sk-pad a group's padding, a step tighter than a tile's and following
+   *            the stage, since on a phone Data and Cloud share its width at
+   *            about 140px each. Named here, not on the group, because the
+   *            row's columns are computed from it (below).
+   *   --mg     between two marks in a group
    *
    * Data and Cloud each span two rows, the label's and the marks', and share
    * them through a subgrid, so "Cloud & DevOps" wrapping in a half-width
@@ -459,6 +471,8 @@
     --sg: 1.25rem;
     --hl: 0.6875rem;
     --hw: 0.75rem;
+    --sk-pad: clamp(0.875rem, 2cqi, 1.5rem);
+    --mg: 0.5rem;
 
     display: grid;
     grid-template-columns: minmax(0, 1fr) var(--sg) minmax(0, 1fr);
@@ -501,16 +515,60 @@
   }
 
   /*
-   * A group: its label, then its marks, which take whatever height is left.
-   * The padding is a step tighter than a tile's and follows the stage, since
-   * on a phone Data and Cloud share its width at about 140px each.
+   * A group: its title bar, then its marks, which take whatever height is
+   * left.
+   *
+   * It is lit the way its marks are: a wash of the accent at the top of the
+   * tile, gone by the middle, and an edge that catches it - the accent along
+   * the top, running down into the hairline. The edge is a gradient on the
+   * border box under a transparent border, since `border-image` drops the
+   * radius, and the rim is the white line along the top a lit tile has.
    */
   .skills-grid > .skill-group {
-    --card-pad: clamp(0.875rem, 2cqi, 1.5rem);
+    --card-pad: var(--sk-pad);
+    --edge-top: color-mix(in oklab, var(--site-accent) 38%, var(--site-hairline));
+    --edge-foot: var(--site-hairline);
+    --wash: color-mix(in oklab, var(--site-accent) 5%, var(--site-card));
+    --rim: color-mix(in oklab, #fff 85%, transparent);
 
     display: grid;
     grid-template-rows: auto 1fr;
-    row-gap: 0.85rem;
+    row-gap: 0.95rem;
+    border-color: transparent;
+    background:
+      linear-gradient(180deg, var(--wash), var(--site-card) 45%) padding-box,
+      linear-gradient(180deg, var(--edge-top), var(--edge-foot) 55%) border-box;
+    box-shadow: inset 0 1px 0 var(--rim);
+  }
+
+  /*
+   * Backend, the core, lit from above in cobalt on the ink - the hero's
+   * studio light, the colour of the suit - with the brightest edge in the
+   * drawing. In the dark theme the ink panel is lifted rather than black,
+   * and under its own grey hairline it read weaker than the tiles beside it,
+   * so its whole edge keeps some of the accent there.
+   */
+  .skills-grid > .skill-group.panel {
+    --edge-top: color-mix(in oklab, var(--site-accent) 70%, transparent);
+    --rim: color-mix(in oklab, #fff 10%, transparent);
+
+    background:
+      radial-gradient(
+          85% 60% at 50% 0%,
+          color-mix(in oklab, var(--site-cobalt-bg) 42%, transparent),
+          transparent 72%
+        )
+        padding-box,
+      linear-gradient(var(--site-bg), var(--site-bg)) padding-box,
+      linear-gradient(180deg, var(--edge-top), var(--edge-foot) 60%) border-box;
+  }
+
+  .dark .skills-grid > .skill-group {
+    --rim: color-mix(in oklab, #fff 6%, transparent);
+  }
+
+  .dark .skills-grid > .skill-group.panel {
+    --edge-foot: color-mix(in oklab, var(--sk-ink) 40%, var(--site-hairline));
   }
 
   .skill-group[data-group='data'],
@@ -518,11 +576,27 @@
     grid-template-rows: subgrid;
   }
 
-  .skill-group > .tile-label {
-    align-self: start;
+  /*
+   * The title bar: the label across the tile to both edges, a hairline under
+   * it. It stretches to its row, so where groups share the row through a
+   * subgrid - the three in the row, Data and Cloud in the column - the
+   * hairlines run level whichever name wraps.
+   *
+   * ⚠️ The name wraps beside the icon, but a name whose one word does not fit
+   * beside it drops under it instead (`flex-basis: min-content`) rather than
+   * running out of the tile - "Données" in half a phone's stage.
+   */
+  .skills-grid > .skill-group > .tile-label {
+    flex-wrap: wrap;
+    align-self: stretch;
+    row-gap: 0.5rem;
+    margin-inline: calc(-1 * var(--card-pad));
+    border-bottom: 1px solid var(--site-hairline);
+    padding: 0 var(--card-pad) 0.95rem;
   }
 
   .skill-group-name {
+    flex: 1 1 min-content;
     font-stretch: 112%;
     font-weight: 660;
     font-size: 1.125rem;
@@ -530,21 +604,28 @@
     color: var(--site-fg);
   }
 
-  /*
-   * In the dark theme the ink panel is lifted rather than black, and under
-   * its own grey hairline Backend read weaker than the white tiles beside it.
-   * The request diagram's core has the same problem and the same answer: the
-   * brightest edge in the drawing.
-   */
-  .dark .skills-grid > .skill-group.panel {
-    border-color: color-mix(in oklab, var(--sk-ink) 55%, var(--site-hairline));
+  /* The group's icon on solid cobalt, lit from its top corner, the same on
+     the paper and on the ink. */
+  .skills-grid .tile-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.65rem;
+    background: linear-gradient(
+      155deg,
+      color-mix(in oklab, var(--site-cobalt-bg) 70%, #fff),
+      var(--site-cobalt-bg) 70%
+    );
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, #fff 35%, transparent),
+      0 6px 14px -6px color-mix(in oklab, var(--site-cobalt-bg) 70%, transparent);
+    color: #fff;
   }
 
   .skill-marks {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-auto-rows: 1fr;
-    gap: 0.5rem;
+    gap: var(--mg);
   }
 
   /* Data and Cloud stack their two on a phone, where each has half the
@@ -554,23 +635,68 @@
   }
 
   /*
-   * Marks at 1.875rem on tiles about 75px tall, a step under the hero's
-   * tray: in the row, Frontend's and Data's two stretch to Backend's three
-   * rows and come out about 116px each at 1440, so tiles any taller made
-   * those two the largest objects in the drawing rather than Backend.
+   * A mark's tile, lit in the mark's own colour: a tint of it over the tile,
+   * a light of it falling from the top edge, and an edge of it, so eleven
+   * tiles read as eleven technologies before a name is read, and the drawing
+   * carries the colour the marks brought rather than eleven white boxes.
+   * The mark is 48px on a tile about 110px tall, drawn close round it - the
+   * tiles were 380 by 170 round a 30px mark where Frontend and Data
+   * stretched to Backend's height.
+   *
+   * `--brand` is missing on the entries with no brand, which take the accent,
+   * so SQL is lit cobalt rather than grey. The ink and the dark theme take
+   * more of the colour, since a tenth of it is lost on a dark ground. The top
+   * highlight is the rim a lit tile has, white by day and faint at night.
+   *
+   * ⚠️ The hover is written out here rather than left to `.mark-tile:hover`
+   * in global.css: it ties with this rule on specificity, and which of the
+   * two files lands later in a page is not promised.
    */
   .skill-marks .mark-tile {
-    padding: 0.55rem 0.5rem;
-    gap: 0.45rem;
+    --sk-brand: var(--brand, var(--sk-ink));
+    --tint: 5%;
+    --lit: 17%;
+    --rim: color-mix(in oklab, #fff 70%, transparent);
+
+    gap: 0.7rem;
+    border-color: color-mix(in oklab, var(--sk-brand) 24%, var(--site-hairline));
+    background:
+      radial-gradient(
+        130% 100% at 50% 0%,
+        color-mix(in oklab, var(--sk-brand) var(--lit), transparent),
+        transparent 75%
+      ),
+      color-mix(in oklab, var(--sk-brand) var(--tint), var(--site-card));
+    box-shadow: inset 0 1px 0 var(--rim);
+    padding: 0.95rem 0.5rem 0.8rem;
+  }
+
+  .skill-group.panel .skill-marks .mark-tile,
+  .dark .skill-marks .mark-tile {
+    --tint: 10%;
+    --lit: 26%;
+    --rim: color-mix(in oklab, #fff 8%, transparent);
+
+    border-color: color-mix(in oklab, var(--sk-brand) 32%, var(--site-hairline));
+  }
+
+  /* `.skills-grid` so it outranks the ink's rule above as well. */
+  .skills-grid .skill-marks .mark-tile:hover {
+    border-color: color-mix(in oklab, var(--sk-brand) 60%, var(--site-hairline));
+    background-color: color-mix(in oklab, var(--sk-brand) calc(var(--tint) * 2.4), var(--site-card));
   }
 
   .skill-marks .mark-tile-icon {
-    width: 1.875rem;
-    height: 1.875rem;
+    width: 2.5rem;
+    height: 2.5rem;
   }
 
-  /* NestJS, leading Backend across the tile: the mark beside its name, a
-     size up from the rest. */
+  .skill-marks .mark-tile-name {
+    font-weight: 620;
+  }
+
+  /* NestJS, leading Backend. On a phone it runs across the tile, the mark
+     beside its name, over a two-by-two. */
   .skill-group[data-group='backend'] .skill-marks > :first-child {
     grid-column: 1 / -1;
     flex-direction: row;
@@ -578,14 +704,14 @@
   }
 
   .skill-group[data-group='backend'] .skill-marks > :first-child .mark-tile-icon {
-    width: 2.375rem;
-    height: 2.375rem;
+    width: 3rem;
+    height: 3rem;
   }
 
   .skill-group[data-group='backend'] .skill-marks > :first-child .mark-tile-name {
     font-stretch: 114%;
     font-weight: 680;
-    font-size: 1.25rem;
+    font-size: 1.3125rem;
     letter-spacing: -0.03em;
   }
 
@@ -605,6 +731,8 @@
    * In the column every line runs down, centred on its area, which is the
    * middle of the tile above it and of the tile below.
    */
+  /* A faint glow along each line, so it reads as a live wire rather than a
+     rule. */
   .skill-link {
     position: relative;
     container-type: size;
@@ -612,6 +740,7 @@
     width: 0;
     border: 0 solid var(--sk-ink);
     border-left-width: 2px;
+    box-shadow: 0 0 7px color-mix(in oklab, var(--sk-ink) 45%, transparent);
     pointer-events: none;
   }
 
@@ -665,11 +794,51 @@
     pointer-events: none;
   }
 
-  /* A tablet's column: Backend's four in one row under NestJS, and Data's
-     and Cloud's two side by side. */
+  /*
+   * From a tablet's column up, Backend is three marks by two: NestJS a
+   * feature down the first column, its mark near twice a mark's, and the
+   * other four as a two-by-two beside it - in site.ts's order, since
+   * auto-placement fills the second and third columns row by row. Data's and
+   * Cloud's two sit side by side.
+   */
   @container skills (min-width: 36rem) {
+    .skills-grid .tile-icon {
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 0.7rem;
+    }
+
+    .skills-grid .tile-icon svg {
+      width: 1.15rem;
+      height: 1.15rem;
+    }
+
+    .skill-group-name {
+      font-size: 1.1875rem;
+    }
+
+    .skill-marks .mark-tile-icon {
+      width: 3rem;
+      height: 3rem;
+    }
+
     .skill-group[data-group='backend'] .skill-marks {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .skill-group[data-group='backend'] .skill-marks > :first-child {
+      grid-column: auto;
+      grid-row: span 2;
+      flex-direction: column;
+    }
+
+    .skill-group[data-group='backend'] .skill-marks > :first-child .mark-tile-icon {
+      width: 5.5rem;
+      height: 5.5rem;
+    }
+
+    .skill-group[data-group='backend'] .skill-marks > :first-child .mark-tile-name {
+      font-size: 1.5rem;
     }
 
     .skill-group:is([data-group='data'], [data-group='cloud']) .skill-marks {
@@ -683,10 +852,18 @@
    * across the foot, fed by a line down out of Backend.
    *
    * The three in the row share two rows through a subgrid, the label's and
-   * the marks', so their marks start on one line and Frontend's and Data's
-   * two stretch to Backend's three rows: every tile is full and the row has
-   * no hole in it. Backend's column is half again as wide, because it holds
-   * a two-by-two where the others hold a stack of two.
+   * the marks', so their marks start on one line. Each holds two rows of
+   * marks - a stack of two either side, three by two in the middle - so they
+   * come out level without anything stretching.
+   *
+   * Every mark in the row is one width, `--m`. The row is five marks across
+   * (Frontend's, Backend's three, Data's) plus the two gaps the lines cross,
+   * six group paddings and borders, and Backend's two gaps between marks, so
+   * `--m` is what is left of the stage, `100cqi`, divided by five. Frontend
+   * and Data are set to one mark and their frame, and Backend takes the rest,
+   * which is its three. With `fr` alone Backend's marks came out about 30px
+   * wider than the others', since it spends its padding once across three
+   * where they spend it on one.
    *
    * ⚠️ Cloud & DevOps is a subgrid of the stage's *columns*. A subgrid's
    * padding goes on to the items in its edge tracks, so its label lands on
@@ -696,12 +873,12 @@
    */
   @container skills (min-width: 52rem) {
     .skills-grid {
-      --gx: clamp(2.75rem, 5.5cqi, 4.5rem);
+      --gx: clamp(3rem, 7cqi, 5.5rem);
       --gy: 3rem;
+      --m: calc((100cqi - 2 * var(--gx) - 6 * var(--sk-pad) - 6px - 2 * var(--mg)) / 5);
+      --side: calc(var(--m) + 2 * var(--sk-pad) + 2px);
 
-      grid-template-columns:
-        minmax(0, 1fr) var(--gx) minmax(0, 1.45fr) var(--gx)
-        minmax(0, 1fr);
+      grid-template-columns: var(--side) var(--gx) minmax(0, 1fr) var(--gx) var(--side);
       grid-template-rows: auto auto var(--gy) auto;
       grid-template-areas:
         'frontend link-frontend backend link-data data'
@@ -714,10 +891,6 @@
       grid-template-rows: subgrid;
     }
 
-    .skill-group[data-group='backend'] .skill-marks {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
     .skill-group:is([data-group='frontend'], [data-group='data']) .skill-marks {
       grid-template-columns: minmax(0, 1fr);
     }
@@ -728,9 +901,33 @@
       align-items: center;
     }
 
-    .skill-group[data-group='cloud'] > .tile-label {
-      grid-column: 1;
-      align-self: center;
+    /*
+     * In the row Frontend's and Data's title bars are one mark wide, 119px
+     * where the row starts, and "Frontend" is 4.6 times its size across, so
+     * the icon and the name follow the stage down to 30px and 16px there and
+     * reach 36px and 19px by 1440.
+     */
+    .skills-grid .tile-icon {
+      width: clamp(1.875rem, 3cqi, 2.25rem);
+      height: clamp(1.875rem, 3cqi, 2.25rem);
+    }
+
+    .skill-group-name {
+      font-size: clamp(1rem, 1.6cqi, 1.1875rem);
+    }
+
+    /*
+     * Cloud's title is a column rather than a bar: the label across
+     * Frontend's column and the gap after it, so "Cloud & DevOps" holds one
+     * line at 1000px, and a hairline down its right edge, which falls on
+     * Backend's left edge - where the marks begin.
+     */
+    .skills-grid > .skill-group[data-group='cloud'] > .tile-label {
+      grid-column: 1 / 3;
+      margin-inline: 0;
+      border-right: 1px solid var(--site-hairline);
+      border-bottom: 0;
+      padding: 0 1rem 0 0;
     }
 
     .skill-group[data-group='cloud'] .skill-marks {
@@ -740,11 +937,26 @@
     }
 
     /* Cloud's two lie down, the mark beside its name, so the strip stays a
-       strip. */
+       strip. Their light is narrower than a square tile's, so it pools over
+       the mark and name in the middle rather than washing the whole bar. */
     .skill-group[data-group='cloud'] .mark-tile {
       flex-direction: row;
-      gap: 0.75rem;
-      padding-block: 0.7rem;
+      gap: 0.85rem;
+      background-image: radial-gradient(
+        60% 140% at 50% 0%,
+        color-mix(in oklab, var(--sk-brand) var(--lit), transparent),
+        transparent 75%
+      );
+      padding-block: 0.85rem;
+    }
+
+    .skill-group[data-group='cloud'] .mark-tile-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+
+    .skill-group[data-group='cloud'] .mark-tile-name {
+      font-size: 1.0625rem;
     }
 
     /*
@@ -863,18 +1075,20 @@
   /* ---- Experience ------------------------------------------------------ */
 
   /* `--role-gap` is named because the rail crosses it, and `--chapter` is the
-     extra room above the first degree that its caption sits in. */
+     extra room above the first degree that its caption sits in: the caption's
+     2.75rem icon and a gap either side of it. */
   .role-list {
     --role-gap: clamp(1.5rem, 2.5vw, 2rem);
-    --chapter: 3rem;
+    --chapter: 4.5rem;
 
     display: grid;
     row-gap: var(--role-gap);
   }
 
   /*
-   * Who and when on the left, what on the right, from 60rem. The split is 5:7,
-   * which puts the bullets at about 85 characters a line on a desktop.
+   * Who and when across the top, what under it. Beside each other, who and
+   * when took a column the height of the points and filled a third of it,
+   * which left the rest of the tile standing empty.
    */
   .role {
     display: grid;
@@ -882,16 +1096,34 @@
   }
 
   /*
-   * The head sits at the top, where the rail leaves its initial, and the rail
-   * runs down the column under it. Centred on the bullets instead, the head
-   * put the initial at a height the rail could not know.
+   * A role is lit the way the Skills groups are: a wash of the accent at the
+   * top of the tile, gone before the middle, an edge that catches it - the
+   * accent along the top running down into the hairline, a gradient on the
+   * border box under a transparent border, since `border-image` drops the
+   * radius - and a white rim along the top. The role he holds now is lit
+   * harder, from its top left corner where its initial is.
    */
-  @media (min-width: 60rem) {
-    .role {
-      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-      column-gap: clamp(2rem, 4vw, 3.5rem);
-      align-items: start;
-    }
+  .role-list > .role {
+    --edge-top: color-mix(in oklab, var(--site-accent) 34%, var(--site-hairline));
+    --wash: color-mix(in oklab, var(--site-accent) 4%, var(--site-card));
+    --glow: transparent;
+
+    border-color: transparent;
+    background:
+      radial-gradient(40% 90% at 0% 0%, var(--glow), transparent 70%) padding-box,
+      linear-gradient(180deg, var(--wash), var(--site-card) 40%) padding-box,
+      linear-gradient(180deg, var(--edge-top), var(--site-hairline) 58%) border-box;
+    box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 85%, transparent);
+  }
+
+  .role-list > .role[data-current] {
+    --edge-top: color-mix(in oklab, var(--site-accent) 60%, var(--site-hairline));
+    --wash: color-mix(in oklab, var(--site-accent) 5%, var(--site-card));
+    --glow: color-mix(in oklab, var(--site-accent) 10%, transparent);
+  }
+
+  .dark .role-list > .role {
+    box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 6%, transparent);
   }
 
   .role-head {
@@ -899,6 +1131,28 @@
     grid-template-columns: auto minmax(0, 1fr);
     gap: 0.5rem 1rem;
     align-items: center;
+  }
+
+  /* From 60rem the period moves to the far end of the head, level with the
+     name, so the head is one line across the tile. */
+  @media (min-width: 60rem) {
+    .role {
+      row-gap: 1.25rem;
+    }
+
+    .role-head {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      column-gap: 1rem;
+    }
+
+    /* `.role-head` to outrank `.role-period` below, which places it under
+       the name. */
+    .role-head .role-period {
+      grid-column: 3;
+      grid-row: 1;
+      align-self: center;
+      margin-top: 0;
+    }
   }
 
   /* The company's initial, in the display voice: what sits at each stop of the
@@ -920,9 +1174,18 @@
     line-height: 1;
   }
 
+  /* The role he holds now: its initial white on solid cobalt, lit from the
+     top corner like the Skills icons, with a glow of its own blue under it. */
   .role[data-current] .role-mark {
-    background-color: var(--site-accent);
-    color: var(--site-bg);
+    background: linear-gradient(
+      155deg,
+      color-mix(in oklab, var(--site-cobalt-bg) 65%, #fff),
+      var(--site-cobalt-bg) 70%
+    );
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, #fff 35%, transparent),
+      0 10px 22px -10px color-mix(in oklab, var(--site-cobalt-bg) 80%, transparent);
+    color: #fff;
   }
 
   .role-company {
@@ -955,9 +1218,16 @@
     color: var(--site-muted);
   }
 
+  .role:not([data-current]) .role-period {
+    background-color: var(--site-inset);
+  }
+
+  /* A soft ring of the accent round the running period, so "2024 -" reads
+     as live beside the other periods' plain pills. */
   .role[data-current] .role-period {
     border-color: var(--site-accent);
     background-color: color-mix(in oklab, var(--site-accent) 10%, var(--site-card));
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--site-accent) 10%, transparent);
     color: var(--site-accent);
   }
 
@@ -1009,6 +1279,12 @@
   .role:not([data-current]) .role-mark {
     outline: 2px solid var(--site-accent);
     outline-offset: -2px;
+    background: linear-gradient(
+      155deg,
+      var(--site-card),
+      color-mix(in oklab, var(--site-accent) 10%, var(--site-card))
+    );
+    box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 70%, transparent);
     color: var(--site-accent);
   }
 
@@ -1050,31 +1326,78 @@
     margin-top: var(--chapter);
   }
 
-  .role-chapter {
+  /*
+   * The caption is a chapter heading, in the names' display voice a size
+   * under them, and its icon is a stop on the rail: centred on it, 2.75rem
+   * square, over the stretch that crosses the gap. It sits halfway down the
+   * gap, `bottom` being its own height less than the gap, halved.
+   */
+  /* `.role-list` to outrank `.tile-label` in global.css, which ties with it
+     and may land later in the page. */
+  .role-list .role-chapter {
     position: absolute;
-    bottom: calc(100% + 1px + (var(--gap-above) - 2rem) / 2);
-    left: calc(var(--card-pad) + 3.5rem + 1rem);
+    bottom: calc(100% + 1px + (var(--gap-above) - 2.75rem) / 2);
+    left: calc(var(--card-pad) + 1.75rem - 1.375rem);
+    gap: 0.9rem;
+    font-stretch: 116%;
+    font-weight: 680;
+    font-size: clamp(1.25rem, 1.8vw, 1.5rem);
+    letter-spacing: -0.03em;
     white-space: nowrap;
+    color: var(--site-fg);
+  }
+
+  .role-list .role-chapter .tile-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.8rem;
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, #fff 35%, transparent),
+      0 8px 18px -8px color-mix(in oklab, var(--site-cobalt-bg) 80%, transparent);
+  }
+
+  .role-chapter .tile-icon svg {
+    width: 1.35rem;
+    height: 1.35rem;
   }
 
   /*
    * The degree's thesis, where a role has its points: a recessed tile, the
    * whole of it the link to the project's write-up. The label names it, the
    * title is the project's, and the tagline says what it was in one line.
+   * It starts where the name does, clear of the rail that runs down past the
+   * crest.
    */
   .role-thesis {
+    --edge-top: color-mix(in oklab, var(--site-accent) 34%, var(--site-hairline));
+
     display: grid;
     gap: 0.35rem;
-    border: 1px solid var(--site-hairline);
+    margin-inline-start: calc(3.5rem + 1rem);
+    border: 1px solid transparent;
     border-radius: var(--site-radius-inner);
-    background-color: var(--site-inset);
+    background:
+      linear-gradient(
+          180deg,
+          color-mix(in oklab, var(--site-accent) 6%, var(--site-inset)),
+          var(--site-inset) 60%
+        )
+        padding-box,
+      linear-gradient(180deg, var(--edge-top), var(--site-hairline) 60%) border-box;
     padding: 1rem 1.15rem 1.1rem;
-    transition: border-color 250ms var(--site-ease);
+    transition:
+      transform 300ms var(--site-ease-out),
+      box-shadow 300ms var(--site-ease);
   }
 
+  /* The whole tile is the link, so it rises to meet the pointer as a
+     linked tile does, its edge taking the accent all the way down. */
   .role-thesis:hover,
   .role-thesis:focus-visible {
-    border-color: color-mix(in oklab, var(--site-accent) 55%, var(--site-hairline));
+    --edge-top: var(--site-accent);
+
+    box-shadow: var(--site-lift-hover);
+    transform: translateY(-3px);
   }
 
   .role-thesis > .tile-label {
@@ -1084,7 +1407,7 @@
   .role-thesis-title {
     font-stretch: 110%;
     font-weight: 640;
-    font-size: 1.125rem;
+    font-size: 1.25rem;
     line-height: 1.25;
     letter-spacing: -0.02em;
   }
@@ -1093,15 +1416,42 @@
     color: var(--site-muted);
   }
 
-  /* Stacked, the thesis starts where the name does, clear of the rail that
-     runs down past the crest. On a phone it is its label and its title, the
-     link the tile is for. */
-  @media (max-width: 59.99rem) {
+  /*
+   * From 60rem the thesis runs the width of the tile, so it is two columns:
+   * the label and the title on the left, the tagline on the right past a
+   * hairline. As one column the tagline stopped halfway across it.
+   */
+  @media (min-width: 60rem) {
     .role-thesis {
-      margin-inline-start: calc(3.5rem + 1rem);
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+      grid-template-rows: auto auto;
+      column-gap: 1.5rem;
+      align-items: center;
+    }
+
+    .role-thesis > .tile-label {
+      grid-area: 1 / 1;
+    }
+
+    .role-thesis-title {
+      grid-area: 2 / 1;
+      align-self: start;
+    }
+
+    .role-thesis-line {
+      grid-area: 1 / 2 / 3;
+      align-self: stretch;
+      display: flex;
+      align-items: center;
+      border-left: 1px solid var(--site-hairline);
+      padding-left: 1.5rem;
+      font-size: 1.0625rem;
+      line-height: 1.5;
     }
   }
 
+  /* On a phone the thesis is its label and its title, the link the tile is
+     for. */
   @media (max-width: 39.99rem) {
     .role-thesis {
       padding: 0.8rem 0.95rem 0.9rem;
@@ -1114,7 +1464,6 @@
 
   .role-points {
     display: grid;
-    gap: 0.9rem;
   }
 
   /*
@@ -1129,14 +1478,84 @@
     }
   }
 
+  /* A step darker than the muted ink: on a tile of their own, the muted grey
+     read as a caption rather than as the work. Stacked, the points are parted
+     by hairlines. */
   .role-points > li {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
     gap: 0.85rem;
     align-items: start;
+    padding-block: 0.85rem;
     font-size: 1rem;
     line-height: 1.55;
-    color: var(--site-muted);
+    color: color-mix(in oklab, var(--site-fg) 72%, var(--site-card));
+  }
+
+  .role-points > li:first-child {
+    padding-top: 0;
+  }
+
+  .role-points > li:last-child {
+    padding-bottom: 0;
+  }
+
+  .role-points > li + li {
+    border-top: 1px solid var(--site-hairline);
+  }
+
+  /*
+   * From 60rem the points are side by side under the head, starting where
+   * the name does, each on a recessed tile lit the way the thesis is: two
+   * across, and an odd last one across both, so no row stops short. From
+   * 84rem, where the shell has stopped growing, a role's points are all in
+   * one row - three across for a role with three - since `auto-fit` drops the
+   * empty tracks and the tiles take their room. Three across any narrower
+   * set a point at under 35 characters a line, eight lines tall.
+   */
+  @media (min-width: 60rem) {
+    .role-points {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.75rem;
+      margin-inline-start: calc(3.5rem + 1rem);
+    }
+
+    .role-points > li:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 84rem) {
+    .role-points {
+      grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    }
+
+    .role-points > li:last-child:nth-child(odd) {
+      grid-column: auto;
+    }
+  }
+
+  @media (min-width: 60rem) {
+
+    /* `.role-list` to outrank the stacked hairline and paddings above. */
+    .role-list .role-points > li {
+      border: 1px solid transparent;
+      border-radius: var(--site-radius-inner);
+      background:
+        linear-gradient(
+            180deg,
+            color-mix(in oklab, var(--site-accent) 5%, var(--site-inset)),
+            var(--site-inset) 55%
+          )
+          padding-box,
+        linear-gradient(
+            180deg,
+            color-mix(in oklab, var(--site-accent) 30%, var(--site-hairline)),
+            var(--site-hairline) 60%
+          )
+          border-box;
+      padding: 1rem 1.1rem 1.05rem;
+    }
   }
 
   .role-check {
@@ -1149,14 +1568,34 @@
     height: 1.6rem;
     margin-top: 0.05rem;
     border-radius: 50%;
-    background-color: color-mix(in oklab, var(--site-accent) 12%, var(--site-card));
-    color: var(--site-accent);
+    background: linear-gradient(
+      155deg,
+      color-mix(in oklab, var(--site-cobalt-bg) 65%, #fff),
+      var(--site-cobalt-bg) 70%
+    );
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, #fff 35%, transparent),
+      0 4px 10px -4px color-mix(in oklab, var(--site-cobalt-bg) 70%, transparent);
+    color: #fff;
   }
 
   .role-check svg {
-    width: 0.95rem;
-    height: 0.95rem;
-    stroke-width: 2.6;
+    width: 0.85rem;
+    height: 0.85rem;
+    stroke-width: 3;
+  }
+
+  /* The chapter's and the thesis's icons on cobalt, as the Skills groups'
+     are. */
+  .role-list .tile-icon {
+    border-radius: 0.65rem;
+    background: linear-gradient(
+      155deg,
+      color-mix(in oklab, var(--site-cobalt-bg) 65%, #fff),
+      var(--site-cobalt-bg) 70%
+    );
+    box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 35%, transparent);
+    color: #fff;
   }
 
   /*

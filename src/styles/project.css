@@ -1068,12 +1068,19 @@
 }
 
 /*
- * The deck stepping back: as the next card comes up the screen, the one under
- * it shrinks from its top edge and its dimming layer darkens, over exactly the
- * run from the next card's top entering the screen to it reaching the place it
- * sticks - `100svh` less the header and its own step down. Linear, so it
+ * The deck stepping back: as the next card slides up over it, the one under
+ * it shrinks from its top edge and its dimming layer darkens. Linear, so it
  * follows the thumb. On the next card's timeline, named in the rules above.
  * The last card has none after it and stays as it is.
+ *
+ * It runs over the cover alone: from the next card's top reaching this one's
+ * foot to it reaching the place it sticks, `100svh` less the header and its
+ * own step down. The foot is where this card sits stuck, `--stick` plus its
+ * height, which is its `min-height` - so the start is `100svh` less both,
+ * which is never under the 2rem that height leaves free. ⚠️ Started instead
+ * at the next card's top entering the screen, it began while this card was
+ * still on its way up on any screen taller than a card and the gap, and a
+ * reader saw a project stepping back before it had arrived.
  *
  * `scale` and `opacity`, so it is composited: nothing reflows and the
  * drawings keep running.
@@ -1097,7 +1104,9 @@
       animation-name: deck-recede;
       animation-timing-function: linear;
       animation-fill-mode: both;
-      animation-range: cover 0px cover calc(100svh - var(--head-h) - 1.25rem - (var(--i, 0) + 1) * 0.875rem);
+      animation-range:
+        cover max(2rem, 100svh - var(--stick) - 40rem)
+        cover calc(100svh - var(--stick) - 0.875rem);
     }
 
     .deck > .case:has(+ .case)::before {

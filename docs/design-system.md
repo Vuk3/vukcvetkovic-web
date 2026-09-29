@@ -302,11 +302,11 @@ its grid in its page file instead.
 card per group once, and Backend's five entries set the height, so Data's two came out as
 a box with 200 points of nothing. The fixes used on the site, in order of preference:
 
-1. **Size the tiles by what they hold** - Skills gives Backend's column half again the
-   width of Frontend's and Data's (§10).
+1. **Size the tiles by what they hold** - Skills gives each group exactly its marks:
+   Backend three wide, Frontend and Data one, all two rows tall, so the three come out
+   level with nothing stretched (§10).
 2. **Share rows through a subgrid**, so the content inside tiles of different heights
-   starts on one line - Skills does this for its group names, one of which wraps, and so
-   stretches Frontend's and Data's two marks to Backend's three rows.
+   starts on one line - Skills does this for its group names, one of which wraps.
 3. **Rows inside one tile** rather than a tile per item - how to play on every game page.
 4. **Centre a short column on a tall one** - a role's name beside its bullets.
 
@@ -530,9 +530,12 @@ Three scroll-driven moments carry most of the homepage, all paint or compositing
   cannot bite, and a percentage is what finishes the sentence at the same point of the
   screen on any height (its top about a fifth of the way down).
 - **The project deck stacks.** See §10. Each card's step back runs on the *next* card's view
-  timeline - named per card, shared through `timeline-scope` on `.deck` - over the run from
-  that card's top entering the screen to it reaching where it sticks, `cover 0px` to
-  `cover calc(100svh - var(--head-h) - 1.25rem - (i + 1) * 0.875rem)`. `scale` on the card
+  timeline - named per card, shared through `timeline-scope` on `.deck` - over the cover
+  alone: from that card's top reaching this one's foot, `cover max(2rem, 100svh -
+  var(--stick) - 40rem)`, to it reaching where it sticks, `cover calc(100svh - var(--stick)
+  - 0.875rem)`. ⚠️ Started at the next card's top entering the screen, it ran while the card
+  was still on its way up on any screen taller than a card, so a project stepped back
+  before it had arrived. `scale` on the card
   and `opacity` on a layer of the stage's colour over it, so the drawings keep running under
   the dimming at no cost.
 
@@ -2232,8 +2235,8 @@ row still fills its columns.
   line across the whole stage (§4), and under it the lead, the buttons and the stack on the
   left with the portrait framed at its own 3:4 on the right. The stage carries a studio
   light - a cobalt glow behind the portrait falling off to the ink, and a faint wash where
-  the masthead starts - the one gradient on the page, there for the reason a photographer
-  puts one behind a sitter.
+  the masthead starts - there for the reason a photographer puts one behind a sitter.
+  Skills lights its Backend with the same cobalt (§10).
 - **The tray** is a wrapping row whose tiles grow, with a basis of a sixth of the row less
   its gaps and a pixel, so eleven always set six and five from a tablet up and sit along the
   foot of the left column, level with the portrait's foot. ⚠️ A basis in rem set eleven in
@@ -2268,34 +2271,80 @@ row still fills its columns.
 - **Skills is a diagram of the stack**, drawn with the request diagram's method (§6) but
   written in home.css, because flow.css is on the project pages alone. Frontend, Backend
   and Data sit in a row with a line through each gap, and Cloud & DevOps runs across the foot
-  under a line down out of Backend. Backend is the ink tile, NestJS across it over a
-  two-by-two. **Every line has a head at each end**, because the answer comes back the way
+  under a line down out of Backend. Backend is the ink tile, three marks by two: NestJS a
+  feature down its first column with its mark at 88px, and the other four as a two-by-two
+  beside it. **Every line has a head at each end**, because the answer comes back the way
   the request went, and on a 5s loop a packet runs out from Frontend to Data and Cloud and
   back home, each group lighting with a ring as a packet lands - Frontend and Backend twice,
-  the second ring on `::before`. The marks are 1.875rem on tiles about 75px tall, the stage
-  559px at 1440.
+  the second ring on `::before`.
+  - **A group is lit the way its marks are**: a wash of the accent at the top of the tile,
+    gone by the middle, and an edge that catches it - the accent along the top running down
+    into the hairline, drawn as a gradient on the border box under a transparent border,
+    since `border-image` drops the radius - with a white rim along the top. Backend is lit
+    from above in cobalt on the ink, the hero's studio light, and keeps the brightest edge
+    in the drawing. The stage has a faint light of the accent over the middle, and each line
+    a faint glow of its own.
+  - **Each group has a title bar**: its label across the tile to both edges with a hairline
+    under it, and its icon white on a cobalt square. The label stretches to its row, so
+    where groups share the row through a subgrid the hairlines run level whichever name
+    wraps, and a name whose one word does not fit beside the icon drops under it
+    (`flex-basis: min-content`) - "Données" in half a phone's stage. In the row the icon and
+    the name follow the stage (30px and 16px where the row starts, where Frontend's bar is
+    119px, up to 36px and 19px), and Cloud's title is a column instead, with a hairline down
+    its right edge on Backend's left one.
+  - **A mark's tile is lit in the mark's own colour**: a tint of it over the tile, a light of
+    it falling from the top edge (a radial gradient), an edge of it and a white rim, so the
+    drawing carries the colour the marks brought rather than eleven white boxes. More of the
+    colour on the ink and at night, and SQL, which has no brand, is lit in the accent. The
+    mark is 48px on a tile about 110px tall - the tiles were 380 by 170 round a 30px mark
+    where Frontend and Data stretched to Backend's height. The hover is written in home.css
+    rather than left to `.mark-tile:hover`, which ties with it on specificity.
+  - **Every mark in the row is one width.** Each group holds two rows of marks, so the three
+    come out level without stretching. `--m` is the stage (`100cqi`) less the two line gaps,
+    six group paddings and borders and Backend's two mark gaps, over five; Frontend and Data
+    are one mark and their frame, and Backend takes the rest (174px each at 1440).
   - **One markup, two arrangements**, by `@container skills (min-width: 52rem)`, about a
     960px window. Below it the drawing is a column: Frontend, Backend, then two lines down
-    into Data and Cloud side by side. Every group and line is placed by grid area, so the
-    markup keeps site.ts's order.
+    into Data and Cloud side by side. Backend is three by two from 36rem of stage; under
+    that, on a phone, NestJS runs across the tile over a two-by-two. Every group and line is
+    placed by grid area, so the markup keeps site.ts's order.
   - ⚠️ **Cloud & DevOps is a subgrid of the stage's columns** in the row. A subgrid's
     padding lands on the items in its edge tracks, so its label lines up with Frontend's
-    content, its marks start on NestJS's left edge and end on MongoDB's right one. The three
-    in the row share their label and marks rows through a subgrid too, and so do Data and
-    Cloud in the column, where "Cloud & DevOps" wraps.
+    content, its marks start on NestJS's left edge and end on MongoDB's right one. The label
+    spans the gap after Frontend too, so it holds one line at 1000px. The three in the row
+    share their label and marks rows through a subgrid, and so do Data and Cloud in the
+    column, where "Cloud & DevOps" wraps.
   - The gaps are grid tracks rather than `gap`, so each line's area is exactly the gap it
     crosses.
   - ⚠️ **It arrives whole**, the stage one `reveal` like any block. Built group by group
     along the flow as it scrolled in, the loop ran ahead of it: a packet reached the end of
     Data's line with Data still to come, and the right of the row stood empty.
-- **Experience** is one wide tile per role: the company's initial, the name, the title and
-  the period on the left, the bullets on the right at about 85 characters a line, the head
-  at the top. A 2px rail runs from the first initial to the last, through the tiles and the
+- **Experience** is one wide tile per role: the company's initial, the name and the title
+  across the top with the period at the far end from 60rem, and the points under them,
+  starting where the name does. Beside each other, the head took a column the height of
+  the points and filled a third of it. A 2px rail runs from the first initial to the last, through the tiles and the
   gaps, and fills with the accent as the page scrolls; the current role's initial and
   period take the accent, the period's dot is the signal and pulses so "2024 -" reads as
   running, and an
   initial the rail has reached takes an accent ring. Stacked, the bullets' checks sit on
   the rail as its stops.
+  - **The tiles are lit the way the Skills groups are**: a wash of the accent at the top,
+    an edge that catches it (a gradient on the border box) and a white rim, the current
+    role harder, from its top left corner. The current initial is white on solid cobalt
+    with a glow of its own blue, the others a lit fill inside their ring, and the checks
+    and the icons are on cobalt too.
+  - **From 60rem each point is a recessed tile** lit the way the thesis is, two across
+    with an odd last one across both, so no row stops short, and from 84rem, where the
+    shell stops growing, all of a role's points in one row (`auto-fit`), three across for
+    Ncoded. Three across any narrower set a point under 35 characters a line. Stacked they
+    are parted by hairlines on the tile, since a tile would cut the rail through their
+    checks. The text is a step darker than the muted ink.
+  - **The thesis runs the tile's width** from 60rem, so it is two columns: the label and
+    title on the left, the tagline on the right past a hairline. It rises to meet the
+    pointer, its edge taking the accent.
+  - **"Education" is a chapter heading**, in the names' display voice a size under them,
+    and its 2.75rem icon is a stop on the rail, centred on it, halfway down a gap of
+    `--chapter` 4.5rem.
   - ⚠️ **Each tile draws its own stretch**, because a tile paints over everything the tile
     above it draws: `-out` from its initial to its bottom edge, `-in` from the tile above,
     across the gap, to its initial. The gap is the lower tile's - drawn by the upper one it
@@ -2495,6 +2544,17 @@ centred in the space between the capsule and the footer on a tall screen.
 
 ## Changelog
 
+- 2026-09-29 - Experience is lit the way Skills is and sets its head across the top: the
+  period at the far end, the points under it as tiles side by side, the thesis in two
+  columns, "Education" a chapter heading whose icon is a stop on the rail, and the current
+  initial, the checks and the icons on cobalt (§10).
+- 2026-09-29 - a card in the project deck steps back only once the next one reaches its
+  foot, not as soon as the next one enters the screen (§5).
+- 2026-09-29 - Skills lights every mark's tile in the mark's own colour and every group
+  with the accent, gives each group a title bar with its icon on cobalt, lights Backend in
+  cobalt from above, sets the mark at 48px on a tile about 110px tall, and Backend as three
+  by two with NestJS a feature down its first column, so no group stretches and every mark
+  in the row is one width (§3, §10).
 - 2026-09-29 - the trace is drawn only from "Projects" into All projects. Run out of every
   section title and down onto the first tile, it pointed at nothing a reader could name
   (§3, §5).
