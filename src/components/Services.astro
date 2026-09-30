@@ -36,7 +36,9 @@ if (site.services.length !== dict.services.items.length) {
 /**
  * Where a service is shown done: a project's page, or its role in Experience.
  * A project brings its hue, so the proof is lit in the colour its card and
- * page are drawn in, and a role has none and keeps the site's accent.
+ * page are drawn in. A role is plum, the same for every company and apart
+ * from every project's hue, so work at a company reads as its own kind of
+ * proof (cobalt made Ncoded look like the object detection project).
  */
 const proofOf = (proof: (typeof site.services)[number]['proof']) => {
   if ('project' in proof) {
@@ -51,7 +53,7 @@ const proofOf = (proof: (typeof site.services)[number]['proof']) => {
   }
   const role = site.experience.find((entry) => entry.id === proof.role);
   if (!role) throw new Error(`services: no role "${proof.role}".`);
-  return { Icon: Briefcase, href: '#experience', name: role.company, hue: undefined };
+  return { Icon: Briefcase, href: '#experience', name: role.company, hue: 'plum' };
 };
 ---
 

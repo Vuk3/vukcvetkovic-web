@@ -2389,7 +2389,7 @@ row still fills its columns.
   corner, an edge that catches it, a white rim), and its icon is white on cobalt as the
   Skills groups' are. The proof is lit the way a Skills mark is lit in its brand, in the
   colour of what it points to: a project's proof carries the project's `data-hue`, so
-  Easy Breathe's is green, and a role's keeps the cobalt. Under the pointer a trace draws
+  Easy Breathe's is green, and a role's is `--hue-plum`, the same for both companies and apart from every project's hue. Under the pointer a trace draws
   down the row's left edge, the edge takes more of the accent and the icon tips. The tags
   and the proof are `services` in site.ts, by position, checked against the dictionaries at
   build. ⚠️ **Not
@@ -2558,6 +2558,9 @@ centred in the space between the capsule and the footer on a tall screen.
 
 ## Changelog
 
+- 2026-09-30 - a service proved by a role is lit in `--hue-plum`, one colour for every
+  company, rather than the cobalt that made Ncoded look like the object detection project
+  (§10).
 - 2026-09-30 - the project hues are cobalt, berry, amber and green: Encryptix moves from
   violet to berry and the Network Traffic Analyzer from teal to amber (§1).
 - 2026-09-30 - Services and the Education tile are lit the way Skills and Experience are,

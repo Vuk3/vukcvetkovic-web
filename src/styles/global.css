@@ -138,6 +138,12 @@
   --hue-amber: #a34f00;
   --hue-green: #2b7a3d;
 
+  /* Not a project's: the colour of work shown at a company, one for every
+     company, so a service proved by a role reads apart from one proved by a
+     project. Purple at 287 degrees, clear of cobalt and berry either side.
+     6.7:1 as text on white, 9:1 on a dark tile. */
+  --hue-plum: #9325b0;
+
   /* One general curve, one for arrivals, one that overshoots for a small pop. */
   --site-ease: cubic-bezier(0.4, 0, 0.2, 1);
   --site-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -232,6 +238,7 @@
   --hue-berry: #ff8ccc;
   --hue-amber: #ffb168;
   --hue-green: #7fd192;
+  --hue-plum: #e09bff;
 }
 
 /*
@@ -547,6 +554,12 @@
     --paper-accent: var(--hue-green);
     --site-accent: var(--hue-green);
     --site-panel-accent: color-mix(in oklab, var(--hue-green) 45%, #fff);
+  }
+
+  [data-hue='plum'] {
+    --paper-accent: var(--hue-plum);
+    --site-accent: var(--hue-plum);
+    --site-panel-accent: color-mix(in oklab, var(--hue-plum) 45%, #fff);
   }
 
   /*
