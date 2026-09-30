@@ -668,21 +668,6 @@
     }
   }
 
-  /*
-   * ⚠️ **No floating Back to top on a phone or a tablet, on a game page.**
-   * The button is fixed to the bottom right corner, and on a screen this
-   * narrow the board runs edge to edge under it: it sat over 2048's corner
-   * tile, the minefield's last column and a column of holes on Four in a Row,
-   * and a tap meant for the board went up the page instead. The footer's own
-   * links and the header are still there. A workaround here rather than a
-   * change to global.css, which is not a game file - see the report.
-   */
-  @media (max-width: 64rem) {
-    .to-top {
-      display: none;
-    }
-  }
-
   /* ---- Shared by every game -------------------------------------------
    *
    * The sound switch, the burst over a board that has just been won, and the

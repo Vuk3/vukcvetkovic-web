@@ -571,8 +571,10 @@ next third of one. It is written inside the footer so the panel palette makes it
 circle, and it is `position: fixed`, so it floats for the whole scroll. It is the arrow
 alone at every width, with the name in `aria-label`: as a labelled pill it covered the
 right edge of the tiles. From about 1400px it sits in the gutter
-(`right: max(0.9rem, (100vw - --site-shell) / 2 - 3.9rem)`), where it covers nothing. Game
-pages hide it below 64rem, where it covered a corner of the board.
+(`right: max(0.9rem, (100vw - --site-shell) / 2 - 3.9rem)`), where it covers nothing.
+⚠️ **Every page hides it below 64rem** (global.css): the gutter there is too narrow to hold
+it, and it sat over the About statement, the project cards and the services on a phone,
+and over the board on a game page.
 
 ⚠️ **`visibility` is in `to-top-in`.** `opacity: 0` alone still takes a tap, so the hidden
 button would be a dead spot in the corner of the hero.
@@ -1063,8 +1065,8 @@ head at its tallest, the stage's padding and a little air - so the board is full
 load. On the old pages no game was. It is one number on purpose: change the head and every
 board follows.
 
-Back to top is hidden on game pages below 64rem (a rule in shared.css, which only game
-pages load): the fixed circle covered a corner of the board.
+Back to top is hidden below 64rem on every page (§5), which on a game page keeps the fixed
+circle off a corner of the board.
 
 ### The games index
 
@@ -2243,6 +2245,9 @@ row still fills its columns.
   light - a cobalt glow behind the portrait falling off to the ink, and a faint wash where
   the masthead starts - there for the reason a photographer puts one behind a sitter.
   Skills lights its Backend with the same cobalt (§10).
+- **The buttons** are one row where they fit. Under 40rem they do not, and wrapped they
+  left GitHub alone on a second row, so there Contact me takes a row at full width and
+  LinkedIn and GitHub share the row under it, half each.
 - **The tray** is a wrapping row whose tiles grow, with a basis of a sixth of the row less
   its gaps and a pixel, so eleven always set six and five from a tablet up and sit along the
   foot of the left column, level with the portrait's foot. ⚠️ A basis in rem set eleven in
@@ -2558,6 +2563,9 @@ centred in the space between the capsule and the footer on a tall screen.
 
 ## Changelog
 
+- 2026-09-30 - on a phone the hero's Contact me takes a row and LinkedIn and GitHub share
+  the next, and Back to top is hidden below 64rem on every page, not only the games (§5,
+  §10).
 - 2026-09-30 - a service proved by a role is lit in `--hue-plum`, one colour for every
   company, rather than the cobalt that made Ncoded look like the object detection project
   (§10).

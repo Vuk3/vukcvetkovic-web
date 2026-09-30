@@ -74,8 +74,9 @@ const channels = [
   `.to-top` is `position: fixed`, so it floats at the bottom right of the page
   for the whole scroll. It stays in this component because the panel palette it
   inherits is what makes it an ink circle on a light page. It is the arrow
-  alone at every width: as a labelled pill it covered the right edge of the
-  tiles and the game boards, and the `aria-label` carries the name.
+  alone, since as a labelled pill it covered the right edge of the tiles, and
+  the `aria-label` carries the name. Below 64rem it is not shown at all: there
+  it covered text and game boards (global.css).
 */}
 <footer class="panel site-foot">
   <div class="shell">

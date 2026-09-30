@@ -210,6 +210,22 @@
   }
 
   /*
+   * On a phone the three do not fit one row, and wrapped they left GitHub
+   * alone on the second. So the ask takes a row of its own at full width and
+   * the two profiles share the row under it, half each: every row full.
+   */
+  @media (max-width: 40rem) {
+    .hero-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .hero-actions > .cta {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /*
    * The portrait, in a frame at the image's own proportions.
    *
    * ⚠️ 3:4 is the photograph's ratio to three decimal places, so `cover` crops

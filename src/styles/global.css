@@ -2009,14 +2009,16 @@
     height: 1.15rem;
   }
 
-  @media (max-width: 40rem) {
+  /*
+   * ⚠️ **No floating Back to top below 64rem, on any page.** There the gutter
+   * is too narrow to hold it, so it sat over the text: the About statement,
+   * the project cards and the services on a phone, and on a game page the
+   * board, where a tap meant for a tile went up the page instead. The header
+   * and the footer's links are still there.
+   */
+  @media (max-width: 64rem) {
     .to-top {
-      padding: 0.75rem;
-    }
-
-    .to-top-icon {
-      width: 1rem;
-      height: 1rem;
+      display: none;
     }
   }
 }
