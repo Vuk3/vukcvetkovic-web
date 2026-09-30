@@ -23,6 +23,7 @@ time.
 | how an unmatched URL is answered | `not_found_handling` in [wrangler.jsonc](../wrangler.jsonc) + the two 404 routes - §4 |
 | image optimization | `adapter: cloudflare({ imageService })` in [astro.config.ts](../astro.config.ts) - §5 |
 | `robots.txt` | [src/pages/robots.txt.ts](../src/pages/robots.txt.ts) - generated, not a static file |
+| **a page's share card** (`og:image`) | [src/og/](../src/og/) - drawn at the end of the build, not a route - §5 |
 | the sitemap | the `sitemap()` integration in [astro.config.ts](../astro.config.ts) - **read §6**, the trailing slash is added by hand |
 
 **Read §3 before changing `build.format`.** Three separate things depend on `'preserve'`,
@@ -123,6 +124,12 @@ Everything in `<head>` is built there, and three of its behaviours are worth kno
   language switcher. It handles Escape, pointer-down outside, and clicking a link inside,
   because a native `<details>` has no light dismiss and the section links are same-page
   anchors that would leave the panel sitting over the section it just jumped to.
+
+- **The share card is chosen by the path.** `ogImageFor` ([src/og/paths.ts](../src/og/paths.ts))
+  answers `/og/<lang>/<section>/<slug>.png` for a project or a game and
+  `/og/<lang>/<section>.png` for their indexes, and `undefined` everywhere else, where
+  `site.ogImage` (the portrait) stands. With a card of its own a page's image alt is its
+  title. The files themselves are drawn after the build (§5).
 
 Canonical, hreflang and OG URLs are all built by running `Astro.url.pathname` back through
 `localizePath`, which is what §3 is about.
@@ -299,6 +306,39 @@ is 86 KB, so the real type cost is 176 KB. `Cvetković` puts `ć` (U+0107) insid
 so no page escapes the second subset. `vietnamese` never loads. None of this is on the
 critical path: `font-display: swap` paints the fallback immediately and measured CLS is 0.
 
+### The share cards are drawn after the pages
+
+Every project, every game and the two indexes share a card of their own, in each of the
+four languages: 52 PNGs at 1200x630 under `dist/client/og/`, about 42 KB each and 2.2 MB
+together, drawn in about 9 seconds at the end of `npm run build`. How they look is
+[design-system.md §10](./design-system.md#the-share-cards).
+
+- **An integration, not an endpoint.** `shareCards()` ([src/og/integration.ts](../src/og/integration.ts))
+  runs on `astro:build:done`, in Node. ⚠️ The Cloudflare adapter prerenders pages in
+  workerd (`prerenderEnvironment` defaults to `'workerd'`), where resvg's native renderer
+  and the file system are not available, so a `.png.ts` route would fail there. The hook
+  writes into `config.build.client`, beside the pages.
+- **The pipeline is satori, resvg and sharp**, all build-only: satori lays out a tree of
+  flexbox boxes and writes SVG with every glyph as a path, resvg rasterises it, and sharp
+  (already a dependency for the image service) packs it into a dithered palette PNG, about
+  a quarter of resvg's size. `satori` and `@resvg/resvg-js` are devDependencies and nothing of
+  them reaches a browser.
+- ⚠️ **The type is four static TrueType cuts of Archivo in [src/og/fonts](../src/og/fonts/)**,
+  because satori reads neither woff2 nor variable axes. They were cut from the fontsource
+  variable woff2, latin and latin-ext merged, with fontTools' instancer (display 720/125,
+  tile 680/112, label 600/108, text 440/100, as `wght`/`wdth`). A character not in them
+  fails the build naming the text, rather than drawing nothing - so a new language or a
+  symbol in a title shows up here first.
+- **The data comes in through static imports**, the dictionaries, site.ts and each game's
+  stylesheet: astro.config.ts is loaded through Vite, so TypeScript and site.ts's image
+  import resolve in it, which a dynamic import from inside the hook would not.
+- ⚠️ **The build checks its own output**: every page's `og:image` under `/og/` must be a
+  file that was drawn, or the build fails listing the pages. A new game with no board in
+  [src/og/boards.ts](../src/og/boards.ts) fails there, and so does a type error in the
+  generator, since `astro check` covers it.
+- **The dev server draws nothing.** A page's card address 404s under `astro dev`; build and
+  serve `dist/client` to see one, or open the PNG under `dist/client/og/`.
+
 ### Video lives on R2, not in the repo
 
 A project's demo clip is too heavy for the repository and for the Worker's assets, which
@@ -391,6 +431,8 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-09-30 - every project, game and index shares a card of its own in each language,
+  drawn after the build by the `shareCards` integration (§2, §5).
 - 2026-09-28 - the Object Detection demo clip is served from R2 on media.vukcvetkovic.com,
   cached for a year by a Cache Rule, and its poster is a ninth webp in the build (§5).
 - 2026-09-28 - the ⌘K command menu is a fifth inline block, about 4.8 KB (1.9 KB gz) in all.

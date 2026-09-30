@@ -54,6 +54,7 @@ plus a project write-up section, in **four languages** (English, Serbian, French
 | **any of the games** | [src/games/](../src/games/) and its component in [src/components/](../src/components/) - boards, palettes and the solver in [design-system.md §The game boards](./design-system.md#9-the-game-boards-and-the-one-place-the-palette-opens-up) |
 | **a game's sound, or the burst on a win** | that game's `sounds.ts`, and [games/sound.ts](../src/games/sound.ts) / [games/burst.ts](../src/games/burst.ts) for what they share - [design-system.md §9](./design-system.md#9-the-game-boards-and-the-one-place-the-palette-opens-up) |
 | a page or a `getStaticPaths` | [src/pages/](../src/pages/) - rules in [src/CLAUDE.md](../src/CLAUDE.md) |
+| **a page's share card** (the image in a LinkedIn or WhatsApp preview) | [src/og/](../src/og/) - how it is drawn in [routing-and-deploy.md §5](./routing-and-deploy.md#the-share-cards-are-drawn-after-the-pages), how it looks in [design-system.md §10](./design-system.md#the-share-cards) |
 
 ## The deep-dives
 

@@ -29,10 +29,11 @@ not need the map to change a dictionary, add a project, or touch the stylesheet.
 ## Working rules
 
 - **`npm run check` is the only gate this project has.** There is no test runner and no
-  linter - nothing to run but `astro check`, which reports 0 errors, 0 warnings and 0 hints across 100 files. Do
+  linter - nothing to run but `astro check`, which reports 0 errors, 0 warnings and 0 hints across 105 files. Do
   not add Vitest, ESLint or Prettier without asking.
 - **`npm run build` runs `astro check` first**, so a failed build is usually a type error
-  rather than a build error. Read the first failure, not the last line.
+  rather than a build error. Read the first failure, not the last line. It ends by drawing
+  the 52 share cards (src/og/), and a failure after the pages are written comes from there.
 - **Do not start the dev server.** Vuk runs it himself. Verify with `npm run check` and
   `npm run build` instead. If he does ask for it, start it detached with
   `astro dev --background` and manage it with `astro dev stop`, `astro dev status` and

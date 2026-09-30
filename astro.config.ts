@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 import { defaultLocale, locales } from './src/i18n/types';
+import { shareCards } from './src/og/integration';
 
 /*
  * ⚠️ **This file is `.ts` so that it can import the locale list rather than
@@ -73,6 +74,10 @@ export default defineConfig({
   },
 
   integrations: [
+    /* A share card for every project, game and index, drawn once the pages
+       are built - see src/og/integration.ts. */
+    shareCards(),
+
     sitemap({
       /* The integration wants a map of locale to language tag, and here the two
          are the same word, so it is built from the same list rather than

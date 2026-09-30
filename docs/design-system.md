@@ -63,6 +63,7 @@ number in them carries a comment saying how it was arrived at:
 | **a game's board, its colours or its keyframes** | its own file under [src/styles/games/](../src/styles/games/), never global.css - §9 |
 | **the games index, a thumbnail's hover** | [games/index.css](../src/styles/games/index.css) and [GameIndex.astro](../src/components/GameIndex.astro) - §9 |
 | a page's composition | §10 |
+| **a share card's look** - a board, the project drawing, the frame | [src/og/cards.ts](../src/og/cards.ts), [src/og/boards.ts](../src/og/boards.ts) - §10 |
 
 **Read §5 before touching any animation.** The `animation` shorthand silently breaks the
 scroll timelines, a `transform` in a keyframe eats every hover on the site, and one custom
@@ -2563,6 +2564,41 @@ to the impact, the squash spreads along the floor from a 50% 100% origin, and tw
 settle it. `main:has(> .notfound)` makes main a column on the 404 only, so the composition is
 centred in the space between the capsule and the footer on a tall screen.
 
+### The share cards
+
+A project, a game or one of their indexes shared on LinkedIn, WhatsApp or Messenger shows a
+card of its own in the page's language, drawn at build ([src/og/](../src/og/); the mechanism
+is [routing-and-deploy.md §5](./routing-and-deploy.md#the-share-cards-are-drawn-after-the-pages)).
+The homepage and the 404s keep the site's card, the portrait (`public/og.png`).
+
+**One frame, the family of the site's card**: the ink, the V mark and the name at the top
+left, the page's title large in the display voice (Archivo at 720/125) in its own colour, its
+line under it, and its address along the foot behind a rule of that colour. A title is set as
+large as its column allows in two lines, three for a project, and every block of text is
+balanced so no line is one word under a full one. The thing itself is on the right, drawn
+rather than described, with a light of its colour behind it.
+
+- **A game shows its board mid-play**, in its dark-theme colours read from its own stylesheet
+  and with its own sprites and sky ([src/og/boards.ts](../src/og/boards.ts)): 2048 won in
+  the corner, the snake ending on 2048 bottom right with every tile once; a beginner field
+  flooded open with three flags; twelve cards with two pairs found in gold and one up;
+  Accretion's ten bodies on the well's night and the game's own stars; the fleet under fire
+  on an 8 by 8 sea (ten across left a ship too small to be one); a 3×3 cube mid-solve in
+  isometric; Four in a Row with red's diagonal ringed. The title is in the board's colour.
+- **A project shows its request** as its page draws it, turned to run down the card: entry,
+  the lit core, the services side by side, the exit - or, for a round trip, the answer
+  going back up beside the request, with the words that travel on each line. Nodes carry
+  their marks from `flowTech` in their dark-ground colours. Above the title the year in a
+  pill of the hue and the context; the measured result, where there is one, under the text
+  if the column has room and under the drawing if not (Object detection's three-line title).
+  ⚠️ A row of nodes shares one type size, the largest at which every word in it fits, and a
+  word that fits at none is hyphenated at a compound's joint: "Anwendungs-protokolle".
+- **The games index is the wall**: the heading with its intro beside it, as the page sets
+  them, and the seven boards in a row under them. Four over three beside the text left each
+  board too small to read as its game.
+- **The projects index** is the four projects as rows, each with its hue down the edge,
+  its year, title and line.
+
 ---
 
 ## 11. Open items
@@ -2579,6 +2615,8 @@ centred in the space between the capsule and the footer on a tall screen.
 
 ## Changelog
 
+- 2026-09-30 - a project, a game or an index shared anywhere shows a card of its own, in its
+  language, drawn at build: the board mid-play, the request, the wall or the four projects (§10).
 - 2026-09-30 - Accretion's card on the games index is drawn on the game's own sky, the
   stars generated once in games/accretion/sky.ts for both (§9).
 - 2026-09-30 - the header lights Projects on the project pages and Games on the game
