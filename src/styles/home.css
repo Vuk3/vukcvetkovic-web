@@ -366,6 +366,44 @@
     flex-direction: column;
   }
 
+  /*
+   * Education, beside the cobalt Games tile, is lit the way the Skills groups
+   * and the roles are: a wash of the accent at the top, gone before the
+   * middle, an edge that catches it (a gradient on the border box under a
+   * transparent border, since `border-image` drops the radius) and a white
+   * rim, with its icon white on cobalt. Plain white, it was the one flat tile
+   * between the hero and Skills.
+   */
+  .about-note:not(.tile-cobalt) {
+    --edge-top: color-mix(in oklab, var(--site-accent) 38%, var(--site-hairline));
+
+    border-color: transparent;
+    background:
+      radial-gradient(45% 80% at 0% 0%, color-mix(in oklab, var(--site-accent) 8%, transparent), transparent 70%)
+        padding-box,
+      linear-gradient(180deg, color-mix(in oklab, var(--site-accent) 5%, var(--site-card)), var(--site-card) 45%)
+        padding-box,
+      linear-gradient(180deg, var(--edge-top), var(--site-hairline) 55%) border-box;
+    box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 85%, transparent);
+  }
+
+  .dark .about-note:not(.tile-cobalt) {
+    box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 6%, transparent);
+  }
+
+  .about-note:not(.tile-cobalt) .tile-icon {
+    border-radius: 0.65rem;
+    background: linear-gradient(
+      155deg,
+      color-mix(in oklab, var(--site-cobalt-bg) 65%, #fff),
+      var(--site-cobalt-bg) 70%
+    );
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, #fff 35%, transparent),
+      0 6px 14px -6px color-mix(in oklab, var(--site-cobalt-bg) 70%, transparent);
+    color: #fff;
+  }
+
   /* The tile's detail, a step under the page's text and in the muted ink, so
      the label and the statement above carry the tile. */
   .about-body {
@@ -1694,14 +1732,34 @@
     gap: var(--site-gap);
   }
 
+  /*
+   * A row is lit the way the roles above it are: a wash of the accent at the
+   * top, gone before the middle, an edge that catches it (a gradient on the
+   * border box under a transparent border) and a white rim, plus a light of
+   * the accent from the top left corner, where the icon is. The edge takes
+   * more of the accent under the pointer.
+   */
   .card.svc-row {
     --card-pad: clamp(1.25rem, 2.2vw, 2rem);
+    --edge-top: color-mix(in oklab, var(--site-accent) 36%, var(--site-hairline));
 
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
     gap: 1rem 1.25rem;
     align-items: start;
     overflow: hidden;
+    border-color: transparent;
+    background:
+      radial-gradient(35% 110% at 0% 0%, color-mix(in oklab, var(--site-accent) 9%, transparent), transparent 70%)
+        padding-box,
+      linear-gradient(180deg, color-mix(in oklab, var(--site-accent) 5%, var(--site-card)), var(--site-card) 45%)
+        padding-box,
+      linear-gradient(180deg, var(--edge-top), var(--site-hairline) 58%) border-box;
+    box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 85%, transparent);
+  }
+
+  .dark .card.svc-row {
+    box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 6%, transparent);
   }
 
   @media (min-width: 64rem) {
@@ -1732,13 +1790,15 @@
   }
 
   .card.svc-row:hover {
-    border-color: color-mix(in oklab, var(--site-accent) 35%, var(--site-hairline));
+    --edge-top: color-mix(in oklab, var(--site-accent) 65%, var(--site-hairline));
   }
 
   .card.svc-row:hover::before {
     scale: 1 1;
   }
 
+  /* The service's icon white on solid cobalt, lit from its top corner, as
+     the Skills groups' are; it tips and glows harder under the pointer. */
   .svc-icon {
     display: inline-flex;
     align-items: center;
@@ -1746,12 +1806,18 @@
     width: 3.5rem;
     height: 3.5rem;
     border-radius: var(--site-radius-inner);
-    background-color: color-mix(in oklab, var(--site-accent) 12%, var(--site-card));
-    color: var(--site-accent);
+    background: linear-gradient(
+      155deg,
+      color-mix(in oklab, var(--site-cobalt-bg) 65%, #fff),
+      var(--site-cobalt-bg) 70%
+    );
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, #fff 35%, transparent),
+      0 8px 18px -8px color-mix(in oklab, var(--site-cobalt-bg) 80%, transparent);
+    color: #fff;
     transition:
       rotate 450ms var(--site-spring),
-      background-color 250ms var(--site-ease),
-      color 250ms var(--site-ease);
+      box-shadow 250ms var(--site-ease);
   }
 
   .svc-icon svg {
@@ -1761,8 +1827,9 @@
 
   .svc-row:hover .svc-icon {
     rotate: -10deg;
-    background-color: var(--site-accent);
-    color: var(--site-bg);
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, #fff 35%, transparent),
+      0 12px 26px -8px var(--site-cobalt-bg);
   }
 
   /* The name, at the row's display size: the list is read down its names. */
@@ -1813,25 +1880,64 @@
   }
 
   /*
-   * Where the service is shown done: recessed, the whole of it the link, the
-   * accent on its edge under the pointer.
+   * Where the service is shown done, the whole of it the link, lit in the
+   * colour of what it points to the way a Skills mark is lit in its brand's:
+   * a tint over the tile, a light falling from its top edge, an edge of the
+   * colour and a white rim, with its icon on that colour. A project's proof
+   * carries the project's `data-hue` (Services.astro), so the accent inside
+   * it is the project's hue, and a role's keeps the site's cobalt. The dark
+   * theme takes more of the colour, since a tenth of it is lost on a dark
+   * ground, and the pointer brings the light and the edge up.
    */
   .svc-proof {
+    --tint: 6%;
+    --lit: 18%;
+
     display: grid;
     gap: 0.3rem;
-    border: 1px solid var(--site-hairline);
+    border: 1px solid color-mix(in oklab, var(--site-accent) 30%, var(--site-hairline));
     border-radius: var(--site-radius-inner);
-    background-color: var(--site-inset);
+    background:
+      radial-gradient(
+        130% 100% at 50% 0%,
+        color-mix(in oklab, var(--site-accent) var(--lit), transparent),
+        transparent 75%
+      ),
+      color-mix(in oklab, var(--site-accent) var(--tint), var(--site-card));
+    box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 70%, transparent);
     padding: 0.8rem 0.95rem 0.9rem;
-    transition:
-      border-color 250ms var(--site-ease),
-      background-color 250ms var(--site-ease);
+    transition: border-color 250ms var(--site-ease);
+  }
+
+  .dark .svc-proof {
+    --tint: 11%;
+    --lit: 28%;
+
+    box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 8%, transparent);
   }
 
   .svc-proof:hover,
   .svc-proof:focus-visible {
-    border-color: color-mix(in oklab, var(--site-accent) 55%, var(--site-hairline));
-    background-color: color-mix(in oklab, var(--site-accent) 6%, var(--site-inset));
+    --lit: 30%;
+
+    border-color: color-mix(in oklab, var(--site-accent) 70%, var(--site-hairline));
+  }
+
+  .dark .svc-proof:is(:hover, :focus-visible) {
+    --lit: 40%;
+  }
+
+  /* On the hue itself, as the accent's own text is: the paper by day, the
+     ink at night, where the hues are pale. */
+  .svc-proof .tile-icon {
+    border-radius: 0.55rem;
+    background: linear-gradient(
+      155deg,
+      color-mix(in oklab, var(--site-accent) 65%, #fff),
+      var(--site-accent) 70%
+    );
+    box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 35%, transparent);
+    color: var(--site-bg);
   }
 
   .svc-proof-name {

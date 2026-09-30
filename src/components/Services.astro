@@ -33,7 +33,11 @@ if (site.services.length !== dict.services.items.length) {
   );
 }
 
-/** Where a service is shown done: a project's page, or its role in Experience. */
+/**
+ * Where a service is shown done: a project's page, or its role in Experience.
+ * A project brings its hue, so the proof is lit in the colour its card and
+ * page are drawn in, and a role has none and keeps the site's accent.
+ */
 const proofOf = (proof: (typeof site.services)[number]['proof']) => {
   if ('project' in proof) {
     const project = site.projects.find((entry) => entry.id === proof.project);
@@ -42,11 +46,12 @@ const proofOf = (proof: (typeof site.services)[number]['proof']) => {
       Icon: FolderOpen,
       href: localizePath(`/projects/${project.slug}/`, lang),
       name: dict.projects.items[project.id].title,
+      hue: project.hue,
     };
   }
   const role = site.experience.find((entry) => entry.id === proof.role);
   if (!role) throw new Error(`services: no role "${proof.role}".`);
-  return { Icon: Briefcase, href: '#experience', name: role.company };
+  return { Icon: Briefcase, href: '#experience', name: role.company, hue: undefined };
 };
 ---
 
@@ -89,7 +94,7 @@ const proofOf = (proof: (typeof site.services)[number]['proof']) => {
               )}
             </div>
 
-            <a href={proof.href} class="svc-proof">
+            <a href={proof.href} class="svc-proof" data-hue={proof.hue}>
               <span class="tile-label">
                 <span class="tile-icon">
                   <proof.Icon aria-hidden="true" />

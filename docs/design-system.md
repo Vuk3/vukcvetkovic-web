@@ -2261,7 +2261,9 @@ row still fills its columns.
 - **About** is the opening statement across the full measure at display size, straight on
   the ground, taking its ink word by word as it is read (§5), then the other two
   paragraphs as tiles, labelled Education and Games, at 4 and 8 columns. The Education tile names the master's and its thesis only: both theses are on the
-  Experience rail, with their links. The Games tile is on cobalt, the tile a link to the
+  Experience rail, with their links. It is lit the way the Skills groups are - a wash and a
+  light of the accent from the top and its top left corner, an edge that catches it, a
+  white rim - with its icon white on cobalt. The Games tile is on cobalt, the tile a link to the
   games, and under its paragraph are the seven games drawn small
   ([GameMinis.astro](../src/components/GameMinis.astro)), each a link to its game that opens
   into the board. Each plays one move of its game - two tiles merge, a field opens round a
@@ -2380,9 +2382,15 @@ row still fills its columns.
   and name at a large tile-title size, then what it covers with the technologies it is done
   in under it, and at the row's far end "In practice": the place on the site it is shown
   done, a project's page or the role in Experience where no project is. Read down, the
-  names are the list, and read across, a row is the whole claim and its proof. Under the pointer
-  a trace draws down the row's left edge and the icon fills. The tags and the proof are
-  `services` in site.ts, by position, checked against the dictionaries at build. ⚠️ **Not
+  names are the list, and read across, a row is the whole claim and its proof. A row is lit
+  the way the roles are (a wash of the accent at the top and a light from its top left
+  corner, an edge that catches it, a white rim), and its icon is white on cobalt as the
+  Skills groups' are. The proof is lit the way a Skills mark is lit in its brand, in the
+  colour of what it points to: a project's proof carries the project's `data-hue`, so
+  Easy Breathe's is green, and a role's keeps the cobalt. Under the pointer a trace draws
+  down the row's left edge, the edge takes more of the accent and the icon tips. The tags
+  and the proof are `services` in site.ts, by position, checked against the dictionaries at
+  build. ⚠️ **Not
   four across and not two by two**: in a row of four the first description ran twice the
   others and the tiles beside it stood with up to 229px of nothing above their proof, and
   four equal icon-and-text tiles were the template look. Stacked below 64rem, the icon
@@ -2548,6 +2556,9 @@ centred in the space between the capsule and the footer on a tall screen.
 
 ## Changelog
 
+- 2026-09-30 - Services and the Education tile are lit the way Skills and Experience are,
+  their icons white on cobalt, and each service's proof is lit in the hue of the project it
+  points to (§10).
 - 2026-09-30 - a word of the About statement starts at 44% of the ink rather than 18%, so it
   clears 3:1 before the page reaches it and the homepage passes the colour-contrast audit (§5).
 - 2026-09-29 - Experience is lit the way Skills is and sets its head across the top: the
