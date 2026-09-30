@@ -868,6 +868,14 @@ carrying the matching `data-section-link`.
   the label's pill with the accent; `.nav-row` (the phone menu) takes a tinted row instead.
 - **It runs on every page and observes nothing where the sections do not exist.** The nav
   hrefs are absolute (`/#about`), so on a project page `getElementById` returns null.
+- **Off the homepage the header still says where the reader is, with no script.**
+  [Nav.astro](../src/components/Nav.astro) reads the path at build: under `/projects/`
+  the Projects link carries `aria-current="true"`, under `/games/` the Games pill and the
+  phone menu's Games row carry it (`page` on the games index itself, the page they open).
+  `true` is drawn the same as `location`, and the Games pill fills with the accent. ⚠️
+  This holds only because the observer finds none of the homepage's sections there and so
+  never clears it: a page that gains an element with one of their ids would have it
+  cleared.
 
 ### The header
 
@@ -2563,6 +2571,8 @@ centred in the space between the capsule and the footer on a tall screen.
 
 ## Changelog
 
+- 2026-09-30 - the header lights Projects on the project pages and Games on the game
+  pages, set at build (§7).
 - 2026-09-30 - on a phone the hero's Contact me takes a row and LinkedIn and GitHub share
   the next, and Back to top is hidden below 64rem on every page, not only the games (§5,
   §10).

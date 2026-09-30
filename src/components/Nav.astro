@@ -33,6 +33,21 @@ const home = localizePath('/', lang);
  */
 const games = localizePath('/games/', lang);
 
+/*
+ * Where the page is, said by the header without script: a project page or
+ * the project index lights Projects, a game or the games index lights Games.
+ * On the homepage the layout's observer marks the section being read; it
+ * finds none of the sections on these pages, so it never clears this.
+ *
+ * `true` rather than `page` - Projects points at the homepage's section, not
+ * at this page, and a game is inside Games rather than being it - except on
+ * the games index, which is the page the Games link opens.
+ */
+const path = Astro.url.pathname;
+const area = /\/projects\//.test(path) ? 'projects' : /\/games\//.test(path) ? 'games' : undefined;
+const sectionCurrent = (id: string) => (id === area ? 'true' : undefined);
+const gamesCurrent = area === 'games' ? (path === games ? 'page' : 'true') : undefined;
+
 const sections = [
   { id: 'about', label: dict.nav.about },
   { id: 'skills', label: dict.nav.skills },
@@ -88,7 +103,12 @@ const languages = locales.map((locale) => ({
           {
             sections.map((section) => (
               <li>
-                <a href={`${home}#${section.id}`} class="nav-link" data-section-link={section.id}>
+                <a
+                  href={`${home}#${section.id}`}
+                  class="nav-link"
+                  data-section-link={section.id}
+                  aria-current={sectionCurrent(section.id)}
+                >
                   {section.label}
                 </a>
               </li>
@@ -103,7 +123,12 @@ const languages = locales.map((locale) => ({
           goes with it, since a phone looks in the menu anyway; the row inside
           the disclosure is the same link.
         */}
-        <a href={games} class="head-btn head-game hidden lg:inline-flex" aria-label={dict.nav.games}>
+        <a
+          href={games}
+          class="head-btn head-game hidden lg:inline-flex"
+          aria-label={dict.nav.games}
+          aria-current={gamesCurrent}
+        >
           <Gamepad2 class="size-[1.05rem] shrink-0" aria-hidden="true" />
           {/*
             The word waits for xl. At lg the seven labels in the rail are already
@@ -171,7 +196,12 @@ const languages = locales.map((locale) => ({
             {
               sections.map((section) => (
                 <li>
-                  <a href={`${home}#${section.id}`} class="nav-row" data-section-link={section.id}>
+                  <a
+                    href={`${home}#${section.id}`}
+                    class="nav-row"
+                    data-section-link={section.id}
+                    aria-current={sectionCurrent(section.id)}
+                  >
                     {section.label}
                   </a>
                 </li>
@@ -179,7 +209,7 @@ const languages = locales.map((locale) => ({
             }
 
             <li class="head-menu-game">
-              <a href={games} class="nav-row">
+              <a href={games} class="nav-row" aria-current={gamesCurrent}>
                 <Gamepad2 class="size-5 shrink-0" aria-hidden="true" />
                 {dict.nav.games}
               </a>

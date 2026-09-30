@@ -1275,7 +1275,9 @@
     color: var(--site-fg);
   }
 
-  .nav-link[aria-current='location'] {
+  /* `true` is the area a page belongs to, set at build by Nav.astro - Projects
+     on a project page - and drawn the same as the section being read. */
+  .nav-link:is([aria-current='location'], [aria-current='true']) {
     background-color: var(--site-accent);
     color: var(--site-bg);
   }
@@ -1303,7 +1305,7 @@
     background-color: var(--site-inset);
   }
 
-  .nav-row[aria-current='location'] {
+  .nav-row:is([aria-current='location'], [aria-current='true'], [aria-current='page']) {
     background-color: color-mix(in oklab, var(--site-accent) 16%, transparent);
     color: var(--site-accent);
   }
@@ -1352,6 +1354,14 @@
 
   .head-game:hover svg {
     transform: rotate(-14deg) scale(1.12);
+  }
+
+  /* On the games index or a game, the pill is where the reader is, filled the
+     way a section link is while its section is being read. */
+  .head-game[aria-current] {
+    border-color: var(--site-accent);
+    background-color: var(--site-accent);
+    color: var(--site-bg);
   }
 
   /* The phone menu: a rounded ink sheet hanging under the capsule. */
