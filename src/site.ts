@@ -143,7 +143,7 @@ export interface FlowTech {
  * products of one studio rather than one card four times. Language-neutral,
  * so it lives here with the rest of what a project is.
  */
-export type ProjectHue = "cobalt" | "violet" | "teal" | "green";
+export type ProjectHue = "cobalt" | "berry" | "amber" | "green";
 
 /** Exported because the pages hand one to the components that render it. */
 export interface Project {
@@ -367,7 +367,7 @@ const projects: Project[] = [
     id: "encryptix",
     slug: "encryptix",
     year: "2023",
-    hue: "violet",
+    hue: "berry",
     flowShape: "pipeline",
     /*
      * The folder is read by the Windows Forms client, and the three ciphers run
@@ -404,7 +404,7 @@ const projects: Project[] = [
     id: "networkTrafficAnalyzer",
     slug: "network-traffic-analyzer",
     year: "2024",
-    hue: "teal",
+    hue: "amber",
     flowShape: "pipeline",
     /*
      * A capture file runs on nothing, and the three protocol families are

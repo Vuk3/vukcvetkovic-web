@@ -126,12 +126,16 @@
    * One hue per project, each the accent of its own card and its own page -
    * the request diagram, the step numbers and the result bars are drawn in
    * it - so four projects read as four products of one studio rather than one
-   * card four times. Cobalt, violet, teal and green, each 5.1:1 or better as
-   * text on white, and 8:1 or better in the dark theme on a tile.
+   * card four times. Cobalt, berry, amber and green, spread round the wheel
+   * (235, 326, 29 and 134 degrees) so no two read as the same colour: violet
+   * and teal beside cobalt and green were 23 and 50 degrees off and read as a
+   * second blue and a second green. Each 5.3:1 or better as text on white,
+   * and 7.7:1 or better in the dark theme on a tile. Amber is dark enough to
+   * read as brown beside the signal's orange, which it must not be taken for.
    */
   --hue-cobalt: #2432d1;
-  --hue-violet: #6a3bd8;
-  --hue-teal: #0b7a82;
+  --hue-berry: #b3196f;
+  --hue-amber: #a34f00;
   --hue-green: #2b7a3d;
 
   /* One general curve, one for arrivals, one that overshoots for a small pop. */
@@ -225,8 +229,8 @@
   --site-cobalt-bg: #2d3be0;
 
   --hue-cobalt: #93a1ff;
-  --hue-violet: #b69bff;
-  --hue-teal: #5ccfd6;
+  --hue-berry: #ff8ccc;
+  --hue-amber: #ffb168;
   --hue-green: #7fd192;
 }
 
@@ -527,16 +531,16 @@
     --site-panel-accent: color-mix(in oklab, var(--hue-cobalt) 45%, #fff);
   }
 
-  [data-hue='violet'] {
-    --paper-accent: var(--hue-violet);
-    --site-accent: var(--hue-violet);
-    --site-panel-accent: color-mix(in oklab, var(--hue-violet) 45%, #fff);
+  [data-hue='berry'] {
+    --paper-accent: var(--hue-berry);
+    --site-accent: var(--hue-berry);
+    --site-panel-accent: color-mix(in oklab, var(--hue-berry) 45%, #fff);
   }
 
-  [data-hue='teal'] {
-    --paper-accent: var(--hue-teal);
-    --site-accent: var(--hue-teal);
-    --site-panel-accent: color-mix(in oklab, var(--hue-teal) 45%, #fff);
+  [data-hue='amber'] {
+    --paper-accent: var(--hue-amber);
+    --site-accent: var(--hue-amber);
+    --site-panel-accent: color-mix(in oklab, var(--hue-amber) 45%, #fff);
   }
 
   [data-hue='green'] {

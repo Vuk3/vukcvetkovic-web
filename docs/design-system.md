@@ -110,13 +110,15 @@ and `.panel` and `.tile-cobalt` re-declare it. `.surface` maps `--site-*` back t
 a white project card on the ink stage, carrying a request diagram with an ink core of its
 own.
 
-**The project hues.** `--hue-cobalt`, `--hue-violet`, `--hue-teal` and `--hue-green`, a
+**The project hues.** `--hue-cobalt`, `--hue-berry`, `--hue-amber` and `--hue-green`, a
 light and a dark value each, picked by `hue` on the project in [site.ts](../src/site.ts)
 and applied by `[data-hue]`, which sets `--paper-accent`, `--site-accent` and a paler
 `--site-panel-accent` - so the card, the request drawn on it and, on the project page,
 every trace, step number and result bar are in the project's colour, and a `.panel` inside
-(a diagram's core) takes it too. Each is 5.1:1 or better as text on white and 8:1 or
-better on a dark tile.
+(a diagram's core) takes it too. Each is 5.3:1 or better as text on white and 7.7:1 or
+better on a dark tile. ⚠️ **They are spread round the wheel** (235, 326, 29 and 134
+degrees): violet and teal, 23 and 50 degrees from cobalt and green, read as a second blue
+and a second green. Amber is kept dark enough to read as brown beside the signal's orange.
 
 **The accent is cobalt, and it is borrowed rather than invented:** it is the navy of the
 suit in the portrait, which is the one photograph on the site. That is why it sits with the
@@ -2550,12 +2552,14 @@ centred in the space between the capsule and the footer on a tall screen.
 | 2 | **The games wall is composed for seven games.** The spans in [index.css](../src/styles/games/index.css) are set by position (6 + 6, 4 + 4 + 4, 6 + 6); an eighth game would sit alone at half width. | known limit |
 | 3 | **Some boards are not whole on load.** Battleship's two waters and their fleets end at 1109 at 1440x900, so they need about 210px of scroll (54px squares were chosen over 39px ones that would fit). On a phone the head of every game page ends 350 to 400px down, so a board is whole once the stage is scrolled under the header. | known limit |
 | 4 | **The project deck is written for up to six projects.** Each card's step back runs on the next card's named view timeline, and `timeline-scope` on `.deck` lists six names. A seventh project would stack but not step back when the eighth arrived. | known limit |
-| 5 | **A project's hue is one of four.** `ProjectHue` in site.ts and `--hue-*` in global.css hold cobalt, violet, teal and green, one per project today. A fifth project repeats one or adds a fifth hue, with a light and a dark value checked against the contrast figures in §1. | known limit |
+| 5 | **A project's hue is one of four.** `ProjectHue` in site.ts and `--hue-*` in global.css hold cobalt, berry, amber and green, one per project today. A fifth project repeats one or adds a fifth hue, with a light and a dark value checked against the contrast figures in §1. | known limit |
 
 ---
 
 ## Changelog
 
+- 2026-09-30 - the project hues are cobalt, berry, amber and green: Encryptix moves from
+  violet to berry and the Network Traffic Analyzer from teal to amber (§1).
 - 2026-09-30 - Services and the Education tile are lit the way Skills and Experience are,
   their icons white on cobalt, and each service's proof is lit in the hue of the project it
   points to (§10).
