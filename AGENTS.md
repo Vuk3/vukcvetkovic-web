@@ -29,7 +29,7 @@ not need the map to change a dictionary, add a project, or touch the stylesheet.
 ## Working rules
 
 - **`npm run check` is the only gate this project has.** There is no test runner and no
-  linter - nothing to run but `astro check`, which reports 0 errors, 0 warnings and 0 hints across 99 files. Do
+  linter - nothing to run but `astro check`, which reports 0 errors, 0 warnings and 0 hints across 100 files. Do
   not add Vitest, ESLint or Prettier without asking.
 - **`npm run build` runs `astro check` first**, so a failed build is usually a type error
   rather than a build error. Read the first failure, not the last line.

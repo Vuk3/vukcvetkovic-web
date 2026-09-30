@@ -186,11 +186,21 @@
     border: 1px solid var(--acc-well-edge);
     /* A block inside the stage, at the radius a block inside a tile takes. */
     border-radius: var(--site-radius-inner);
-    /*
-     * The ground the sky is laid on: the band's glow and three soft pools of
-     * colour under the nebulae. The stars and the clouds themselves are the
-     * `.acc-sky` layers, which move.
-     */
+    /* The pointer aims and drops, so the browser must not also read a drag
+       across the well as a scroll. */
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: crosshair;
+  }
+
+  /*
+   * The ground the sky is laid on: the band's glow and three soft pools of
+   * colour under the nebulae. The stars and the clouds themselves are the
+   * `.acc-sky` layers, which move. The thumbnail on the games index is laid on
+   * the same ground, so the card's night is the game's.
+   */
+  :is(.acc-field, .game-art-acc) {
     background:
       linear-gradient(
         163deg,
@@ -203,12 +213,6 @@
       radial-gradient(52% 38% at 16% 34%, color-mix(in oklab, #2f5c99 18%, transparent) 0%, transparent 70%),
       radial-gradient(80% 50% at 50% 104%, color-mix(in oklab, #1a2340 60%, transparent) 0%, transparent 78%),
       var(--acc-well);
-    /* The pointer aims and drops, so the browser must not also read a drag
-       across the well as a scroll. */
-    touch-action: none;
-    user-select: none;
-    -webkit-user-select: none;
-    cursor: crosshair;
   }
 
   /*
@@ -1652,10 +1656,27 @@
     }
   }
 
-  /* The well's own flat night, as on the page. The glow it had from the top
-     was the gradient wash the redesign took out of every stage and still. */
+  /*
+   * The card on the well's own ground (with `.acc-field`, above) and its sky:
+   * the game's dust and near stars, from games/accretion/sky.ts. The game's
+   * layers are a tenth larger than the well so they can slide; nothing slides
+   * here, so a layer is the card. The near stars hold still - the wall's only
+   * motion is the beat a card plays under the pointer, and a twinkle running
+   * on one card of seven would be the one thing moving on the page.
+   */
   .game-art-acc {
-    background-color: var(--acc-well);
+    position: relative;
+  }
+
+  .game-art-acc .acc-sky-layer {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    will-change: auto;
+  }
+
+  .game-art-acc .acc-star {
+    animation: none;
   }
 
   /*

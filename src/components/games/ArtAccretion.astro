@@ -32,6 +32,8 @@
  * and a half Moons, which in a box this shape leaves the Moon at four pixels
  * and the card saying nothing. These are compressed to about five to one.
  */
+import { WORLD_H, WORLD_W } from '../../games/accretion/game';
+import { far, mid, near } from '../../games/accretion/sky';
 import '../../styles/games/accretion.css';
 
 /**
@@ -65,8 +67,37 @@ const bodies = [
   Two elements, not one. The outer is the query container and the inner is the
   field, because a container cannot size itself in its own `cqi` - see the
   warning on `.game-art` in styles/games/index.css.
+
+  Behind the field, the game's own night: the same dust and near stars the
+  well is drawn on, from games/accretion/sky.ts, sliced to the card's 5:2 the
+  way the well's layers are sliced to its shape. One layer of dust rather than
+  two, since nothing here moves them apart, and no nebulae: their fractal noise
+  is the one expensive thing in the sky, and the wall shows seven cards that
+  scale on hover. The ground's pools of colour stand in for them.
 */}
 <div class="game-art game-art-acc" aria-hidden="true">
+  <div class="acc-sky">
+    <svg class="acc-sky-layer" viewBox={`0 0 ${WORLD_W} ${WORLD_H}`} preserveAspectRatio="xMidYMid slice">
+      {
+        [...far, ...mid].map((group) => (
+          <path class={`acc-dust acc-dust-${group.tone}`} d={group.d} stroke-width={group.size} opacity={group.alpha} />
+        ))
+      }
+    </svg>
+    <div class="acc-sky-layer">
+      {
+        near.map((star) => (
+          <span
+            class="acc-star"
+            data-tone={star.tone}
+            data-spikes={star.spikes ? '' : undefined}
+            style={`left:${star.x}%;top:${star.y}%;--acc-star-size:${star.size}px`}
+          />
+        ))
+      }
+    </div>
+  </div>
+
   <div class="game-art-well">
     {
       bodies.map(({ cx, cy, d }, tier) => (

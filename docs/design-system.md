@@ -1527,8 +1527,9 @@ module keeps a queue of one.
 
 ### The sky
 
-**Four layers, drawn once at build time in [Accretion.astro](../src/components/Accretion.astro)
-from a seeded generator**, so the sky is identical on every build, in every language and for
+**Four layers, generated once at build time by a seeded generator in
+[games/accretion/sky.ts](../src/games/accretion/sky.ts)** and drawn by
+[Accretion.astro](../src/components/Accretion.astro), so the sky is identical on every build, in every language and for
 every reader: 260 faint stars thickest along a diagonal band, three nebulae of fractal noise,
 70 brighter stars, and a near layer of eleven glowing stars - four of them throwing
 diffraction spikes - a distant galaxy and two meteors on long cycles. A star is a
@@ -1543,9 +1544,16 @@ layers are promoted, so moving one is a composite and the noise is not recompute
 motion stops the parallax and the drift, and the stylesheet's blanket rule stops the twinkle
 and the meteors.
 
-⚠️ **It is markup in the component and not rules in accretion.css**, because that file is
-inlined into the games index as well, for the thumbnail, and only this page has a sky. The
-markup adds 3.4 KB gz to this page and nothing anywhere else.
+⚠️ **It is markup in the components and not rules in accretion.css**, because that file is
+inlined into every page that shows the game or its card, and a star should cost only the
+pages that draw it. The markup adds 3.4 KB gz to this page.
+
+**The card on the games index draws the same night**
+([ArtAccretion.astro](../src/components/games/ArtAccretion.astro)): the well's ground, a
+shared rule with `.acc-field`, and the dust and near stars from sky.ts, the dust sliced to
+the card's 5:2 as the well's layers are to its shape. No nebulae, whose noise is the one
+expensive thing in the sky, on a wall of seven cards that scale on hover, and the near stars
+hold still, since the wall moves only under the pointer. It adds 2 KB gz to the index.
 
 ### The record is signed
 
@@ -2571,6 +2579,8 @@ centred in the space between the capsule and the footer on a tall screen.
 
 ## Changelog
 
+- 2026-09-30 - Accretion's card on the games index is drawn on the game's own sky, the
+  stars generated once in games/accretion/sky.ts for both (§9).
 - 2026-09-30 - the header lights Projects on the project pages and Games on the game
   pages, set at build (§7).
 - 2026-09-30 - on a phone the hero's Contact me takes a row and LinkedIn and GitHub share
