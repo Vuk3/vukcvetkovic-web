@@ -382,12 +382,12 @@
 
   /*
    * The statement being said: each word takes its ink as the page reaches it,
-   * in reading order, from a trace of the ink to the ink itself. Every word
-   * runs on the statement's own timeline, over a window a sixteenth of it
-   * wide that starts `--p` of the way along, so the front moves through the
-   * sentence word by word rather than line by line - which is what reads as
-   * speech. Done by the time the statement's top is about a fifth of the way
-   * down the screen, so nobody reads a faded word.
+   * in reading order, from a grey that already reads (see `word-ink`) to the
+   * ink itself. Every word runs on the statement's own timeline, over a window
+   * a sixteenth of it wide that starts `--p` of the way along, so the front
+   * moves through the sentence word by word rather than line by line - which
+   * is what reads as speech. Done by the time the statement's top is about a
+   * fifth of the way down the screen.
    *
    * Colour only, so it is paint: nothing moves and nothing reflows. Where
    * scroll-driven animation is missing, or less motion is asked for, every
@@ -2054,10 +2054,19 @@
   }
 }
 
-/* A word of the statement taking its ink. */
+/*
+ * A word of the statement taking its ink.
+ *
+ * ⚠️ The first state is measured, so it has to pass on its own. The statement
+ * is below the fold on load, and an audit reads every word before the page
+ * reaches it: text this size needs 3:1 against its ground. 44% of the ink is
+ * 3.3:1 on the paper and on the dark alike, a little over the floor so a nudge
+ * to either colour does not tip it back under. A fainter start fails the
+ * statement word by word and costs Accessibility its colour-contrast audit.
+ */
 @keyframes word-ink {
   from {
-    color: color-mix(in oklab, var(--site-fg) 18%, var(--site-bg));
+    color: color-mix(in oklab, var(--site-fg) 44%, var(--site-bg));
   }
 
   to {

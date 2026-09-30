@@ -523,12 +523,16 @@ Three scroll-driven moments carry most of the homepage, all paint or compositing
 - **The About statement is said as it is read.** It is split into words at build
   ([About.astro](../src/components/About.astro)), each carrying `--p`, how far through the
   sentence it is. The paragraph is a named view timeline (`--statement`) and every word runs
-  `word-ink` - from a trace of the ink to the ink - over a window a sixteenth of the timeline
+  `word-ink` - from 44% of the ink to the ink - over a window a sixteenth of the timeline
   wide that starts `--p` of the way along, so the front moves through the sentence word by
   word in reading order. ⚠️ **This one range is in percentages of `cover`, on purpose**: the
   statement is the second thing on the page with thousands of pixels under it, so the budget
   cannot bite, and a percentage is what finishes the sentence at the same point of the
-  screen on any height (its top about a fifth of the way down).
+  screen on any height (its top about a fifth of the way down). ⚠️ **The first state is
+  measured.** The statement is below the fold on load, so Lighthouse reads every word before
+  the page reaches it, and each has to clear 3:1, the floor for text this size, on its own.
+  44% of the ink is 3.3:1 on both grounds. A fainter start fails the statement word by word
+  and costs Accessibility its colour-contrast audit.
 - **The project deck stacks.** See §10. Each card's step back runs on the *next* card's view
   timeline - named per card, shared through `timeline-scope` on `.deck` - over the cover
   alone: from that card's top reaching this one's foot, `cover max(2rem, 100svh -
@@ -2544,6 +2548,8 @@ centred in the space between the capsule and the footer on a tall screen.
 
 ## Changelog
 
+- 2026-09-30 - a word of the About statement starts at 44% of the ink rather than 18%, so it
+  clears 3:1 before the page reaches it and the homepage passes the colour-contrast audit (§5).
 - 2026-09-29 - Experience is lit the way Skills is and sets its head across the top: the
   period at the far end, the points under it as tiles side by side, the thesis in two
   columns, "Education" a chapter heading whose icon is a stop on the rail, and the current
