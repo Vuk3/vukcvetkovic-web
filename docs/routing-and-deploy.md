@@ -309,8 +309,8 @@ critical path: `font-display: swap` paints the fallback immediately and measured
 ### The share cards are drawn after the pages
 
 Every project, every game and the two indexes share a card of their own, in each of the
-four languages: 52 PNGs at 1200x630 under `dist/client/og/`, about 42 KB each and 2.2 MB
-together, drawn in about 9 seconds at the end of `npm run build`. How they look is
+four languages: 52 PNGs at 1200x630 under `dist/client/og/`, about 49 KB each and 2.5 MB
+together, drawn in about 10 seconds at the end of `npm run build`. How they look is
 [design-system.md §10](./design-system.md#the-share-cards).
 
 - **An integration, not an endpoint.** `shareCards()` ([src/og/integration.ts](../src/og/integration.ts))

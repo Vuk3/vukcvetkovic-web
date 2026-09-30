@@ -2573,10 +2573,18 @@ The homepage and the 404s keep the site's card, the portrait (`public/og.png`).
 
 **One frame, the family of the site's card**: the ink, the V mark and the name at the top
 left, the page's title large in the display voice (Archivo at 720/125) in its own colour, its
-line under it, and its address along the foot behind a rule of that colour. A title is set as
-large as its column allows in two lines, three for a project, and every block of text is
-balanced so no line is one word under a full one. The thing itself is on the right, drawn
-rather than described, with a light of its colour behind it.
+line under it, and its address along the foot behind a rule of that colour. The thing itself
+is on the right, drawn rather than described, with a light of its colour behind it, and every
+block of text is balanced so no line is one word under a full one.
+
+⚠️ **Everything is as large as the card holds, measured rather than guessed**, because a
+preview shows a card at about half its size ([src/og/cards.ts](../src/og/cards.ts)). The pad
+is 46 by 40, a board is 516 of the 550 the card has, and the line under the title is sized
+first, from 36px down, with the title giving way for it to three fifths of its own largest
+size before the line steps down; the address takes the largest of 30px down that holds it on
+one line. A project's drawing and the projects index are scaled as a whole to the largest
+that fits the height. Every height is added up from the same broken lines satori is handed,
+each its own box at its own line height, so what is measured is what is drawn.
 
 - **A game shows its board mid-play**, in its dark-theme colours read from its own stylesheet
   and with its own sprites and sky ([src/og/boards.ts](../src/og/boards.ts)): 2048 won in
@@ -2590,9 +2598,12 @@ rather than described, with a light of its colour behind it.
   going back up beside the request, with the words that travel on each line. Nodes carry
   their marks from `flowTech` in their dark-ground colours. Above the title the year in a
   pill of the hue and the context; the measured result, where there is one, under the text
-  if the column has room and under the drawing if not (Object detection's three-line title).
-  ⚠️ A row of nodes shares one type size, the largest at which every word in it fits, and a
-  word that fits at none is hyphenated at a compound's joint: "Anwendungs-protokolle".
+  if the line keeps 26px and the title seven tenths of its size there, since the drawing then
+  has the whole height, and under the drawing if not (Object detection's three-line title).
+  The entry, core and exit set their marks beside their titles and the lane's tiles under,
+  for the height a five-level pipeline is short of. ⚠️ A row of nodes shares one type size,
+  the largest at which every word in it fits, and a word that fits at none is left out of the
+  choice and hyphenated at a compound's joint: "Anwendungs-protokolle".
 - **The games index is the wall**: the heading with its intro beside it, as the page sets
   them, and the seven boards in a row under them. Four over three beside the text left each
   board too small to read as its game.
@@ -2615,6 +2626,8 @@ rather than described, with a light of its colour behind it.
 
 ## Changelog
 
+- 2026-09-30 - the share cards set their type, boards and drawings as large as each card holds,
+  measured from the room, with a smaller pad and brighter text (§10).
 - 2026-09-30 - a project, a game or an index shared anywhere shows a card of its own, in its
   language, drawn at build: the board mid-play, the request, the wall or the four projects (§10).
 - 2026-09-30 - Accretion's card on the games index is drawn on the game's own sky, the
