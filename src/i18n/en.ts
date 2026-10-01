@@ -7,12 +7,14 @@
  * Only prose belongs here. Names, URLs, employers, dates and technology labels
  * live in src/site.ts. The keys under `skills.groups`, `experience.roles` and
  * `projects.items` match the `id` fields there.
+ *
+ * The apostrophe is the typographic one (’) throughout, as in the French.
  */
 const en = {
   meta: {
     title: "Vuk Cvetković - Software engineer",
     description:
-      "Software engineer in Niš, Serbia. I build the whole product: Node.js backend (NestJS, Express), AWS deployment and event-driven communication, React front end.",
+      "Software engineer in Niš, Serbia. I build the whole product: Node.js backend (NestJS, Express), AWS deployment and event-driven communication, React frontend.",
     ogImageAlt: "Vuk Cvetković, software engineer",
   },
 
@@ -50,9 +52,9 @@ const en = {
   about: {
     label: "About",
     paragraphs: [
-      "I work on client projects from the first data model to the deployment on AWS. I always start from the domain: what the data is, who can access it, and which systems it has to talk to, and the API, the services and the React interface follow from that.",
-      "I have a master’s in software engineering. My thesis compared two machine learning ecosystems on the same task: a YOLOv8m model in Python and an ML.NET model in .NET, behind one NestJS gateway and one React front end.",
-      "The best example of my front end work is this site itself: four languages, and seven games written without a canvas or a game library. Each game has a write-up on how it was built.",
+      "I work on client projects from the first data model to the deployment on AWS. I always start from the domain: what the data is, who can access it, and which systems it has to talk to. The API, the services and the React interface follow from that.",
+      "I have a master’s in software engineering. My thesis compared two machine learning ecosystems on the same task: a YOLOv8m model in Python and an ML.NET model in .NET, behind one NestJS gateway and one React frontend.",
+      "The best example of my frontend work is this site itself: four languages, and seven games written without a canvas or a game library. Each game has a write-up on how it was built.",
     ],
   },
 
@@ -73,8 +75,8 @@ const en = {
         role: "Backend developer",
         bullets: [
           "Backend services in Node.js (NestJS, Express): REST APIs, JWT authentication, role-based access control and third-party integrations, over both SQL and document databases.",
-          "The same work in .NET where a client already runs it, structured with Clean Architecture so the business logic stays separable from the framework around it.",
-          "The AWS side: S3, ECS, EC2, Lambda, Route 53 and EventBridge, covering deployments and the event-driven paths between services.",
+          "The same work in .NET, structured with Clean Architecture so the business logic stays independent of the framework around it.",
+          "The AWS side: S3, ECS, EC2, Lambda, Route 53 and EventBridge, covering deployments and event-driven communication between services.",
         ],
       },
       novateq: {
@@ -92,12 +94,12 @@ const en = {
     degrees: {
       master: {
         degree: "MSc, Software Engineering",
-        thesis: "Master's thesis",
+        thesis: "Master’s thesis",
         school: "Faculty of Electronic Engineering, University of Niš",
       },
       bachelor: {
         degree: "BSc, Computing and Informatics",
-        thesis: "Bachelor's thesis",
+        thesis: "Bachelor’s thesis",
         school: "Faculty of Electronic Engineering, University of Niš",
       },
     },
@@ -177,7 +179,7 @@ const en = {
 
     /** Stack rows are named by the service they belong to. */
     stackGroups: {
-      frontend: "Front end",
+      frontend: "Frontend",
       gateway: "Gateway",
       pythonService: "Python service",
       dotnetService: ".NET service",
@@ -196,11 +198,11 @@ const en = {
         title: "Comparative object detection system",
         tagline: "The same image through two machine learning ecosystems, answered in one format.",
         description:
-          "My master's thesis. The same image runs through a YOLOv8m model in Python and an ML.NET model in .NET, both behind one gateway that answers in a single format, so one React front end draws either result. Reannotating the dataset took YOLOv8m to 0.916 mAP@0.5 against 0.748 for ML.NET.",
+          "My master’s thesis. The same image runs through a YOLOv8m model in Python and an ML.NET model in .NET, both behind one gateway that answers in a single format, so one React frontend draws either result. Reannotating the dataset took YOLOv8m to 0.916 mAP@0.5 against 0.748 for ML.NET.",
         metaTitle: "Comparative object detection system - Vuk Cvetković",
         metaDescription:
-          "A master's thesis system: YOLOv8m in Python and ML.NET in .NET behind one NestJS gateway, compared on the same protective equipment dataset.",
-        context: "Master's thesis, Faculty of Electronic Engineering in Niš",
+          "A master’s thesis system: YOLOv8m in Python and ML.NET in .NET behind one NestJS gateway, compared on the same protective equipment dataset.",
+        context: "Master’s thesis, Faculty of Electronic Engineering in Niš",
         domain: "Personal protective equipment on site",
 
         /*
@@ -212,7 +214,7 @@ const en = {
          * either side of the gateway, not stages of their own.
          */
         flow: {
-          entry: "React front end",
+          entry: "React frontend",
           entryLabel: "Image, multipart/form-data",
           core: "NestJS gateway",
           branches: [
@@ -225,18 +227,18 @@ const en = {
         },
 
         overview: [
-          "The thesis asks what changes when the same detection task is built twice: once in Python, the ecosystem research reaches for, and once in .NET, the one that already runs the backend. The system trains a YOLOv8m model and an ML.NET model on the same annotated images, puts both behind one API, and runs an image through either or both.",
+          "The thesis asks what changes when the same detection task is built twice: once in Python, the ecosystem that research reaches for, and once in .NET, the one that already runs the backend. The system trains a YOLOv8m model and an ML.NET model on the same annotated images, puts both behind one API, and runs an image through either or both.",
           "The domain is personal protective equipment on a work site, over six classes: helmet, vest and gloves, each as present or missing. The negative classes are the point. A system like this is only useful if it can say that someone is not wearing a helmet, not merely that a helmet is somewhere in the frame.",
         ],
 
         steps: [
           {
-            title: "The front end posts the image",
+            title: "The frontend posts the image",
             body: "React sends the file as multipart/form-data with the chosen model as a second field. Ask for both and it fires the two requests in parallel, so the comparison is over one image at one moment.",
           },
           {
             title: "The gateway routes it",
-            body: "NestJS is the only address the front end knows. It takes the upload and forwards it to the FastAPI service or the ASP.NET Core one, which leaves the two ML services free to change independently of the client.",
+            body: "NestJS is the only address the frontend knows. It takes the upload and forwards it to the FastAPI service or the ASP.NET Core one, which leaves the two ML services free to change independently of the client.",
           },
           {
             title: "The service runs inference",
@@ -247,7 +249,7 @@ const en = {
             body: "Class, score, and a box as x1, y1, x2, y2, alongside the model id, the annotation set it was trained on, and the original image dimensions. The .NET side clamps its coordinates to those dimensions first, so a box can never fall outside the image.",
           },
           {
-            title: "The front end draws it",
+            title: "The frontend draws it",
             body: "Because the response is identical either way, there is no YOLO branch and no ML.NET branch in the interface. It scales the coordinates from the original size to the displayed size and paints the boxes, labels and confidences over the image.",
           },
         ],
@@ -280,9 +282,9 @@ const en = {
         ],
 
         dataset: [
-          "The dataset was assembled in Roboflow out of two public sets, then reviewed and merged into one: 2,911 images split 2,374 for training, 290 for validation and 247 for test, auto-oriented and resized to 640x640. The Python side takes it in YOLO format and the .NET side in COCO, since that is what Model Builder expects for detection, so the two tools get the formats they want over identical images and identical classes.",
+          "The dataset was assembled in Roboflow out of two public sets, then reviewed and merged into one: 2,911 images split 2,374 for training, 290 for validation and 247 for test, auto-oriented and resized to 640x640. The Python side takes it in YOLO format and the .NET side in COCO, which Model Builder expects for detection, so the two tools get the formats they want over identical images and identical classes.",
           "Then the part I did not plan for. The first pass held 8,813 annotations, and going back through it brought that to 17,942, which means more than half the objects had been unlabelled. An object that is present in the image but missing from the labels teaches the model during training that it is background, and then counts against the model during evaluation when it detects it anyway.",
-          "Both models trained for 50 epochs at 640x640 from pretrained weights, with the parameters held steady across the two dataset versions so a difference in results could be read as a difference in annotation quality rather than in configuration. Model Builder stops at the trained model, so the .NET side needed an evaluation service of its own: it loads the COCO annotations, predicts over the validation set, and computes precision, recall, F1 and mAP@0.5 with confusion matrices and precision-recall curves, which is what put ML.NET on the same footing as the output Ultralytics prints by itself.",
+          "Both models trained for 50 epochs at 640x640 from pretrained weights, with the parameters held steady across the two dataset versions so a difference in results could be read as a difference in annotation quality rather than in configuration. Model Builder stops at the trained model, so the .NET side needed an evaluation service of its own: it loads the COCO annotations, predicts over the validation set, and computes precision, recall, F1 and mAP@0.5 with confusion matrices and precision-recall curves. That gave ML.NET the same output Ultralytics prints by itself.",
         ],
 
         /*
@@ -304,27 +306,27 @@ const en = {
           ],
           rows: ["YOLOv8m", "YOLOv8m", "ML.NET", "ML.NET"],
           notes: [
-            "Reannotating moved every metric for both models. YOLOv8m went from 0.790 to 0.916 mAP@0.5 and ML.NET from 0.580 to 0.748, so in relative terms the weaker model gained the most, 29 percent against 16. The first pass had been holding it back hardest.",
+            "Reannotating moved every metric for both models. YOLOv8m went from 0.790 to 0.916 mAP@0.5 and ML.NET from 0.580 to 0.748, so in relative terms the weaker model gained more, 29 per cent against 16. The first pass had been holding it back hardest.",
             "YOLOv8m is ahead on the numbers, and the gap that matters is recall: 0.867 against 0.709 on the corrected set, at almost the same precision. For protective equipment that asymmetry is the whole story, because a missed detection is a person the system quietly reports as fine, and precision on its own cannot tell you it happened.",
             "The comparison is fair because the setup was the same on both sides: one image domain, the same six classes, and comparable parameters instead of separate tuning for each model.",
           ],
         },
 
         takeaway: [
-          "The outcome sat in the data more than in the choice of framework. Reannotating the same 2,911 images moved both models further than the distance between the two ecosystems moved ML.NET, and that is not the conclusion I expected to be writing up.",
-          "The engineering half was more practical. Python gave me room to experiment and produced the evaluation material for free, .NET gave me a model that drops into an ASP.NET Core service with no bridge in between, and the standardized response is the only reason one front end can treat them as interchangeable.",
+          "The outcome sat in the data more than in the choice of framework. Reannotating the same 2,911 images moved both models further than the gap between the two ecosystems set ML.NET back, and that is not the conclusion I expected to be writing up.",
+          "The engineering half was more practical. Python gave me room to experiment and produced the evaluation material for free, .NET gave me a model that drops into an ASP.NET Core service with no bridge in between, and the standardized response is the only reason one frontend can treat them as interchangeable.",
         ],
       },
 
       encryptix: {
         title: "Encryptix",
-        tagline: "Three ciphers behind one service, and a hash at both ends to prove the file came back.",
+        tagline: "Three ciphers behind one service, and a hash at both ends to prove the file came back intact.",
         description:
-          "My bachelor's thesis. A desktop client hands a whole folder to a WCF service, which encrypts every file with AES, RC6 or XXTEA - the last two written from the specification rather than taken from a library - and records a SHA-512 hash before and after each pass, so the round trip can be proved rather than assumed. Processing the files in parallel took a 150-file pass from 68.91 to 44.16 seconds.",
+          "My bachelor’s thesis. A desktop client hands a whole folder to a WCF service, which encrypts every file with AES, RC6 or XXTEA. I wrote RC6 and XXTEA from their specifications instead of taking them from a library. The service records a SHA-512 hash before and after each pass, so the round trip can be proved rather than assumed. Processing the files in parallel took a 150-file pass from 68.91 to 44.16 seconds.",
         metaTitle: "Encryptix - Vuk Cvetković",
         metaDescription:
-          "A bachelor's thesis project: a Windows Forms client and a WCF service that encrypt a whole folder with AES, RC6 or XXTEA, with SHA-512 verification on both ends.",
-        context: "Bachelor's thesis, Faculty of Electronic Engineering in Niš",
+          "A bachelor’s thesis project: a Windows Forms client and a WCF service that encrypt a whole folder with AES, RC6 or XXTEA and check the round trip with SHA-512.",
+        context: "Bachelor’s thesis, Faculty of Electronic Engineering in Niš",
         domain: "File encryption on the desktop",
 
         flow: {
@@ -344,8 +346,8 @@ const en = {
         },
 
         overview: [
-          "The unit of work here is a folder, not a file. You point the application at a directory, it reads everything inside it and inside every subfolder, and then one of three symmetric ciphers runs over the whole set - with the encrypted tree, the decrypted tree and the hash log each written somewhere you choose.",
-          "The reason there are three is that only one of them came for free. AES is the .NET library's implementation, which is what any sensible application would use. RC6 and XXTEA are built from their specifications, and that is where the project actually was: the key expansion, the padding, the rotations and the deliberate integer overflow that XXTEA depends on.",
+          "The unit of work here is a folder, not a file. You point the application at a directory, it reads everything inside it and inside every subfolder, and then one of three symmetric ciphers runs over the whole set. The encrypted tree, the decrypted tree and the hash log are each written somewhere you choose.",
+          "The reason there are three is that only one of them came for free. AES is the .NET library’s implementation, which is what any sensible application would use. RC6 and XXTEA are built from their specifications, and that is where the real work was: the key expansion, the padding, the rotations and the deliberate integer overflow that XXTEA depends on.",
         ],
 
         steps: [
@@ -355,11 +357,11 @@ const en = {
           },
           {
             title: "A background task keeps the window alive",
-            body: "Windows Forms gives the application one thread and that thread owns the controls, so reading a large folder on it would freeze the window and stop the spinner it is meant to be showing. The read runs as a Task instead, and the continuation is scheduled back onto the form's own synchronization context, which is the only place the buttons can legally be re-enabled.",
+            body: "Windows Forms gives the application one thread and that thread owns the controls, so reading a large folder on it would freeze the window and stop the spinner it is meant to be showing. The read runs as a Task instead, and the continuation is scheduled back onto the form’s own synchronization context, which is the only place the buttons can legally be re-enabled.",
           },
           {
             title: "The list crosses to the service",
-            body: "The client calls the WCF service over HTTP. Both sides had to be reconfigured for the payload: the buffer limits go up to the largest value an int will hold, and the transfer mode changes from buffered to streamed so only the message header is buffered rather than the whole file list, with a ten-minute timeout on each end.",
+            body: "The client calls the WCF service over HTTP. Both sides had to be reconfigured for the payload: the buffer limits go up to the largest value an int will hold, and the transfer mode changes from buffered to streamed so only the message header is buffered rather than the whole file list. Each end gets a ten-minute timeout.",
           },
           {
             title: "The service encrypts, file by file",
@@ -367,14 +369,14 @@ const en = {
           },
           {
             title: "Both ends are hashed",
-            body: "Every file gets a text file beside it holding four SHA-512 lines: before encryption, after encryption, before decryption, after decryption. The first and the last are the ones that matter, and they have to be identical. That is the whole integrity claim, and it is checkable by anyone who opens the file.",
+            body: "Every file gets a text file beside it holding four SHA-512 lines: before encryption, after encryption, before decryption, after decryption. The first and the last are the ones that matter, and they have to be identical. That is the whole integrity claim, and anyone who opens the file can check it.",
           },
         ],
 
         features: [
           {
             title: "A whole folder at a time",
-            body: "Subfolders included, to any depth. The output mirrors the input tree, which comes from diffing each file's path against the root rather than from tracking the recursion.",
+            body: "Subfolders included, to any depth. The output mirrors the input tree, which comes from diffing each file’s path against the root rather than from tracking the recursion.",
           },
           {
             title: "Three ciphers, one form",
@@ -390,7 +392,7 @@ const en = {
           },
           {
             title: "A progress bar that finishes with the job",
-            body: "Paced from the total byte count while the service works, and filled the instant the real call returns by way of a cancellation token, so it tracks the run and completes with it rather than after it.",
+            body: "Paced from the total byte count while the service works, and filled by way of a cancellation token the instant the real call returns, so it tracks the run and completes with it rather than after it.",
           },
           {
             title: "The file tree up front",
@@ -404,13 +406,13 @@ const en = {
           columns: ["Mode", "Files", "Encryption (s)", "Decryption (s)"],
           rows: ["Sequential", "Parallel"],
           notes: [
-            "The same 150 files, the same RC6 key, the same output folders, run once each way. Parallel encryption finished in 44.16 seconds against 68.91, and decryption in 40.39 against 70.13 - a third off in each direction.",
+            "The same 150 files, the same RC6 key, the same output folders, run once each way. Parallel encryption finished in 44.16 seconds against 68.91, and decryption in 40.39 against 70.13 - more than a third off in each direction.",
             "The gain comes from the files being independent: the parallel loop needs no lock and no ordering, so no file waits for the one before it.",
           ],
         },
 
         takeaway: [
-          "Implementing two of the three ciphers rather than calling them is what this project was for. They are short algorithms where almost every line is load-bearing: which direction a rotation goes, where the original length is stored, and the fact that XXTEA needs its arithmetic to wrap on overflow rather than raise. The matching hashes are what prove all of it lands correctly, byte for byte.",
+          "Implementing two of the three ciphers rather than calling them is what this project was for. They are short algorithms where almost every line is load-bearing: which direction a rotation goes, where the original length is stored, and the fact that XXTEA needs its arithmetic to wrap on overflow rather than throw. The matching hashes are what prove all of it lands correctly, byte for byte.",
           "The client-server split is the other half of it. The cryptography runs in the service rather than in the process that draws the window, and the same three algorithms are available to anything else that can call it.",
         ],
       },
@@ -419,7 +421,7 @@ const en = {
         title: "Network Traffic Analyzer",
         tagline: "A packet capture read once, then asked twelve questions about every packet in it.",
         description:
-          "A seminar paper on traffic analysis, with a desktop application to demonstrate it. It opens a .pcapng capture through Pyshark, walks every packet layer by layer, and pulls out what each protocol carries - HTTP headers, DNS queries, TCP flags, FTP credentials - into an expandable tree, alongside a chart of how the protocols divide up.",
+          "A seminar paper on traffic analysis, with a desktop application to demonstrate it. It opens a .pcapng capture through Pyshark, walks every packet layer by layer, and pulls out what each protocol carries - HTTP headers, DNS queries, TCP flags, FTP credentials - into an expandable tree, alongside a chart of how the traffic divides up by protocol.",
         metaTitle: "Network Traffic Analyzer - Vuk Cvetković",
         metaDescription:
           "A seminar paper project in Python: a Tkinter application that reads .pcapng captures through Pyshark, extracts twelve protocols per packet, and charts the protocol distribution.",
@@ -429,7 +431,7 @@ const en = {
         flow: {
           entry: "A .pcapng capture",
           entryLabel: "",
-          core: "Pyshark, over Wireshark's tshark",
+          core: "Pyshark, over Wireshark’s tshark",
           branches: [
             { title: "Application protocols", badge: "HTTP, HTTPS, DNS, FTP, SMTP" },
             { title: "Transport and control", badge: "TCP, UDP, ICMP, ARP" },
@@ -452,19 +454,19 @@ const en = {
           },
           {
             title: "Each packet is walked layer by layer",
-            body: "The protocol names come from the packet's own layer stack rather than from a lookup, so a packet reports what it actually contains and the tally at the end counts real layers. Twelve extractors then run in sequence, each one asking whether its protocol is present before it touches anything.",
+            body: "The protocol names come from the packet’s own layer stack rather than from a lookup, so a packet reports what it actually contains and the tally at the end counts real layers. Twelve extractors then run in sequence, each one asking whether its protocol is present before it touches anything.",
           },
           {
             title: "Every extractor asks before it reads",
-            body: "A field that a given packet does not carry is not an error, it is the normal case, so every extractor checks each attribute exists before reading it and simply omits what is absent. That is why the tree is uneven: one HTTP packet shows a dozen fields and the next shows two, and both are correct.",
+            body: "A field that a given packet does not carry is not an error but the normal case, so every extractor checks each attribute exists before reading it and simply omits what is absent. That is why the tree is uneven: one HTTP packet shows a dozen fields and the next shows two, and both are correct.",
           },
           {
             title: "What is in plain text comes out in plain text",
-            body: "HTTP Basic credentials are base64, not encryption, so the extractor decodes them. FTP sends its username and password as text, so those come out too. That is the honest demonstration the paper wanted: not a claim that these protocols are insecure, but the decoded string sitting in a tree in front of you.",
+            body: "HTTP Basic credentials are base64-encoded, not encrypted, so the extractor decodes them. FTP sends its username and password as text, so those come out too. That is the honest demonstration the paper wanted: not a claim that these protocols are insecure, but the decoded string sitting in a tree in front of you.",
           },
           {
             title: "The results land in a tree and in charts",
-            body: "Each packet becomes one row - timestamp, source and destination IP, length, protocol list - which expands into a node per protocol and a leaf per field. The same pass returns a count per protocol, which Matplotlib draws as a pie and a bar chart embedded straight into the window.",
+            body: "Each packet becomes one row - timestamp, source and destination IP, length, protocol list - and each row expands into a node per protocol and a leaf per field. The same pass returns a count per protocol, which Matplotlib draws as a pie and a bar chart embedded straight into the window.",
           },
         ],
 
@@ -487,7 +489,7 @@ const en = {
           },
           {
             title: "Credentials in the clear, shown as such",
-            body: "Decoded HTTP Basic authentication and FTP usernames and passwords, which is the shortest possible argument for why those protocols are not used unencrypted.",
+            body: "Decoded HTTP Basic authentication and FTP usernames and passwords, which is the shortest possible argument against using those protocols unencrypted.",
           },
           {
             title: "Both PCAP generations",
@@ -511,12 +513,12 @@ const en = {
 
       easyBreathe: {
         title: "Easy Breathe",
-        tagline: "Serbia's public pollen readings, narrowed to the ones a single person needs to know about.",
+        tagline: "Serbia’s public pollen readings, narrowed to the ones a single person needs to know about.",
         description:
-          "A mobile app on top of open government data. Serbia's environmental agency publishes pollen measurements from stations across the country, and the app mirrors them into its own database on a schedule, then narrows them to the allergens one person has selected within a radius they choose - on a map, by concentration level, and as a push notification when a level climbs.",
+          "A mobile app on top of open government data. Serbia’s environmental agency publishes pollen measurements from stations across the country, and the app mirrors them into its own database on a schedule, then narrows them to the allergens one person has selected, within a radius they choose. It shows the result on a map, by concentration level, and as a push notification when a level climbs.",
         metaTitle: "Easy Breathe - Vuk Cvetković",
         metaDescription:
-          "A React Native and Expo app on a NestJS API: Serbia's open pollen data, seeded on a schedule and filtered by location, radius and the allergens a user selects.",
+          "A React Native and Expo app on a NestJS API: Serbia’s open pollen data, seeded on a schedule and filtered by location, radius and the allergens a user selects.",
         context: "Seminar paper on e-government systems, Faculty of Electronic Engineering in Niš",
         domain: "Open government data, pollen and allergens",
 
@@ -534,41 +536,41 @@ const en = {
         },
 
         overview: [
-          "The public data is there and it is good: Serbia's environmental agency publishes daily pollen readings from measuring stations across the country, as an open API with no key and no limit. What it does not do is tell one person with a ragweed allergy whether today is a bad day where they happen to be standing. That gap is the whole app.",
+          "The public data is there and it is good: Serbia’s environmental agency publishes daily pollen readings from measuring stations across the country, as an open API with no key and no limit. What it does not do is tell one person with a ragweed allergy whether today is a bad day where they happen to be standing. That gap is the whole app.",
           "So the work splits in two. The API mirrors the open data into its own database on a schedule, because a phone should not page through hundreds of thousands of national measurements to answer a local question. The app then asks one question against that mirror - what is in the air near me, of the things I react to - and answers it on a map, in four levels, and in a notification.",
         ],
 
         steps: [
           {
             title: "The open data is mirrored on two clocks",
-            body: "The five endpoints do not change at the same rate, so they are not fetched at the same rate. Allergens, allergen types and locations are seeded at nine on the first of the month. Pollens and concentrations, which are the ones that move, are fetched every hour between nine and noon, which is when the day's measurements appear.",
+            body: "The five endpoints do not change at the same rate, so they are not fetched at the same rate. Allergens, allergen types and locations are seeded at nine on the first of the month. Pollens and concentrations, the ones that move, are fetched every hour between nine and noon, when the day’s measurements appear.",
           },
           {
             title: "Seeding is safe to repeat",
-            body: "Every seeder looks up which ids it already holds, keeps only the ones it does not, and inserts those. So an hourly job that finds nothing new writes nothing, the same run can be repeated without duplicating a measurement, and the window it asks for reaches a week back - which is what picks up a reading published a few days after it was taken.",
+            body: "Every seeder looks up which ids it already holds, keeps only the ones it does not, and inserts those. So an hourly job that finds nothing new writes nothing, the same run can be repeated without duplicating a measurement, and the window it asks for reaches a week back, far enough to pick up a reading published a few days after it was taken.",
           },
           {
             title: "A location and a radius become a set of stations",
-            body: "The user's coordinates and their chosen radius in kilometres go into a MongoDB geospatial query, dividing the radius by the earth's own to get the sphere the query needs. What comes back is every measuring station close enough to matter to that person.",
+            body: "The user’s coordinates and their chosen radius in kilometres go into a MongoDB geospatial query. The radius is first divided by the earth’s own, because the query takes it in radians. What comes back is every measuring station close enough to matter to that person.",
           },
           {
             title: "Stations and a date become the readings that count",
-            body: "Those station ids and today's date select the day's pollen records, each of which carries the ids of the concentrations measured with it. Those concentrations are then fetched and cut down to the allergens the user actually selected, so the response holds only readings that are both nearby and relevant.",
+            body: "Those station ids and today’s date select the day’s pollen records, each of which carries the ids of the concentrations measured with it. Those concentrations are then fetched and cut down to the allergens the user actually selected, so the response holds only readings that are both nearby and relevant.",
           },
           {
             title: "Each reading gets a level and a place",
-            body: "A number in the air means nothing on its own, so each concentration is compared against its own allergen's published margins and comes out as Low, Normal, High or Very high. The reading is then formatted with the allergen and the station it came from, which is what the map marker and the detail view show.",
+            body: "A number in the air means nothing on its own, so each concentration is compared against its own allergen’s published thresholds and comes out as Low, Normal, High or Very high. The reading is then formatted with the allergen and the station it came from, which is what the map marker and the detail view show.",
           },
         ],
 
         features: [
           {
             title: "Pick your own allergens",
-            body: "Around thirty are published, and the profile is a multiselect over all of them. Everything downstream - the map, the levels, the notifications - follows that list.",
+            body: "Around thirty are published, and the profile lets you select as many of them as you like. Everything downstream - the map, the levels, the notifications - follows that list.",
           },
           {
             title: "Your radius, your interval",
-            body: "The radius to search in kilometres and how often to check in hours, both set on the profile. A shorter interval means fresher alerts, a longer one saves battery.",
+            body: "The search radius in kilometres and the check interval in hours, both set on the profile. A shorter interval means fresher alerts, a longer one saves battery.",
           },
           {
             title: "A map you can read at a glance",
@@ -597,7 +599,7 @@ const en = {
         },
 
         takeaway: [
-          "The lesson that carried was that open data is not the same as usable data. Five endpoints that reference each other by id, a national scale, and no way to ask a geographic question means the value is entirely in the mirroring and the joining. Deciding what to copy, how often, and how to make copying it twice harmless is where the engineering actually was.",
+          "The lesson that stuck was that open data is not the same as usable data. With five endpoints that reference each other by id, a national scale, and no way to ask a geographic question, the value is entirely in the mirroring and the joining. Deciding what to copy, how often, and how to make copying it twice harmless is where the engineering actually was.",
           "The other half is that the answer has to arrive without being asked for. Someone with an allergy does not open an app to check - they want to be told, at a radius and an interval they set once. Push notifications on top of a scheduled backend are what turn a public dataset into something that reaches a person on the day it matters.",
         ],
       },
@@ -660,7 +662,7 @@ const en = {
     index: {
       metaTitle: "Games - Vuk Cvetković",
       metaDescription:
-        "Browser games by Vuk Cvetković: 2048, Minesweeper, Memory in twelve levels, Battleship against four opponents, a game about merging worlds into bigger ones, a 3D cube from 2×2 to 5×5, and four in a row against a grandmaster. Each gets a page of its own.",
+        "Browser games by Vuk Cvetković: 2048, Minesweeper, Memory in twelve levels, Battleships against four opponents, a game about merging worlds into bigger ones, a 3D cube from 2×2 to 5×5, and four in a row against a grandmaster. Each gets a page of its own.",
       heading: "Games",
       intro:
         "Games worth more than one go. Each has a page of its own, and underneath it a write-up on how it was built, for anyone who wants that too.",
@@ -701,7 +703,7 @@ const en = {
 
         over: {
           title: "No moves left",
-          body: "The board is full and nothing beside anything matches. One step back is still there if the last move was the one that did it.",
+          body: "The board is full and no two neighbouring tiles match. You can still take one step back if the last move was the one that did it.",
           restart: "Play again",
         },
 
@@ -711,7 +713,7 @@ const en = {
             {
               title: "Push the whole board",
               description:
-                "Arrow keys or WASD on a keyboard, a swipe in any direction on a phone. Every tile travels as far as it can in one move, not one square.",
+                "Arrow keys or WASD on a keyboard, a swipe in any direction on a phone. Every tile travels as far as it can in one move, not just one square.",
             },
             {
               title: "Equal numbers merge",
@@ -735,9 +737,9 @@ const en = {
           label: "How it is built",
           paragraphs: [
             "No canvas and no game library. A tile is an element with two custom properties on it, its position is a translate resolved against its own size, and the browser composites the slide. That is where the smoothness comes from: a move changes a transform and nothing else, so no part of it goes through layout.",
-            "Keeping every tile's element for the life of that tile is the other half. The board is never re-rendered from the state - a move updates the numbers on nodes that are already there, which is why a tile visibly travels from where it was instead of disappearing and reappearing somewhere else.",
+            "Keeping every tile’s element for the life of that tile is the other half. The board is never re-rendered from the state. A move updates the numbers on nodes that are already there, so a tile visibly travels from where it was instead of disappearing and reappearing somewhere else.",
             "The numbers are text, so they are as sharp as the rest of the page and they scale with whatever size the reader has set. The colours are tokens in the same stylesheet as everything else, which is why the board answers the theme toggle in the header.",
-            "Input runs through one function from three places, so a key, a swipe and a tap cannot drift into meaning slightly different things. The arrow keys belong to the board only while the board is on screen, and a move pushed before the last one has landed is held rather than dropped - which is why pushing quickly never costs you a turn.",
+            "Input runs through one function from three places, so a key, a swipe and a mouse drag cannot drift into meaning slightly different things. The arrow keys belong to the board only while the board is on screen, and a move pushed before the last one has landed is held rather than dropped, so pushing quickly never costs you a turn.",
           ],
         },
       },
@@ -764,7 +766,7 @@ const en = {
         best: "Best",
         newGame: "New game",
         flagMode: "Flag mode",
-        hint: "Press to open, right click or F to flag, a long press on a phone. A finished number opens the rest of its ring on a press or the middle button.",
+        hint: "Press to open, right-click or F to flag, a long press on a phone. A finished number opens the rest of its ring on a press or the middle button.",
 
         /** The board itself, and the five words a screen reader reads off it.
          *  A revealed number needs none of them - the digit is real text. */
@@ -786,7 +788,7 @@ const en = {
 
         lost: {
           title: "Mine",
-          body: "The field is shown as it was. A flag on a clear cell is marked, which is usually where the reasoning went.",
+          body: "The field is shown as it was. A flag on a clear cell is marked, which is usually where the reasoning went wrong.",
           again: "Try again",
         },
 
@@ -796,7 +798,7 @@ const en = {
             {
               title: "The first click is safe",
               description:
-                "The mines are laid after it, around wherever you pressed, so the opening move cannot lose and always breaks into open ground. Start anywhere.",
+                "The mines are laid after it, away from wherever you pressed, so the opening move cannot lose and always breaks into open ground. Start anywhere.",
             },
             {
               title: "A number counts its neighbours",
@@ -806,7 +808,7 @@ const en = {
             {
               title: "Flag what you have worked out",
               description:
-                "Right click on a desktop, F on a keyboard, a long press on a phone. A long press only ever plants one, so a slow finger cannot take back what it just put down - flag mode is what removes one, and it is what you want for a whole run of them anyway. The counter shows mines less flags.",
+                "Right-click on a desktop, F on a keyboard, a long press on a phone. A long press only ever plants one, so a slow finger cannot take back what it just put down - flag mode is what removes one, and it is what you want for a whole run of them anyway. The counter shows mines less flags.",
             },
             {
               title: "Press a number you have finished",
@@ -819,9 +821,9 @@ const en = {
         close: {
           label: "How it is built",
           paragraphs: [
-            "No canvas and no game library, and unlike 2048 no motion either. There is no loop and nothing in flight: a cell is a button, it changes state or it does not, and the whole board is four hundred and eighty of them at the expert size. What it costs to run is a class on an element.",
-            "The mines are laid on the first press rather than at the start, around the cell that was pressed and the eight touching it. A field dealt in advance has to either let the opening move lose, which is a coin toss rather than a game, or deal again until it does not, which quietly bends the odds everywhere else. Laying them late gets an honest field and a first move that always opens into a region.",
-            "Opening a region is a queue rather than a recursion, which a four hundred deep fill on a phone is entitled to refuse, and the queue hands the animation its timing for free: the ring a cell was found on is how far it is from the press, so each one waits that many steps before it opens. The fill arrives as something spreading outward instead of the board changing all at once, and it costs one custom property and a delay.",
+            "No canvas and no game library, and unlike 2048 nothing slides either. There is no loop and nothing in flight: a cell is a button, it changes state or it does not, and the whole board is four hundred and eighty of them at the expert size. What it costs to run is a class on an element.",
+            "The mines are laid on the first press rather than at the start, clear of the cell that was pressed and the eight touching it. A field dealt in advance has to either let the opening move lose, which is a coin toss rather than a game, or deal again until it does not, which quietly bends the odds everywhere else. Laying them late gets an honest field and a first move that always opens into a region.",
+            "Opening a region is a queue rather than a recursion, which a phone is entitled to refuse once the fill runs four hundred deep, and the queue hands the animation its timing for free: the ring a cell was found on is how far it is from the press, so each one waits that many steps before it opens. The fill arrives as something spreading outwards instead of the board changing all at once, and it costs one custom property and a delay.",
             "The board is a real grid: rows, cells, a row and column count, and one cell in the tab order at a time so the arrow keys walk it rather than the Tab key. 2048 has to be hidden from a screen reader and described through a live region, because sixteen tiles that rewrite themselves on every keypress cannot be read. A minefield is a table that sits still and waits, which is exactly what a grid is for.",
           ],
         },
@@ -835,7 +837,7 @@ const en = {
 
         metaDescription:
           "Memory in the browser: twelve levels from four cards to sixty, up to three stars a board, and free play with every board open from the start.",
-        lead: "Turn two cards at a time and find every pair. Twelve levels, each board bigger than the last, from four cards to sixty and thirty pictures. Clear a level to open the next, or go straight to any size in free play.",
+        lead: "Turn two cards at a time and find every pair. Twelve levels, each board bigger than the last, from four cards to sixty, with thirty pictures in the deck. Clear a level to open the next, or go straight to any size in free play.",
 
         /** The two ways to play, and the legend over them. */
         modes: "Mode",
@@ -914,7 +916,7 @@ const en = {
           cactus: "Cactus",
           tree: "Pine tree",
           rocket: "Rocket",
-          balloon: "Hot air balloon",
+          balloon: "Hot-air balloon",
           anchor: "Anchor",
           key: "Key",
           crown: "Crown",
@@ -940,12 +942,12 @@ const en = {
             {
               title: "Two cards a turn",
               description:
-                "Press a card to turn it over, then a second one. If the pictures match, both stay face up. If they do not, they stay up long enough to be remembered and then turn back, and pressing the next card turns them back at once.",
+                "Press a card to turn it over, then a second one. If the pictures match, both stay face up. If they do not, they stay up long enough for you to remember them, then turn back. Press the next card and they turn back at once.",
             },
             {
               title: "Every turn is a move",
               description:
-                "Two cards are one move, pair or not. Three stars is a board cleared about as fast as a perfect memory would clear it, two is within half as many moves again, and one is for getting there. The stars over the table go out as you pass each mark.",
+                "Two cards are one move, pair or not. Three stars is for clearing a board about as fast as a perfect memory would, two for taking up to half as many moves again, and one for getting there. The stars you are playing for go out as you pass each mark.",
             },
             {
               title: "Twelve levels, each one bigger",
@@ -963,8 +965,8 @@ const en = {
         close: {
           label: "How it is built",
           paragraphs: [
-            "No canvas and no game library, like the rest of them. A card is a button with two faces, and turning it is one transition on one property: the layer holding both faces rotates half a turn about its vertical axis, each face hides its own back, and the browser shows whichever one is towards you. The turn overshoots by a few degrees and settles, which is what makes it read as a card with some weight in it rather than a square spinning. Every card carries its own perspective, scaled to its size, so a card on the smallest board and one on the largest turn through the same depth.",
-            "The thirty pictures are drawn rather than downloaded: one sprite sheet in the page, one symbol per picture, and every card face is a reference to one of them. Each is flat colour in three tones, the colour itself, a highlight towards the light and a shade away from it, on a ground of its own. The pictures keep their colours in both themes and only the grounds follow the page, so an apple remembered in the light is the same apple in the dark. The sounds are made the same way, in the browser, from a few oscillators and a burst of filtered noise, so there is no audio file on the page either.",
+            "No canvas and no game library, like the rest of them. A card is a button with two faces, and turning it is one transition on one property: the layer holding both faces rotates half a turn about its vertical axis, each face hides its own back, and the browser shows whichever one is towards you. The turn overshoots by a few degrees and settles, so it reads as a card with some weight in it, not a square spinning. Every card carries its own perspective, scaled to its size, so a card on the smallest board and one on the largest turn through the same depth.",
+            "The thirty pictures are drawn rather than downloaded: one sprite sheet in the page, one symbol per picture, and every card face is a reference to one of them. Each is flat colour on a ground of its own, in three tones: the colour itself, a highlight towards the light and a shade away from it. The pictures keep their colours in both themes and only the grounds follow the page, so an apple remembered in the light is the same apple in the dark. The sounds are made the same way, in the browser, from a few oscillators and a burst of filtered noise, so there is no audio file on the page either.",
             "A card does not know what it is until it is turned. The face-down table in the page holds no answers: the front of every card points at nothing, and the picture is written onto it at the moment it goes over. The deck is shuffled once per board and lives inside the game, where the page cannot read it.",
             "The star marks were measured rather than chosen. A player with perfect memory, one that never turns a card it has already seen unless that card completes a pair, played two hundred thousand games on every board, and three stars is the number of moves it needed in nine games out of ten. Its average came out at 1.61 moves a pair, which is the known answer for this game and how the simulation was checked.",
             "The board is sized to fit the screen, because a memory board you have to scroll is one you cannot see. On a phone held upright it turns a quarter, ten across becoming six across, and not one card moves to do it: the grid fills by column instead of by row, the arrow keys swap axes to match, and a screen reader still walks the same table.",
@@ -986,7 +988,7 @@ const en = {
         best: "Best",
         next: "Next",
         newGame: "New game",
-        hint: "Move to aim and press to drop. Arrow keys aim, space drops.",
+        hint: "Move to aim and press to drop. Arrow keys aim, Space drops.",
         sequence: "The sequence, from smallest to largest",
 
         /** The ten bodies, in order. The order is the solar system, the sizes
@@ -1024,7 +1026,7 @@ const en = {
                 "They do not have to be pressed together or held: the moment two equal bodies come to rest against each other they become the next one up, and a merge that lands next to another sets off a chain.",
             },
             {
-              title: "Build sideways, not upward",
+              title: "Build sideways, not upwards",
               description:
                 "A body dropped onto a tall pile rolls, and where it lands is not where it was aimed. Keeping the larger ones along the bottom is most of the game, because they are the ones with nowhere left to go.",
             },
@@ -1048,13 +1050,13 @@ const en = {
       },
 
       battleship: {
-        name: "Battleship",
+        name: "Battleships",
 
         tagline:
           "Hide five ships, then find theirs first. Four opponents, from one that fires at random to one that counts every position your fleet could still be in.",
 
         metaDescription:
-          "Battleship in the browser, against four opponents: a classic fleet on a ten by ten grid, and an opponent that counts every placement the evidence still allows.",
+          "Battleships in the browser, against four opponents: a classic fleet on a ten by ten grid, and an opponent that counts every placement the evidence still allows.",
         lead: "Hide five ships, then find theirs before they find yours. Shots alternate one at a time, and the opponent you pick is the whole of the difficulty: the weakest fires wherever it has not fired yet, and the strongest counts every position your fleet could still be in and shoots the square that appears in most of them.",
 
         /** The four opponents. Ranks rather than adjectives, because "easy" and
@@ -1177,7 +1179,7 @@ const en = {
           paragraphs: [
             "No canvas and no game library, like the rest of them. The sea is a grid of buttons and the fleet is a layer over it: one element per ship, spanning its squares, with a drawing inside it. A carrier has a flight deck, an island and markings, a submarine sits low with nothing on deck at all, and none of that survives being cut into squares - so a hull is one shape across its whole length rather than a rounded end stuck on each square. Each vessel is drawn twice over: the full plan, with its turrets and funnels and flight deck, and the outline alone. The outline is what the copies stacked underneath a hull use to give it a side, so the detail is resolved once per ship rather than eight times. A ship laid the other way is the same drawing turned a quarter.",
             "The board is tilted and the ships stand off it, and both are real rather than drawn. The chart is rotated in three dimensions and the fleet is lifted along the axis that rotation leaves, so a hull is above its own shadow and turns its side with it when it turns. There is no perspective anywhere, deliberately: a vanishing point would make the far edge narrower than the near one, and a grid you name squares on cannot afford to have its columns stop being parallel. A shot is drawn too, crossing from one of your own hulls to the square it lands on, because a turn here is one fleet firing at another rather than a mark appearing.",
-            "The opponent cannot see the fleet it is shooting at, and that is structural rather than a promise made in a comment. The function that picks a square takes two things: the record of its own shots, and the lengths of the ships it has already sunk. The layout is not in scope where the decision happens, so there is no line to be careful about. Which ship sank is public, the same way a player says it out loud, and it is what lets the reasoning narrow.",
+            "The opponent cannot see the fleet it is shooting at, and that is structural rather than a promise made in a comment. The function that picks a square takes two things: the record of its own shots, and the lengths of the ships still afloat. The layout is not in scope where the decision happens, so there is no line to be careful about. Which ship sank is public, the same way a player says it out loud, and it is what lets the reasoning narrow.",
             "The strongest of the four does not guess. For every ship still afloat it walks every position that ship could occupy, drops the ones a miss or a wreck has ruled out, and adds a vote to each unknown square the survivors cover. The heaviest square is the shot. Hunting and following up a hit are the same calculation rather than two modes: with nothing unexplained it produces the familiar bell over the middle of the board, and with a hit on the table the positions that fail to account for it are dropped and the weight collapses around it.",
             "Following up a hit is usually written as a queue of squares to try, and that queue is where this kind of program goes wrong: it has to be weeded every time a ship sinks, every time another shot resolves one of its entries, and every time two ships lie alongside each other. Here the follow-up squares are worked out from the board every turn, so there is nothing to keep and nothing to go stale. Four opponents, forty thousand simulated games against an independently written defender, and not one illegal shot between them.",
           ],
@@ -1226,7 +1228,7 @@ const en = {
         /** One per kind of puzzle, since the cube and the pyramid are turned
          *  with different letters. The page shows the one that applies. */
         hint: {
-          cube: "Drag a sticker to turn its layer, and drag anywhere around the cube to turn all of it. On a keyboard, U, D, L, R, F and B turn a face, Shift turns it the other way, a number first reaches a deeper layer, and the arrow keys turn the whole cube. H shows a hint.",
+          cube: "Drag a sticker to turn its layer, and drag anywhere around the cube to turn all of it. On a keyboard, U, D, L, R, F and B turn a face, Shift turns it the other way, a number first reaches a deeper layer, and the arrow keys turn the whole cube. On the 2×2 and 3×3, H shows a hint.",
           pyramid: "Drag a sticker to turn its corner, and drag anywhere around the pyramid to turn all of it. On a keyboard, U, L, R and B turn a corner, Shift turns it the other way, 1 first turns the tip alone, and the arrow keys turn the whole pyramid. H shows a hint.",
         },
 
@@ -1266,7 +1268,7 @@ const en = {
           colours: ["white", "red", "green", "yellow", "orange", "blue"],
           move: {
             turn: "Turn {layer} {way}.",
-            half: "Turn {layer} half way round.",
+            half: "Turn {layer} halfway round.",
             layers: {
               top: "the top layer",
               bottom: "the bottom layer",
@@ -1315,7 +1317,7 @@ const en = {
             yellowCross: {
               title: "Yellow cross",
               align: "This lines the yellow shape up for the sequence.",
-              alg: "This sequence turns the top edges yellow side up. Sometimes it takes it twice.",
+              alg: "This sequence turns the top edges yellow side up. Sometimes it has to be done twice.",
             },
             yellowEdges: {
               title: "Yellow edges",
@@ -1342,7 +1344,7 @@ const en = {
             orient: {
               title: "Yellow on top",
               align: "This lines the corners up for the sequence.",
-              alg: "This sequence turns the top corners yellow side up. Sometimes it takes it more than once.",
+              alg: "This sequence turns the top corners yellow side up. Sometimes it has to be done more than once.",
             },
             permute: {
               title: "Last layer",
@@ -1389,7 +1391,7 @@ const en = {
             {
               title: "Scramble, then beat the clock",
               description:
-                "Scramble mixes it with a few dozen random turns. The clock starts with your first turn and stops the moment every face is one colour, and your best time is kept for each puzzle. Undo takes back the last turn. Stuck? Hint shows the next move and what it is for, one step of the method at a time, and a solve made with hints does not count as a record.",
+                "Scramble mixes it with random turns. The clock starts with your first turn and stops the moment every face is one colour, and your best time is kept for each puzzle. Undo takes back the last turn. Stuck? Hint shows the next move and what it is for, one step of the method at a time, and a solve made with hints does not count as a record.",
             },
             {
               title: "Five puzzles",
@@ -1404,10 +1406,10 @@ const en = {
           paragraphs: [
             "No canvas, no WebGL and no 3D library. The puzzle is a scene of ordinary elements, one per sticker, placed in three dimensions with CSS transforms, and the browser draws the perspective and works out what is in front of what. A 5×5 is a hundred and fifty of them. A turn writes a rotation onto the stickers in the turning layer and onto nothing else, and two dark plates slide into the cut so the inside of the puzzle is never empty.",
             "No turn is written down anywhere. A puzzle is a list of places a sticker can be, each with a centre and a direction it faces, and a turn is an axis, a slice of depth along it and an angle. The stickers a turn takes are the ones in the slice, and where each one lands is found by rotating it and looking up the place that is there. The cube and the pyramid have nothing mechanical in common and run on the same code, and the 3×3 passes the classic check: R U, repeated 105 times, brings it back to solved.",
-            "A drag is measured through the same projection the browser draws with. Every axis the sticker under your finger could turn about is tried, and the one whose motion on screen best matches your finger wins, so the right layer turns from any angle, at a speed that keeps the sticker under your finger. When you let go, a spring pulls the layer to the nearest step. It is set a little under critical damping, so the layer overshoots by a degree or two and settles back, which is what makes it read as plastic clicking into place.",
-            "After a turn, a sticker takes the position of the place it landed in rather than keeping the rotation that got it there. The two can differ by a quarter turn in the sticker's own plane, which cannot be seen because every sticker is symmetric about its centre, and it means no rounding error builds up however long you play.",
+            "A drag is measured through the same projection the browser draws with. Every axis the sticker under your finger could turn about is tried, and the one whose motion on screen best matches your finger wins, so the right layer turns from any angle, at a speed that keeps the sticker under your finger. When you let go, a spring pulls the layer to the nearest step. It is set a little under critical damping, so the layer overshoots by a degree or two and settles back, like plastic clicking into place.",
+            "After a turn, a sticker takes the position of the place it landed in rather than keeping the rotation that got it there. The two can differ by a quarter turn in the sticker’s own plane, which cannot be seen because every sticker is symmetric about its centre, and it means no rounding error builds up however long you play.",
             "Each sticker is lit from one direction, fixed to you rather than to the puzzle, so the face on top is the bright one and the face on the right the dim one however the puzzle is turned. The brightness is recalculated as the view turns and only written when it changes by a visible amount. The sounds are made in the browser as well: every turn is two clicks a few milliseconds apart over a short, low knock.",
-            "The hints follow the method people are taught rather than the shortest solution, because a shortest solution can only say that a move is one closer, which teaches nothing. The 3×3 is solved in the seven steps of the layer by layer method, the 2×2 in three and the pyramid in three, and each move carries its step, the piece it is about and, inside a sequence, the sequence itself. Where a step is judgement rather than a sequence, such as which white edge to bring down next and how, a short search finds the fewest moves for that one piece that keep everything already placed in place. The plan is worked out again whenever the puzzle is not where it said it would be, and it was checked by following it from fifteen hundred random scrambles, every one of which it solved.",
+            "The hints follow the method people are taught rather than the shortest solution, because a shortest solution can only say that a move is one closer, which teaches nothing. The 3×3 is solved in the seven steps of the layer-by-layer method, the 2×2 in three and the pyramid in three, and each move carries its step, the piece it is about and, inside a sequence, the sequence itself. Where a step is judgement rather than a sequence, such as which white edge to bring down next and how, a short search finds the fewest moves for that one piece that leave everything already placed where it is. The plan is worked out again whenever the puzzle is not where it said it would be, and it was checked by following it from fifteen hundred random scrambles, every one of which it solved.",
           ],
         },
       },
@@ -1448,7 +1450,7 @@ const en = {
           },
           master: {
             name: "Master",
-            note: "Looks seven moves ahead. A trap will not do it, you need a plan.",
+            note: "Looks seven moves ahead. A trap will not do it: you need a plan.",
           },
           grandmaster: {
             name: "Grandmaster",
@@ -1522,9 +1524,9 @@ const en = {
           paragraphs: [
             "No canvas and no game library, like the rest of them. The board is a drawing laid over the discs rather than a background under them: one shape of plastic with 42 holes cut in it, and every disc a little wider than its hole. So a disc falls behind the bars between the rows and shows through the holes, the way it does on the real one, and the rim of every disc stays hidden behind the plastic. The inside of each hole is two thin crescents, shaded at the top and lit at the bottom, and that pair is most of why a disc looks set into the board rather than painted on it.",
             "A disc falls under gravity rather than for a set time, so a long fall down an empty column and a short one onto a nearly full column each take the time a real one would. It bounces twice off whatever it lands on, each bounce lower than the last. The movement is the parabola itself, drawn with the exact curves for free fall, and the three clicks you hear land on the same three moments. A new game empties the board the way the slider under a real one does: every disc drops out of the bottom at once, the lowest first.",
-            "The opponent keeps a score of the position as it goes rather than working it out from scratch. The board has 69 lines of four, each line counts the discs of each colour in it, and a disc only changes the lines through its own square, thirteen at most. A win is a count reaching four, a threat is a count of three next to an empty square, and the value of the whole board is a running total. The one piece of real theory in it is parity: the board fills from the bottom, and with perfect play the side that went first ends up with the odd rows and the other side with the even ones, so a threat on your own rows is worth more than one on theirs.",
+            "The opponent keeps a score of the position as it goes rather than working it out from scratch. The board has 69 lines of four, each line counts the discs of each colour in it, and a disc only changes the lines through its own square, thirteen at most. A win is a count reaching four, a threat is a count of three with the fourth square empty, and the value of the whole board is a running total. The one piece of real theory in it is parity: the board fills from the bottom, and with perfect play the side that went first ends up with the odd rows and the other side with the even ones, so a threat on your own rows is worth more than one on theirs.",
             "The four differ in how far ahead they look. The beginner takes its own four most of the time and otherwise plays near the middle. The amateur looks three moves ahead, which is enough to take a win, block one and never hand one over. The master looks seven ahead and picks among the moves within a few points of its best, so two games against it rarely go the same way. The grandmaster searches one move deeper at a time until a third of a second is up, reusing a table of 262,144 positions it has already seen. From the opening that is thirteen to fifteen moves ahead, and from about the sixteenth disc on it usually knows how the game ends.",
-            "Each of them beats the one below it nearly every time. In sixty simulated games per pair, with the first move alternating, the amateur beat the beginner 60 times, the master beat the amateur 57 times, and the grandmaster beat the master 57 times and drew twice. The pause before an opponent's disc moves, and the stop it sometimes makes over another column, are only there so you can follow the move: by then the choice has already been made.",
+            "Each of them beats the one below it nearly every time. In 60 simulated games per pair, with the first move alternating, the amateur beat the beginner 60 times, the master beat the amateur 57 times, and the grandmaster beat the master 57 times and drew twice. The pause before an opponent’s disc moves, and the stop it sometimes makes over another column, are only there so you can follow the move: by then the choice has already been made.",
           ],
         },
       },
@@ -1591,7 +1593,7 @@ const en = {
     metaTitle: "Page not found - Vuk Cvetković",
     status: "404",
     heading: "Page not found",
-    body: "The address may be wrong, or the page may have moved. The link below goes back to the start, and everything on the site is one step from there.",
+    body: "The address may be wrong, or the page may have moved. The link below goes back to the homepage, and everything on the site is one step from there.",
     cta: "Back to the homepage",
   },
 };

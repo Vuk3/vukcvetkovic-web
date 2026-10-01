@@ -45,7 +45,7 @@ const de: Dict = {
   about: {
     label: 'Über mich',
     paragraphs: [
-      'Ich arbeite an Kundenprojekten vom ersten Datenmodell bis zum Deployment auf AWS. Dabei fange ich immer bei der Domäne an: welche Daten es gibt, wer darauf zugreifen darf und mit welchen Systemen sie sprechen müssen. Daraus ergeben sich die API, die Services und die React-Oberfläche.',
+      'Ich arbeite an Kundenprojekten vom ersten Datenmodell bis zum Deployment auf AWS. Dabei fange ich immer bei der Domäne an: welche Daten es gibt, wer darauf zugreifen darf und mit welchen Systemen sie ausgetauscht werden müssen. Daraus ergeben sich die API, die Services und die React-Oberfläche.',
       'Ich habe einen Master in Software Engineering. In meiner Masterarbeit habe ich zwei Machine-Learning-Ökosysteme anhand derselben Aufgabe verglichen: ein YOLOv8m-Modell in Python und ein ML.NET-Modell in .NET, beide hinter einem gemeinsamen NestJS-Gateway und einem React-Frontend.',
       'Das beste Beispiel für meine Frontend-Arbeit ist diese Website selbst: vier Sprachen und sieben Spiele, geschrieben ohne Canvas und ohne Spielbibliothek. Zu jedem Spiel gibt es einen Text darüber, wie es gebaut ist.',
     ],
@@ -68,7 +68,7 @@ const de: Dict = {
         role: 'Backend-Entwickler',
         bullets: [
           'Backend-Services in Node.js (NestJS, Express): REST-APIs, JWT-Authentifizierung, rollenbasierte Zugriffskontrolle und Integrationen mit Drittanbietern, mit SQL- und Dokumentdatenbanken.',
-          'Dieselbe Arbeit in .NET, wo ein Kunde bereits damit arbeitet, nach Clean Architecture aufgebaut, damit die Geschäftslogik vom Framework getrennt bleibt.',
+          'Dieselbe Arbeit in .NET, nach Clean Architecture aufgebaut, damit die Geschäftslogik vom Framework getrennt bleibt.',
           'Auf AWS: S3, ECS, EC2, Lambda, Route 53 und EventBridge, für Deployments und die ereignisgetriebene Kommunikation zwischen den Services.',
         ],
       },
@@ -199,11 +199,11 @@ const de: Dict = {
           },
           {
             title: 'Der Service führt die Inferenz aus',
-            body: 'Python liest das Bild als RGB ein und übergibt es an YOLOv8m. Die geladenen Gewichte bleiben im Speicher, damit die .pt-Datei nicht bei jeder Anfrage neu gelesen wird. Die .NET-Seite konvertiert das Bild in ein MLImage und wählt das ML.NET-Modell anhand seiner Id.',
+            body: 'Python liest das Bild als RGB ein und übergibt es an YOLOv8m. Die geladenen Gewichte bleiben im Speicher, damit die .pt-Datei nicht bei jeder Anfrage neu gelesen wird. Die .NET-Seite konvertiert das Bild in ein MLImage und wählt das ML.NET-Modell anhand seiner ID.',
           },
           {
             title: 'Beide antworten in derselben Form',
-            body: 'Klasse, Score und ein Rahmen als x1, y1, x2, y2, dazu die Modell-Id, der Annotationssatz, auf dem trainiert wurde, und die ursprünglichen Bildmaße. Die .NET-Seite begrenzt ihre Koordinaten zuerst auf diese Maße, damit ein Rahmen das Bild nie verlassen kann.',
+            body: 'Klasse, Score und ein Rahmen als x1, y1, x2, y2, dazu die Modell-ID, der Annotationssatz, auf dem trainiert wurde, und die ursprünglichen Bildmaße. Die .NET-Seite begrenzt ihre Koordinaten zuerst auf diese Maße, damit ein Rahmen das Bild nie verlassen kann.',
           },
           {
             title: 'Das Frontend zeichnet es',
@@ -214,7 +214,7 @@ const de: Dict = {
         features: [
           {
             title: 'Ein Modell oder beide',
-            body: 'Ein Service allein oder beide gleichzeitig, in zwei Panels über demselben Bild. Alle vier trainierten Modelle lassen sich namentlich auswählen.',
+            body: 'Ein Service allein oder beide gleichzeitig, in zwei Panels mit demselben Bild. Alle vier trainierten Modelle lassen sich namentlich auswählen.',
           },
           {
             title: 'Eine Konfidenzschwelle, die Sie einstellen',
@@ -241,7 +241,7 @@ const de: Dict = {
         dataset: [
           'Der Datensatz entstand in Roboflow aus zwei öffentlichen Datensätzen, die geprüft und zusammengeführt wurden: 2.911 Bilder, davon 2.374 für das Training, 290 für die Validierung und 247 für den Test, automatisch ausgerichtet und auf 640x640 skaliert. Die Python-Seite bekommt ihn im YOLO-Format, die .NET-Seite im COCO-Format, weil Model Builder dieses Format für die Objekterkennung erwartet. So hat jedes Werkzeug sein Format, bei identischen Bildern und identischen Klassen.',
           'Dann kam der Teil, den ich nicht eingeplant hatte. Nach dem ersten Durchgang gab es 8.813 Annotationen, eine zweite Durchsicht brachte die Zahl auf 17.942. Mehr als die Hälfte der Objekte war also nicht gelabelt. Ein Objekt, das im Bild vorhanden ist, in den Labels aber fehlt, bringt dem Modell im Training bei, dass es Hintergrund ist, und zählt in der Auswertung als Fehler, wenn das Modell es trotzdem erkennt.',
-          'Beide Modelle wurden ausgehend von vortrainierten Gewichten 50 Epochen lang bei 640x640 trainiert. Die Parameter blieben über beide Datensatzversionen gleich, damit sich ein Unterschied in den Ergebnissen auf die Annotationsqualität zurückführen lässt und nicht auf die Konfiguration. Model Builder hört beim trainierten Modell auf, deshalb brauchte die .NET-Seite einen eigenen Evaluation-Service: Er lädt die COCO-Annotationen, erstellt Vorhersagen für den Validierungssatz und berechnet Precision, Recall, F1 und mAP@0.5 samt Konfusionsmatrizen und Precision-Recall-Kurven. Damit steht ML.NET auf derselben Grundlage wie die Ausgabe, die Ultralytics von sich aus liefert.',
+          'Beide Modelle wurden ausgehend von vortrainierten Gewichten 50 Epochen lang bei 640x640 trainiert. Die Parameter blieben über beide Datensatzversionen gleich, damit sich ein Unterschied in den Ergebnissen auf die Annotationsqualität zurückführen lässt und nicht auf die Konfiguration. Model Builder hört beim trainierten Modell auf, deshalb brauchte die .NET-Seite einen eigenen Auswertungs-Service: Er lädt die COCO-Annotationen, erstellt Vorhersagen für den Validierungssatz und berechnet Precision, Recall, F1 und mAP@0.5 samt Konfusionsmatrizen und Precision-Recall-Kurven. Damit steht ML.NET auf derselben Grundlage wie die Ausgabe, die Ultralytics von sich aus liefert.',
         ],
 
         results: {
@@ -276,7 +276,7 @@ const de: Dict = {
           'Meine Bachelorarbeit. Ein Desktop-Client übergibt einen ganzen Ordner an einen WCF-Service, der jede Datei mit AES, RC6 oder XXTEA verschlüsselt. RC6 und XXTEA habe ich nach ihrer Spezifikation selbst implementiert, statt sie aus einer Bibliothek zu übernehmen. Vor und nach jedem Durchgang wird ein SHA-512-Hash festgehalten, damit sich nachweisen lässt, dass der Hin- und Rückweg verlustfrei war. Parallel verarbeitet, dauerte ein Durchgang über 150 Dateien 44,16 statt 68,91 Sekunden.',
         metaTitle: 'Encryptix - Vuk Cvetković',
         metaDescription:
-          'Ein Projekt aus der Bachelorarbeit: ein Windows-Forms-Client und ein WCF-Service, die einen ganzen Ordner mit AES, RC6 oder XXTEA verschlüsseln, mit SHA-512-Prüfung an beiden Enden.',
+          'Ein Projekt aus der Bachelorarbeit: ein Windows-Forms-Client und ein WCF-Service, die einen ganzen Ordner mit AES, RC6 oder XXTEA verschlüsseln und den Hin- und Rückweg mit SHA-512 prüfen.',
         context: 'Bachelorarbeit, Fakultät für Elektronik in Niš',
         domain: 'Dateiverschlüsselung auf dem Desktop',
 
@@ -296,7 +296,7 @@ const de: Dict = {
 
         overview: [
           'Encryptix arbeitet mit ganzen Ordnern statt mit einzelnen Dateien. Sie wählen ein Verzeichnis, die Anwendung liest alles darin samt Unterordnern, und dann läuft eines von drei symmetrischen Verfahren über den gesamten Inhalt. Den verschlüsselten Baum, den entschlüsselten Baum und das Hash-Protokoll schreibt sie jeweils an einen Ort Ihrer Wahl.',
-          'Von den drei Verfahren kam nur eines fertig mit. AES ist die Implementierung aus der .NET-Bibliothek, wie sie jede vernünftige Anwendung verwenden würde. RC6 und XXTEA sind nach ihren Spezifikationen gebaut, und darin lag die eigentliche Arbeit: die Schlüsselexpansion, das Auffüllen der Blöcke, die Rotationen und der bewusste Ganzzahlüberlauf, auf dem XXTEA beruht.',
+          'Es sind drei Verfahren, weil nur eines davon fertig mitgeliefert wurde. AES ist die Implementierung aus der .NET-Bibliothek, wie sie jede vernünftige Anwendung verwenden würde. RC6 und XXTEA sind nach ihren Spezifikationen gebaut, und darin lag die eigentliche Arbeit: die Schlüsselexpansion, das Auffüllen der Blöcke, die Rotationen und der bewusste Ganzzahlüberlauf, auf dem XXTEA beruht.',
         ],
 
         steps: [
@@ -341,7 +341,7 @@ const de: Dict = {
           },
           {
             title: 'Ein Fortschrittsbalken, der mit der Arbeit fertig wird',
-            body: 'Während der Service arbeitet, richtet sich der Balken nach der Gesamtzahl der Bytes. Kehrt der eigentliche Aufruf zurück, füllt ihn ein Cancellation Token sofort auf, sodass er dem Lauf folgt und mit ihm fertig wird, nicht erst danach.',
+            body: 'Während der Service arbeitet, richtet sich der Balken nach der Gesamtzahl der Bytes. Kehrt der eigentliche Aufruf zurück, wird der Balken über ein Cancellation Token sofort aufgefüllt, sodass er dem Lauf folgt und mit ihm fertig wird, nicht erst danach.',
           },
           {
             title: 'Der Dateibaum vorab',
@@ -355,7 +355,7 @@ const de: Dict = {
           columns: ['Modus', 'Dateien', 'Verschlüsselung (s)', 'Entschlüsselung (s)'],
           rows: ['Sequenziell', 'Parallel'],
           notes: [
-            'Dieselben 150 Dateien, derselbe RC6-Schlüssel, dieselben Ausgabeordner, in jedem Modus ein Durchlauf. Parallel dauerte das Verschlüsseln 44,16 statt 68,91 Sekunden, das Entschlüsseln 40,39 statt 70,13 - in beide Richtungen ein Drittel weniger.',
+            'Dieselben 150 Dateien, derselbe RC6-Schlüssel, dieselben Ausgabeordner, in jedem Modus ein Durchlauf. Parallel dauerte das Verschlüsseln 44,16 statt 68,91 Sekunden, das Entschlüsseln 40,39 statt 70,13 - in beide Richtungen mehr als ein Drittel weniger.',
             'Der Gewinn kommt daher, dass die Dateien unabhängig voneinander sind: Die parallele Schleife braucht weder Sperren noch eine Reihenfolge, und keine Datei wartet auf die vorige.',
           ],
         },
@@ -412,7 +412,7 @@ const de: Dict = {
           },
           {
             title: 'Was im Klartext übertragen wird, erscheint im Klartext',
-            body: 'HTTP-Basic-Zugangsdaten sind nur base64-kodiert, nicht verschlüsselt, also dekodiert der Extraktor sie. FTP schickt Benutzername und Passwort als Klartext, also erscheinen auch sie. So zeigt die Arbeit, wie unsicher diese Protokolle sind: Die dekodierte Zeichenkette steht im Baum vor Ihnen.',
+            body: 'HTTP-Basic-Zugangsdaten sind nur base64-kodiert, nicht verschlüsselt, also dekodiert der Extraktor sie. FTP schickt Benutzername und Passwort als Klartext, also erscheinen auch sie. Genau diesen ehrlichen Nachweis wollte die Arbeit führen: keine Behauptung, dass diese Protokolle unsicher sind, sondern die dekodierte Zeichenkette, die im Baum vor Ihnen steht.',
           },
           {
             title: 'Die Ergebnisse landen in einem Baum und in Diagrammen',
@@ -476,7 +476,7 @@ const de: Dict = {
         flow: {
           entry: 'Fünf offene Endpunkte',
           entryLabel: '',
-          core: 'Geplantes Einlesen',
+          core: 'Einlesen nach Zeitplan',
           branches: [
             { title: 'Monatlich', badge: 'Allergene, Typen, Orte' },
             { title: 'Stündlich, 9 bis 12 Uhr', badge: 'Pollen, Konzentrationen' },
@@ -498,15 +498,15 @@ const de: Dict = {
           },
           {
             title: 'Das Einlesen lässt sich gefahrlos wiederholen',
-            body: 'Jeder Einlesejob prüft zuerst, welche Ids schon in der Datenbank liegen, und fügt nur die fehlenden ein. Ein stündlicher Lauf, der nichts Neues findet, schreibt also nichts, derselbe Lauf lässt sich ohne doppelte Messungen wiederholen, und das abgefragte Zeitfenster reicht eine Woche zurück. So kommt auch eine Messung an, die erst einige Tage nach der Erhebung veröffentlicht wurde.',
+            body: 'Jeder Einlesejob prüft zuerst, welche IDs schon in der Datenbank liegen, und fügt nur die fehlenden ein. Ein stündlicher Lauf, der nichts Neues findet, schreibt also nichts, derselbe Lauf lässt sich ohne doppelte Messungen wiederholen, und das abgefragte Zeitfenster reicht eine Woche zurück. So kommt auch eine Messung an, die erst einige Tage nach der Erhebung veröffentlicht wurde.',
           },
           {
             title: 'Aus Ort und Radius wird eine Auswahl von Stationen',
-            body: 'Die Koordinaten der Person und der gewählte Radius in Kilometern gehen in eine Geo-Abfrage in MongoDB. Der Radius wird dafür durch den Erdradius geteilt, weil die Kugelabfrage ihn in dieser Form erwartet. Zurück kommt jede Messstation, die nah genug liegt, um für diese Person relevant zu sein.',
+            body: 'Die Koordinaten der Person und der gewählte Radius in Kilometern gehen in eine Geo-Abfrage in MongoDB. Der Radius wird dafür durch den Erdradius geteilt, weil die Abfrage ihn im Bogenmaß erwartet. Zurück kommt jede Messstation, die nah genug liegt, um für diese Person relevant zu sein.',
           },
           {
             title: 'Aus Stationen und Datum werden die relevanten Messungen',
-            body: 'Mit diesen Stations-Ids und dem heutigen Datum werden die Pollendatensätze des Tages ausgewählt, und jeder davon enthält die Ids der zugehörigen Konzentrationen. Diese Konzentrationen werden geladen und auf die Allergene reduziert, die die Person tatsächlich ausgewählt hat. Die Antwort enthält also nur Messungen, die in der Nähe liegen und relevant sind.',
+            body: 'Mit diesen Stations-IDs und dem heutigen Datum werden die Pollendatensätze des Tages ausgewählt, und jeder davon enthält die IDs der zugehörigen Konzentrationen. Diese Konzentrationen werden geladen und auf die Allergene reduziert, die die Person tatsächlich ausgewählt hat. Die Antwort enthält also nur Messungen, die in der Nähe liegen und relevant sind.',
           },
           {
             title: 'Jede Messung bekommt eine Stufe und einen Ort',
@@ -550,7 +550,7 @@ const de: Dict = {
         },
 
         takeaway: [
-          'Was hängen geblieben ist: Offene Daten sind noch keine nutzbaren Daten. Die API liefert fünf Endpunkte, die sich gegenseitig über Ids referenzieren, Daten für das ganze Land und keine Möglichkeit, geografisch abzufragen. Der ganze Nutzen entsteht also erst beim Spiegeln und Verknüpfen. Die eigentliche Arbeit lag in den Entscheidungen, was kopiert wird, wie oft und wie ein doppelter Durchlauf harmlos bleibt.',
+          'Was hängen geblieben ist: Offene Daten sind noch keine nutzbaren Daten. Die API liefert fünf Endpunkte, die sich gegenseitig über IDs referenzieren, Daten für das ganze Land und keine Möglichkeit, geografisch abzufragen. Der ganze Nutzen entsteht also erst beim Spiegeln und Verknüpfen. Die eigentliche Arbeit lag in den Entscheidungen, was kopiert wird, wie oft und wie ein doppelter Durchlauf harmlos bleibt.',
           'Außerdem muss die Antwort kommen, ohne dass jemand danach fragt. Wer eine Allergie hat, öffnet keine App, um nachzusehen. Er will benachrichtigt werden, in einem Radius und Intervall, die er einmal einstellt. Erst Push-Nachrichten auf einem Backend, das nach Zeitplan arbeitet, bringen die öffentlichen Daten an dem Tag zu einer Person, an dem es darauf ankommt.',
         ],
       },
@@ -578,7 +578,7 @@ const de: Dict = {
     index: {
       metaTitle: 'Spiele - Vuk Cvetković',
       metaDescription:
-        'Browserspiele von Vuk Cvetković: 2048, Minesweeper, Memory in zwölf Leveln, Schiffe versenken gegen vier Gegner, ein Spiel, in dem Welten zu größeren verschmelzen, ein Zauberwürfel in 3D von 2×2 bis 5×5 und Vier in einer Reihe gegen einen Großmeister. Jedes hat eine eigene Seite.',
+        'Browserspiele von Vuk Cvetković: 2048, Minesweeper, Paare finden in zwölf Leveln, Schiffe versenken gegen vier Gegner, ein Spiel, in dem Welten zu größeren verschmelzen, ein Zauberwürfel in 3D von 2×2 bis 5×5 und Vier in einer Reihe gegen einen Großmeister. Jedes hat eine eigene Seite.',
       heading: 'Spiele',
       intro:
         'Spiele, die mehr als eine Runde wert sind. Jedes hat eine eigene Seite, und darunter steht für alle, die es interessiert, wie es gebaut ist.',
@@ -590,11 +590,11 @@ const de: Dict = {
 
         /** One line, for the card on the index. */
         tagline:
-          'Schiebe das Brett, und jede Kachel rutscht so weit wie möglich. Aus zwei gleichen Zahlen wird eine doppelt so große, bis hinauf zu 2048.',
+          'Schieben Sie das Spielfeld, und jede Kachel rutscht so weit wie möglich. Aus zwei gleichen Zahlen wird eine doppelt so große, bis hinauf zu 2048.',
 
         metaDescription:
-          "Das Kachelspiel: das Brett schieben, gleiche Zahlen verschmelzen und eine einzelne Kachel mit 2048 erreichen.",
-        lead: "Schiebe das Brett in eine beliebige Richtung, und jede Kachel rutscht so weit wie möglich. Zwei gleiche Zahlen verschmelzen zu einer doppelt so großen, und das Ziel ist eine einzelne Kachel mit 2048.",
+          "Das Kachelspiel: das Spielfeld schieben, gleiche Zahlen verschmelzen und eine einzelne Kachel mit 2048 erreichen.",
+        lead: "Schieben Sie das Spielfeld in eine beliebige Richtung, und jede Kachel rutscht so weit wie möglich. Zwei gleiche Zahlen verschmelzen zu einer doppelt so großen, und das Ziel ist eine einzelne Kachel mit 2048.",
 
         score: "Punkte",
         best: "Bestwert",
@@ -605,13 +605,13 @@ const de: Dict = {
 
         won: {
           title: "2048",
-          body: "Die Kachel liegt auf dem Brett. Hier muss aber nicht Schluss sein - das Spiel läuft, solange sich etwas bewegen lässt.",
+          body: "Die Kachel liegt auf dem Spielfeld. Hier muss aber nicht Schluss sein - das Spiel läuft, solange sich etwas bewegen lässt.",
           keepGoing: "Weiterspielen",
         },
 
         over: {
           title: "Kein Zug mehr",
-          body: "Das Brett ist voll, und keine zwei benachbarten Kacheln passen zusammen. Einen Zug kannst du noch zurücknehmen, falls es am letzten lag.",
+          body: "Das Spielfeld ist voll, und keine zwei benachbarten Kacheln passen zusammen. Einen Zug können Sie noch zurücknehmen, falls es am letzten lag.",
           restart: "Nochmal spielen",
         },
 
@@ -619,9 +619,9 @@ const de: Dict = {
           label: "So wird gespielt",
           items: [
             {
-              title: "Schiebe das ganze Brett",
+              title: "Das ganze Spielfeld schieben",
               description:
-                "Pfeiltasten oder WASD auf der Tastatur, am Smartphone ein Wisch in eine beliebige Richtung. Jede Kachel rutscht in einem Zug so weit wie möglich, nicht nur ein Feld.",
+                "Pfeiltasten oder WASD auf der Tastatur, am Smartphone eine Wischbewegung in eine beliebige Richtung. Jede Kachel rutscht in einem Zug so weit wie möglich, nicht nur ein Feld.",
             },
             {
               title: "Gleiche Zahlen verschmelzen",
@@ -634,9 +634,9 @@ const de: Dict = {
                 "Sie erscheint auf einem freien Feld und ist in neun von zehn Fällen eine 2. Ein Schieben, das nichts verändert, zählt nicht als Zug: Es kommt keine neue Kachel dazu, und der Versuch kostet nichts.",
             },
             {
-              title: "Such dir eine Ecke und bleib dort",
+              title: "Eine Ecke wählen und dort bleiben",
               description:
-                "Halte die größte Kachel in einer Ecke und schiebe nie von ihr weg. Der größte Teil des Spiels besteht darin, den Zug nicht zu machen, der sie dort herausholt.",
+                "Halten Sie die größte Kachel in einer Ecke und schieben Sie nie von ihr weg. Der größte Teil des Spiels besteht darin, den Zug nicht zu machen, der sie dort herausholt.",
             },
           ],
         },
@@ -645,9 +645,9 @@ const de: Dict = {
           label: "Wie es gebaut ist",
           paragraphs: [
             "Kein Canvas und keine Spielbibliothek. Eine Kachel ist ein Element mit zwei benutzerdefinierten Eigenschaften, ihre Position ist ein translate relativ zu ihrer eigenen Größe, und das Gleiten übernimmt der Browser beim Compositing. Daher läuft es so flüssig: Ein Zug ändert eine Transformation und sonst nichts, und nichts davon geht durch das Layout.",
-            "Außerdem behält jede Kachel ihr Element, solange es sie gibt. Das Brett wird nie aus dem Zustand neu gerendert: Ein Zug ändert nur die Zahlen auf Knoten, die schon da sind. Deshalb sieht man eine Kachel ihren Weg zurücklegen, statt dass sie verschwindet und anderswo wieder auftaucht.",
-            "Die Zahlen sind Text, also so scharf wie der Rest der Seite, und sie wachsen mit der Schriftgröße, die der Leser eingestellt hat. Die Farben sind Tokens im selben Stylesheet wie alles andere, deshalb folgt das Brett dem Design-Schalter in der Kopfzeile.",
-            "Alle drei Eingabewege laufen durch eine einzige Funktion, damit Taste, Wisch und Tipp nicht allmählich leicht Verschiedenes bedeuten. Die Pfeiltasten gehören dem Brett nur, solange es sichtbar ist, und ein Zug, der kommt, bevor der vorige fertig ist, wird vorgemerkt statt verworfen. Deshalb verliert man auch beim schnellen Spielen nie einen Zug.",
+            "Außerdem behält jede Kachel ihr Element, solange es sie gibt. Das Spielfeld wird nie aus dem Zustand neu gerendert: Ein Zug ändert nur die Zahlen auf Knoten, die schon da sind. Deshalb sieht man eine Kachel ihren Weg zurücklegen, statt dass sie verschwindet und anderswo wieder auftaucht.",
+            "Die Zahlen sind Text, also so scharf wie der Rest der Seite, und sie wachsen mit der Schriftgröße, die der Leser eingestellt hat. Die Farben sind Tokens im selben Stylesheet wie alles andere, deshalb folgt das Spielfeld dem Design-Schalter in der Kopfzeile.",
+            "Alle drei Eingabewege laufen durch eine einzige Funktion, damit Tastendruck, Wischen und Ziehen mit der Maus nicht mit der Zeit leicht Verschiedenes bedeuten. Die Pfeiltasten gehören dem Spielfeld nur, solange es sichtbar ist, und ein Zug, der kommt, bevor der vorige fertig ist, wird vorgemerkt statt verworfen. Deshalb verliert man auch beim schnellen Spielen nie einen Zug.",
           ],
         },
       },
@@ -656,13 +656,13 @@ const de: Dict = {
         name: 'Minesweeper',
 
         tagline:
-          'Öffne jedes Feld, das keine Mine ist. Jede Zahl gibt an, wie viele Minen an ihr Feld grenzen, und alles andere ergibt sich daraus.',
+          'Öffnen Sie jedes Feld, das keine Mine ist. Jede Zahl gibt an, wie viele Minen an ihr Feld grenzen, und alles andere ergibt sich daraus.',
 
         metaDescription:
           'Minesweeper im Browser, in den Stufen Anfänger, Fortgeschritten und Experte, und der erste Klick ist immer sicher.',
-        lead: 'Öffne jedes Feld, das keine Mine ist. Eine Zahl sagt, wie viele der acht Felder um sie herum vermint sind, und alles Weitere folgt daraus. Drei Bretter in den Größen des Originals, und der erste Klick ist immer sicher.',
+        lead: 'Öffnen Sie jedes Feld, das keine Mine ist. Eine Zahl sagt, wie viele der acht Felder um sie herum vermint sind, und alles Weitere folgt daraus. Drei Spielfelder in den Größen des Originals, und der erste Klick ist immer sicher.',
 
-        boards: 'Brett',
+        boards: 'Spielfeld',
         levels: {
           beginner: 'Anfänger',
           intermediate: 'Fortgeschritten',
@@ -688,7 +688,7 @@ const de: Dict = {
         won: {
           title: 'Geräumt',
           body: 'Jedes Feld, das keine Mine war, ist offen.',
-          record: 'Eine neue Bestzeit auf diesem Brett.',
+          record: 'Eine neue Bestzeit auf diesem Spielfeld.',
           again: 'Nochmal spielen',
         },
 
@@ -704,7 +704,7 @@ const de: Dict = {
             {
               title: 'Der erste Klick ist sicher',
               description:
-                'Die Minen werden erst danach gelegt, und zwar so, dass die gedrückte Stelle frei bleibt. Der erste Zug kann also nicht verlieren und öffnet immer eine freie Fläche. Fang irgendwo an.',
+                'Die Minen werden erst danach gelegt, und zwar so, dass die gedrückte Stelle frei bleibt. Der erste Zug kann also nicht verlieren und öffnet immer eine freie Fläche. Fangen Sie irgendwo an.',
             },
             {
               title: 'Eine Zahl zählt ihre Nachbarn',
@@ -712,14 +712,14 @@ const de: Dict = {
                 'Sie gibt an, wie viele der acht angrenzenden Felder eine Mine enthalten. Ein Feld ohne Minen ringsum öffnet mit einem Druck die ganze Fläche um sich herum.',
             },
             {
-              title: 'Markiere, was du herausgefunden hast',
+              title: 'Erkannte Minen markieren',
               description:
-                'Rechtsklick am Rechner, F auf der Tastatur, langes Drücken am Smartphone. Langes Drücken setzt immer nur eine Fahne, ein langsamer Finger kann also nicht gleich wieder entfernen, was er gerade gesetzt hat. Entfernt wird im Fahnenmodus, und den willst du ohnehin, wenn mehrere Fahnen auf einmal anstehen. Der Zähler zeigt Minen minus Fahnen.',
+                'Rechtsklick am Computer, F auf der Tastatur, langes Drücken am Smartphone. Langes Drücken setzt immer nur eine Fahne, ein langsamer Finger kann also nicht gleich wieder entfernen, was er gerade gesetzt hat. Entfernt wird im Fahnenmodus, und den wollen Sie ohnehin, wenn mehrere Fahnen auf einmal anstehen. Der Zähler zeigt Minen minus Fahnen.',
             },
             {
-              title: 'Drücke auf eine erfüllte Zahl',
+              title: 'Auf eine erfüllte Zahl drücken',
               description:
-                'Sobald um eine Zahl so viele Fahnen liegen, wie sie angibt, öffnet ein Druck auf sie den Rest ihrer Umgebung auf einmal, und die mittlere Maustaste macht dasselbe. Hältst du die Taste gedrückt, erscheinen die Felder, die aufgehen würden, schon eingedrückt, und du siehst alle acht, bevor du dich festlegst. Darin liegt das Tempo dieses Spiels, und die meisten entdecken es nie.',
+                'Sobald um eine Zahl so viele Fahnen liegen, wie sie angibt, öffnet ein Druck auf sie den Rest ihrer Umgebung auf einmal, und die mittlere Maustaste macht dasselbe. Wenn Sie die Taste gedrückt halten, erscheinen die Felder, die aufgehen würden, schon eingedrückt, und Sie sehen alle acht, bevor Sie sich festlegen. Darin liegt das Tempo dieses Spiels, und die meisten entdecken es nie.',
             },
           ],
         },
@@ -727,23 +727,23 @@ const de: Dict = {
         close: {
           label: 'Wie es gebaut ist',
           paragraphs: [
-            'Kein Canvas und keine Spielbibliothek, und anders als bei 2048 auch keine Bewegung. Es gibt keine Schleife und nichts, was sich gerade bewegt: Ein Feld ist ein Button, der seinen Zustand wechselt oder eben nicht, und in der Expertengröße besteht das Brett aus vierhundertachtzig davon. Zur Laufzeit kostet es eine Klasse auf einem Element.',
+            'Kein Canvas und keine Spielbibliothek, und anders als bei 2048 gleitet auch nichts. Es gibt keine Schleife und nichts, was gerade unterwegs ist: Ein Feld ist ein Button, der seinen Zustand wechselt oder eben nicht, und in der Expertengröße besteht das Spielfeld aus vierhundertachtzig davon. Zur Laufzeit kostet es eine Klasse auf einem Element.',
             'Die Minen werden erst beim ersten Druck gelegt, nicht schon zu Beginn, und zwar außerhalb des gedrückten Feldes und seiner acht Nachbarn. Wer die Minen vorab verteilt, muss entweder den ersten Zug verlieren lassen, was ein Münzwurf ist und kein Spiel, oder so lange neu verteilen, bis das nicht mehr passiert, und das verzerrt unbemerkt die Wahrscheinlichkeiten auf dem restlichen Feld. Werden die Minen spät gelegt, bleibt das Feld fair, und der erste Zug öffnet immer eine ganze Fläche.',
-            'Eine Fläche wird über eine Warteschlange geöffnet, nicht rekursiv, denn eine Rekursion mit vierhundert Ebenen darf ein Smartphone zu Recht verweigern. Die Warteschlange liefert der Animation das Timing gleich mit: Der Ring, auf dem ein Feld gefunden wurde, ist sein Abstand zum gedrückten Feld, also wartet jedes Feld entsprechend viele Schritte, bevor es aufgeht. So breitet sich das Öffnen nach außen aus, statt dass das ganze Brett auf einmal umspringt, und das kostet eine benutzerdefinierte Eigenschaft und eine Verzögerung.',
-            'Das Brett ist ein echtes Grid: Zeilen, Zellen, eine Zeilen- und Spaltenzahl und immer genau ein Feld in der Tabulatorreihenfolge, sodass man es mit den Pfeiltasten durchläuft statt mit der Tabulatortaste. 2048 muss vor dem Screenreader verborgen und über eine Live-Region beschrieben werden, weil sechzehn Kacheln, die sich bei jedem Tastendruck neu schreiben, nicht lesbar sind. Ein Minenfeld ist eine Tabelle, die stillhält und wartet, und genau dafür ist ein Grid da.',
+            'Eine Fläche wird über eine Warteschlange geöffnet, nicht rekursiv, denn eine Rekursion mit vierhundert Ebenen darf ein Smartphone zu Recht verweigern. Die Warteschlange liefert der Animation das Timing gleich mit: Der Ring, auf dem ein Feld gefunden wurde, ist sein Abstand zum gedrückten Feld, also wartet jedes Feld entsprechend viele Schritte, bevor es aufgeht. So breitet sich das Öffnen nach außen aus, statt dass das ganze Spielfeld auf einmal umspringt, und das kostet eine benutzerdefinierte Eigenschaft und eine Verzögerung.',
+            'Das Spielfeld ist ein echtes Grid: Zeilen, Zellen, eine Zeilen- und Spaltenzahl und immer genau ein Feld in der Tabulatorreihenfolge, sodass man es mit den Pfeiltasten durchläuft statt mit der Tabulatortaste. 2048 muss vor dem Screenreader verborgen und über eine Live-Region beschrieben werden, weil sechzehn Kacheln, die sich bei jedem Tastendruck neu schreiben, nicht lesbar sind. Ein Minenfeld ist eine Tabelle, die stillhält und wartet, und genau dafür ist ein Grid da.',
           ],
         },
       },
 
       memory: {
-        name: 'Memory',
+        name: 'Paare finden',
 
         tagline:
-          'Deck zwei Karten auf und merk dir, was darunter war. Zwölf Level, von vier bis sechzig Karten, und mit jedem geschafften Level ein größeres Brett.',
+          'Decken Sie zwei Karten auf und merken Sie sich, was darunter war. Zwölf Level, von vier bis sechzig Karten, und mit jedem geschafften Level ein größeres Spielfeld.',
 
         metaDescription:
-          'Memory im Browser: zwölf Level von vier bis sechzig Karten, bis zu drei Sterne pro Brett und ein freies Spiel, in dem jedes Brett von Anfang an offen ist.',
-        lead: 'Deck immer zwei Karten auf und finde jedes Paar. Zwölf Level, jedes Brett größer als das vorige, von vier bis zu sechzig Karten, das größte mit dreißig Bildern. Schaff ein Level, um das nächste freizuschalten, oder spring im freien Spiel direkt zu jeder Größe.',
+          'Paare finden im Browser: zwölf Level von vier bis sechzig Karten, bis zu drei Sterne pro Spielfeld und ein freies Spiel, in dem jedes Spielfeld von Anfang an offen ist.',
+        lead: 'Decken Sie immer zwei Karten auf und finden Sie jedes Paar. Zwölf Level, jedes Spielfeld größer als das vorige, von vier bis zu sechzig Karten, das größte mit dreißig Bildern. Schaffen Sie ein Level, um das nächste freizuschalten, oder springen Sie im freien Spiel direkt zu jeder Größe.',
 
         modes: 'Modus',
         modeNames: {
@@ -751,7 +751,7 @@ const de: Dict = {
           free: 'Freies Spiel',
         },
 
-        boards: 'Wähle ein Level',
+        boards: 'Level wählen',
         level: 'Level',
 
         locked: 'Gesperrt',
@@ -763,7 +763,7 @@ const de: Dict = {
         best: 'Wenigste Züge',
         goal: 'Sterne',
         newGame: 'Neues Spiel',
-        hint: 'Drück auf eine Karte, um sie umzudrehen, dann auf eine zweite. Ein Paar bleibt offen liegen, alles andere dreht sich zurück. Mit den Pfeiltasten bewegst du dich über den Tisch, Enter dreht eine Karte um.',
+        hint: 'Drücken Sie auf eine Karte, um sie umzudrehen, dann auf eine zweite. Ein Paar bleibt offen liegen, alles andere dreht sich zurück. Mit den Pfeiltasten bewegen Sie sich über den Tisch, Enter dreht eine Karte um.',
 
         gridLabel: 'Karten',
         cells: {
@@ -814,8 +814,8 @@ const de: Dict = {
           record: 'So wenige Züge wie noch nie auf diesem Level.',
           final: 'Das war das letzte Level. Was jetzt noch bleibt: drei Sterne auf allen zwölf.',
           next: 'Nächstes Level',
-          bigger: 'Nächstes Brett',
-          again: 'Noch einmal',
+          bigger: 'Nächstes Spielfeld',
+          again: 'Nochmal spielen',
         },
 
         how: {
@@ -824,34 +824,34 @@ const de: Dict = {
             {
               title: 'Zwei Karten pro Zug',
               description:
-                'Drück auf eine Karte, um sie umzudrehen, dann auf eine zweite. Zeigen beide dasselbe Bild, bleiben sie offen liegen. Wenn nicht, bleiben sie lange genug offen, dass du sie dir merken kannst, und drehen sich dann zurück. Drückst du vorher auf die nächste Karte, drehen sie sich sofort zurück.',
+                'Drücken Sie auf eine Karte, um sie umzudrehen, dann auf eine zweite. Zeigen beide dasselbe Bild, bleiben sie offen liegen. Wenn nicht, bleiben sie lange genug offen, dass Sie sich die Karten merken können, und drehen sich dann zurück. Wenn Sie vorher auf die nächste Karte drücken, drehen sie sich sofort zurück.',
             },
             {
               title: 'Jeder Zug zählt',
               description:
-                'Zwei Karten sind ein Zug, Paar oder nicht. Drei Sterne gibt es für ein Brett, das etwa so schnell abgeräumt ist, wie ein perfektes Gedächtnis es schaffen würde, zwei für höchstens anderthalbmal so viele Züge und einen dafür, dass du es schaffst. Die Sterne über dem Tisch erlöschen, sobald du eine Marke überschreitest.',
+                'Zwei Karten sind ein Zug, Paar oder nicht. Drei Sterne gibt es für ein Spielfeld, das etwa so schnell abgeräumt ist, wie ein perfektes Gedächtnis es schaffen würde, zwei für höchstens anderthalbmal so viele Züge und einen dafür, dass Sie es schaffen. Die Sterne, um die Sie spielen, erlöschen, sobald Sie eine Marke überschreiten.',
             },
             {
               title: 'Zwölf Level, jedes größer',
               description:
-                'Von zwei mal zwei bis zehn mal sechs. Ein geschafftes Level schaltet das nächste frei, und für jedes wird deine niedrigste Zugzahl gespeichert. Die ersten fünf verwenden jeweils nur einen Teil des Stapels, Obst, Natur oder Gegenstände, und ab dem sechsten sind alle dreißig Bilder im Spiel.',
+                'Von zwei mal zwei bis zehn mal sechs. Ein geschafftes Level schaltet das nächste frei, und für jedes wird Ihre niedrigste Zugzahl gespeichert. Die ersten fünf verwenden jeweils nur einen Teil des Stapels, Obst, Natur oder Gegenstände, und ab dem sechsten sind alle dreißig Bilder im Spiel.',
             },
             {
-              title: 'Oder spring direkt weiter',
+              title: 'Oder direkt weiterspringen',
               description:
-                'Im freien Spiel sind alle Bretter auf einmal offen, ohne Sterne und ohne Sperren. Derselbe Stapel und dieselben Regeln, für die Momente, in denen du gleich den großen Tisch willst.',
+                'Im freien Spiel sind alle Spielfelder auf einmal offen, ohne Sterne und ohne Sperren. Derselbe Stapel und dieselben Regeln, für die Momente, in denen Sie gleich den großen Tisch wollen.',
             },
           ],
         },
 
         close: {
-          label: 'So ist es gebaut',
+          label: 'Wie es gebaut ist',
           paragraphs: [
-            'Kein Canvas und keine Spielbibliothek, wie bei den anderen auch. Eine Karte ist ein Button mit zwei Seiten, und das Umdrehen ist eine Transition auf einer einzigen Eigenschaft: Die Ebene mit beiden Seiten dreht sich um 180 Grad um ihre senkrechte Achse, jede Seite verbirgt ihre eigene Rückseite, und der Browser zeigt die, die dir zugewandt ist. Die Drehung schießt ein paar Grad über das Ziel hinaus und pendelt sich dann ein. Dadurch wirkt die Karte, als hätte sie Gewicht, und nicht wie ein Quadrat, das sich dreht. Jede Karte bringt ihre eigene Perspektive mit, passend zu ihrer Größe, sodass sich eine Karte auf dem kleinsten Brett und eine auf dem größten mit derselben räumlichen Tiefe drehen.',
+            'Kein Canvas und keine Spielbibliothek, wie bei den anderen auch. Eine Karte ist ein Button mit zwei Seiten, und das Umdrehen ist eine Transition auf einer einzigen Eigenschaft: Die Ebene mit beiden Seiten dreht sich um 180 Grad um ihre senkrechte Achse, jede Seite verbirgt ihre eigene Rückseite, und der Browser zeigt die, die Ihnen zugewandt ist. Die Drehung schießt ein paar Grad über das Ziel hinaus und pendelt sich dann ein. Dadurch wirkt die Karte, als hätte sie Gewicht, und nicht wie ein Quadrat, das sich dreht. Jede Karte bringt ihre eigene Perspektive mit, passend zu ihrer Größe, sodass sich eine Karte auf dem kleinsten Spielfeld und eine auf dem größten mit derselben räumlichen Tiefe drehen.',
             'Die dreißig Bilder werden gezeichnet, nicht heruntergeladen: ein Sprite-Sheet in der Seite, ein Symbol pro Bild, und jede Kartenseite verweist auf eines davon. Jedes Bild besteht aus flachen Farben in drei Tönen, der Farbe selbst, einem Glanzlicht zur Lichtseite hin und einem Schatten auf der abgewandten Seite, auf einem eigenen Hintergrund. Die Bilder behalten ihre Farben in beiden Designs, nur die Hintergründe folgen der Seite, sodass ein im hellen Design gemerkter Apfel im dunklen derselbe Apfel ist. Die Klänge entstehen ebenfalls im Browser, aus ein paar Oszillatoren und gefiltertem Rauschen, es gibt also auch keine Audiodatei auf der Seite.',
-            'Eine Karte weiß erst, was sie ist, wenn sie umgedreht wird. Der verdeckte Tisch in der Seite enthält keine einzige Lösung: Die Vorderseite jeder Karte verweist auf nichts, und das Bild wird erst eingesetzt, wenn sie sich umdreht. Der Stapel wird einmal pro Brett gemischt und liegt nur im Spiel selbst, wo die Seite ihn nicht auslesen kann.',
-            'Die Sterngrenzen sind gemessen, nicht ausgedacht. Ein Spieler mit perfektem Gedächtnis, der nie eine schon gesehene Karte umdreht, außer sie vervollständigt ein Paar, hat auf jedem Brett zweihunderttausend Partien gespielt. Drei Sterne gibt es für die Zugzahl, die er in neun von zehn Partien geschafft hat. Sein Schnitt lag bei 1,61 Zügen pro Paar. Das ist der bekannte Wert für dieses Spiel, und daran wurde die Simulation überprüft.',
-            'Das Brett ist so bemessen, dass es auf den Bildschirm passt, denn ein Memory-Brett, das man scrollen muss, kann man nicht überblicken. Auf einem hochkant gehaltenen Smartphone dreht es sich um 90 Grad, aus zehn Karten nebeneinander werden sechs, und keine einzige Karte wandert dafür: Das Grid füllt sich spaltenweise statt zeilenweise, die Pfeiltasten tauschen passend ihre Achsen, und ein Screenreader liest weiter dieselbe Tabelle.',
+            'Eine Karte weiß erst, was sie ist, wenn sie umgedreht wird. In der Seite enthält der Tisch mit den verdeckten Karten keine einzige Lösung: Die Vorderseite jeder Karte verweist auf nichts, und das Bild wird erst eingesetzt, wenn sie sich umdreht. Der Stapel wird einmal pro Spielfeld gemischt und liegt nur im Spiel selbst, wo die Seite ihn nicht auslesen kann.',
+            'Die Sterngrenzen sind gemessen, nicht ausgedacht. Ein Spieler mit perfektem Gedächtnis, der nie eine schon gesehene Karte umdreht, außer sie vervollständigt ein Paar, hat auf jedem Spielfeld zweihunderttausend Partien gespielt. Drei Sterne gibt es für die Zugzahl, die er in neun von zehn Partien geschafft hat. Sein Schnitt lag bei 1,61 Zügen pro Paar. Das ist der bekannte Wert für dieses Spiel, und daran wurde die Simulation überprüft.',
+            'Das Spielfeld ist so bemessen, dass es auf den Bildschirm passt, denn ein Spielfeld, das man scrollen muss, kann man nicht überblicken. Auf einem hochkant gehaltenen Smartphone dreht es sich um 90 Grad, aus zehn Karten nebeneinander werden sechs, und keine einzige Karte wandert dafür: Das Grid füllt sich spaltenweise statt zeilenweise, die Pfeiltasten tauschen passend ihre Achsen, und ein Screenreader liest weiter dieselbe Tabelle.',
           ],
         },
       },
@@ -860,18 +860,18 @@ const de: Dict = {
         name: 'Akkretion',
 
         tagline:
-          'Lass einen Himmelskörper auf einen anderen fallen. Zwei gleiche verschmelzen zum nächstgrößeren, vom Mond bis hinauf zur Sonne.',
+          'Lassen Sie einen Himmelskörper auf einen anderen fallen. Zwei gleiche verschmelzen zum nächstgrößeren, vom Mond bis hinauf zur Sonne.',
 
         metaDescription:
           'Ein Merge-Spiel im Browser: Himmelskörper fallen lassen, und zwei gleiche werden zum nächstgrößeren, vom Mond bis zur Sonne.',
-        lead: 'Lass einen Himmelskörper fallen. Zwei gleiche verschmelzen zum nächstgrößeren, vom Mond über die Planeten bis zur Sonne, und der Raum füllt sich, ob du bereit bist oder nicht.',
+        lead: 'Lassen Sie einen Himmelskörper fallen. Zwei gleiche verschmelzen zum nächstgrößeren, vom Mond über die Planeten bis zur Sonne, und der Raum füllt sich, ob Sie bereit sind oder nicht.',
 
         score: 'Punkte',
         best: 'Bestwert',
         next: 'Als Nächstes',
         newGame: 'Neues Spiel',
         hint: 'Zum Zielen bewegen, zum Fallenlassen drücken. Mit den Pfeiltasten zielen, mit der Leertaste fallen lassen.',
-        sequence: 'Die Reihe, von der kleinsten zur größten',
+        sequence: 'Die Reihe, vom kleinsten zum größten',
 
         planets: [
           'Mond',
@@ -933,20 +933,20 @@ const de: Dict = {
         name: 'Schiffe versenken',
 
         tagline:
-          'Verstecke fünf Schiffe und finde die des Gegners zuerst. Vier Gegner, vom zufälligen Schützen bis zu einem, der jede Aufstellung zählt, die für deine Flotte noch möglich ist.',
+          'Verstecken Sie fünf Schiffe und finden Sie die des Gegners zuerst. Vier Gegner, von einem, der wahllos schießt, bis zu einem, der jede Aufstellung zählt, die für Ihre Flotte noch möglich ist.',
 
         metaDescription:
-          'Schiffe versenken im Browser, gegen vier Gegner: die klassische Flotte auf einem Feld von zehn mal zehn und ein Gegner, der jede Aufstellung zählt, die die bisherigen Schüsse noch zulassen.',
-        lead: 'Verstecke fünf Schiffe und finde die gegnerischen, bevor der Gegner deine findet. Geschossen wird abwechselnd, ein Schuss pro Zug, und die Schwierigkeit hängt allein vom gewählten Gegner ab: Der schwächste schießt irgendwohin, wo er noch nicht war, der stärkste zählt jede Aufstellung, die für deine Flotte noch möglich ist, und schießt auf das Feld, das in den meisten davon vorkommt.',
+          'Schiffe versenken im Browser, gegen vier Gegner: die klassische Flotte auf einem Spielfeld mit zehn mal zehn Feldern und ein Gegner, der jede Aufstellung zählt, die die bisherigen Schüsse noch zulassen.',
+        lead: 'Verstecken Sie fünf Schiffe und finden Sie die gegnerischen, bevor der Gegner Ihre findet. Geschossen wird abwechselnd, ein Schuss pro Zug, und die Schwierigkeit hängt allein vom gewählten Gegner ab: Der schwächste schießt irgendwohin, wo er noch nicht war, der stärkste zählt jede Aufstellung, die für Ihre Flotte noch möglich ist, und schießt auf das Feld, das in den meisten davon vorkommt.',
 
         /** Ränge statt Adjektive: "leicht" und "schwer" sagen, wie es für dich
          *  ausgeht, ein Rang sagt, wer gegenüber sitzt, und das ist es, was
          *  gewählt wird. */
-        opponents: 'Wähle deinen Gegner',
+        opponents: 'Gegner wählen',
         levels: {
           sailor: {
             name: 'Matrose',
-            note: 'Schießt zufällig. Braucht etwa 95 Schüsse für ein Feld, gegen ihn zu verlieren ist also richtig schwer.',
+            note: 'Schießt zufällig. Braucht etwa 95 Schüsse für die ganze Flotte, gegen ihn zu verlieren ist also richtig schwer.',
           },
           gunner: {
             name: 'Kanonier',
@@ -954,11 +954,11 @@ const de: Dict = {
           },
           captain: {
             name: 'Kapitän',
-            note: 'Sucht das Feld systematisch ab. Etwa 50 Schüsse, ein fairer Kampf.',
+            note: 'Sucht das Spielfeld systematisch ab. Etwa 50 Schüsse, ein fairer Kampf.',
           },
           admiral: {
             name: 'Admiral',
-            note: 'Etwa 45 Schüsse, nah am besten Wert, der je erreicht wurde. Rechne mit einer Niederlage.',
+            note: 'Etwa 45 Schüsse, nah am besten Wert, der je erreicht wurde. Rechnen Sie mit einer Niederlage.',
           },
         },
 
@@ -975,7 +975,7 @@ const de: Dict = {
         /** Die Überschrift über jedem Feld, und der Name des Rasters selbst. */
         sides: {
           enemy: 'Gegnerische Gewässer',
-          own: 'Deine Flotte',
+          own: 'Ihre Flotte',
         },
 
         /** Was ein Feld sagt, wenn darauf nichts zu lesen ist. */
@@ -994,25 +994,25 @@ const de: Dict = {
         messages: {
           hit: 'Treffer.',
           miss: 'Daneben.',
-          sunk: '{ship} sinkt.',
+          sunk: '{ship} versenkt.',
           waiting: 'Der Gegner zielt.',
-          ready: 'Du bist dran.',
+          ready: 'Sie sind dran.',
         },
 
         setupHint:
-          'Deine Flotte liegt schon im Wasser. Drücke auf ein Schiff, um es aufzunehmen, und auf das Wasser, um es abzusetzen. Drehen kannst du es vorher.',
-        hint: 'Drücke auf ein Feld in den gegnerischen Gewässern, um zu schießen. Mit den Pfeiltasten bewegst du dich über ein Spielfeld, Enter schießt, und R dreht ein Schiff beim Setzen.',
+          'Ihre Flotte liegt schon im Wasser. Drücken Sie auf ein Schiff, um es aufzunehmen, und auf das Wasser, um es abzusetzen. Drehen können Sie es vorher.',
+        hint: 'Drücken Sie auf ein Feld in den gegnerischen Gewässern, um zu schießen. Mit den Pfeiltasten bewegen Sie sich über ein Spielfeld, Enter schießt, und R dreht ein Schiff beim Setzen.',
 
         won: {
           title: 'Die gegnerische Flotte ist versenkt',
-          body: 'Alle fünf versenkt, und deine Flotte war schneller.',
+          body: 'Alle fünf versenkt, und Ihre Flotte war schneller.',
           record: 'So wenige Schüsse wie noch nie gegen diesen Gegner.',
-          again: 'Noch einmal',
+          again: 'Nochmal spielen',
         },
 
         lost: {
-          title: 'Deine Flotte ist versenkt',
-          body: 'Die gegnerischen Schiffe werden dort gezeigt, wo sie lagen, damit du siehst, wonach du gesucht hast.',
+          title: 'Ihre Flotte ist versenkt',
+          body: 'Die gegnerischen Schiffe werden dort gezeigt, wo sie lagen, damit Sie sehen, wonach Sie gesucht haben.',
           again: 'Nochmal versuchen',
         },
 
@@ -1020,14 +1020,14 @@ const de: Dict = {
           label: 'So wird gespielt',
           items: [
             {
-              title: 'Setze fünf Schiffe ins Wasser',
+              title: 'Fünf Schiffe ins Wasser setzen',
               description:
-                'Beim Öffnen der Seite wird dir sofort eine Flotte aufgestellt, du kannst also gleich loslegen. Drücke auf ein Schiff, um es aufzunehmen, dreh es, und drücke auf ein Feld, um es abzusetzen. Schiffe dürfen sich berühren: Das ist die Standardregel und die, die am wenigsten verrät.',
+                'Beim Öffnen der Seite wird Ihnen sofort eine Flotte aufgestellt, Sie können also gleich loslegen. Drücken Sie auf ein Schiff, um es aufzunehmen, drehen Sie es, und drücken Sie auf ein Feld, um es abzusetzen. Schiffe dürfen sich berühren: Das ist die Standardregel und die, die am wenigsten verrät.',
             },
             {
               title: 'Ein Schuss pro Seite, abwechselnd',
               description:
-                'Ein Treffer bringt keinen zweiten Schuss, auf keiner Seite. Du schießt zuerst, der Gegner antwortet, und vorbei ist es, sobald bei einer Flotte alle siebzehn Felder getroffen sind.',
+                'Ein Treffer bringt keinen zweiten Schuss, auf keiner Seite. Sie schießen zuerst, der Gegner antwortet, und vorbei ist es, sobald bei einer Flotte alle siebzehn Felder getroffen sind.',
             },
             {
               title: 'Ein Treffer ist eine Spur',
@@ -1035,9 +1035,9 @@ const de: Dict = {
                 'Da liegt etwas, und es erstreckt sich in eine von vier Richtungen. Zwei Treffer in einer Reihe legen die Richtung fest, und bis das Schiff sinkt, lohnen sich nur noch die Felder an den beiden Enden dieser Reihe.',
             },
             {
-              title: 'Wähle, gegen wen du spielst',
+              title: 'Den Gegner wählen',
               description:
-                'Der Matrose braucht etwa fünfundneunzig Schüsse für ein Feld, der Kanonier fünfundfünfzig, der Kapitän fünfzig und der Admiral fünfundvierzig. Siebzehn ist die Untergrenze. Dein Bestwert wird für jeden getrennt gespeichert, denn ein Sieg über den einen ist kein Sieg über den anderen.',
+                'Der Matrose braucht etwa fünfundneunzig Schüsse für die ganze Flotte, der Kanonier fünfundfünfzig, der Kapitän fünfzig und der Admiral fünfundvierzig. Siebzehn ist die Untergrenze. Ihr Bestwert wird für jeden getrennt gespeichert, denn ein Sieg über den einen ist kein Sieg über den anderen.',
             },
           ],
         },
@@ -1045,11 +1045,11 @@ const de: Dict = {
         close: {
           label: 'Wie es gebaut ist',
           paragraphs: [
-            'Kein Canvas und keine Spielbibliothek, wie bei den anderen auch. Das Meer ist ein Raster aus Schaltflächen und die Flotte eine Schicht darüber: ein Element je Schiff, das sich über alle seine Felder erstreckt, mit einer Zeichnung darin. Ein Flugzeugträger hat ein Flugdeck, eine Insel und Markierungen, ein U-Boot liegt tief im Wasser und hat gar nichts an Deck, und nichts davon übersteht das Zerschneiden in Felder. Ein Rumpf ist deshalb eine durchgehende Form über die ganze Länge und kein abgerundetes Ende, das auf jedes Feld geklebt wurde. Jedes Schiff ist zweimal gezeichnet: als vollständiger Grundriss mit Türmen, Schornsteinen und Flugdeck und als bloße Silhouette. Die Silhouette verwenden die Kopien, die unter einem Rumpf gestapelt sind und ihm eine Bordwand geben, so wird das Detail nur einmal je Schiff aufgelöst statt achtmal. Ein quer liegendes Schiff ist dieselbe Zeichnung, um 90 Grad gedreht.',
-            'Das Feld ist geneigt, die Schiffe stehen darüber, und beides ist echtes 3D, nicht aufgemalt. Die Karte ist dreidimensional gedreht und die Flotte entlang der Achse angehoben, die diese Drehung übrig lässt, also steht ein Rumpf über seinem eigenen Schatten und dreht seine Bordwand mit, wenn er gedreht wird. Perspektive gibt es nirgends, und zwar mit Absicht: Ein Fluchtpunkt würde die hintere Kante schmaler machen als die vordere, und auf einem Raster, dessen Felder man benennt, müssen die Spalten parallel bleiben. Auch ein Schuss wird gezeichnet: Er fliegt von einem deiner Rümpfe zu dem Feld, auf dem er landet, denn ein Zug ist hier eine Flotte, die auf eine andere feuert, und nicht bloß eine Markierung, die erscheint.',
-            'Der Gegner sieht die Flotte nicht, auf die er schießt, und das garantiert der Aufbau des Codes, nicht bloß ein Kommentar. Die Funktion, die ein Feld wählt, bekommt zwei Dinge: die Liste ihrer eigenen Schüsse und die Längen der Schiffe, die sie schon versenkt hat. Die Aufstellung ist dort, wo entschieden wird, gar nicht erreichbar, es gibt also keine Zeile, bei der man aufpassen müsste. Welches Schiff gesunken ist, ist öffentlich, so wie ein Spieler es laut ansagt, und genau damit lässt sich die Suche eingrenzen.',
-            'Der stärkste der vier rät nicht. Für jedes Schiff, das noch schwimmt, geht er jede Position durch, die es einnehmen könnte, verwirft die, die ein Fehlschuss oder ein Wrack ausschließt, und gibt jedem unbekannten Feld, das eine der verbleibenden Positionen abdeckt, eine Stimme. Geschossen wird auf das Feld mit den meisten Stimmen. Suchen und das Verfolgen eines Treffers sind dieselbe Rechnung und keine zwei Modi: Ist nichts ungeklärt, entsteht die bekannte Glockenform über der Mitte des Feldes. Liegt ein Treffer vor, fallen die Positionen weg, die ihn nicht erklären, und das Gewicht sammelt sich um ihn herum.',
-            'Das Verfolgen eines Treffers wird meist als Warteschlange von Feldern geschrieben, die noch auszuprobieren sind, und genau hier entstehen in solchen Programmen die Fehler: Die Warteschlange muss bereinigt werden, wenn ein Schiff sinkt, wenn ein anderer Schuss einen ihrer Einträge erledigt und wenn zwei Schiffe nebeneinander liegen. Hier werden die Folgefelder in jedem Zug neu aus dem Spielfeld abgeleitet, es gibt also nichts zu speichern und nichts, was veralten kann. Vier Gegner, vierzigtausend simulierte Partien gegen einen unabhängig geschriebenen Verteidiger und kein einziger unzulässiger Schuss.',
+            'Kein Canvas und keine Spielbibliothek, wie bei den anderen auch. Das Meer ist ein Raster aus Buttons und die Flotte eine Ebene darüber: ein Element je Schiff, das sich über alle seine Felder erstreckt, mit einer Zeichnung darin. Ein Flugzeugträger hat ein Flugdeck, eine Insel und Markierungen, ein U-Boot liegt tief im Wasser und hat gar nichts an Deck, und nichts davon übersteht das Zerschneiden in Felder. Ein Rumpf ist deshalb eine durchgehende Form über die ganze Länge und kein abgerundetes Ende, das auf jedes Feld geklebt wurde. Jedes Schiff ist zweimal gezeichnet: als vollständiger Grundriss mit Türmen, Schornsteinen und Flugdeck und als bloße Silhouette. Die Silhouette verwenden die Kopien, die unter einem Rumpf gestapelt sind und ihm eine Bordwand geben, so wird das Detail nur einmal je Schiff aufgelöst statt achtmal. Ein quer liegendes Schiff ist dieselbe Zeichnung, um 90 Grad gedreht.',
+            'Das Spielfeld ist geneigt, die Schiffe stehen darüber, und beides ist echtes 3D, nicht aufgemalt. Die Karte ist dreidimensional gedreht und die Flotte entlang der Achse angehoben, die diese Drehung übrig lässt, also steht ein Rumpf über seinem eigenen Schatten und dreht seine Bordwand mit, wenn er gedreht wird. Perspektive gibt es nirgends, und zwar mit Absicht: Ein Fluchtpunkt würde die hintere Kante schmaler machen als die vordere, und auf einem Raster, dessen Felder man benennt, müssen die Spalten parallel bleiben. Auch ein Schuss wird gezeichnet: Er fliegt von einem Ihrer Rümpfe zu dem Feld, auf dem er landet, denn ein Zug ist hier eine Flotte, die auf eine andere feuert, und nicht bloß eine Markierung, die erscheint.',
+            'Der Gegner sieht die Flotte nicht, auf die er schießt, und das garantiert der Aufbau des Codes, nicht bloß ein Kommentar. Die Funktion, die ein Feld wählt, bekommt zwei Dinge: die Liste ihrer eigenen Schüsse und die Längen der Schiffe, die noch schwimmen. Die Aufstellung ist dort, wo entschieden wird, gar nicht erreichbar, es gibt also keine Zeile, bei der man aufpassen müsste. Welches Schiff gesunken ist, ist öffentlich, so wie ein Spieler es laut ansagt, und genau damit lässt sich die Suche eingrenzen.',
+            'Der stärkste der vier rät nicht. Für jedes Schiff, das noch schwimmt, geht er jede Position durch, die es einnehmen könnte, verwirft die, die ein Fehlschuss oder ein Wrack ausschließt, und gibt jedem unbekannten Feld, das eine der verbleibenden Positionen abdeckt, eine Stimme. Geschossen wird auf das Feld mit den meisten Stimmen. Suchen und das Verfolgen eines Treffers sind dieselbe Rechnung und keine zwei Modi: Ist nichts ungeklärt, entsteht die bekannte Glockenform über der Mitte des Spielfelds. Liegt ein Treffer vor, fallen die Positionen weg, die ihn nicht erklären, und das Gewicht sammelt sich um ihn herum.',
+            'Das Verfolgen eines Treffers wird meist als Warteschlange von Feldern geschrieben, die noch auszuprobieren sind, und genau hier entstehen in solchen Programmen die Fehler: Die Warteschlange muss bereinigt werden, wenn ein Schiff sinkt, wenn ein anderer Schuss einen ihrer Einträge erledigt und wenn zwei Schiffe nebeneinanderliegen. Hier werden die Folgefelder in jedem Zug neu aus dem Spielfeld abgeleitet, es gibt also nichts zu speichern und nichts, was veralten kann. Vier Gegner, vierzigtausend simulierte Partien gegen einen unabhängig geschriebenen Verteidiger und kein einziger unzulässiger Schuss.',
           ],
         },
       },
@@ -1059,13 +1059,13 @@ const de: Dict = {
         name: 'Zauberwürfel',
 
         tagline:
-          'Misch ihn und bring ihn wieder in Ordnung, gegen die Uhr. Vier Würfel von 2×2 bis 5×5 und eine Pyramide, in echtem 3D, und jede Schicht drehst du, indem du an ihr ziehst.',
+          'Mischen Sie ihn und bringen Sie ihn wieder in Ordnung, gegen die Uhr. Vier Würfel von 2×2 bis 5×5 und eine Pyramide, in echtem 3D, und jede Schicht wird durch Ziehen gedreht.',
 
         metaDescription:
           'Ein Zauberwürfel in 3D im Browser: 2×2, 3×3, 4×4, 5×5 und die Pyramide, gedreht durch Ziehen an einer Schicht, mit Uhr und Bestzeit für jedes Puzzle.',
-        lead: 'Misch ihn und bau ihn wieder zusammen. Zieh an einer Schicht, um sie zu drehen, und zieh irgendwo neben dem Puzzle, um das Ganze umzudrehen. Die Uhr läuft ab deinem ersten Zug und bleibt stehen, wenn jede Seite wieder einfarbig ist.',
+        lead: 'Mischen Sie ihn und bringen Sie ihn wieder in Ordnung. Ziehen Sie an einer Schicht, um sie zu drehen, und ziehen Sie irgendwo neben dem Puzzle, um das Ganze umzudrehen. Die Uhr läuft ab Ihrem ersten Zug und bleibt stehen, wenn jede Seite wieder einfarbig ist.',
 
-        puzzles: 'Wähle ein Puzzle',
+        puzzles: 'Puzzle wählen',
         cube: 'Würfel',
         pyramid: 'Pyramide',
 
@@ -1076,21 +1076,21 @@ const de: Dict = {
         undo: 'Rückgängig',
 
         cue: {
-          idle: 'Misch ihn, um zu starten',
-          ready: 'Die Uhr läuft ab deinem ersten Zug',
+          idle: 'Zum Starten mischen',
+          ready: 'Die Uhr läuft ab Ihrem ersten Zug',
         },
 
         hint: {
-          cube: 'Zieh an einem Feld, um seine Schicht zu drehen, und zieh irgendwo neben dem Würfel, um ihn ganz zu drehen. Auf der Tastatur drehen U, D, L, R, F und B eine Seite, mit Umschalt in die andere Richtung, eine Zahl davor erreicht eine tiefere Schicht, und die Pfeiltasten drehen den ganzen Würfel. H zeigt einen Tipp.',
-          pyramid: 'Zieh an einem Feld, um seine Ecke zu drehen, und zieh irgendwo neben der Pyramide, um sie ganz zu drehen. Auf der Tastatur drehen U, L, R und B eine Ecke, mit Umschalt in die andere Richtung, eine 1 davor dreht nur die Spitze, und die Pfeiltasten drehen die ganze Pyramide. H zeigt einen Tipp.',
+          cube: 'Ziehen Sie an einem Feld, um seine Schicht zu drehen, und ziehen Sie irgendwo neben dem Würfel, um ihn ganz zu drehen. Auf der Tastatur drehen U, D, L, R, F und B eine Seite, mit Umschalt in die andere Richtung, eine Zahl davor erreicht eine tiefere Schicht, und die Pfeiltasten drehen den ganzen Würfel. Beim 2×2 und 3×3 zeigt H einen Tipp.',
+          pyramid: 'Ziehen Sie an einem Feld, um seine Ecke zu drehen, und ziehen Sie irgendwo neben der Pyramide, um sie ganz zu drehen. Auf der Tastatur drehen U, L, R und B eine Ecke, mit Umschalt in die andere Richtung, eine 1 davor dreht nur die Spitze, und die Pfeiltasten drehen die ganze Pyramide. H zeigt einen Tipp.',
         },
 
         messages: {
-          scrambled: 'Gemischt. Die Uhr läuft ab deinem ersten Zug.',
+          scrambled: 'Gemischt. Die Uhr läuft ab Ihrem ersten Zug.',
         },
 
         /** See the note in en.ts. The layers are in the accusative, since the
-         *  sentence is "Dreh {layer} {way}", `{piece}` is drawn as colour
+         *  sentence is "Drehen Sie {layer} {way}", `{piece}` is drawn as colour
          *  chips, and `left` carries its own colon. */
         advice: {
           button: 'Tipp',
@@ -1100,8 +1100,8 @@ const de: Dict = {
           close: 'Tipp schließen',
           colours: ['weiß', 'rot', 'grün', 'gelb', 'orange', 'blau'],
           move: {
-            turn: 'Dreh {layer} {way}.',
-            half: 'Dreh {layer} um eine halbe Umdrehung.',
+            turn: 'Drehen Sie {layer} {way}.',
+            half: 'Drehen Sie {layer} um eine halbe Umdrehung.',
             layers: {
               top: 'die obere Schicht',
               bottom: 'die untere Schicht',
@@ -1187,22 +1187,22 @@ const de: Dict = {
             },
             tips: {
               title: 'Spitzen',
-              place: 'Das dreht die Spitze {piece}, bis ihre Farben zum Mittelstück darunter passen.',
+              place: 'Das dreht die Spitze {piece}, bis ihre Farben zum Mittelstein darunter passen.',
             },
             centres: {
-              title: 'Mittelstücke',
+              title: 'Mittelsteine',
               place: 'Das dreht eine Ecke mit ihrer Spitze, bis ihre drei Mittelfarben zu den Seiten ringsum passen.',
             },
             edges: {
               title: 'Kanten',
-              place: 'Das bringt die Kante {piece} an ihren Platz, ohne die Mittelstücke und die schon gelösten Kanten zu bewegen.',
+              place: 'Das bringt die Kante {piece} an ihren Platz, ohne die Mittelsteine und die schon gelösten Kanten zu bewegen.',
             },
           },
         },
 
         won: {
           title: 'Gelöst',
-          record: 'Deine Bestzeit für dieses Puzzle.',
+          record: 'Ihre Bestzeit für dieses Puzzle.',
           again: 'Neu mischen',
           next: 'Nächstes Puzzle',
           assisted: 'Mit Tipps gelöst, deshalb zählt es nicht als Bestzeit.',
@@ -1212,37 +1212,37 @@ const de: Dict = {
           label: 'So wird gespielt',
           items: [
             {
-              title: 'Zieh an einer Schicht',
+              title: 'An einer Schicht ziehen',
               description:
-                'Drück auf ein Feld und zieh es in die Richtung, in die seine Reihe oder Spalte gehen soll. Die Schicht folgt deinem Finger und rastet ein, wenn du loslässt, und ein schneller Wisch dreht sie für dich zu Ende.',
+                'Drücken Sie auf ein Feld und ziehen Sie es in die Richtung, in die seine Reihe oder Spalte gehen soll. Die Schicht folgt Ihrem Finger und rastet ein, wenn Sie loslassen, und eine schnelle Wischbewegung dreht sie zu Ende.',
             },
             {
-              title: 'Zieh daneben, um ihn umzudrehen',
+              title: 'Zum Umdrehen daneben ziehen',
               description:
-                'Zieh irgendwo neben dem Puzzle, um das Ganze zu drehen und eine andere Seite anzusehen. Lass los, und es richtet sich wieder gerade vor dir aus, sodass immer drei Seiten gut zu sehen sind. Am Computer macht die rechte Maustaste dasselbe direkt auf dem Puzzle.',
+                'Ziehen Sie irgendwo neben dem Puzzle, um das Ganze zu drehen und eine andere Seite anzusehen. Lassen Sie los, und es richtet sich wieder gerade vor Ihnen aus, sodass immer drei Seiten gut zu sehen sind. Am Computer macht die rechte Maustaste dasselbe direkt auf dem Puzzle.',
             },
             {
               title: 'Mischen, dann gegen die Uhr',
               description:
-                'Mischen verdreht es mit ein paar Dutzend zufälligen Zügen. Die Uhr läuft ab deinem ersten Zug und bleibt stehen, sobald jede Seite einfarbig ist, und deine Bestzeit wird für jedes Puzzle einzeln gespeichert. Rückgängig nimmt den letzten Zug zurück. Du kommst nicht weiter? Tipp zeigt den nächsten Zug und wofür er da ist, Schritt für Schritt, und eine Lösung mit Tipps zählt nicht als Bestzeit.',
+                'Mischen verdreht es mit zufälligen Zügen. Die Uhr läuft ab Ihrem ersten Zug und bleibt stehen, sobald jede Seite einfarbig ist, und Ihre Bestzeit wird für jedes Puzzle einzeln gespeichert. Rückgängig nimmt den letzten Zug zurück. Sie kommen nicht weiter? Tipp zeigt den nächsten Zug und wofür er da ist, Schritt für Schritt, und eine Lösung mit Tipps zählt nicht als Bestzeit.',
             },
             {
               title: 'Fünf Puzzles',
               description:
-                'Mit dem 2×2 fängst du am besten an, der 3×3 ist der Klassiker. 4×4 und 5×5 haben zusätzliche Schichten in der Mitte, und die Pyramide dreht sich in Dritteln um ihre Ecken, mit Spitzen, die sich einzeln drehen.',
+                'Der 2×2 ist der beste Einstieg, der 3×3 ist der Klassiker. 4×4 und 5×5 haben zusätzliche Schichten in der Mitte, und die Pyramide dreht sich in Dritteln um ihre Ecken, mit Spitzen, die sich einzeln drehen.',
             },
           ],
         },
 
         close: {
-          label: 'Wie er gebaut ist',
+          label: 'Wie es gebaut ist',
           paragraphs: [
             'Kein Canvas, kein WebGL und keine 3D-Bibliothek. Das Puzzle ist eine Szene aus gewöhnlichen Elementen, eines pro Feld, mit CSS-Transformationen im Raum platziert, und der Browser zeichnet die Perspektive und rechnet aus, was vor was liegt. Ein 5×5 hat hundertfünfzig davon. Ein Zug schreibt eine Drehung auf die Felder der Schicht, die sich dreht, und auf sonst nichts, und in den Schnitt schieben sich zwei dunkle Platten, damit das Innere des Puzzles nie leer ist.',
             'Kein Zug ist irgendwo aufgeschrieben. Ein Puzzle ist eine Liste von Plätzen, an denen ein Feld sein kann, jeder mit einem Mittelpunkt und einer Richtung, in die er zeigt, und ein Zug ist eine Achse, eine Scheibe Tiefe entlang dieser Achse und ein Winkel. Ein Zug nimmt die Felder in dieser Scheibe mit, und wo jedes landet, wird gefunden, indem man es dreht und nachsieht, welcher Platz dort liegt. Würfel und Pyramide haben mechanisch nichts gemeinsam und laufen auf demselben Code, und der 3×3 besteht die klassische Probe: R U, 105 Mal wiederholt, bringt ihn zurück in den gelösten Zustand.',
-            'Ein Ziehen wird durch dieselbe Projektion gemessen, mit der der Browser zeichnet. Jede Achse, um die sich das Feld unter deinem Finger drehen könnte, wird ausprobiert, und die, deren Bewegung auf dem Bildschirm am besten zu deinem Finger passt, gewinnt. So dreht sich aus jedem Winkel die richtige Schicht, und zwar so schnell, dass das Feld unter deinem Finger bleibt. Lässt du los, zieht eine Feder die Schicht zum nächsten Schritt. Sie ist etwas unter der kritischen Dämpfung eingestellt, sodass die Schicht ein, zwei Grad überschwingt und zurückfedert, und genau das wirkt wie Plastik, das einrastet.',
-            'Nach einem Zug übernimmt ein Feld die Lage des Platzes, an dem es gelandet ist, statt die Drehung zu behalten, die es dorthin gebracht hat. Die beiden können sich um eine Vierteldrehung in der Ebene des Feldes unterscheiden, was man nicht sieht, weil jedes Feld um seine Mitte symmetrisch ist, und so sammelt sich kein Rundungsfehler an, egal wie lange du spielst.',
-            'Jedes Feld wird aus einer einzigen Richtung beleuchtet, die an dich gebunden ist und nicht an das Puzzle, sodass die obere Seite die hellste und die rechte die dunkelste ist, wie auch immer es gedreht ist. Die Helligkeit wird neu berechnet, während sich die Ansicht dreht, und nur geschrieben, wenn sie sich sichtbar ändert. Auch die Klänge entstehen im Browser: Jeder Zug sind zwei Klicks im Abstand von ein paar Millisekunden über einem kurzen, tiefen Klopfen.',
-            'Die Tipps folgen der Methode, die man lernt, und nicht der kürzesten Lösung, denn eine kürzeste Lösung kann nur sagen, dass ein Zug einen Schritt näher bringt, und daraus lernt man nichts. Der 3×3 wird in den sieben Schritten der Schicht-für-Schicht-Methode gelöst, der 2×2 in drei und die Pyramide in drei, und jeder Zug trägt seinen Schritt, das Teil, um das es geht, und innerhalb einer Folge die Folge selbst. Wo ein Schritt eine Frage des Urteils ist und keine Folge, etwa welche weiße Kante als nächste nach unten kommt und wie, findet eine kurze Suche die wenigsten Züge für dieses eine Teil, ohne zu bewegen, was schon an seinem Platz ist. Der Plan wird neu berechnet, sobald das Puzzle nicht dort ist, wo er es erwartet hat, und er wurde geprüft, indem er von fünfzehnhundert zufälligen Mischungen aus befolgt wurde, und hat jede davon gelöst.',
+            'Ein Ziehen wird durch dieselbe Projektion gemessen, mit der der Browser zeichnet. Jede Achse, um die sich das Feld unter Ihrem Finger drehen könnte, wird ausprobiert, und die, deren Bewegung auf dem Bildschirm am besten zu Ihrem Finger passt, gewinnt. So dreht sich aus jedem Winkel die richtige Schicht, und zwar so schnell, dass das Feld unter Ihrem Finger bleibt. Wenn Sie loslassen, zieht eine Feder die Schicht zum nächsten Schritt. Sie ist etwas unter der kritischen Dämpfung eingestellt, sodass die Schicht ein, zwei Grad überschwingt und zurückfedert, und genau das wirkt wie Plastik, das einrastet.',
+            'Nach einem Zug übernimmt ein Feld die Lage des Platzes, an dem es gelandet ist, statt die Drehung zu behalten, die es dorthin gebracht hat. Die beiden können sich um eine Vierteldrehung in der Ebene des Feldes unterscheiden, was man nicht sieht, weil jedes Feld um seine Mitte symmetrisch ist, und so sammelt sich kein Rundungsfehler an, egal wie lange Sie spielen.',
+            'Jedes Feld wird aus einer einzigen Richtung beleuchtet, die an den Betrachter gebunden ist und nicht an das Puzzle, sodass die obere Seite die hellste und die rechte die dunkelste ist, wie auch immer es gedreht ist. Die Helligkeit wird neu berechnet, während sich die Ansicht dreht, und nur geschrieben, wenn sie sich sichtbar ändert. Auch die Klänge entstehen im Browser: Bei jedem Zug ertönen zwei Klicks im Abstand von ein paar Millisekunden über einem kurzen, tiefen Klopfen.',
+            'Die Tipps folgen der Methode, die man lernt, und nicht der kürzesten Lösung, denn eine kürzeste Lösung kann nur sagen, dass ein Zug einen Schritt näher bringt, und daraus lernt man nichts. Der 3×3 wird in den sieben Schritten der Schicht-für-Schicht-Methode gelöst, der 2×2 in drei und die Pyramide in drei, und jeder Zug trägt seinen Schritt, das Teil, um das es geht, und innerhalb einer Folge die Folge selbst. Wo ein Schritt Ermessenssache ist und keine Folge, etwa welche weiße Kante als nächste nach unten kommt und wie, findet eine kurze Suche die wenigsten Züge für dieses eine Teil, ohne zu bewegen, was schon an seinem Platz ist. Der Plan wird neu berechnet, sobald das Puzzle nicht dort ist, wo er es erwartet hat. Geprüft wurde er, indem man ihn von fünfzehnhundert zufällig gemischten Stellungen aus befolgte, und er hat jede davon gelöst.',
           ],
         },
       },
@@ -1251,29 +1251,29 @@ const de: Dict = {
         name: 'Vier in einer Reihe',
 
         tagline:
-          'Wirf eine Scheibe ein und bring vier in eine Reihe, bevor dein Gegner es schafft. Vier Gegner, von einem, der kaum hinschaut, bis zu einem, der fünfzehn Züge vorausdenkt.',
+          'Werfen Sie eine Scheibe ein und bringen Sie vier in eine Reihe, bevor der Gegner es schafft. Vier Gegner, von einem, der kaum hinschaut, bis zu einem, der fünfzehn Züge vorausdenkt.',
 
         metaDescription:
           'Vier in einer Reihe im Browser, gegen vier Gegner: das klassische Brett mit sieben mal sechs Feldern, Scheiben, die fallen und abprallen, und ein Großmeister, der fünfzehn Züge vorausdenkt.',
-        lead: 'Wirf deine Scheiben ins Brett und bring vier in eine Reihe, bevor dein Gegner es schafft: waagerecht, senkrecht oder diagonal. Wie schwer es wird, entscheidet allein der Gegner, den du wählst. Der Anfänger schaut kaum hin, und der Großmeister sieht weiter voraus als du.',
+        lead: 'Werfen Sie Ihre Scheiben ins Brett und bringen Sie vier in eine Reihe, bevor Ihr Gegner es schafft: waagerecht, senkrecht oder diagonal. Wie schwer es wird, entscheidet allein der Gegner, den Sie wählen. Der Anfänger schaut kaum hin, und der Großmeister sieht weiter voraus als Sie.',
 
-        opponents: 'Wähle deinen Gegner',
+        opponents: 'Gegner wählen',
         levels: {
           beginner: {
             name: 'Anfänger',
-            note: 'Spielt nahe der Mitte und sieht nur seine eigenen Vierer. Deine blockt er nicht.',
+            note: 'Spielt nahe der Mitte und sieht nur seine eigenen Vierer. Ihre blockt er nicht.',
           },
           amateur: {
             name: 'Amateur',
-            note: 'Nimmt einen Sieg mit, blockt deinen und schenkt dir nie einen. Zwei Drohungen auf einmal schlagen ihn.',
+            note: 'Nimmt einen Sieg mit, blockt Ihren und schenkt Ihnen nie einen. Zwei Drohungen auf einmal schlagen ihn.',
           },
           master: {
             name: 'Meister',
-            note: 'Denkt sieben Züge voraus. Eine Falle reicht nicht, du brauchst einen Plan.',
+            note: 'Denkt sieben Züge voraus. Eine Falle reicht nicht, Sie brauchen einen Plan.',
           },
           grandmaster: {
             name: 'Großmeister',
-            note: 'Denkt bis zu fünfzehn Züge voraus und spielt seinen besten Zug. Rechne mit einer Niederlage, vor allem wenn er anfängt.',
+            note: 'Denkt bis zu fünfzehn Züge voraus und spielt seinen besten Zug. Rechnen Sie mit einer Niederlage, vor allem wenn er anfängt.',
           },
         },
 
@@ -1281,27 +1281,27 @@ const de: Dict = {
         losses: 'Niederlagen',
         newGame: 'Neues Spiel',
 
-        you: 'Du',
+        you: 'Sie',
 
         board: 'Brett',
         column: 'Spalte {n}',
         columnFull: 'Spalte {n}, voll',
 
         status: {
-          you: 'Du bist dran',
-          them: 'Dein Gegner ist dran',
-          won: 'Vier in einer Reihe. Du gewinnst!',
-          lost: 'Dein Gegner hatte zuerst vier.',
+          you: 'Sie sind dran',
+          them: 'Der Gegner ist dran',
+          won: 'Vier in einer Reihe. Sie haben gewonnen!',
+          lost: 'Der Gegner hatte zuerst vier.',
           draw: 'Das Brett ist voll. Unentschieden.',
         },
-        again: 'Noch einmal',
+        again: 'Nochmal spielen',
 
         moves: {
-          you: 'Du: Spalte {n}.',
+          you: 'Sie: Spalte {n}.',
           them: '{name}: Spalte {n}.',
         },
 
-        hint: 'Drücke auf eine Spalte, um eine Scheibe einzuwerfen, oder zieh einen Finger oben am Brett entlang und lass los. Die Pfeiltasten wählen eine Spalte und Enter wirft ein, oder drück 1 bis 7.',
+        hint: 'Drücken Sie auf eine Spalte, um eine Scheibe einzuwerfen, oder ziehen Sie einen Finger oben am Brett entlang und lassen Sie los. Die Pfeiltasten wählen eine Spalte und Enter wirft ein, oder drücken Sie 1 bis 7.',
 
         how: {
           label: 'So wird gespielt',
@@ -1317,14 +1317,14 @@ const de: Dict = {
                 'Drei in einer Linie mit freiem viertem Feld sind eine Drohung. Eine lässt sich blocken, zwei nicht, und so werden die meisten Partien gewonnen: nicht mit einer langen Falle, sondern mit einem Zug, der zwei Felder auf einmal öffnet.',
             },
             {
-              title: 'Achte darauf, was darunter liegt',
+              title: 'Darauf achten, was darunter liegt',
               description:
-                'Wirf nie eine Scheibe direkt unter ein Feld, auf dem dein Gegner gewinnt, denn damit lässt du ihn dort spielen. Spät in der Partie geht es oft nur noch darum, wer zuerst unter der Drohung des anderen spielen muss.',
+                'Werfen Sie nie eine Scheibe direkt unter ein Feld, auf dem Ihr Gegner gewinnt, denn damit lassen Sie ihn dort spielen. Spät in der Partie geht es oft nur noch darum, wer zuerst unter der Drohung des anderen spielen muss.',
             },
             {
-              title: 'Wähle deinen Gegner',
+              title: 'Den Gegner wählen',
               description:
-                'Vier Gegner, vom Anfänger bis zum Großmeister, und deine Siege und Niederlagen werden für jeden einzeln gespeichert. Wer anfängt, wechselt von Partie zu Partie, und das zählt: Bei perfektem Spiel gewinnt immer, wer anfängt und in der mittleren Spalte beginnt.',
+                'Vier Gegner, vom Anfänger bis zum Großmeister, und Ihre Siege und Niederlagen werden für jeden einzeln gespeichert. Wer anfängt, wechselt von Partie zu Partie, und das zählt: Bei perfektem Spiel gewinnt immer, wer anfängt und in der mittleren Spalte beginnt.',
             },
           ],
         },
@@ -1333,10 +1333,10 @@ const de: Dict = {
           label: 'Wie es gebaut ist',
           paragraphs: [
             'Kein Canvas und keine Spielbibliothek, wie bei den anderen. Das Brett ist eine Zeichnung, die über den Scheiben liegt, statt ein Hintergrund darunter: ein Stück Kunststoff mit 42 Löchern, und jede Scheibe ist ein wenig breiter als ihr Loch. So fällt eine Scheibe hinter den Stegen zwischen den Reihen hindurch und ist durch die Löcher zu sehen, wie beim echten Spiel, und der Rand jeder Scheibe bleibt hinter dem Kunststoff verborgen. Das Innere jedes Lochs sind zwei schmale Sicheln, oben im Schatten und unten im Licht, und dieses Paar sorgt vor allem dafür, dass eine Scheibe im Brett zu sitzen scheint, statt aufgemalt zu sein.',
-            'Eine Scheibe fällt nach der Schwerkraft und nicht in einer festen Zeit, also dauern ein langer Fall durch eine leere Spalte und ein kurzer auf eine fast volle jeweils so lange wie bei einer echten Scheibe. Sie prallt zweimal von dem ab, worauf sie landet, jedes Mal niedriger. Die Bewegung ist die Parabel selbst, gezeichnet mit den exakten Kurven des freien Falls, und die drei Klicks, die du hörst, fallen auf dieselben drei Momente. Ein neues Spiel leert das Brett wie der Schieber unter einem echten: Alle Scheiben fallen gleichzeitig unten heraus, die unterste zuerst.',
-            'Der Gegner führt die Bewertung der Stellung laufend mit, statt sie jedes Mal neu zu berechnen. Das Brett hat 69 Linien aus vier Feldern, jede Linie zählt die Scheiben jeder Farbe in ihr, und eine Scheibe ändert nur die Linien durch ihr eigenes Feld, höchstens dreizehn. Ein Sieg ist ein Zähler, der vier erreicht, eine Drohung sind drei neben einem freien Feld, und der Wert des ganzen Bretts ist eine laufende Summe. Das einzige Stück echter Theorie darin ist die Parität: Das Brett füllt sich von unten, und bei perfektem Spiel bekommt, wer angefangen hat, die ungeraden Reihen und der andere die geraden. Eine Drohung auf den eigenen Reihen ist deshalb mehr wert als eine auf denen des Gegners.',
+            'Eine Scheibe fällt nach der Schwerkraft und nicht in einer festen Zeit, also dauern ein langer Fall durch eine leere Spalte und ein kurzer auf eine fast volle jeweils so lange wie bei einer echten Scheibe. Sie prallt zweimal von dem ab, worauf sie landet, jedes Mal niedriger. Die Bewegung ist die Parabel selbst, gezeichnet mit den exakten Kurven des freien Falls, und die drei Klicks, die Sie hören, fallen auf dieselben drei Momente. Ein neues Spiel leert das Brett wie der Schieber unter einem echten: Alle Scheiben fallen gleichzeitig unten heraus, die unterste zuerst.',
+            'Der Gegner führt die Bewertung der Stellung laufend mit, statt sie jedes Mal neu zu berechnen. Das Brett hat 69 Linien aus vier Feldern, jede Linie zählt die Scheiben jeder Farbe in ihr, und eine Scheibe ändert nur die Linien durch ihr eigenes Feld, höchstens dreizehn. Ein Sieg ist ein Zähler, der vier erreicht, eine Drohung sind drei, deren viertes Feld frei ist, und der Wert des ganzen Bretts ist eine laufende Summe. Das einzige Stück echter Theorie darin ist die Parität: Das Brett füllt sich von unten, und bei perfektem Spiel bekommt, wer angefangen hat, die ungeraden Reihen und der andere die geraden. Eine Drohung auf den eigenen Reihen ist deshalb mehr wert als eine auf denen des Gegners.',
             'Die vier unterscheiden sich darin, wie weit sie vorausdenken. Der Anfänger nimmt seinen eigenen Vierer meistens mit und spielt sonst nahe der Mitte. Der Amateur denkt drei Züge voraus, was reicht, um einen Sieg mitzunehmen, einen zu blocken und nie einen herzuschenken. Der Meister denkt sieben Züge voraus und wählt unter den Zügen, die nur wenige Punkte hinter seinem besten liegen, sodass zwei Partien gegen ihn selten gleich verlaufen. Der Großmeister vertieft seine Suche Zug um Zug, bis eine Drittelsekunde um ist, und nutzt dabei eine Tabelle mit 262.144 schon gesehenen Stellungen. Von der Eröffnung an sind das dreizehn bis fünfzehn Züge, und etwa ab der sechzehnten Scheibe weiß er meist schon, wie die Partie ausgeht.',
-            'Jeder schlägt den unter ihm fast immer. In sechzig simulierten Partien pro Paar, mit wechselndem ersten Zug, schlug der Amateur den Anfänger 60 Mal, der Meister den Amateur 57 Mal und der Großmeister den Meister 57 Mal, bei zwei Unentschieden. Die Pause, bevor sich die Scheibe des Gegners bewegt, und der Halt, den sie manchmal über einer anderen Spalte macht, sind nur dazu da, dass du den Zug verfolgen kannst: Die Wahl ist dann längst getroffen.',
+            'Jeder schlägt den unter ihm fast immer. In 60 simulierten Partien pro Paar, mit wechselndem ersten Zug, schlug der Amateur den Anfänger 60 Mal, der Meister den Amateur 57 Mal und der Großmeister den Meister 57 Mal, bei zwei Unentschieden. Die Pause, bevor sich die Scheibe des Gegners bewegt, und der Halt, den sie manchmal über einer anderen Spalte macht, sind nur dazu da, dass Sie den Zug verfolgen können: Die Wahl ist dann längst getroffen.',
           ],
         },
       },
@@ -1350,7 +1350,7 @@ const de: Dict = {
     label: 'Befehlsmenü',
     open: 'Suchen',
     placeholder: 'Zu einem Abschnitt, Projekt oder Spiel',
-    empty: 'Nichts auf der Seite passt dazu.',
+    empty: 'Nichts auf der Website passt dazu.',
     actions: 'Aktionen',
     copy: 'E-Mail-Adresse kopieren',
     copied: 'Kopiert',
@@ -1365,7 +1365,7 @@ const de: Dict = {
           'REST-APIs und Services in Node.js (NestJS, Express) oder .NET, mit Datenmodellierung, Authentifizierung, rollenbasierter Zugriffskontrolle und Integrationen mit Drittanbietern.',
       },
       {
-        title: 'Full-Stack-Produktarbeit',
+        title: 'Full-Stack-Produktentwicklung',
         description:
           'Ein ganzes Feature aus einer Hand: das Datenbankschema, die API und die React-Oberflächen, die sie nutzen.',
       },
@@ -1375,7 +1375,7 @@ const de: Dict = {
           'Cloud-Infrastruktur neu aufsetzen oder die bestehende verbessern: Umgebungen, CI/CD-Pipelines und eine Prüfung von Kosten und Zuverlässigkeit.',
       },
       {
-        title: 'Technische Durchsicht und Beratung',
+        title: 'Technisches Review und Beratung',
         description:
           'Ein Review von bestehendem Code oder einer bestehenden Architektur: was zuerst behoben werden sollte, ein Refactoring-Plan und ob sich eine Neuentwicklung lohnt.',
       },

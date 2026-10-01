@@ -4,6 +4,12 @@
  * Formal address (vous) throughout, and the typographic apostrophe rather than
  * the straight one, which is correct French.
  *
+ * The space before : ? ! is a no-break space (U+00A0), and the one between the
+ * groups of a figure a narrow no-break space (U+202F, what Intl prints for
+ * French), written into the strings. So no line opens on a colon and no number
+ * splits on any page, not only where a component runs `keep`. They look like
+ * plain spaces in an editor, and a plain space typed in their place can break.
+ *
  * Typed as `Dict`, so this file must keep exactly the keys en.ts has.
  */
 import type { Dict } from "./types";
@@ -12,7 +18,7 @@ const fr: Dict = {
   meta: {
     title: "Vuk Cvetković - Ingénieur logiciel",
     description:
-      "Ingénieur logiciel à Niš, en Serbie, de bout en bout : backend Node.js (NestJS, Express), déploiement et communication événementielle sur AWS, frontend React.",
+      "Ingénieur logiciel à Niš, en Serbie. Je construis tout le produit : backend Node.js (NestJS, Express), déploiement et communication événementielle sur AWS, frontend React.",
     ogImageAlt: "Vuk Cvetković, ingénieur logiciel",
   },
 
@@ -43,9 +49,9 @@ const fr: Dict = {
   about: {
     label: "À propos",
     paragraphs: [
-      "Je travaille sur des projets clients, du premier modèle de données jusqu’au déploiement sur AWS. Je pars toujours du domaine : quelles sont les données, qui peut y accéder et avec quels systèmes elles doivent communiquer. L’API, les services et l’interface React en découlent.",
-      "Je suis titulaire d’un master en génie logiciel. Mon mémoire comparait deux écosystèmes d’apprentissage automatique sur une même tâche : un modèle YOLOv8m en Python et un modèle ML.NET en .NET, derrière une seule passerelle NestJS et un seul frontend React.",
-      "Le meilleur exemple de mon travail frontend, c’est ce site : quatre langues et sept jeux écrits sans canvas ni bibliothèque de jeu. Chaque jeu est accompagné d’un texte qui explique comment il a été construit.",
+      "Je travaille sur des projets clients, du premier modèle de données jusqu’au déploiement sur AWS. Je pars toujours du domaine : quelles sont les données, qui peut y accéder et avec quels systèmes elles doivent communiquer. L’API, les services et l’interface React en découlent.",
+      "Je suis titulaire d’un master en génie logiciel. Mon mémoire comparait deux écosystèmes d’apprentissage automatique sur une même tâche : un modèle YOLOv8m en Python et un modèle ML.NET en .NET, derrière une seule passerelle NestJS et un seul frontend React.",
+      "Le meilleur exemple de mon travail frontend, c’est ce site : quatre langues et sept jeux écrits sans canvas ni bibliothèque de jeu. Chaque jeu est accompagné d’un texte qui explique comment il a été construit.",
     ],
   },
 
@@ -65,16 +71,16 @@ const fr: Dict = {
       ncoded: {
         role: "Développeur backend",
         bullets: [
-          "Des services backend en Node.js (NestJS, Express) : API REST, authentification JWT, contrôle d’accès par rôles et intégrations tierces, sur des bases SQL comme documentaires.",
-          "Le même travail en .NET chez les clients qui l’utilisent déjà, structuré en Clean Architecture pour que la logique métier reste découplée du framework.",
-          "Côté AWS : S3, ECS, EC2, Lambda, Route 53 et EventBridge, pour les déploiements et la communication événementielle entre les services.",
+          "Des services backend en Node.js (NestJS, Express) : API REST, authentification JWT, contrôle d’accès par rôles et intégrations tierces, sur des bases SQL comme documentaires.",
+          "Le même travail en .NET, structuré en Clean Architecture pour que la logique métier reste découplée du framework.",
+          "Côté AWS : S3, ECS, EC2, Lambda, Route 53 et EventBridge, pour les déploiements et la communication événementielle entre les services.",
         ],
       },
       novateq: {
         role: "Développeur full-stack",
         bullets: [
-          "Des services backend en .NET Web API et le site de l’entreprise en ASP.NET MVC, adaptés tous les deux aux besoins de chaque client.",
-          "Maintien de la stabilité de la plateforme Sportsbook par le traitement des incidents remontés, et revue de projets de jeux de casino pour comprendre comment ce type de produit se construit.",
+          "Des services backend en .NET Web API et le site de l’entreprise en ASP.NET MVC, adaptés aux besoins de chaque client.",
+          "J’ai assuré la stabilité de la plateforme Sportsbook en traitant les incidents remontés, et j’ai étudié des projets de jeux de casino pour comprendre comment ce type de produit se construit.",
         ],
       },
     },
@@ -113,7 +119,7 @@ const fr: Dict = {
     index: {
       metaTitle: "Projets - Vuk Cvetković",
       metaDescription:
-        "Les projets de Vuk Cvetković, ingénieur logiciel à Niš : ce que fait chaque système, comment il est construit, et ce qui en est ressorti.",
+        "Les projets de Vuk Cvetković, ingénieur logiciel à Niš : ce que fait chaque système, comment il est construit, et ce qui en est ressorti.",
       heading: "Projets",
       intro:
         "Des travaux que je peux détailler entièrement, avec l’architecture et les résultats plutôt qu’une capture d’écran. Chacun a sa propre page.",
@@ -165,7 +171,7 @@ const fr: Dict = {
           "Mon mémoire de master. Une même image passe par un modèle YOLOv8m en Python et par un modèle ML.NET en .NET, tous deux derrière une passerelle qui répond dans un format unique, si bien qu’un seul frontend React affiche l’un ou l’autre résultat. La reprise des annotations a porté YOLOv8m à un mAP@0.5 de 0,916, contre 0,748 pour ML.NET.",
         metaTitle: "Système comparatif de détection d’objets - Vuk Cvetković",
         metaDescription:
-          "Système développé pour un mémoire de master : YOLOv8m en Python et ML.NET en .NET derrière une passerelle NestJS, comparés sur un même jeu de données d’équipements de protection.",
+          "Système développé pour un mémoire de master : YOLOv8m en Python et ML.NET en .NET derrière une passerelle NestJS, comparés sur un même jeu de données d’équipements de protection.",
         context: "Mémoire de master, Faculté de génie électronique de Niš",
         domain: "Équipements de protection individuelle sur chantier",
 
@@ -178,19 +184,19 @@ const fr: Dict = {
             { title: "Service ASP.NET Core", badge: "Modèle ML.NET" },
           ],
           exit: "",
-          exitLabel: "Un seul format JSON : cadres, classes, confiance",
+          exitLabel: "Un seul format JSON : cadres, classes, confiance",
           exitNote: "",
         },
 
         overview: [
-          "Le mémoire étudie ce qui change quand une même tâche de détection est réalisée deux fois : une fois en Python, l’écosystème privilégié par la recherche, et une fois en .NET, celui sur lequel tourne déjà le backend. Le système entraîne un modèle YOLOv8m et un modèle ML.NET sur les mêmes images annotées, place les deux derrière une seule API, et fait passer une image par l’un, l’autre ou les deux.",
-          "Le domaine est l’équipement de protection individuelle sur chantier, en six classes : casque, gilet et gants, chacun présent ou absent. Tout l’intérêt est dans les classes négatives. Un tel système ne sert que s’il peut dire que quelqu’un ne porte pas de casque, et pas seulement qu’un casque se trouve quelque part dans l’image.",
+          "Le mémoire étudie ce qui change quand une même tâche de détection est réalisée deux fois : une fois en Python, l’écosystème privilégié par la recherche, et une fois en .NET, celui sur lequel tourne déjà le backend. Le système entraîne un modèle YOLOv8m et un modèle ML.NET sur les mêmes images annotées, place les deux derrière une seule API, et fait passer une image par l’un, l’autre ou les deux.",
+          "Le domaine est l’équipement de protection individuelle sur chantier, en six classes : casque, gilet et gants, chacun présent ou absent. Tout l’intérêt est dans les classes négatives. Un tel système ne sert que s’il peut dire que quelqu’un ne porte pas de casque, et pas seulement qu’un casque se trouve quelque part dans l’image.",
         ],
 
         steps: [
           {
             title: "Le frontend envoie l’image",
-            body: "React envoie le fichier en multipart/form-data, avec le modèle choisi dans un second champ. Si vous demandez les deux, il lance les deux requêtes en parallèle : la comparaison porte donc sur une même image au même instant.",
+            body: "React envoie le fichier en multipart/form-data, avec le modèle choisi dans un second champ. Si vous demandez les deux, il lance les deux requêtes en parallèle : la comparaison porte donc sur une même image au même instant.",
           },
           {
             title: "La passerelle l’aiguille",
@@ -238,9 +244,9 @@ const fr: Dict = {
         ],
 
         dataset: [
-          "Le jeu de données a été assemblé dans Roboflow à partir de deux ensembles publics, puis relu et fusionné en un seul : 2 911 images réparties en 2 374 pour l’entraînement, 290 pour la validation et 247 pour le test, réorientées automatiquement et redimensionnées en 640x640. Le côté Python l’utilise au format YOLO et le côté .NET au format COCO, puisque c’est ce que Model Builder attend pour la détection : chaque outil reçoit son format, sur des images et des classes identiques.",
-          "Vient ensuite ce que je n’avais pas prévu. La première version comptait 8 813 annotations, et une reprise complète a porté ce total à 17 942 : plus de la moitié des objets n’étaient donc pas étiquetés. Un objet présent dans l’image mais absent des étiquettes apprend au modèle, pendant l’entraînement, qu’il fait partie du fond, puis lui est compté comme une erreur à l’évaluation quand il le détecte malgré tout.",
-          "Les deux modèles ont été entraînés pendant 50 epochs en 640x640 à partir de poids pré-entraînés, avec des paramètres identiques entre les deux versions du jeu de données, pour qu’un écart de résultats reflète la qualité des annotations et non la configuration. Model Builder s’arrête au modèle entraîné, il a donc fallu écrire un service d’évaluation pour le côté .NET : il charge les annotations COCO, prédit sur le jeu de validation et calcule precision, recall, F1 et mAP@0.5 avec les matrices de confusion et les courbes precision-recall, ce qui a mis ML.NET à égalité avec ce qu’Ultralytics fournit d’office.",
+          "Le jeu de données a été assemblé dans Roboflow à partir de deux ensembles publics, puis relu et fusionné en un seul : 2 911 images réparties en 2 374 pour l’entraînement, 290 pour la validation et 247 pour le test, réorientées automatiquement et redimensionnées en 640x640. Le côté Python l’utilise au format YOLO et le côté .NET au format COCO, puisque c’est ce que Model Builder attend pour la détection : chaque outil reçoit son format, sur des images et des classes identiques.",
+          "Vient ensuite ce que je n’avais pas prévu. La première version comptait 8 813 annotations, et une reprise complète a porté ce total à 17 942 : plus de la moitié des objets n’étaient donc pas étiquetés. Un objet présent dans l’image mais absent des étiquettes apprend au modèle, pendant l’entraînement, qu’il fait partie du fond, puis lui est compté comme une erreur à l’évaluation quand le modèle le détecte malgré tout.",
+          "Les deux modèles ont été entraînés pendant 50 epochs en 640x640 à partir de poids pré-entraînés, avec des paramètres identiques entre les deux versions du jeu de données, pour qu’un écart de résultats reflète la qualité des annotations et non la configuration. Model Builder s’arrête au modèle entraîné, il a donc fallu écrire un service d’évaluation pour le côté .NET : il charge les annotations COCO, prédit sur le jeu de validation et calcule precision, recall, F1 et mAP@0.5 avec les matrices de confusion et les courbes precision-recall, ce qui a mis ML.NET à égalité avec ce qu’Ultralytics fournit d’office.",
         ],
 
         results: {
@@ -255,14 +261,14 @@ const fr: Dict = {
           ],
           rows: ["YOLOv8m", "YOLOv8m", "ML.NET", "ML.NET"],
           notes: [
-            "La reprise des annotations a fait évoluer toutes les métriques des deux modèles. YOLOv8m est passé de 0,790 à 0,916 en mAP@0.5 et ML.NET de 0,580 à 0,748 : en relatif, c’est le modèle le plus faible qui gagne le plus, 29 pour cent contre 16. C’est lui que la première version pénalisait le plus.",
-            "YOLOv8m l’emporte sur les chiffres, et l’écart qui compte est celui du recall : 0,867 contre 0,709 sur le jeu corrigé, à precision presque égale. Pour des équipements de protection, tout se joue sur cette asymétrie : une détection manquée, c’est une personne que le système déclare conforme sans rien signaler, et la precision seule ne permet pas de le voir.",
-            "La comparaison est équitable parce que les conditions étaient les mêmes des deux côtés : un seul domaine d’images, les mêmes six classes, et des paramètres comparables plutôt qu’un réglage séparé pour chaque modèle.",
+            "La reprise des annotations a fait évoluer toutes les métriques des deux modèles. YOLOv8m est passé de 0,790 à 0,916 en mAP@0.5 et ML.NET de 0,580 à 0,748 : en relatif, c’est le modèle le plus faible qui gagne le plus, 29 pour cent contre 16. C’est lui que la première version pénalisait le plus.",
+            "YOLOv8m l’emporte sur les chiffres, et l’écart qui compte est celui du recall : 0,867 contre 0,709 sur le jeu corrigé, à precision presque égale. Pour des équipements de protection, tout se joue sur cette asymétrie : une détection manquée, c’est une personne que le système déclare conforme sans rien signaler, et la precision seule ne permet pas de le voir.",
+            "La comparaison est équitable parce que les conditions étaient les mêmes des deux côtés : un seul domaine d’images, les mêmes six classes, et des paramètres comparables plutôt qu’un réglage séparé pour chaque modèle.",
           ],
         },
 
         takeaway: [
-          "Le résultat dépendait plus des données que du choix du framework. Reprendre les annotations des mêmes 2 911 images a fait progresser les deux modèles plus que l’écart entre les deux écosystèmes ne pénalisait ML.NET, et ce n’est pas la conclusion que je pensais écrire.",
+          "Le résultat dépendait plus des données que du choix du framework. Reprendre les annotations des mêmes 2 911 images a fait progresser les deux modèles plus que l’écart entre les deux écosystèmes ne pénalisait ML.NET, et ce n’est pas la conclusion que je pensais écrire.",
           "Côté ingénierie, les enseignements sont plus pratiques. Python m’a laissé de la place pour expérimenter et m’a fourni les éléments d’évaluation sans effort, .NET m’a donné un modèle qui s’intègre à un service ASP.NET Core sans couche intermédiaire, et c’est uniquement grâce à la réponse standardisée qu’un seul frontend peut les traiter comme interchangeables.",
         ],
       },
@@ -275,7 +281,7 @@ const fr: Dict = {
           "Mon mémoire de licence. Une application de bureau confie un dossier entier à un service WCF, qui chiffre chaque fichier avec AES, RC6 ou XXTEA - les deux derniers implémentés d’après leur spécification plutôt que tirés d’une bibliothèque - et enregistre une empreinte SHA-512 avant et après chaque passage, ce qui permet de prouver l’aller-retour au lieu de le supposer. Le traitement en parallèle a fait passer un lot de 150 fichiers de 68,91 à 44,16 secondes.",
         metaTitle: "Encryptix - Vuk Cvetković",
         metaDescription:
-          "Un projet de mémoire de licence : un client Windows Forms et un service WCF qui chiffrent un dossier entier avec AES, RC6 ou XXTEA, et une vérification SHA-512 aux deux bouts.",
+          "Un projet de mémoire de licence : un client Windows Forms et un service WCF qui chiffrent un dossier entier avec AES, RC6 ou XXTEA et vérifient l’aller-retour par SHA-512.",
         context: "Mémoire de licence, Faculté de génie électronique de Niš",
         domain: "Chiffrement de fichiers sur le poste de travail",
 
@@ -290,26 +296,26 @@ const fr: Dict = {
           ],
           exit: "Un fichier chiffré par fichier d’entrée",
           exitLabel: "",
-          exitNote: "SHA-512 enregistrée avant et après",
+          exitNote: "Empreinte SHA-512 enregistrée avant et après",
         },
 
         overview: [
-          "Ici, on travaille sur un dossier, pas sur un fichier. Vous indiquez un répertoire à l’application, elle lit tout son contenu, sous-dossiers compris, puis l’un des trois chiffrements symétriques traite l’ensemble. L’arborescence chiffrée, l’arborescence déchiffrée et le journal des empreintes sont écrits à l’emplacement de votre choix.",
-          "S’il y en a trois, c’est qu’un seul était fourni tout fait. AES est l’implémentation de la bibliothèque .NET, celle que toute application raisonnable utiliserait. RC6 et XXTEA sont implémentés d’après leur spécification, et c’est là qu’était le vrai travail : l’expansion de la clé, le remplissage des blocs, les rotations et le dépassement d’entier volontaire sur lequel repose XXTEA.",
+          "Ici, on travaille sur un dossier, pas sur un fichier. Vous indiquez un répertoire à l’application, elle lit tout son contenu, sous-dossiers compris, puis l’un des trois chiffrements symétriques traite l’ensemble. L’arborescence chiffrée, l’arborescence déchiffrée et le journal des empreintes sont écrits chacun à l’emplacement de votre choix.",
+          "S’il y en a trois, c’est qu’un seul était fourni tout fait. AES est l’implémentation de la bibliothèque .NET, celle que toute application raisonnable utiliserait. RC6 et XXTEA sont implémentés d’après leur spécification, et c’est là qu’était le vrai travail : l’expansion de la clé, le remplissage des blocs, les rotations et le dépassement d’entier volontaire sur lequel repose XXTEA.",
         ],
 
         steps: [
           {
             title: "Le client lit le dossier",
-            body: "Une boîte de dialogue, puis un parcours récursif qui lit chaque fichier en octets bruts, quelle que soit son extension, et regroupe son nom, son extension, son répertoire et son contenu dans un seul enregistrement. Le contenu n’est jamais interprété : un .txt et un .exe suivent le même chemin dans le programme.",
+            body: "Une boîte de dialogue, puis un parcours récursif qui lit chaque fichier en octets bruts, quelle que soit son extension, et regroupe son nom, son extension, son répertoire et son contenu dans un seul enregistrement. Le contenu n’est jamais interprété : un .txt et un .exe suivent le même chemin dans le programme.",
           },
           {
             title: "Une tâche de fond pour ne pas figer la fenêtre",
-            body: "Sous Windows Forms, l’application n’a qu’un seul thread, et c’est lui qui possède les contrôles : lire un gros dossier sur ce thread figerait la fenêtre, et avec elle l’indicateur qu’elle est censée afficher. La lecture s’exécute donc dans une Task, et la continuation est replanifiée sur le contexte de synchronisation du formulaire, le seul endroit d’où l’on a le droit de réactiver les boutons.",
+            body: "Sous Windows Forms, l’application n’a qu’un seul thread, et c’est lui qui possède les contrôles : lire un gros dossier sur ce thread figerait la fenêtre, et avec elle l’indicateur qu’elle est censée afficher. La lecture s’exécute donc dans une Task, et la continuation est replanifiée sur le contexte de synchronisation du formulaire, le seul endroit d’où l’on a le droit de réactiver les boutons.",
           },
           {
             title: "La liste passe au service",
-            body: "Le client appelle le service WCF en HTTP. Les deux côtés ont dû être reconfigurés pour la taille des messages : les limites de tampon sont portées à la valeur maximale d’un int, et le mode de transfert passe de Buffered à Streamed, pour que seul l’en-tête du message soit mis en tampon et non toute la liste des fichiers, avec un délai d’expiration de dix minutes de chaque côté.",
+            body: "Le client appelle le service WCF en HTTP. Les deux côtés ont dû être reconfigurés pour la taille des messages : les limites de tampon sont portées à la valeur maximale d’un int, et le mode de transfert passe de Buffered à Streamed, pour que seul l’en-tête du message soit mis en tampon et non toute la liste des fichiers, avec un délai d’expiration de dix minutes de chaque côté.",
           },
           {
             title: "Le service chiffre, fichier par fichier",
@@ -317,14 +323,14 @@ const fr: Dict = {
           },
           {
             title: "Une empreinte à chaque bout",
-            body: "À côté de chaque fichier, un fichier texte contient quatre empreintes SHA-512 : avant chiffrement, après chiffrement, avant déchiffrement, après déchiffrement. Ce sont la première et la dernière qui comptent, et elles doivent être identiques. Toute la garantie d’intégrité est là, et n’importe qui peut la vérifier en ouvrant le fichier.",
+            body: "À côté de chaque fichier, un fichier texte contient quatre empreintes SHA-512 : avant chiffrement, après chiffrement, avant déchiffrement, après déchiffrement. Ce sont la première et la dernière qui comptent, et elles doivent être identiques. Toute la garantie d’intégrité est là, et n’importe qui peut la vérifier en ouvrant le fichier.",
           },
         ],
 
         features: [
           {
             title: "Un dossier entier d’un coup",
-            body: "Sous-dossiers compris, à n’importe quelle profondeur. L’arborescence de sortie reproduit celle d’entrée : elle est calculée à partir du chemin de chaque fichier relatif à la racine, et non en suivant la récursion.",
+            body: "Sous-dossiers compris, à n’importe quelle profondeur. L’arborescence de sortie reproduit celle d’entrée : elle est calculée à partir du chemin de chaque fichier relatif à la racine, et non en suivant la récursion.",
           },
           {
             title: "Trois chiffrements, un formulaire",
@@ -340,7 +346,7 @@ const fr: Dict = {
           },
           {
             title: "Une barre de progression qui finit avec le traitement",
-            body: "Elle avance au rythme du nombre total d’octets pendant que le service travaille, et se remplit dès que l’appel réel revient, grâce à un jeton d’annulation : elle suit le traitement et se termine avec lui, pas après.",
+            body: "Elle avance au rythme du nombre total d’octets pendant que le service travaille, et se remplit dès que l’appel réel revient, grâce à un jeton d’annulation : elle suit le traitement et se termine avec lui, pas après.",
           },
           {
             title: "L’arborescence d’abord",
@@ -354,13 +360,13 @@ const fr: Dict = {
           columns: ["Mode", "Fichiers", "Chiffrement (s)", "Déchiffrement (s)"],
           rows: ["Séquentiel", "Parallèle"],
           notes: [
-            "Les mêmes 150 fichiers, la même clé RC6, les mêmes dossiers de sortie, une exécution dans chaque mode. Le chiffrement parallèle a pris 44,16 secondes contre 68,91, et le déchiffrement 40,39 contre 70,13 : un tiers de moins dans les deux sens.",
-            "Le gain vient de l’indépendance des fichiers : la boucle parallèle n’a besoin ni de verrou ni d’ordre, et aucun fichier n’attend le précédent.",
+            "Les mêmes 150 fichiers, la même clé RC6, les mêmes dossiers de sortie, une exécution dans chaque mode. Le chiffrement parallèle a pris 44,16 secondes contre 68,91, et le déchiffrement 40,39 contre 70,13 : plus d’un tiers de moins dans les deux sens.",
+            "Le gain vient de l’indépendance des fichiers : la boucle parallèle n’a besoin ni de verrou ni d’ordre, et aucun fichier n’attend le précédent.",
           ],
         },
 
         takeaway: [
-          "Le projet avait pour but d’implémenter deux des trois chiffrements plutôt que de les appeler. Ce sont des algorithmes courts où presque chaque ligne compte : le sens d’une rotation, l’endroit où est stockée la longueur d’origine, et le fait que XXTEA exige que son arithmétique déborde au lieu de lever une erreur. Les empreintes identiques prouvent que tout est juste, octet par octet.",
+          "Le projet avait pour but d’implémenter deux des trois chiffrements plutôt que de les appeler. Ce sont des algorithmes courts où presque chaque ligne compte : le sens d’une rotation, l’endroit où est stockée la longueur d’origine, et le fait que XXTEA exige que son arithmétique déborde au lieu de lever une erreur. Les empreintes identiques prouvent que tout est juste, octet par octet.",
           "L’autre volet du projet, c’est la séparation client-serveur. La cryptographie s’exécute dans le service et non dans le processus qui affiche la fenêtre, et les trois algorithmes sont disponibles pour tout autre programme capable d’appeler ce service.",
         ],
       },
@@ -373,7 +379,7 @@ const fr: Dict = {
           "Un mémoire de séminaire sur l’analyse du trafic, avec une application de bureau qui la met en pratique. L’application ouvre une capture .pcapng via Pyshark, parcourt chaque paquet couche par couche et présente ce que transporte chaque protocole - en-têtes HTTP, requêtes DNS, drapeaux TCP, identifiants FTP - dans une arborescence dépliable, avec un graphique de la répartition des protocoles.",
         metaTitle: "Network Traffic Analyzer - Vuk Cvetković",
         metaDescription:
-          "Un projet de mémoire de séminaire en Python : une application Tkinter qui lit des captures .pcapng via Pyshark, extrait douze protocoles par paquet et trace la répartition des protocoles.",
+          "Un projet de mémoire de séminaire en Python : une application Tkinter qui lit des captures .pcapng via Pyshark, extrait douze protocoles par paquet et trace la répartition des protocoles.",
         context: "Mémoire de séminaire, Faculté de génie électronique de Niš",
         domain: "Analyse de captures de paquets",
 
@@ -392,14 +398,14 @@ const fr: Dict = {
         },
 
         overview: [
-          "Le mémoire traite de l’analyse du trafic réseau et explique pourquoi PCAP en est devenu le format standard. L’application met cela en pratique : ouvrez une capture, et elle affiche ce que transporte chaque paquet, protocole par protocole.",
-          "En dessous, c’est Wireshark qui décode : Pyshark pilote son tshark, et l’analyse profite de toute sa couverture des protocoles. Par-dessus, l’application pose la même série de questions à chaque paquet du fichier et rassemble les réponses au même endroit, ce qui est pratique quand on cherche quelque chose sans savoir encore dans quel paquet.",
+          "Le mémoire traite de l’analyse du trafic réseau et explique pourquoi PCAP en est devenu le format standard. L’application met cela en pratique : ouvrez une capture, et elle affiche ce que transporte chaque paquet, protocole par protocole.",
+          "En dessous, c’est Wireshark qui décode : Pyshark pilote son tshark, et l’analyse profite de toute sa couverture des protocoles. Par-dessus, l’application pose la même série de questions à chaque paquet du fichier et rassemble les réponses au même endroit, ce qui est pratique quand on cherche quelque chose sans savoir encore dans quel paquet.",
         ],
 
         steps: [
           {
             title: "La capture est lue une seule fois",
-            body: "Une boîte de dialogue accepte un .pcapng ou un .pcap, Pyshark l’ouvre, et tous les paquets sont chargés dans une liste en mémoire avant la fermeture du fichier. Le fichier n’est plus jamais relu, d’où des filtres peu coûteux : ils parcourent de nouveau la liste au lieu de réanalyser la capture.",
+            body: "Une boîte de dialogue accepte un .pcapng ou un .pcap, Pyshark l’ouvre, et tous les paquets sont chargés dans une liste en mémoire avant la fermeture du fichier. Le fichier n’est plus jamais relu, d’où des filtres peu coûteux : ils parcourent de nouveau la liste au lieu de réanalyser la capture.",
           },
           {
             title: "Chaque paquet est parcouru couche par couche",
@@ -407,14 +413,14 @@ const fr: Dict = {
           },
           {
             title: "Chaque extracteur vérifie avant de lire",
-            body: "Un champ qu’un paquet donné ne transporte pas n’est pas une erreur, c’est le cas normal : chaque extracteur vérifie donc l’existence de chaque attribut avant de le lire et omet simplement ce qui manque. D’où un arbre irrégulier : un paquet HTTP montre une douzaine de champs, le suivant en montre deux, et les deux sont corrects.",
+            body: "Un champ qu’un paquet donné ne transporte pas n’est pas une erreur, c’est le cas normal : chaque extracteur vérifie donc l’existence de chaque attribut avant de le lire et omet simplement ce qui manque. D’où un arbre irrégulier : un paquet HTTP montre une douzaine de champs, le suivant en montre deux, et les deux sont corrects.",
           },
           {
             title: "Ce qui est en clair ressort en clair",
-            body: "Les identifiants HTTP Basic sont du base64, pas du chiffrement, donc l’extracteur les décode. FTP envoie le nom d’utilisateur et le mot de passe en texte, ils apparaissent donc aussi. C’est la démonstration que voulait le mémoire : la chaîne décodée, affichée dans l’arbre, sous vos yeux.",
+            body: "Les identifiants HTTP Basic sont du base64, pas du chiffrement, donc l’extracteur les décode. FTP envoie le nom d’utilisateur et le mot de passe en texte, ils apparaissent donc aussi. C’est la démonstration honnête que voulait le mémoire : pas l’affirmation que ces protocoles sont peu sûrs, mais la chaîne décodée, affichée dans l’arbre, sous vos yeux.",
           },
           {
-            title: "Les résultats : un arbre et des graphiques",
+            title: "Les résultats : un arbre et des graphiques",
             body: "Chaque paquet devient une ligne - horodatage, IP source et destination, longueur, liste de protocoles - qui se déplie en un nœud par protocole et une feuille par champ. Le même parcours produit un décompte par protocole, que Matplotlib trace en camembert et en diagramme en barres, intégrés directement dans la fenêtre.",
           },
         ],
@@ -430,15 +436,15 @@ const fr: Dict = {
           },
           {
             title: "Un arbre, pas un pavé de texte",
-            body: "Paquet, puis protocole, puis champ, et chaque niveau ne s’ouvre que lorsque vous le demandez : une capture de plusieurs milliers de paquets reste lisible.",
+            body: "Paquet, puis protocole, puis champ, et chaque niveau ne s’ouvre que lorsque vous le demandez : une capture de plusieurs milliers de paquets reste lisible.",
           },
           {
             title: "La répartition des protocoles d’un coup d’œil",
-            body: "Un camembert pour les proportions et un diagramme en barres pour les nombres, redessinés à chaque filtre appliqué : vous voyez ce que le filtre a réellement retiré.",
+            body: "Un camembert pour les proportions et un diagramme en barres pour les nombres, redessinés à chaque filtre appliqué : vous voyez ce que le filtre a réellement retiré.",
           },
           {
             title: "Des identifiants en clair, montrés comme tels",
-            body: "L’authentification HTTP Basic décodée, les noms d’utilisateur et les mots de passe FTP : l’argument le plus court possible pour ne pas utiliser ces protocoles sans chiffrement.",
+            body: "L’authentification HTTP Basic décodée, les noms d’utilisateur et les mots de passe FTP : l’argument le plus court possible pour ne pas utiliser ces protocoles sans chiffrement.",
           },
           {
             title: "Les deux générations de PCAP",
@@ -455,8 +461,8 @@ const fr: Dict = {
         },
 
         takeaway: [
-          "L’application fonctionne sur n’importe quelle capture grâce à la discipline qu’impose le format. Un paquet ne garantit rien sur les champs qu’il contient : chaque lecture est donc protégée par une vérification, et un champ absent est un résultat normal, pas un échec. Écrire les douze extracteurs un par un rend cela explicite, et c’est pourquoi une capture de deux paquets et une de deux mille passent par le même code, sans aucun cas particulier.",
-          "Comme la capture n’est lue qu’une fois, tout le reste est immédiat. Chaque filtre, chaque recomptage et chaque graphique redessiné partent de la liste déjà en mémoire : changer une date ou une adresse IP affiche aussitôt une nouvelle vue de la même capture, sans relire le fichier.",
+          "L’application fonctionne sur n’importe quelle capture grâce à la discipline qu’impose le format. Un paquet ne garantit rien sur les champs qu’il contient : chaque lecture est donc protégée par une vérification, et un champ absent est un résultat normal, pas un échec. Écrire les douze extracteurs un par un rend cela explicite, et c’est pourquoi une capture de deux paquets et une de deux mille passent par le même code, sans aucun cas particulier.",
+          "Comme la capture n’est lue qu’une fois, tout le reste est immédiat. Chaque filtre, chaque recomptage et chaque graphique redessiné partent de la liste déjà en mémoire : changer une date ou une adresse IP affiche aussitôt une nouvelle vue de la même capture, sans relire le fichier.",
         ],
       },
 
@@ -465,10 +471,10 @@ const fr: Dict = {
         tagline:
           "Les relevés publics de pollen en Serbie, filtrés pour ne garder que ceux qui concernent une personne.",
         description:
-          "Une application mobile construite sur des données publiques ouvertes. L’agence serbe de l’environnement publie les relevés de pollen des stations de tout le pays, et l’application les copie à intervalles réguliers dans sa propre base, puis ne garde que les allergènes choisis par l’utilisateur, dans le rayon qu’il a fixé - sur une carte, par niveau de concentration, et par une notification push quand un niveau augmente.",
+          "Une application mobile construite sur des données publiques ouvertes. L’agence serbe de l’environnement publie les relevés de pollen des stations de tout le pays, et l’application les copie à intervalles réguliers dans sa propre base, puis ne garde que les allergènes choisis par l’utilisateur, dans le rayon qu’il a fixé. Elle affiche le résultat sur une carte, par niveau de concentration, et par une notification push quand un niveau augmente.",
         metaTitle: "Easy Breathe - Vuk Cvetković",
         metaDescription:
-          "Une application React Native et Expo adossée à une API NestJS : les données ouvertes sur le pollen en Serbie, importées à intervalles réguliers et filtrées par lieu, rayon et allergènes choisis.",
+          "Une application React Native et Expo adossée à une API NestJS : les données ouvertes sur le pollen en Serbie, importées à intervalles réguliers et filtrées par lieu, rayon et allergènes choisis.",
         context: "Mémoire de séminaire sur les systèmes d’e-administration, Faculté de génie électronique de Niš",
         domain: "Données publiques ouvertes, pollen et allergènes",
 
@@ -478,7 +484,7 @@ const fr: Dict = {
           core: "Import planifié",
           branches: [
             { title: "Mensuel", badge: "Allergènes, types, lieux" },
-            { title: "Horaire, de 9 h à 12 h", badge: "Pollens, concentrations" },
+            { title: "Horaire, de 9 h à 12 h", badge: "Pollens, concentrations" },
           ],
           exit: "Une base dédoublonnée",
           exitLabel: "",
@@ -486,7 +492,7 @@ const fr: Dict = {
         },
 
         overview: [
-          "Les données publiques existent, et elles sont de qualité : l’agence serbe de l’environnement publie chaque jour les relevés de pollen des stations de mesure du pays, sous forme d’API ouverte, sans clé ni limite. Ce qu’elle ne fait pas, c’est dire à une personne allergique à l’ambroisie si la journée sera difficile là où elle se trouve. L’application sert à combler cet écart.",
+          "Les données publiques existent, et elles sont de qualité : l’agence serbe de l’environnement publie chaque jour les relevés de pollen des stations de mesure du pays, sous forme d’API ouverte, sans clé ni limite. Ce qu’elle ne fait pas, c’est dire à une personne allergique à l’ambroisie si la journée sera difficile là où elle se trouve. L’application sert à combler cet écart.",
           "Le travail se partage donc en deux. L’API copie les données ouvertes dans sa propre base à intervalles réguliers, car un téléphone n’a pas à parcourir des centaines de milliers de relevés nationaux pour répondre à une question locale. L’application pose ensuite une seule question à cette copie - qu’y a-t-il dans l’air près de moi, parmi ce à quoi je suis allergique - et y répond sur une carte, en quatre niveaux, et par une notification.",
         ],
 
@@ -501,15 +507,15 @@ const fr: Dict = {
           },
           {
             title: "Une position et un rayon donnent une liste de stations",
-            body: "Les coordonnées de l’utilisateur et le rayon choisi, en kilomètres, alimentent une requête géospatiale MongoDB, le rayon étant divisé par celui de la Terre pour obtenir la sphère qu’attend la requête. Elle renvoie toutes les stations de mesure assez proches pour concerner cette personne.",
+            body: "Les coordonnées de l’utilisateur et le rayon choisi, en kilomètres, alimentent une requête géospatiale MongoDB, le rayon étant d’abord divisé par celui de la Terre, car la requête l’attend en radians. Elle renvoie toutes les stations de mesure assez proches pour concerner cette personne.",
           },
           {
             title: "Stations et date donnent les relevés utiles",
-            body: "Les identifiants de ces stations et la date du jour sélectionnent les relevés de pollen de la journée, chacun contenant les identifiants des concentrations mesurées. Ces concentrations sont ensuite récupérées et filtrées sur les allergènes que l’utilisateur a sélectionnés : la réponse ne contient que des relevés à la fois proches et pertinents.",
+            body: "Les identifiants de ces stations et la date du jour sélectionnent les relevés de pollen de la journée, chacun contenant les identifiants des concentrations mesurées. Ces concentrations sont ensuite récupérées et filtrées sur les allergènes que l’utilisateur a sélectionnés : la réponse ne contient que des relevés à la fois proches et pertinents.",
           },
           {
             title: "Chaque relevé reçoit un niveau et un lieu",
-            body: "Une concentration brute ne veut rien dire en soi : chacune est comparée aux seuils publiés pour son allergène et classée Low, Normal, High ou Very high. Le relevé est ensuite mis en forme avec l’allergène et la station d’origine, et c’est ce qu’affichent le marqueur sur la carte et la vue détaillée.",
+            body: "Une concentration brute ne veut rien dire en soi : chacune est comparée aux seuils publiés pour son allergène et classée Low, Normal, High ou Very high. Le relevé est ensuite mis en forme avec l’allergène et la station d’origine, et c’est ce qu’affichent le marqueur sur la carte et la vue détaillée.",
           },
         ],
 
@@ -532,11 +538,11 @@ const fr: Dict = {
           },
           {
             title: "Une notification quand ça monte",
-            body: "Une notification push et une alerte dans l’application dès qu’un allergène de votre liste atteint une forte concentration à proximité : l’application est utile même fermée.",
+            body: "Une notification push et une alerte dans l’application dès qu’un allergène de votre liste atteint une forte concentration à proximité : l’application est utile même fermée.",
           },
           {
             title: "Des comptes simples",
-            body: "Inscription et connexion par e-mail. Le profil enregistre les allergènes, le rayon et l’intervalle : la sélection est liée au compte, pas au téléphone.",
+            body: "Inscription et connexion par e-mail. Le profil enregistre les allergènes, le rayon et l’intervalle : la sélection est liée au compte, pas au téléphone.",
           },
         ],
 
@@ -549,8 +555,8 @@ const fr: Dict = {
         },
 
         takeaway: [
-          "La principale leçon : des données ouvertes ne sont pas forcément des données exploitables. Cinq endpoints qui se référencent par identifiants, une échelle nationale et aucun moyen de poser une question géographique : toute la valeur est dans la copie et les jointures. Décider quoi copier, à quelle fréquence, et comment rendre une double copie sans effet, c’est là qu’était le vrai travail d’ingénierie.",
-          "L’autre leçon, c’est que l’information doit arriver sans qu’on la demande. Une personne allergique n’ouvre pas une application pour vérifier : elle veut être prévenue, dans un rayon et à un intervalle réglés une fois pour toutes. Grâce aux notifications push sur un backend planifié, un jeu de données public devient une alerte qui prévient la personne concernée le jour où cela compte.",
+          "La principale leçon : des données ouvertes ne sont pas forcément des données exploitables. Cinq endpoints qui se référencent par identifiants, une échelle nationale et aucun moyen de poser une question géographique : toute la valeur est dans la copie et les jointures. Décider quoi copier, à quelle fréquence, et comment rendre une double copie sans effet, c’est là qu’était le vrai travail d’ingénierie.",
+          "L’autre leçon, c’est que l’information doit arriver sans qu’on la demande. Une personne allergique n’ouvre pas une application pour vérifier : elle veut être prévenue, dans un rayon et à un intervalle réglés une fois pour toutes. Grâce aux notifications push sur un backend planifié, un jeu de données public devient une alerte qui prévient la personne concernée le jour où cela compte.",
         ],
       },
     },
@@ -563,7 +569,7 @@ const fr: Dict = {
     /** The space before the colon is French typography and therefore part of
      *  the string, which is why the label carries its own punctuation. See the
      *  note in en.ts. */
-    built: "Réalisé :",
+    built: "Réalisé :",
 
     sound: "Son",
 
@@ -577,7 +583,7 @@ const fr: Dict = {
     index: {
       metaTitle: "Jeux - Vuk Cvetković",
       metaDescription:
-        "Les jeux de navigateur de Vuk Cvetković : 2048, le démineur, un Memory en douze niveaux, la bataille navale contre quatre adversaires, un jeu où l’on fusionne des mondes pour en former de plus grands, un cube en 3D du 2×2 au 5×5, et un quatre en ligne contre un grand maître. Chacun a sa propre page.",
+        "Les jeux de navigateur de Vuk Cvetković : 2048, le démineur, un Memory en douze niveaux, la bataille navale contre quatre adversaires, un jeu où l’on fusionne des mondes pour en former de plus grands, un cube en 3D du 2×2 au 5×5, et un quatre en ligne contre un grand maître. Chacun a sa propre page.",
       heading: "Jeux",
       intro:
         "Des jeux qui méritent plus d’une partie. Chacun a sa page, avec en dessous un texte sur la façon dont il est construit, pour ceux que cela intéresse.",
@@ -600,11 +606,11 @@ const fr: Dict = {
         highest: "Plus grande tuile",
         newGame: "Nouvelle partie",
         undo: "Annuler",
-        hint: "Les flèches ou WASD, et un balayage sur téléphone.",
+        hint: "Les flèches ou ZQSD, et un balayage sur téléphone.",
 
         won: {
           title: "2048",
-          body: "La tuile est sur le plateau. Rien n’oblige à s’arrêter là : la partie continue tant qu’une tuile peut bouger.",
+          body: "La tuile est sur le plateau. Rien n’oblige à s’arrêter là : la partie continue tant qu’une tuile peut bouger.",
           keepGoing: "Continuer",
         },
 
@@ -620,17 +626,17 @@ const fr: Dict = {
             {
               title: "Poussez tout le plateau",
               description:
-                "Les flèches ou WASD au clavier, un balayage dans n’importe quelle direction sur téléphone. Chaque tuile parcourt en un coup toute la distance possible, et non une seule case.",
+                "Les flèches ou ZQSD au clavier, un balayage dans n’importe quelle direction sur téléphone. Chaque tuile parcourt en un coup toute la distance possible, et non une seule case.",
             },
             {
               title: "Les nombres identiques fusionnent",
               description:
-                "Deux tuiles portant le même nombre n’en font plus qu’une, de valeur double. Une tuile qui vient de fusionner ne peut plus fusionner pendant ce coup : une rangée de quatre 2 donne donc deux 4, et non un 8.",
+                "Deux tuiles portant le même nombre n’en font plus qu’une, de valeur double. Une tuile qui vient de fusionner ne peut plus fusionner pendant ce coup : une rangée de quatre 2 donne donc deux 4, et non un 8.",
             },
             {
               title: "Une nouvelle tuile à chaque coup",
               description:
-                "Elle apparaît sur une case libre, et c’est un 2 neuf fois sur dix. Une poussée qui ne change rien n’est pas un coup : rien de nouveau n’apparaît, et vous ne perdez rien à essayer.",
+                "Elle apparaît sur une case libre, et c’est un 2 neuf fois sur dix. Une poussée qui ne change rien n’est pas un coup : rien de nouveau n’apparaît, et vous ne perdez rien à essayer.",
             },
             {
               title: "Choisissez un coin et restez-y",
@@ -643,10 +649,10 @@ const fr: Dict = {
         close: {
           label: "Comment c’est construit",
           paragraphs: [
-            "Ni canvas ni bibliothèque de jeu. Une tuile est un élément doté de deux propriétés personnalisées, sa position est une translation calculée par rapport à sa propre taille, et le navigateur gère le glissement à l’étape de composition. D’où la fluidité : un coup ne modifie qu’une transformation, et rien ne passe par le calcul de la mise en page.",
-            "Autre point : chaque tuile garde le même élément pendant toute sa vie. Le plateau n’est jamais reconstruit à partir de l’état : un coup met à jour les nombres sur des nœuds déjà présents, c’est pourquoi on voit une tuile parcourir le chemin depuis sa place au lieu de disparaître et de réapparaître ailleurs.",
-            "Les chiffres sont du texte : ils sont aussi nets que le reste de la page et suivent la taille de texte réglée par le lecteur. Les couleurs sont des variables de la même feuille de style que tout le reste, c’est pourquoi le plateau suit le sélecteur de thème de l’en-tête.",
-            "Toutes les commandes passent par une seule fonction, appelée depuis trois endroits, si bien qu’une touche, un balayage et un appui ne peuvent pas finir par avoir des effets légèrement différents. Les flèches ne sont captées par le plateau que lorsqu’il est à l’écran, et un coup joué avant que le précédent soit terminé est mis en attente plutôt qu’ignoré : jouer vite ne coûte jamais un coup.",
+            "Ni canvas ni bibliothèque de jeu. Une tuile est un élément doté de deux propriétés personnalisées, sa position est une translation calculée par rapport à sa propre taille, et le navigateur gère le glissement à l’étape de composition. D’où la fluidité : un coup ne modifie qu’une transformation, et rien ne passe par le calcul de la mise en page.",
+            "Autre point : chaque tuile garde le même élément pendant toute sa vie. Le plateau n’est jamais reconstruit à partir de l’état : un coup met à jour les nombres sur des nœuds déjà présents, c’est pourquoi on voit une tuile parcourir le chemin depuis sa place au lieu de disparaître et de réapparaître ailleurs.",
+            "Les chiffres sont du texte : ils sont aussi nets que le reste de la page et suivent la taille de texte réglée par le lecteur. Les couleurs sont des variables de la même feuille de style que tout le reste, c’est pourquoi le plateau suit le sélecteur de thème de l’en-tête.",
+            "Toutes les commandes passent par une seule fonction, appelée depuis trois endroits, si bien qu’une touche, un balayage du doigt et un glissement de la souris ne peuvent pas finir par avoir des effets légèrement différents. Les flèches ne sont captées par le plateau que lorsqu’il est à l’écran, et un coup joué avant que le précédent soit terminé est mis en attente plutôt qu’ignoré : jouer vite ne coûte jamais un coup.",
           ],
         },
       },
@@ -693,7 +699,7 @@ const fr: Dict = {
 
         lost: {
           title: "Mine",
-          body: "Le terrain est révélé tel qu’il était. Un drapeau posé sur une case sans mine est signalé : c’est souvent là que le raisonnement a déraillé.",
+          body: "Le terrain est révélé tel qu’il était. Un drapeau posé sur une case sans mine est signalé : c’est souvent là que le raisonnement a déraillé.",
           again: "Réessayer",
         },
 
@@ -703,7 +709,7 @@ const fr: Dict = {
             {
               title: "Le premier clic est sûr",
               description:
-                "Les mines sont placées après lui, en épargnant l’endroit où vous avez appuyé : le premier coup ne peut donc pas faire perdre et ouvre toujours une zone dégagée. Commencez où vous voulez.",
+                "Les mines sont placées après lui, en épargnant l’endroit où vous avez appuyé : le premier coup ne peut donc pas faire perdre et ouvre toujours une zone dégagée. Commencez où vous voulez.",
             },
             {
               title: "Un nombre compte ses voisines",
@@ -713,12 +719,12 @@ const fr: Dict = {
             {
               title: "Marquez ce que vous avez déduit",
               description:
-                "Clic droit sur ordinateur, F au clavier, appui long sur téléphone. L’appui long ne fait que poser un drapeau, pour qu’un doigt trop lent ne retire pas celui qu’il vient de mettre : pour en enlever un, passez en mode drapeaux, qui est de toute façon plus pratique pour en poser toute une série. Le compteur affiche le nombre de mines moins le nombre de drapeaux.",
+                "Clic droit sur ordinateur, F au clavier, appui long sur téléphone. L’appui long ne fait que poser un drapeau, pour qu’un doigt trop lent ne retire pas celui qu’il vient de mettre : pour en enlever un, passez en mode drapeaux, qui est de toute façon plus pratique pour en poser toute une série. Le compteur affiche le nombre de mines moins le nombre de drapeaux.",
             },
             {
               title: "Appuyez sur un nombre complet",
               description:
-                "Dès qu’un nombre a autant de drapeaux autour de lui qu’il l’annonce, appuyer dessus ouvre d’un coup toutes les autres cases autour, et le bouton du milieu fait de même. Maintenez le bouton enfoncé et les cases qui s’ouvriraient s’enfoncent aussi : vous voyez les huit avant de valider. C’est là que se gagne la vitesse dans ce jeu, et la plupart des joueurs ne le découvrent jamais.",
+                "Dès qu’un nombre a autant de drapeaux autour de lui qu’il l’annonce, appuyer dessus ouvre d’un coup toutes les autres cases autour, et le bouton du milieu fait de même. Maintenez le bouton enfoncé et les cases qui s’ouvriraient s’enfoncent aussi : vous voyez les huit avant de valider. C’est là que se gagne la vitesse dans ce jeu, et la plupart des joueurs ne le découvrent jamais.",
             },
           ],
         },
@@ -726,10 +732,10 @@ const fr: Dict = {
         close: {
           label: "Comment c’est construit",
           paragraphs: [
-            "Ni canvas ni bibliothèque de jeu, et contrairement à 2048, pas de mouvement non plus. Il n’y a ni boucle ni animation en cours : une case est un bouton, qui change d’état ou non, et le plateau expert en compte quatre cent quatre-vingts. Le coût d’exécution se résume à une classe sur un élément.",
+            "Ni canvas ni bibliothèque de jeu, et contrairement à 2048, rien ne glisse non plus. Il n’y a ni boucle ni déplacement en cours : une case est un bouton, qui change d’état ou non, et le plateau expert en compte quatre cent quatre-vingts. Le coût d’exécution se résume à une classe sur un élément.",
             "Les mines sont placées au premier appui et non au départ, en épargnant la case touchée et les huit qui l’entourent. Un terrain tiré à l’avance doit soit laisser le premier coup perdre, ce qui relève du pile ou face et non du jeu, soit être redistribué jusqu’à ce que ce ne soit plus le cas, ce qui fausse discrètement les probabilités partout ailleurs. Placer les mines au dernier moment donne un terrain honnête et un premier coup qui ouvre toujours une zone.",
-            "Une zone s’ouvre avec une file d’attente et non par récursion, qu’un téléphone a le droit de refuser à quatre cents niveaux de profondeur, et cette file fournit au passage le minutage de l’animation : l’anneau où une case a été trouvée donne sa distance au point d’appui, et chaque case attend autant de pas avant de s’ouvrir. L’ouverture se propage ainsi vers l’extérieur au lieu de changer le plateau d’un bloc, pour le prix d’une propriété personnalisée et d’un délai.",
-            "Le plateau est une vraie grille : des lignes, des cellules, un nombre de lignes et de colonnes, et une seule case à la fois dans l’ordre de tabulation, pour qu’on le parcoure avec les flèches plutôt qu’avec la touche Tab. Le plateau de 2048, lui, doit être masqué aux lecteurs d’écran et décrit par une région live, parce que seize tuiles qui se réécrivent à chaque touche sont impossibles à lire. Un champ de mines est un tableau immobile qui attend, et c’est exactement à cela que sert une grille.",
+            "Une zone s’ouvre avec une file d’attente et non par récursion, qu’un téléphone a le droit de refuser à quatre cents niveaux de profondeur, et cette file fournit au passage le minutage de l’animation : l’anneau où une case a été trouvée donne sa distance au point d’appui, et chaque case attend autant de pas avant de s’ouvrir. L’ouverture se propage ainsi vers l’extérieur au lieu de changer le plateau d’un bloc, pour le prix d’une propriété personnalisée et d’un délai.",
+            "Le plateau est une vraie grille : des lignes, des cellules, un nombre de lignes et de colonnes, et une seule case à la fois dans l’ordre de tabulation, pour qu’on le parcoure avec les flèches plutôt qu’avec la touche Tab. Le plateau de 2048, lui, doit être masqué aux lecteurs d’écran et décrit par une région live, parce que seize tuiles qui se réécrivent à chaque touche sont impossibles à lire. Un champ de mines est un tableau immobile qui attend, et c’est exactement à cela que sert une grille.",
           ],
         },
       },
@@ -741,7 +747,7 @@ const fr: Dict = {
           "Retournez deux cartes et retenez ce qu’elles cachaient. Douze niveaux, de quatre cartes à soixante, et un plateau plus grand à chaque niveau réussi.",
 
         metaDescription:
-          "Le Memory dans le navigateur : douze niveaux de quatre à soixante cartes, jusqu’à trois étoiles par plateau, et une partie libre où tous les plateaux sont ouverts dès le départ.",
+          "Le Memory dans le navigateur : douze niveaux de quatre à soixante cartes, jusqu’à trois étoiles par plateau, et une partie libre où tous les plateaux sont ouverts dès le départ.",
         lead: "Retournez deux cartes à la fois et trouvez toutes les paires. Douze niveaux, chaque plateau plus grand que le précédent, de quatre cartes à soixante, avec trente images au total. Réussissez un niveau pour ouvrir le suivant, ou passez directement à n’importe quelle taille en partie libre.",
 
         modes: "Mode",
@@ -811,7 +817,7 @@ const fr: Dict = {
         won: {
           title: "Toutes les paires trouvées",
           record: "Moins de coups que jamais sur ce niveau.",
-          final: "C’était le dernier niveau. Il ne reste plus qu’à décrocher les trois étoiles sur les douze.",
+          final: "C’était le dernier niveau. Il ne reste plus qu’à décrocher les trois étoiles sur chacun des douze niveaux.",
           next: "Niveau suivant",
           bigger: "Plateau suivant",
           again: "Rejouer",
@@ -828,7 +834,7 @@ const fr: Dict = {
             {
               title: "Chaque tour est un coup",
               description:
-                "Deux cartes font un coup, paire ou non. Trois étoiles : le plateau est terminé presque aussi vite qu’avec une mémoire parfaite. Deux étoiles : jusqu’à moitié plus de coups. Une étoile : vous êtes allé au bout. Les étoiles au-dessus de la table s’éteignent à mesure que vous franchissez chaque seuil.",
+                "Deux cartes font un coup, paire ou non. Trois étoiles : le plateau est terminé presque aussi vite qu’avec une mémoire parfaite. Deux étoiles : jusqu’à moitié plus de coups. Une étoile : vous êtes allé au bout. Les étoiles en jeu s’éteignent à mesure que vous franchissez chaque seuil.",
             },
             {
               title: "Douze niveaux, chacun plus grand",
@@ -846,11 +852,11 @@ const fr: Dict = {
         close: {
           label: "Comment c’est construit",
           paragraphs: [
-            "Pas de canvas ni de bibliothèque de jeu, comme pour les autres. Une carte est un bouton à deux faces, et la retourner tient en une seule transition sur une seule propriété : le calque qui porte les deux faces fait un demi-tour autour de son axe vertical, chaque face a son revers masqué, et le navigateur affiche celle qui est tournée vers vous. La rotation dépasse de quelques degrés avant de se stabiliser, ce qui donne à la carte du poids, là où un simple carré ne ferait que pivoter. Chaque carte a sa propre perspective, proportionnelle à sa taille, si bien qu’une carte du plus petit plateau et une du plus grand tournent avec la même profondeur.",
-            "Les trente images sont dessinées, pas téléchargées : une seule planche de sprites dans la page, un symbole par image, et chaque face de carte y fait référence. Chacune est en aplats de trois tons, la couleur elle-même, un reflet du côté de la lumière et une ombre à l’opposé, sur un fond qui lui est propre. Les images gardent leurs couleurs dans les deux thèmes et seuls les fonds suivent la page, si bien qu’une pomme retenue en thème clair est la même pomme en thème sombre. Les sons sont produits de la même manière, dans le navigateur, avec quelques oscillateurs et une salve de bruit filtré : la page ne charge donc aucun fichier audio non plus.",
-            "Une carte ne sait pas ce qu’elle est avant d’être retournée. La table face cachée ne contient aucune réponse dans la page : la face de chaque carte ne pointe vers aucune image, et l’image n’y est écrite qu’au moment où la carte se retourne. Les cartes sont mélangées une fois par plateau, et leur ordre reste dans le code du jeu, là où la page ne peut pas le lire.",
+            "Pas de canvas ni de bibliothèque de jeu, comme pour les autres. Une carte est un bouton à deux faces, et la retourner tient en une seule transition sur une seule propriété : le calque qui porte les deux faces fait un demi-tour autour de son axe vertical, chaque face a son revers masqué, et le navigateur affiche celle qui est tournée vers vous. La rotation dépasse de quelques degrés avant de se stabiliser, ce qui donne à la carte du poids, là où un simple carré ne ferait que pivoter. Chaque carte a sa propre perspective, proportionnelle à sa taille, si bien qu’une carte du plus petit plateau et une du plus grand tournent avec la même profondeur.",
+            "Les trente images sont dessinées, pas téléchargées : une seule planche de sprites dans la page, un symbole par image, et chaque face de carte y fait référence. Chacune est en aplats de trois tons, la couleur elle-même, un reflet du côté de la lumière et une ombre à l’opposé, sur un fond qui lui est propre. Les images gardent leurs couleurs dans les deux thèmes et seuls les fonds suivent la page, si bien qu’une pomme retenue en thème clair est la même pomme en thème sombre. Les sons sont produits de la même manière, dans le navigateur, avec quelques oscillateurs et une salve de bruit filtré : la page ne charge donc aucun fichier audio non plus.",
+            "Une carte ne sait pas ce qu’elle est avant d’être retournée. La table face cachée ne contient aucune réponse dans la page : la face de chaque carte ne pointe vers aucune image, et l’image n’y est écrite qu’au moment où la carte se retourne. Les cartes sont mélangées une fois par plateau, et leur ordre reste dans le code du jeu, là où la page ne peut pas le lire.",
             "Les seuils des étoiles ont été mesurés, pas choisis. Un joueur à la mémoire parfaite, qui ne retourne jamais une carte déjà vue sauf pour compléter une paire, a joué deux cent mille parties sur chaque plateau, et le seuil des trois étoiles correspond au nombre de coups qui lui a suffi neuf parties sur dix. Sa moyenne est de 1,61 coup par paire, la valeur connue pour ce jeu, qui a servi à vérifier la simulation.",
-            "Le plateau est dimensionné pour tenir à l’écran, parce qu’un plateau de Memory qu’il faut faire défiler, on ne le voit jamais en entier. Sur un téléphone tenu à la verticale, il pivote d’un quart de tour et passe de dix cartes de large à six, sans qu’aucune carte ne bouge pour autant : la grille se remplit par colonnes au lieu de par lignes, les flèches échangent leurs axes en conséquence, et un lecteur d’écran parcourt toujours le même tableau.",
+            "Le plateau est dimensionné pour tenir à l’écran, parce qu’un plateau de Memory qu’il faut faire défiler, on ne le voit jamais en entier. Sur un téléphone tenu à la verticale, il pivote d’un quart de tour et passe de dix cartes de large à six, sans qu’aucune carte ne bouge pour autant : la grille se remplit par colonnes et non par lignes, les flèches échangent leurs axes en conséquence, et un lecteur d’écran parcourt toujours le même tableau.",
           ],
         },
       },
@@ -859,10 +865,10 @@ const fr: Dict = {
         name: "Accrétion",
 
         tagline:
-          "Laissez tomber des corps célestes. Deux identiques fusionnent en l’astre suivant, de la Lune jusqu’au Soleil.",
+          "Laissez tomber un corps céleste sur un autre. Deux identiques fusionnent en l’astre suivant, de la Lune jusqu’au Soleil.",
 
         metaDescription:
-          "Un jeu de fusion dans le navigateur : laissez tomber des corps célestes, et deux identiques fusionnent en l’astre suivant, de la Lune au Soleil.",
+          "Un jeu de fusion dans le navigateur : laissez tomber des corps célestes, et deux identiques fusionnent en l’astre suivant, de la Lune au Soleil.",
         lead: "Laissez tomber un corps céleste. Deux identiques fusionnent en l’astre suivant, de la Lune au Soleil en passant par les planètes, et l’espace se remplit, que vous soyez prêt ou non.",
 
         score: "Score",
@@ -902,17 +908,17 @@ const fr: Dict = {
             {
               title: "Deux identiques se touchent et fusionnent",
               description:
-                "Inutile de les presser l’un contre l’autre ou de les maintenir : dès que deux corps identiques s’immobilisent l’un contre l’autre, ils deviennent l’astre suivant, et une fusion qui aboutit à côté d’une autre déclenche une réaction en chaîne.",
+                "Inutile de les presser l’un contre l’autre ou de les maintenir : dès que deux corps identiques s’immobilisent l’un contre l’autre, ils deviennent l’astre suivant, et si ce nouvel astre se pose à côté d’un astre identique, cela déclenche une réaction en chaîne.",
             },
             {
               title: "Construisez en largeur, pas en hauteur",
               description:
-                "Un corps lâché sur une pile haute roule, et il ne s’arrête pas là où vous l’avez visé. L’essentiel du jeu consiste à garder les gros corps au fond, car ce sont eux qui n’ont plus nulle part où aller.",
+                "Un corps lâché sur une pile haute roule, et il ne s’arrête pas là où vous visiez. L’essentiel du jeu consiste à garder les gros corps au fond, car ce sont eux qui n’ont plus nulle part où aller.",
             },
             {
               title: "La ligne est un délai, pas un mur",
               description:
-                "Rien n’empêche un corps de la dépasser. La partie n’est perdue que si un corps s’est posé au-dessus et y est encore une demi-seconde plus tard : un rebond passager ne coûte rien, un Jupiter installé là, si.",
+                "Rien n’empêche un corps de la dépasser. La partie n’est perdue que si un corps s’est posé au-dessus et y est encore une demi-seconde plus tard : un rebond passager ne coûte rien, un Jupiter installé là, si.",
             },
           ],
         },
@@ -922,8 +928,8 @@ const fr: Dict = {
           paragraphs: [
             "Pas de canvas, pas de bibliothèque de physique et aucune dépendance. Un corps est un div avec un border-radius, sa couleur est un dégradé dans la même feuille de style que le reste de la page, et à chaque image, une seule transformation est écrite sur chacun. Les planètes suivent donc l’échelle de la page, restent nettes à tout niveau de zoom et n’ajoutent rien à télécharger. Un moteur physique généraliste pèserait à lui seul cinq fois ce jeu tout entier.",
             "Le solveur fait beaucoup de petits pas plutôt que quelques grands, huit par image. À chaque pas, chaque contact est résolu comme un ressort raide et très amorti, les corps se déplacent, puis chaque contact est résolu une seconde fois, de façon rigide, ce qui annule la vitesse que la poussée leur avait donnée. Un recouvrement est ainsi corrigé sans jamais devenir un rebond, et une pile au repos reste parfaitement immobile. Un contact est détecté alors qu’il reste encore un écart, si bien qu’une planète qui tombe s’arrête exactement sur la surface où elle se pose au lieu de s’y enfoncer puis d’en être repoussée.",
-            "Le reste sert à donner du poids plutôt que de l’élasticité. Le frottement agit entre les deux surfaces, rotation comprise, donc un corps qui glisse se met à rouler. Un atterrissage brutal absorbe la rotation avec laquelle le corps arrive, si bien qu’une planète qui en accroche une autre sur le côté s’arrête près d’elle au lieu de traverser le champ en roulant. Un choc est dissipé sur place et jamais reporté au pas suivant, ce qui empêche un gros corps de rebondir sur un petit. Enfin, une planète en équilibre au sommet d’une autre en est aussitôt délogée : l’équilibre a beau être réel, une planète posée sur une autre comme un bonhomme de neige a l’air coincée.",
-            "La simulation tourne dans son propre espace de 1200 sur 1650 unités et ignore à quelle taille elle est affichée. Une seule transformation sur un seul élément met tout le champ à l’échelle de la largeur que la page lui accorde : un redimensionnement change ce nombre et rien d’autre, ni un rayon, ni une position, ni un pas. À chaque image, chaque corps est dessiné entre ses positions des deux derniers pas, si bien qu’un écran à 120 Hz reçoit une nouvelle position à chaque rafraîchissement. Le ciel en arrière-plan est dessiné une seule fois, à la génération du site : trois cents étoiles en points le long de quelques tracés, des nébuleuses faites de bruit fractal et quatre couches qui glissent à des vitesses différentes pendant que vous visez.",
+            "Le reste sert à donner du poids plutôt que de l’élasticité. Le frottement agit entre les deux surfaces, rotation comprise, donc un corps qui glisse se met à rouler. Un atterrissage brutal absorbe la rotation avec laquelle le corps arrive, si bien qu’une planète qui en accroche une autre sur le côté s’arrête près d’elle au lieu de traverser le champ en roulant. Un choc est dissipé sur place et jamais reporté au pas suivant, ce qui empêche un gros corps de rebondir sur un petit. Enfin, une planète en équilibre au sommet d’une autre en est aussitôt délogée : l’équilibre a beau être réel, une planète posée sur une autre comme un bonhomme de neige a l’air coincée.",
+            "La simulation tourne dans son propre espace de 1200 sur 1650 unités et ignore à quelle taille elle est affichée. Une seule transformation sur un seul élément met tout le champ à l’échelle de la largeur que la page lui accorde : un redimensionnement change ce nombre et rien d’autre, ni un rayon, ni une position, ni un pas. À chaque image, chaque corps est dessiné entre ses positions des deux derniers pas, si bien qu’un écran à 120 Hz reçoit une nouvelle position à chaque rafraîchissement. Le ciel en arrière-plan est dessiné une seule fois, à la génération du site : trois cents étoiles en points le long de quelques tracés, des nébuleuses faites de bruit fractal et quatre couches qui glissent à des vitesses différentes pendant que vous visez.",
           ],
         },
       },
@@ -932,11 +938,11 @@ const fr: Dict = {
         name: "Bataille navale",
 
         tagline:
-          "Cachez cinq navires, puis trouvez les leurs en premier. Quatre adversaires, de celui qui tire au hasard à celui qui compte chaque position où votre flotte peut encore se trouver.",
+          "Cachez cinq navires, puis trouvez ceux de l’adversaire en premier. Quatre adversaires, de celui qui tire au hasard à celui qui compte chaque position où votre flotte peut encore se trouver.",
 
         metaDescription:
-          "La bataille navale dans le navigateur, contre quatre adversaires : la flotte classique sur une grille de dix sur dix, et un adversaire qui compte chaque disposition que les tirs déjà joués autorisent encore.",
-        lead: "Cachez cinq navires, puis trouvez les leurs avant qu’ils ne trouvent les vôtres. Chacun tire à son tour, et toute la difficulté tient à l’adversaire choisi : le plus faible tire là où il n’a pas encore tiré, et le plus fort compte chaque position où votre flotte peut encore se trouver et vise la case qui apparaît dans le plus grand nombre d’entre elles.",
+          "La bataille navale dans le navigateur, contre quatre adversaires : la flotte classique sur une grille de dix sur dix, et un adversaire qui compte chaque disposition que les tirs déjà joués autorisent encore.",
+        lead: "Cachez cinq navires, puis trouvez ceux de l’adversaire avant qu’il ne trouve les vôtres. Chacun tire à son tour, et toute la difficulté tient à l’adversaire choisi : le plus faible tire là où il n’a pas encore tiré, et le plus fort compte chaque position où votre flotte peut encore se trouver et vise la case qui apparaît dans le plus grand nombre d’entre elles.",
 
         /** Des grades plutôt que des adjectifs : « facile » et « difficile »
          *  disent comment cela va se passer pour vous, un grade dit qui est en
@@ -945,7 +951,7 @@ const fr: Dict = {
         levels: {
           sailor: {
             name: "Matelot",
-            note: "Tire au hasard. Environ 95 tirs pour couler toute la flotte : il faut vraiment le vouloir pour perdre.",
+            note: "Tire au hasard. Environ 95 tirs pour couler toute la flotte : il faut vraiment le vouloir pour perdre.",
           },
           gunner: {
             name: "Canonnier",
@@ -953,7 +959,7 @@ const fr: Dict = {
           },
           captain: {
             name: "Capitaine",
-            note: "Fouille la grille méthodiquement. Environ 50 tirs : un combat équilibré.",
+            note: "Fouille la grille méthodiquement. Environ 50 tirs : un combat équilibré.",
           },
           admiral: {
             name: "Amiral",
@@ -973,7 +979,7 @@ const fr: Dict = {
 
         /** Le titre au-dessus de chaque grille, et le nom de la grille. */
         sides: {
-          enemy: "Leurs eaux",
+          enemy: "Eaux ennemies",
           own: "Votre flotte",
         },
 
@@ -993,17 +999,17 @@ const fr: Dict = {
         messages: {
           hit: "Touché.",
           miss: "Manqué.",
-          sunk: "{ship} coule.",
+          sunk: "{ship} coulé.",
           waiting: "Il vise.",
           ready: "À vous de tirer.",
         },
 
         setupHint:
           "Votre flotte est déjà à l’eau. Appuyez sur un navire pour le prendre, faites-le pivoter si besoin, puis appuyez sur l’eau pour le poser.",
-        hint: "Appuyez sur une case dans leurs eaux pour tirer. Les flèches parcourent une grille, Entrée tire, et R fait pivoter un navire pendant que vous le placez.",
+        hint: "Appuyez sur une case dans les eaux ennemies pour tirer. Les flèches parcourent une grille, Entrée tire, et R fait pivoter un navire pendant que vous le placez.",
 
         won: {
-          title: "Leur flotte est coulée",
+          title: "La flotte ennemie est coulée",
           body: "Les cinq navires sont coulés, et votre flotte a été la plus rapide.",
           record: "En moins de tirs que jamais contre cet adversaire.",
           again: "Rejouer",
@@ -1011,7 +1017,7 @@ const fr: Dict = {
 
         lost: {
           title: "Votre flotte est coulée",
-          body: "Leurs navires sont révélés à leur emplacement, pour que vous voyiez ce que vous cherchiez.",
+          body: "Les navires ennemis sont révélés à leur emplacement, pour que vous voyiez ce que vous cherchiez.",
           again: "Réessayer",
         },
 
@@ -1021,7 +1027,7 @@ const fr: Dict = {
             {
               title: "Mettez cinq navires à l’eau",
               description:
-                "Une flotte est placée pour vous dès l’ouverture de la page : vous pouvez commencer tout de suite. Appuyez sur un navire pour le prendre, faites-le pivoter, puis appuyez sur une case pour le poser. Les navires peuvent se toucher : c’est la règle standard, et celle qui révèle le moins d’informations.",
+                "Une flotte est placée pour vous dès l’ouverture de la page : vous pouvez commencer tout de suite. Appuyez sur un navire pour le prendre, faites-le pivoter, puis appuyez sur une case pour le poser. Les navires peuvent se toucher : c’est la règle standard, et celle qui révèle le moins d’informations.",
             },
             {
               title: "Un tir chacun, à tour de rôle",
@@ -1044,11 +1050,11 @@ const fr: Dict = {
         close: {
           label: "Comment c’est construit",
           paragraphs: [
-            "Pas de canvas ni de bibliothèque de jeu, comme pour les autres. La mer est une grille de boutons et la flotte est une couche au-dessus : un élément par navire, couvrant ses cases, avec un dessin à l’intérieur. Un porte-avions a un pont d’envol, un îlot et des marquages, un sous-marin flotte bas et n’a rien sur le pont, et rien de tout cela ne survit au découpage en cases. Une coque est donc une seule forme sur toute sa longueur, et non une extrémité arrondie collée sur chaque case. Chaque navire est dessiné deux fois : le plan complet, avec ses tourelles, ses cheminées et son pont d’envol, et la silhouette seule. C’est la silhouette qu’utilisent les copies empilées sous une coque pour lui donner un flanc, si bien que le détail n’est résolu qu’une fois par navire au lieu de huit. Un navire posé dans l’autre sens est le même dessin tourné d’un quart de tour.",
-            "Le plateau est incliné et les navires se tiennent au-dessus, et les deux sont réels plutôt que dessinés. Le plateau pivote en trois dimensions et la flotte est soulevée le long de l’axe que cette rotation laisse libre : une coque se trouve donc au-dessus de sa propre ombre, et son flanc tourne avec elle quand elle pivote. Il n’y a de perspective nulle part, volontairement : un point de fuite rendrait le bord lointain plus étroit que le bord proche, et une grille dont on désigne les cases par leur nom ne peut pas se permettre des colonnes qui ne soient plus parallèles. Un tir est dessiné lui aussi, de l’une de vos coques jusqu’à la case où il tombe, car ici un tour, c’est une flotte qui tire sur une autre, pas une marque qui apparaît.",
-            "L’adversaire ne voit pas la flotte sur laquelle il tire, et c’est garanti par la structure du code, pas par une promesse dans un commentaire. La fonction qui choisit une case reçoit deux choses : le relevé de ses propres tirs, et les longueurs des navires qu’il a déjà coulés. La disposition n’est pas accessible là où la décision se prend, il n’y a donc aucune ligne à surveiller. Le nom du navire coulé est public, comme quand un joueur l’annonce à voix haute, et cette information permet d’affiner le raisonnement.",
-            "Le plus fort des quatre ne devine pas. Pour chaque navire encore à flot, il parcourt chaque position que ce navire pourrait occuper, écarte celles qu’un tir manqué ou une épave exclut, et ajoute une voix à chaque case inconnue couverte par les positions restantes. Il tire sur la case qui a le plus de voix. Chercher un navire et achever un coup au but relèvent du même calcul : sans rien d’inexpliqué, il produit la courbe en cloche habituelle au centre de la grille, et dès qu’un coup au but est sur la table, les positions qui ne l’expliquent pas sont écartées et tout le poids se concentre autour de lui.",
-            "Achever un coup au but s’écrit d’ordinaire sous forme de file de cases à essayer, et c’est dans cette file que ce genre de programme se trompe : il faut la purger à chaque navire coulé, chaque fois qu’un autre tir règle l’une de ses entrées, et chaque fois que deux navires sont côte à côte. Ici, les cases à viser après un coup au but sont recalculées à partir de la grille à chaque tour : il n’y a rien à conserver et rien qui puisse devenir obsolète. Quatre adversaires, quarante mille parties simulées contre un défenseur écrit séparément, et pas un seul tir illégal.",
+            "Pas de canvas ni de bibliothèque de jeu, comme pour les autres. La mer est une grille de boutons et la flotte est une couche au-dessus : un élément par navire, couvrant ses cases, avec un dessin à l’intérieur. Un porte-avions a un pont d’envol, un îlot et des marquages, un sous-marin flotte bas et n’a rien sur le pont, et rien de tout cela ne survit au découpage en cases. Une coque est donc une seule forme sur toute sa longueur, et non une extrémité arrondie collée sur chaque case. Chaque navire est dessiné deux fois : le plan complet, avec ses tourelles, ses cheminées et son pont d’envol, et la silhouette seule. C’est la silhouette qu’utilisent les copies empilées sous une coque pour lui donner un flanc, si bien que le détail n’est résolu qu’une fois par navire au lieu de huit. Un navire posé dans l’autre sens est le même dessin tourné d’un quart de tour.",
+            "Le plateau est incliné et les navires se tiennent au-dessus, et les deux sont réels plutôt que dessinés. Le plateau pivote en trois dimensions et la flotte est soulevée le long de l’axe que cette rotation laisse libre : une coque se trouve donc au-dessus de sa propre ombre, et son flanc tourne avec elle quand elle pivote. Il n’y a de perspective nulle part, volontairement : un point de fuite rendrait le bord lointain plus étroit que le bord proche, et une grille dont on désigne les cases par leur nom ne peut pas se permettre des colonnes qui ne soient plus parallèles. Un tir est dessiné lui aussi, de l’une de vos coques jusqu’à la case où il tombe, car ici un tour, c’est une flotte qui tire sur une autre, pas une marque qui apparaît.",
+            "L’adversaire ne voit pas la flotte sur laquelle il tire, et c’est garanti par la structure du code, pas par une promesse dans un commentaire. La fonction qui choisit une case reçoit deux choses : le relevé de ses propres tirs, et les longueurs des navires encore à flot. La disposition n’est pas accessible là où la décision se prend, il n’y a donc aucune ligne à surveiller. Le nom du navire coulé est public, comme quand un joueur l’annonce à voix haute, et cette information permet d’affiner le raisonnement.",
+            "Le plus fort des quatre ne devine pas. Pour chaque navire encore à flot, il parcourt chaque position que ce navire pourrait occuper, écarte celles qu’un tir manqué ou une épave exclut, et ajoute une voix à chaque case inconnue couverte par les positions restantes. Il tire sur la case qui a le plus de voix. Chercher un navire et achever un coup au but relèvent du même calcul : sans rien d’inexpliqué, il produit la courbe en cloche habituelle au centre de la grille, et dès qu’un coup au but est sur la table, les positions qui ne l’expliquent pas sont écartées et tout le poids se concentre autour de lui.",
+            "Achever un coup au but s’écrit d’ordinaire sous forme de file de cases à essayer, et c’est dans cette file que ce genre de programme se trompe : il faut la purger à chaque navire coulé, chaque fois qu’un autre tir règle l’une de ses entrées, et chaque fois que deux navires sont côte à côte. Ici, les cases à viser après un coup au but sont recalculées à partir de la grille à chaque tour : il n’y a rien à conserver et rien qui puisse devenir obsolète. Quatre adversaires, quarante mille parties simulées contre un défenseur écrit séparément, et pas un seul tir illégal.",
           ],
         },
       },
@@ -1061,7 +1067,7 @@ const fr: Dict = {
           "Mélangez-le et remettez-le en ordre, contre la montre. Quatre cubes du 2×2 au 5×5 et une pyramide, en vraie 3D, et chaque couronne se tourne en la faisant glisser.",
 
         metaDescription:
-          "Un cube en 3D dans le navigateur : le 2×2, le 3×3, le 4×4, le 5×5 et la pyramide, que l’on tourne en faisant glisser une couronne, avec un chrono et un meilleur temps pour chacun.",
+          "Un cube en 3D dans le navigateur : le 2×2, le 3×3, le 4×4, le 5×5 et la pyramide, que l’on tourne en faisant glisser une couronne, avec un chrono et un meilleur temps pour chacun.",
         lead: "Mélangez-le et remettez-le en ordre. Faites glisser une couronne pour la tourner, et faites glisser n’importe où autour du casse-tête pour le retourner en entier. Le chrono démarre à votre premier mouvement et s’arrête quand chaque face est de nouveau d’une seule couleur.",
 
         puzzles: "Choisissez un casse-tête",
@@ -1080,7 +1086,7 @@ const fr: Dict = {
         },
 
         hint: {
-          cube: "Faites glisser une case pour tourner sa couronne, et faites glisser n’importe où autour du cube pour le tourner en entier. Au clavier, U, D, L, R, F et B tournent une face, Maj la tourne dans l’autre sens, un chiffre avant la lettre atteint une couronne plus profonde, et les flèches tournent le cube entier. H affiche un indice.",
+          cube: "Faites glisser une case pour tourner sa couronne, et faites glisser n’importe où autour du cube pour le tourner en entier. Au clavier, U, D, L, R, F et B tournent une face, Maj la tourne dans l’autre sens, un chiffre avant la lettre atteint une couronne plus profonde, et les flèches tournent le cube entier. Sur le 2×2 et le 3×3, H affiche un indice.",
           pyramid: "Faites glisser une case pour tourner son coin, et faites glisser n’importe où autour de la pyramide pour la tourner en entier. Au clavier, U, L, R et B tournent un coin, Maj le tourne dans l’autre sens, 1 avant la lettre tourne la pointe seule, et les flèches tournent la pyramide entière. H affiche un indice.",
         },
 
@@ -1095,8 +1101,8 @@ const fr: Dict = {
         advice: {
           button: "Indice",
           step: "Étape {n} sur {total}",
-          left: "Coups restants dans cette étape :",
-          play: "Le jouer",
+          left: "Coups restants dans cette étape :",
+          play: "Jouer le coup",
           close: "Fermer l’indice",
           colours: ["blanc", "rouge", "vert", "jaune", "orange", "bleu"],
           move: {
@@ -1137,12 +1143,12 @@ const fr: Dict = {
             corners: {
               title: "Coins blancs",
               out: "Le coin {piece} est dans la couronne blanche, mais au mauvais endroit, alors on le remonte d’abord dans la couronne du haut.",
-              align: "Cela place le coin {piece} juste au-dessus de sa place.",
+              align: "Cela amène le coin {piece} juste au-dessus de son emplacement.",
               insert: "Cette séquence fait descendre le coin {piece} à sa place, face blanche en bas. On la répète jusqu’à ce qu’il y soit.",
             },
             middle: {
               title: "Couronne du milieu",
-              out: "L’arête {piece} est dans la couronne du milieu, mais au mauvais endroit, alors on la remonte d’abord en haut.",
+              out: "L’arête {piece} est dans la couronne du milieu, mais au mauvais endroit, alors on la remonte d’abord dans la couronne du haut.",
               align: "Cela place l’arête {piece} au-dessus du centre de sa couleur.",
               right: "Cette séquence descend l’arête {piece} dans la couronne du milieu, vers la droite.",
               left: "Cette séquence descend l’arête {piece} dans la couronne du milieu, vers la gauche.",
@@ -1171,7 +1177,7 @@ const fr: Dict = {
             layer: {
               title: "Première couronne",
               out: "Le coin {piece} est dans la couronne blanche, mais au mauvais endroit, alors on le remonte d’abord dans la couronne du haut.",
-              align: "Cela place le coin {piece} juste au-dessus de sa place.",
+              align: "Cela amène le coin {piece} juste au-dessus de son emplacement.",
               insert: "Cette séquence fait descendre le coin {piece} à sa place, face blanche en bas. On la répète jusqu’à ce qu’il y soit.",
             },
             orient: {
@@ -1224,25 +1230,25 @@ const fr: Dict = {
             {
               title: "Mélangez, puis battez le chrono",
               description:
-                "Mélanger le brasse avec quelques dizaines de mouvements au hasard. Le chrono démarre à votre premier mouvement et s’arrête dès que chaque face est d’une seule couleur, et votre meilleur temps est gardé pour chaque casse-tête. Annuler reprend le dernier mouvement. Bloqué ? Indice montre le prochain mouvement et à quoi il sert, étape par étape, et une résolution avec des indices ne compte pas comme record.",
+                "Le bouton Mélanger effectue des mouvements au hasard. Le chrono démarre à votre premier mouvement et s’arrête dès que chaque face est d’une seule couleur, et votre meilleur temps est gardé pour chaque casse-tête. Annuler reprend le dernier mouvement. Bloqué ? Indice montre le prochain mouvement et à quoi il sert, étape par étape, et une résolution avec des indices ne compte pas comme record.",
             },
             {
               title: "Cinq casse-têtes",
               description:
-                "Le 2×2 est idéal pour commencer et le 3×3 est le grand classique. Le 4×4 et le 5×5 ajoutent des couronnes au milieu, et la pyramide tourne par tiers de tour autour de ses coins, avec des pointes qui tournent toutes seules.",
+                "Le 2×2 est idéal pour commencer et le 3×3 est le grand classique. Le 4×4 et le 5×5 ajoutent des couronnes au milieu, et la pyramide tourne par tiers de tour autour de ses coins, avec des pointes qui tournent séparément.",
             },
           ],
         },
 
         close: {
-          label: "Comment il est construit",
+          label: "Comment c’est construit",
           paragraphs: [
             "Pas de canvas, pas de WebGL et pas de bibliothèque 3D. Le casse-tête est une scène d’éléments ordinaires, un par case, placés en trois dimensions avec des transformations CSS, et le navigateur dessine la perspective et calcule ce qui passe devant quoi. Un 5×5 en compte cent cinquante. Un mouvement écrit une rotation sur les cases de la couronne qui tourne et sur rien d’autre, et deux plaques sombres se glissent dans la coupe pour que l’intérieur du casse-tête ne soit jamais vide.",
-            "Aucun mouvement n’est écrit nulle part. Un casse-tête est une liste de places où une case peut se trouver, chacune avec un centre et une direction, et un mouvement est un axe, une tranche de profondeur le long de cet axe et un angle. Les cases que prend un mouvement sont celles de la tranche, et l’endroit où chacune arrive se trouve en la faisant tourner puis en cherchant la place qui s’y trouve. Le cube et la pyramide n’ont rien de mécanique en commun et tournent sur le même code, et le 3×3 passe la vérification classique : R U, répété 105 fois, le ramène à l’état résolu.",
-            "Un glissement est mesuré à travers la projection même que le navigateur utilise pour dessiner. Chaque axe autour duquel la case sous votre doigt pourrait tourner est essayé, et celui dont le mouvement à l’écran suit le mieux votre doigt l’emporte : la bonne couronne tourne sous n’importe quel angle, à une vitesse qui garde la case sous votre doigt. Quand vous relâchez, un ressort tire la couronne jusqu’au cran le plus proche. Il est réglé un peu en dessous de l’amortissement critique, si bien que la couronne dépasse d’un degré ou deux et revient, et c’est ce qui donne l’impression d’un plastique qui s’enclenche.",
+            "Aucun mouvement n’est écrit nulle part. Un casse-tête est une liste de places où une case peut se trouver, chacune avec un centre et une direction, et un mouvement est un axe, une tranche de profondeur le long de cet axe et un angle. Les cases que prend un mouvement sont celles de la tranche, et on trouve où chacune arrive en la faisant tourner puis en cherchant la place correspondante. Le cube et la pyramide n’ont rien de mécanique en commun et tournent sur le même code, et le 3×3 passe la vérification classique : R U, répété 105 fois, le ramène à l’état résolu.",
+            "Un glissement est mesuré à travers la projection même que le navigateur utilise pour dessiner. Chaque axe autour duquel la case sous votre doigt pourrait tourner est essayé, et celui dont le mouvement à l’écran suit le mieux votre doigt l’emporte : la bonne couronne tourne sous n’importe quel angle, à une vitesse qui garde la case sous votre doigt. Quand vous relâchez, un ressort tire la couronne jusqu’au cran le plus proche. Il est réglé un peu en dessous de l’amortissement critique, si bien que la couronne dépasse d’un degré ou deux et revient, et c’est ce qui donne l’impression d’un plastique qui s’enclenche.",
             "Après un mouvement, une case prend la position de la place où elle est arrivée au lieu de garder la rotation qui l’y a menée. Les deux peuvent différer d’un quart de tour dans le plan de la case, ce qui ne se voit pas puisque chaque case est symétrique autour de son centre, et aucune erreur d’arrondi ne s’accumule, quelle que soit la durée de la partie.",
-            "Chaque case est éclairée depuis une seule direction, fixée à vous plutôt qu’au casse-tête, si bien que la face du dessus est la plus claire et celle de droite la plus sombre, quelle que soit la façon dont il est tourné. La luminosité est recalculée pendant que la vue tourne et n’est écrite que lorsqu’elle change de façon visible. Les sons sont eux aussi produits dans le navigateur : chaque mouvement, c’est deux clics à quelques millisecondes d’écart sur un coup bref et grave.",
-            "Les indices suivent la méthode qu’on apprend plutôt que la solution la plus courte, parce qu’une solution la plus courte peut seulement dire qu’un mouvement rapproche d’un coup, ce qui n’apprend rien. Le 3×3 se résout en sept étapes, couronne par couronne, le 2×2 en trois et la pyramide en trois, et chaque mouvement porte son étape, la pièce qu’il concerne et, au sein d’une séquence, la séquence elle-même. Là où une étape relève du jugement plutôt que d’une séquence, comme savoir quelle arête blanche descendre ensuite et comment, une courte recherche trouve le moins de mouvements pour cette seule pièce sans déplacer ce qui est déjà en place. Le plan est recalculé dès que le casse-tête n’est pas là où il devait être, et il a été vérifié en le suivant depuis mille cinq cents mélanges au hasard, qu’il a tous résolus.",
+            "Chaque case est éclairée depuis une seule direction, fixée à vous plutôt qu’au casse-tête, si bien que la face du dessus est la plus claire et celle de droite la plus sombre, quelle que soit la façon dont il est tourné. La luminosité est recalculée pendant que la vue tourne et n’est écrite que lorsqu’elle change de façon visible. Les sons sont eux aussi produits dans le navigateur : chaque mouvement, c’est deux clics à quelques millisecondes d’écart sur un coup bref et grave.",
+            "Les indices suivent la méthode qu’on apprend plutôt que la solution la plus courte, parce que celle-ci peut seulement dire qu’un mouvement rapproche d’un cran du but, ce qui n’apprend rien. Le 3×3 se résout en sept étapes, couronne par couronne, le 2×2 en trois et la pyramide en trois, et chaque mouvement porte son étape, la pièce qu’il concerne et, au sein d’une séquence, la séquence elle-même. Là où une étape relève du jugement plutôt que d’une séquence, comme savoir quelle arête blanche descendre ensuite et comment, une courte recherche trouve le moins de mouvements pour cette seule pièce sans déplacer ce qui est déjà en place. Le plan est recalculé dès que le casse-tête n’est pas là où il devait être, et il a été vérifié en le suivant depuis mille cinq cents mélanges au hasard, qu’il a tous résolus.",
           ],
         },
       },
@@ -1254,8 +1260,8 @@ const fr: Dict = {
           "Lâchez un pion et alignez-en quatre avant l’adversaire. Quatre adversaires, de celui qui regarde à peine à celui qui voit quinze coups à l’avance.",
 
         metaDescription:
-          "Quatre en ligne dans le navigateur, contre quatre adversaires : la grille classique de sept sur six, des pions qui tombent et rebondissent, et un grand maître qui voit quinze coups à l’avance.",
-        lead: "Lâchez vos pions dans la grille et alignez-en quatre avant votre adversaire : à l’horizontale, à la verticale ou en diagonale. Toute la difficulté tient à l’adversaire choisi. Le débutant regarde à peine, et le grand maître voit plus loin que vous.",
+          "Quatre en ligne dans le navigateur, contre quatre adversaires : la grille classique de sept sur six, des pions qui tombent et rebondissent, et un grand maître qui voit quinze coups à l’avance.",
+        lead: "Lâchez vos pions dans la grille et alignez-en quatre avant votre adversaire : à l’horizontale, à la verticale ou en diagonale. Toute la difficulté tient à l’adversaire choisi. Le débutant regarde à peine, et le grand maître voit plus loin que vous.",
 
         opponents: "Choisissez votre adversaire",
         levels: {
@@ -1290,18 +1296,18 @@ const fr: Dict = {
         status: {
           you: "À vous de jouer",
           them: "À l’adversaire",
-          won: "Quatre en ligne. Vous gagnez !",
+          won: "Quatre en ligne. Vous gagnez !",
           lost: "L’adversaire en a aligné quatre avant vous.",
           draw: "La grille est pleine. Match nul.",
         },
         again: "Rejouer",
 
         moves: {
-          you: "Vous : colonne {n}.",
-          them: "{name} : colonne {n}.",
+          you: "Vous : colonne {n}.",
+          them: "{name} : colonne {n}.",
         },
 
-        hint: "Appuyez sur une colonne pour lâcher un pion, ou faites glisser un doigt le long du haut de la grille et relâchez. Les flèches choisissent une colonne et Entrée lâche le pion, ou appuyez sur 1 à 7.",
+        hint: "Appuyez sur une colonne pour lâcher un pion, ou faites glisser un doigt le long du haut de la grille et relâchez. Les flèches choisissent une colonne et Entrée lâche le pion, ou appuyez sur une touche de 1 à 7.",
 
         how: {
           label: "Comment jouer",
@@ -1309,12 +1315,12 @@ const fr: Dict = {
             {
               title: "Quatre alignés, c’est gagné",
               description:
-                "Un pion tombe sur la case libre la plus basse de sa colonne. Le premier à aligner quatre pions à lui, à l’horizontale, à la verticale ou en diagonale, gagne, et une grille remplie avant cela donne un match nul.",
+                "Un pion tombe sur la case libre la plus basse de sa colonne. Le premier à aligner quatre de ses pions, à l’horizontale, à la verticale ou en diagonale, gagne, et une grille remplie avant cela donne un match nul.",
             },
             {
               title: "Deux menaces à la fois",
               description:
-                "Trois pions alignés avec la quatrième case libre, c’est une menace. On peut en bloquer une, pas deux, et c’est ainsi que se gagnent la plupart des parties : pas avec un long piège, mais avec un coup qui ouvre deux cases à la fois.",
+                "Trois pions alignés avec la quatrième case libre, c’est une menace. On peut en bloquer une, pas deux, et c’est ainsi que se gagnent la plupart des parties : pas avec un long piège, mais avec un coup qui ouvre deux cases à la fois.",
             },
             {
               title: "Attention à ce qui est dessous",
@@ -1322,9 +1328,9 @@ const fr: Dict = {
                 "Ne lâchez jamais un pion juste sous une case où votre adversaire gagne, car vous lui permettez d’y jouer. En fin de partie, toute la lutte consiste souvent à savoir qui devra jouer le premier sous la menace de l’autre.",
             },
             {
-              title: "Choisissez votre adversaire",
+              title: "Choisissez contre qui vous jouez",
               description:
-                "Quatre adversaires, du débutant au grand maître, et vos victoires et défaites sont conservées pour chacun. Le premier joueur change à chaque partie, et c’est important : en jouant parfaitement, celui qui commence et joue d’abord dans la colonne du milieu gagne toujours.",
+                "Quatre adversaires, du débutant au grand maître, et vos victoires et défaites sont conservées pour chacun. Le premier joueur change à chaque partie, et c’est important : en jouant parfaitement, celui qui commence et joue d’abord dans la colonne du milieu gagne toujours.",
             },
           ],
         },
@@ -1332,11 +1338,11 @@ const fr: Dict = {
         close: {
           label: "Comment c’est construit",
           paragraphs: [
-            "Pas de canvas ni de bibliothèque de jeu, comme pour les autres. La grille est un dessin posé sur les pions plutôt qu’un fond placé dessous : une seule pièce de plastique percée de 42 trous, et chaque pion un peu plus large que son trou. Un pion tombe donc derrière les barres entre les rangées et apparaît à travers les trous, comme sur le vrai jeu, et le bord de chaque pion reste caché derrière le plastique. L’intérieur de chaque trou, ce sont deux fins croissants, l’un dans l’ombre en haut, l’autre éclairé en bas, et c’est surtout ce duo qui donne l’impression qu’un pion est enfoncé dans la grille plutôt que peint dessus.",
-            "Un pion tombe sous l’effet de la gravité et non en un temps fixé, si bien qu’une longue chute dans une colonne vide et une courte sur une colonne presque pleine durent chacune le temps que prendrait un vrai pion. Il rebondit deux fois sur ce qu’il rencontre, chaque rebond plus bas que le précédent. Le mouvement est la parabole elle-même, tracée avec les courbes exactes de la chute libre, et les trois clics que vous entendez tombent aux trois mêmes instants. Une nouvelle partie vide la grille comme la réglette sous un vrai jeu : tous les pions tombent par le bas en même temps, le plus bas d’abord.",
-            "L’adversaire tient le score de la position au fil de la partie au lieu de le recalculer à chaque fois. La grille compte 69 lignes de quatre, chaque ligne compte les pions de chaque couleur qu’elle contient, et un pion ne modifie que les lignes qui passent par sa case, treize au plus. Une victoire, c’est un compteur qui atteint quatre, une menace, c’est trois à côté d’une case vide, et la valeur de toute la grille est un total tenu à jour. Le seul vrai morceau de théorie, c’est la parité : la grille se remplit par le bas, et en jouant parfaitement, celui qui a commencé finit avec les rangées impaires et l’autre avec les paires. Une menace sur vos propres rangées vaut donc davantage qu’une menace sur les siennes.",
-            "Les quatre diffèrent par la distance à laquelle ils voient. Le débutant prend la plupart du temps son propre alignement et joue sinon près du centre. L’amateur voit trois coups à l’avance, ce qui suffit pour prendre une victoire, en bloquer une et ne jamais en offrir. Le maître voit sept coups à l’avance et choisit parmi les coups à quelques points du meilleur, si bien que deux parties contre lui se ressemblent rarement. Le grand maître approfondit sa recherche d’un coup à la fois jusqu’à ce qu’un tiers de seconde soit écoulé, en réutilisant une table de 262 144 positions déjà vues. Depuis l’ouverture, cela fait treize à quinze coups à l’avance, et à partir du seizième pion environ, il sait en général comment la partie se termine.",
-            "Chacun bat celui du dessous presque à chaque fois. Sur soixante parties simulées par paire, en alternant le premier joueur, l’amateur a battu le débutant 60 fois, le maître a battu l’amateur 57 fois, et le grand maître a battu le maître 57 fois, avec deux nuls. La pause avant que le pion de l’adversaire ne bouge, et l’arrêt qu’il marque parfois au-dessus d’une autre colonne, servent seulement à ce que vous puissiez suivre le coup : à ce moment-là, le choix est déjà fait.",
+            "Pas de canvas ni de bibliothèque de jeu, comme pour les autres. La grille est un dessin posé sur les pions plutôt qu’un fond placé dessous : une seule pièce de plastique percée de 42 trous, et chaque pion un peu plus large que son trou. Un pion tombe donc derrière les barres entre les rangées et apparaît à travers les trous, comme sur le vrai jeu, et le bord de chaque pion reste caché derrière le plastique. L’intérieur de chaque trou, ce sont deux fins croissants, l’un dans l’ombre en haut, l’autre éclairé en bas, et c’est surtout ce duo qui donne l’impression qu’un pion est enfoncé dans la grille plutôt que peint dessus.",
+            "Un pion tombe sous l’effet de la gravité et non en un temps fixé, si bien qu’une longue chute dans une colonne vide et une courte sur une colonne presque pleine durent chacune le temps que prendrait un vrai pion. Il rebondit deux fois sur ce qu’il rencontre, chaque rebond plus bas que le précédent. Le mouvement est la parabole elle-même, tracée avec les courbes exactes de la chute libre, et les trois clics que vous entendez tombent aux trois mêmes instants. Une nouvelle partie vide la grille comme la réglette sous un vrai jeu : tous les pions tombent par le bas en même temps, le plus bas d’abord.",
+            "L’adversaire tient le score de la position au fil de la partie au lieu de le recalculer à chaque fois. La grille compte 69 lignes de quatre, chaque ligne compte les pions de chaque couleur qu’elle contient, et un pion ne modifie que les lignes qui passent par sa case, treize au plus. Une victoire, c’est un compteur qui atteint quatre, une menace, c’est trois avec la quatrième case libre, et la valeur de toute la grille est un total tenu à jour. Le seul vrai morceau de théorie, c’est la parité : la grille se remplit par le bas, et en jouant parfaitement, celui qui a commencé finit avec les rangées impaires et l’autre avec les paires. Une menace sur vos propres rangées vaut donc davantage qu’une menace sur les siennes.",
+            "Les quatre diffèrent par la distance à laquelle ils voient. Le débutant complète la plupart du temps son propre alignement et joue sinon près du centre. L’amateur voit trois coups à l’avance, ce qui suffit pour prendre une victoire, en bloquer une et ne jamais en offrir. Le maître voit sept coups à l’avance et choisit parmi les coups à quelques points du meilleur, si bien que deux parties contre lui se ressemblent rarement. Le grand maître approfondit sa recherche d’un coup à la fois jusqu’à ce qu’un tiers de seconde soit écoulé, en réutilisant une table de 262 144 positions déjà vues. Depuis l’ouverture, cela fait treize à quinze coups à l’avance, et à partir du seizième pion environ, il sait en général comment la partie se termine.",
+            "Chacun bat celui du dessous presque à chaque fois. Sur 60 parties simulées par paire, en alternant le premier joueur, l’amateur a battu le débutant 60 fois, le maître a battu l’amateur 57 fois, et le grand maître a battu le maître 57 fois, avec deux nuls. La pause avant que le pion de l’adversaire ne bouge, et l’arrêt qu’il marque parfois au-dessus d’une autre colonne, servent seulement à ce que vous puissiez suivre le coup : à ce moment-là, le choix est déjà fait.",
           ],
         },
       },
@@ -1367,17 +1373,17 @@ const fr: Dict = {
       {
         title: "Développement produit full-stack",
         description:
-          "Une fonctionnalité entière, confiée à une seule personne : le schéma de la base de données, l’API et les écrans React qui s’en servent.",
+          "Une fonctionnalité entière, confiée à une seule personne : le schéma de la base de données, l’API et les écrans React qui s’en servent.",
       },
       {
         title: "Architecture et déploiement AWS",
         description:
-          "Mettre en place une infrastructure cloud ou consolider celle qui tourne déjà : environnements, pipelines CI/CD, et une revue des coûts et de la fiabilité.",
+          "Mettre en place une infrastructure cloud ou consolider celle qui tourne déjà : environnements, pipelines CI/CD, et une revue des coûts et de la fiabilité.",
       },
       {
         title: "Revue technique et conseil",
         description:
-          "L’audit d’une base de code ou d’une architecture existante : ce qu’il faut corriger en premier, un plan de refactorisation, et si une réécriture se justifie.",
+          "L’audit d’une base de code ou d’une architecture existante : ce qu’il faut corriger en premier, un plan de refactorisation, et si une réécriture se justifie.",
       },
     ],
   },

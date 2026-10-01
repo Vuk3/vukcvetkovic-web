@@ -39,6 +39,12 @@ union.
 
 - **No em dash and no semicolon.** Use a plain hyphen or a colon. This applies to every
   locale.
+- **The formal address wherever a locale has one, the games included**: vi, vous, Sie, as
+  each file's header says. A short command label on a Serbian button (Poništi, Igraj
+  ponovo) keeps the short imperative, the way Serbian software words its buttons.
+- **Typography travels in the strings.** English and French take the typographic
+  apostrophe (’), and French a no-break space before : ? ! and inside a figure, written
+  into fr.ts (its header says which). They look like plain spaces in an editor.
 - **TypeScript is never a listed skill or a named technology.** Naming it next to Node and
   React states the obvious.
 - The positioning is Node-first: NestJS and Node.js lead and .NET follows, by order alone.

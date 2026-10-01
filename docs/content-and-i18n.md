@@ -419,6 +419,10 @@ anybody as protection - see
 
 ## Changelog
 
+- 2026-10-01 - a copy review across all four dictionaries. The Serbian and German game copy
+  takes the formal address the headers set, game names avoid trademarks in English and
+  German too (Battleships, Paare finden), English takes the typographic apostrophe, and
+  French writes its no-break spaces into the strings.
 - 2026-09-29 - a project carries a `hue` in site.ts, the colour its card and its page are
   drawn in, and `hero.location` is new copy in all four dictionaries (§5).
 - 2026-09-28 - a project can carry a `demo`, a clip on R2 with its poster in src/assets,
