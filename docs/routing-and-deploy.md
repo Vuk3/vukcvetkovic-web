@@ -379,6 +379,13 @@ which writes `worker-configuration.d.ts` - a file [tsconfig.json](../tsconfig.js
 `include` and which is not checked in. That is harmless: `include` tolerates a missing path
 where `files` would not, and `astro check` passes without it.
 
+**[.nvmrc](../.nvmrc) is the Node that Cloudflare's build installs**, and it is the one the
+site is built with locally, 22.23.2, so a build there runs on what was checked here.
+`engines` in [package.json](../package.json) stays at `>=22.12.0`, Astro's own floor. At
+22.12.0 the install warns `EBADENGINE` for `undici@8`, which asks for 22.19 and comes in
+through Astro's font API (`unifont`). The site loads its font from `@fontsource`, so that
+code never runs, and the pin is what keeps the warning out of the log.
+
 ---
 
 ## 6. The sitemap carries a trailing slash by hand
@@ -446,6 +453,8 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-10-02 - `.nvmrc` pins Node 22.23.2, the local version, so Cloudflare's build matches
+  it and the `undici` engine warning is gone (§5).
 - 2026-10-02 - the Object Detection demo clip is re-encoded for seeking, 2400×1460 at
   30 fps with a keyframe every second, 46 MB, and replaced under its old name (§5).
 - 2026-09-30 - every project, game and index shares a card of its own in each language,
