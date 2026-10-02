@@ -544,7 +544,7 @@ const games: Record<GameId, Game> = {
   accretion: { slug: "accretion", status: "beta", date: "2026-09-11" },
   battleship: { slug: "battleship", status: "beta", date: "2026-09-17" },
   cube: { slug: "cube", status: "live", date: "2026-09-24" },
-  fourInARow: { slug: "four-in-a-row", status: "beta", date: "2026-09-24" },
+  fourInARow: { slug: "four-in-a-row", status: "live", date: "2026-09-24" },
 };
 
 export const site = {
