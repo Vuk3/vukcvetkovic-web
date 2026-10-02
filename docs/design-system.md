@@ -1909,6 +1909,17 @@ landed before the pressed sticker's place is read: until then a sticker in the l
 layer is still in its old place, on another face, and a drag along the bottom row just
 after R was read as a drag on the bottom face.
 
+⚠️ **A press always ends.** It ends on its release, or as soon as the page can tell the
+release went elsewhere: a mouse moving with no button down, the same pointer pressing
+again, or the capture lost. Each lands the layer as a release would. A button let go
+outside the window or in another app used to leave the layer on the cursor, and the next
+click could not take hold of anything, since a press was still under way.
+
+⚠️ **A solved puzzle takes no more turns.** Turns typed ahead of the solving one are
+dropped, a drag that gets going while the solving turn lands is let go, and Undo pressed
+then does nothing. Each of the first two, driven through the page in Chrome, turned a layer
+after the solve, under the panel announcing it.
+
 ⚠️ **The whole puzzle turns freely and stays where it is left.** A drag off the puzzle, or
 with the right button on it, turns it like a trackball, and a flick coasts, its speed
 falling to a third every `COAST` seconds until it drops under 0.3 radians a second. It used
@@ -2626,6 +2637,8 @@ each its own box at its own line height, so what is measured is what is drawn.
 
 ## Changelog
 
+- 2026-10-02 - a cube press ends when its release goes astray, and a solved cube takes no
+  more turns, typed ahead or dragged (§9).
 - 2026-09-30 - the share cards set their type, boards and drawings as large as each card holds,
   measured from the room, with a smaller pad and brighter text (§10).
 - 2026-09-30 - a project, a game or an index shared anywhere shows a card of its own, in its

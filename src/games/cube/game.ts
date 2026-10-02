@@ -1327,6 +1327,10 @@ export function mount(options: Options): Controller {
 
   function finish() {
     const time = elapsed();
+    // Turns typed ahead of the one that solved it are dropped. Played, they
+    // undid the solve under the panel announcing it, which then had nothing
+    // to say about the puzzle on screen.
+    queue.length = 0;
     closeHint();
     setState('solved');
     options.onTime(time);
@@ -1352,7 +1356,7 @@ export function mount(options: Options): Controller {
   function load(puzzle: Puzzle) {
     closeHint();
     nudge = null;
-    press = null;
+    drop();
     active = null;
     queue.length = 0;
     history = [];
@@ -1422,7 +1426,9 @@ export function mount(options: Options): Controller {
     if (state === 'scrambling') return;
     closeHint();
     flush();
-    press = null;
+    // A finger can still be on a layer, with a second one on the button. Its
+    // press ends here, held look and all.
+    drop();
 
     history = [];
     moves = 0;
@@ -1458,11 +1464,13 @@ export function mount(options: Options): Controller {
   }
 
   function undo() {
-    if (state === 'scrambling' || state === 'solved') return;
+    if (state === 'scrambling') return;
 
     // A turn still landing is not in the history yet, so undoing now would
-    // take back the one before it.
+    // take back the one before it. It may also be the turn that solves the
+    // puzzle, so solved is asked after it lands, not before.
     if (active || queue.length) flush();
+    if (state === 'solved') return;
 
     const last = history.pop();
     if (!last) return;
@@ -1676,7 +1684,7 @@ export function mount(options: Options): Controller {
    * the real projection, so the choice is right at any angle the puzzle has
    * been turned to.
    */
-  function grip(p: Press, dx: number, dy: number): 'turn' | 'view' | 'wait' {
+  function grip(p: Press, dx: number, dy: number): 'turn' | 'view' | 'wait' | 'none' {
     if (p.tile === null) return 'view';
 
     // A layer still landing from the last drag lands now. By the time a finger
@@ -1685,6 +1693,13 @@ export function mount(options: Options): Controller {
     // is still in its old slot until then, on another face, and a drag along
     // the bottom row just after R was read as a drag on the bottom face.
     if (active || queue.length) flush();
+
+    // That landing may have been the move that solved it, and a turn started
+    // now would undo the solve the panel is about to announce.
+    if (state === 'solved') {
+      drop();
+      return 'none';
+    }
 
     const slot = shape.slots[slotOf[p.tile]];
     const m = qmatrix(orientation);
@@ -1782,7 +1797,24 @@ export function mount(options: Options): Controller {
     }
   }
 
+  /** Ends a press with no turn and no spin: for one the puzzle can no longer
+   *  take, because it is solved or being scrambled. */
+  function drop() {
+    if (!press) return;
+    const { id } = press;
+    press = null;
+    stage.classList.remove('is-held');
+    try {
+      stage.releasePointerCapture(id);
+    } catch {
+      /* Never captured, or already released. */
+    }
+  }
+
   const onPointerDown = (event: PointerEvent) => {
+    // The same pointer pressing again means its release never arrived, so
+    // that press ends now, as if it had.
+    if (press && press.id === event.pointerId) onPointerUp(event);
     if (press || state === 'scrambling' || state === 'solved') return;
     if (event.pointerType === 'mouse' && event.button !== 0 && event.button !== 2) return;
 
@@ -1835,6 +1867,15 @@ export function mount(options: Options): Controller {
     const p = press;
     if (!p || event.pointerId !== p.id) return;
 
+    // ⚠️ A mouse moving with no button down was let go somewhere the page
+    // never heard about: outside the window, in another app, over a dialog.
+    // Without this the layer stayed on the cursor, and the next press could
+    // not take hold of anything, since a press was still under way.
+    if (!p.touch && event.buttons === 0) {
+      onPointerUp(event);
+      return;
+    }
+
     const dx = event.clientX - p.x;
     const dy = event.clientY - p.y;
     const dt = Math.max(1, event.timeStamp - p.lastT) / 1000;
@@ -1846,7 +1887,7 @@ export function mount(options: Options): Controller {
       // at the press meanwhile, so whatever is picked catches up with the
       // whole of the drag on its first frame, at the drag's speed so far.
       const took = grip(p, dx, dy);
-      if (took === 'wait') return;
+      if (took === 'wait' || took === 'none') return;
       p.mode = took;
     }
 
@@ -1909,6 +1950,9 @@ export function mount(options: Options): Controller {
   stage.addEventListener('pointermove', onPointerMove);
   stage.addEventListener('pointerup', onPointerUp);
   stage.addEventListener('pointercancel', onPointerUp);
+  // Capture lost any other way ends the press too. After a release this
+  // arrives with the press already over, and does nothing.
+  stage.addEventListener('lostpointercapture', onPointerUp);
   stage.addEventListener('contextmenu', (event) => event.preventDefault());
 
   /* ---- Keys -----------------------------------------------------------
