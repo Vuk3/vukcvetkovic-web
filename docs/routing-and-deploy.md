@@ -23,6 +23,7 @@ time.
 | how an unmatched URL is answered | `not_found_handling` in [wrangler.jsonc](../wrangler.jsonc) + the two 404 routes - §4 |
 | image optimization | `adapter: cloudflare({ imageService })` in [astro.config.ts](../astro.config.ts) - §5 |
 | a response header (HSTS, the CSP, framing) | [public/_headers](../public/_headers) - §5, the adapter adds the caching rule |
+| how `http://` or `www.` is redirected | the Cloudflare dashboard, not the repo - §5 |
 | `robots.txt` | [src/pages/robots.txt.ts](../src/pages/robots.txt.ts) - generated, not a static file |
 | **a page's share card** (`og:image`) | [src/og/](../src/og/) - drawn at the end of the build, not a route - §5 |
 | the sitemap | the `sitemap()` integration in [astro.config.ts](../astro.config.ts) - **read §6**, the trailing slash is added by hand |
@@ -244,6 +245,31 @@ if a rule in the file already sets `Cache-Control` on `/_astro/`, so the file se
   stays out of the list because the demo video's fullscreen button uses it.
 
 Cloudflare's parser skips the `#` comment lines, so the reasoning lives in the file itself.
+
+### http and www are redirected in the Cloudflare dashboard
+
+**Nothing in the repository redirects.** Both redirects are set on the zone
+**vukcvetkovic.com** in the Cloudflare dashboard, and both run before the Worker, so a
+redirected request never reaches it.
+
+| From | To | Where in the dashboard |
+|---|---|---|
+| `http://` on any host in the zone (the site, www, media) | the same URL on `https://`, 301 | SSL/TLS → Edge Certificates → **Always Use HTTPS** |
+| `https://www.vukcvetkovic.com/*` | `https://vukcvetkovic.com/${1}`, 301, query string kept | Rules → **Redirect Rules**: a Single Redirect, wildcard pattern, Preserve query string on |
+
+`http://www.vukcvetkovic.com/sr/` takes both, in two hops: to `https://www.…` first, then
+to the apex.
+
+- ⚠️ **One Worker, `vukcvetkovic-web`, is the whole site.** Workers & Pages →
+  vukcvetkovic-web → Settings → Domains & Routes lists both `vukcvetkovic.com` and
+  `www.vukcvetkovic.com` as custom domains. Deleting the Worker takes the site down, not
+  only www.
+- ⚠️ **www stays a custom domain on the Worker.** The Worker no longer answers it, but a
+  custom domain owns the DNS record it was created with. Removing www there removes the
+  record, and with no record the request never reaches Cloudflare for the rule to catch:
+  every old www link would fail instead of redirecting.
+- **HSTS is not switched on in the dashboard.** [public/_headers](../public/_headers) sends
+  it, and enabling it under Edge Certificates as well would send the header twice.
 
 ### What lands in `dist/client/_astro/`
 
@@ -473,6 +499,8 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-10-02 - `http://` and `www.` redirect to `https://vukcvetkovic.com`, through Always
+  Use HTTPS and a Redirect Rule in the Cloudflare dashboard (§5).
 - 2026-10-02 - every response carries the security headers from `public/_headers`: HSTS,
   nosniff, the referrer policy, no framing, a permissions policy and a CSP without hashes (§5).
 - 2026-10-02 - `.nvmrc` pins Node 22.23.2, the local version, so Cloudflare's build matches
