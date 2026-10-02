@@ -311,7 +311,7 @@ Astro inlines them into each page rather than emitting a bundle. About 4.8 KB of
 
 Eight of the files in `_astro` are the seven game engines and the piece they share. 2048 is
 2.9 KB gz, Minesweeper 3.6 KB, Memory 4.5 KB, Accretion 5.3 KB, Battleship 6.0 KB, Cube
-11.0 KB, Four in a Row 6.1 KB, and the shared chunk 1.7 KB: [games/record.ts](../src/games/record.ts),
+11.0 KB, Four in a Row 6.2 KB, and the shared chunk 1.7 KB: [games/record.ts](../src/games/record.ts),
 [games/sound.ts](../src/games/sound.ts) and [games/burst.ts](../src/games/burst.ts) in one
 file, because all seven games import all three and Rollup puts modules with the same
 importers into the same chunk. Each engine is requested by its own route
@@ -499,6 +499,8 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-10-03 - Four in a Row's engine is 6.2 KB gz, with the board shut through the bounces
+  of the disc that ends a game.
 - 2026-10-02 - the cube's engine is 11.0 KB gz, with a press that ends when its release goes
   astray and no turn after a solve.
 - 2026-10-02 - `http://` and `www.` redirect to `https://vukcvetkovic.com`, through Always

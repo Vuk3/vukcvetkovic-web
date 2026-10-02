@@ -2157,6 +2157,11 @@ keeps the column on every move and draws it only when it is yours, and `showHand
 disc there when your turn comes rather than sliding it over from where theirs let go. An exchange, from your press to your next turn, takes
 about a second and a half to two against the grandmaster.
 
+⚠️ **A disc that ends the game keeps the board shut until the ending is on it.** The four
+lights up after the bounces, and while they ran the board took a press: a second disc went
+in after the four and the game went on over it, to their four as well. Driven through the
+page in Chrome, a press during the bounce did that in four games of four.
+
 ### Sound, the burst and the jolt, shared by all seven
 
 Every game has sound now, and every win throws a burst. Both are shared the way
@@ -2637,6 +2642,8 @@ each its own box at its own line height, so what is measured is what is drawn.
 
 ## Changelog
 
+- 2026-10-03 - Four in a Row takes no press from the disc that ends a game until the ending
+  is shown (§9).
 - 2026-10-02 - a cube press ends when its release goes astray, and a solved cube takes no
   more turns, typed ahead or dragged (§9).
 - 2026-09-30 - the share cards set their type, boards and drawings as large as each card holds,

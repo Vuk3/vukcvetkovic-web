@@ -1095,7 +1095,10 @@ export function mount(options: Options, initial: LevelId): Controller {
     hideHand();
 
     drop(column, 1, (bouncing) => {
-      busy = false;
+      // ⚠️ A disc that ends the game keeps the board shut until the ending
+      // is on it. Open while it bounced, a second press dropped a disc after
+      // the four, and the game went on over it, to their four as well.
+      if (!won(pos, last) && !full(pos)) busy = false;
       settle(1, bouncing);
     });
 
