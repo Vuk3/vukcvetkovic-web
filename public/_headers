@@ -1,0 +1,21 @@
+# Security headers on every response the site serves. At build the Cloudflare
+# adapter puts its own rule above this one, immutable Cache-Control for
+# /_astro/*, and would skip it if a rule here set Cache-Control on that path,
+# so nothing below does. See docs/routing-and-deploy.md §5.
+#
+# HSTS: a year, with subdomains, since www and media are both served over HTTPS.
+#
+# The CSP holds only the directives that need no hashes. A script-src or
+# style-src would have to hash the five inline scripts and the inlined
+# stylesheets, which change with every edit to them, and allow the `style`
+# attributes that carry the tile spans.
+#
+# Permissions-Policy names only features Chrome recognises: an unknown one is
+# logged as a console error. fullscreen stays allowed for the demo video.
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Content-Security-Policy: frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests

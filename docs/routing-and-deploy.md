@@ -22,6 +22,7 @@ time.
 | the emitted filenames (`.html` vs `index.html`) | `build.format` in [astro.config.ts](../astro.config.ts) - **read §3 first**, three things depend on it |
 | how an unmatched URL is answered | `not_found_handling` in [wrangler.jsonc](../wrangler.jsonc) + the two 404 routes - §4 |
 | image optimization | `adapter: cloudflare({ imageService })` in [astro.config.ts](../astro.config.ts) - §5 |
+| a response header (HSTS, the CSP, framing) | [public/_headers](../public/_headers) - §5, the adapter adds the caching rule |
 | `robots.txt` | [src/pages/robots.txt.ts](../src/pages/robots.txt.ts) - generated, not a static file |
 | **a page's share card** (`og:image`) | [src/og/](../src/og/) - drawn at the end of the build, not a route - §5 |
 | the sitemap | the `sitemap()` integration in [astro.config.ts](../astro.config.ts) - **read §6**, the trailing slash is added by hand |
@@ -222,8 +223,27 @@ That is also why `sharp` is an explicit devDependency rather than being left to 
 [wrangler.jsonc](../wrangler.jsonc) is the *input*, not what ships. At build time the
 adapter writes `dist/client/wrangler.json` with the directory relative to itself and points
 wrangler at that, so the `assets.directory` path in the checked-in file only matters if
-wrangler is invoked directly. The adapter also injects `_headers` (immutable
-`Cache-Control` for `/_astro/*`) and `.assetsignore` next to the output.
+wrangler is invoked directly. The adapter also writes `.assetsignore` next to the output,
+and puts its own rule, immutable `Cache-Control` for `/_astro/*`, at the top of `_headers`.
+
+### Every response carries the security headers
+
+[public/_headers](../public/_headers) sets them on `/*`, and the build copies it to
+`dist/client/`, where the adapter's caching rule lands above it. The adapter skips that rule
+if a rule in the file already sets `Cache-Control` on `/_astro/`, so the file sets none.
+
+- **HSTS** for a year, with `includeSubDomains`: www and media are both served over HTTPS.
+- **`X-Content-Type-Options`, `Referrer-Policy` and `X-Frame-Options`**, plus `frame-ancestors`
+  in the CSP, so no other site can frame a page.
+- **The CSP holds only directives that need no hashes**: `frame-ancestors`, `base-uri`,
+  `form-action`, `object-src` and `upgrade-insecure-requests`. A `script-src` or `style-src`
+  would have to hash the five inline scripts and the inlined stylesheets, which change with
+  every edit to them, and allow the `style` attributes that carry the tile spans.
+- ⚠️ **`Permissions-Policy` names only features Chrome recognises.** An unknown one, such as
+  the retired `interest-cohort`, is logged as a console error on every page. `fullscreen`
+  stays out of the list because the demo video's fullscreen button uses it.
+
+Cloudflare's parser skips the `#` comment lines, so the reasoning lives in the file itself.
 
 ### What lands in `dist/client/_astro/`
 
@@ -453,6 +473,8 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-10-02 - every response carries the security headers from `public/_headers`: HSTS,
+  nosniff, the referrer policy, no framing, a permissions policy and a CSP without hashes (§5).
 - 2026-10-02 - `.nvmrc` pins Node 22.23.2, the local version, so Cloudflare's build matches
   it and the `undici` engine warning is gone (§5).
 - 2026-10-02 - the Object Detection demo clip is re-encoded for seeking, 2400×1460 at
