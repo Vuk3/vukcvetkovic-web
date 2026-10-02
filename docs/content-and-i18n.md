@@ -419,6 +419,7 @@ anybody as protection - see
 
 ## Changelog
 
+- 2026-10-02 - the Cube is `live`.
 - 2026-10-01 - a copy review across all four dictionaries. The Serbian and German game copy
   takes the formal address the headers set, game names avoid trademarks in English and
   German too (Battleships, Paare finden), English takes the typographic apostrophe, and
