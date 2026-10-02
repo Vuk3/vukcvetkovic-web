@@ -350,6 +350,21 @@ sizes it like every other image.
 - **Upload an H.264 MP4 with no sound and fast start**, the index at the front of the file
   (`moov` before `mdat`), so it plays while it is still arriving. Cloudflare caches `.mp4`
   at the edge and does not cache `.mov`: a `.mov` goes to R2 on every request.
+- **Encode it for seeking: a keyframe every second, a constant 30 fps, 2400px wide at
+  most.** A seek decodes from the keyframe before it, so the gap between keyframes is what
+  dragging the seek bar costs. At ffmpeg's default of one every 250 frames, a 3182px clip
+  at High level 6.0 showed 3 or 4 of 41 positions during a drag. The Object Detection clip,
+  2400×1460 (the frame at its widest on a 2x screen, like the poster) at 30 fps with a
+  keyframe every 30 frames, shows 39 to 41 and lands at level 5.0, which hardware decoders
+  take. It is 46 MB: a keyframe every 2 s made it 32 MB and showed 20 to 31. From the
+  screen recording, never from an earlier export:
+
+  ```sh
+  ffmpeg -i recording.mov -vf "fps=30,scale=2400:1460:flags=lanczos" \
+    -c:v libx264 -preset slow -crf 22 -profile:v high -pix_fmt yuv420p \
+    -g 30 -an -movflags +faststart clip.mp4
+  ```
+
 - **A changed clip gets a new file name** (`-v2`), and `demo.src` moves with it. A Cache
   Rule on the zone (hostname `media.vukcvetkovic.com`) keeps every file there for a year,
   at the edge and in the browser, and a purge only reaches the edge: a clip replaced under
@@ -431,6 +446,8 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-10-02 - the Object Detection demo clip is re-encoded for seeking, 2400×1460 at
+  30 fps with a keyframe every second, 46 MB, and replaced under its old name (§5).
 - 2026-09-30 - every project, game and index shares a card of its own in each language,
   drawn after the build by the `shareCards` integration (§2, §5).
 - 2026-09-28 - the Object Detection demo clip is served from R2 on media.vukcvetkovic.com,

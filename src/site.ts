@@ -358,8 +358,8 @@ const projects: Project[] = [
     demo: {
       src: "https://media.vukcvetkovic.com/object-detection-demo.mp4",
       poster: objectDetectionPoster,
-      width: 3182,
-      height: 1936,
+      width: 2400,
+      height: 1460,
     },
     links: {},
   },
