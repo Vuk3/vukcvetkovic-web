@@ -71,10 +71,28 @@ const formatters: Record<ResultFormat, Intl.NumberFormat> = {
   seconds: new Intl.NumberFormat(lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
 };
 
+/*
+ * Live, and the source: a button per service where the project is several
+ * repositories (`source` on its stack groups, the thesis's four), each named
+ * for its service and announced as its source, otherwise the one in
+ * `links.source`. Whichever has no URL yet is dropped.
+ */
+const services = project.stack.flatMap((group) =>
+  group.source
+    ? [
+        {
+          href: group.source,
+          label: dict.projects.stackGroups[group.id],
+          name: `${dict.projects.sourceLabel}: ${dict.projects.stackGroups[group.id]}`,
+          Icon: CodeXml,
+        },
+      ]
+    : [],
+);
 const links = [
   { href: project.links.live, label: dict.projects.liveLabel, Icon: Globe },
-  { href: project.links.source, label: dict.projects.sourceLabel, Icon: CodeXml },
-].filter((link): link is { href: string; label: string; Icon: typeof Globe } => Boolean(link.href));
+  ...(services.length > 0 ? services : [{ href: project.links.source, label: dict.projects.sourceLabel, Icon: CodeXml }]),
+].filter((link): link is { href: string; label: string; name?: string; Icon: typeof Globe } => Boolean(link.href));
 
 /*
  * ---- Tiles sized to what they hold ----------------------------------------
@@ -436,7 +454,7 @@ const meta = [
           <ul class="proj-links enter" style="--enter-delay:360ms">
             {links.map((link) => (
               <li>
-                <a href={link.href} target="_blank" rel="noopener" class="cta-ghost">
+                <a href={link.href} target="_blank" rel="noopener" class="cta-ghost" aria-label={link.name}>
                   <link.Icon class="size-[1rem] shrink-0" aria-hidden="true" />
                   {link.label}
                 </a>
@@ -518,7 +536,8 @@ const meta = [
     as a map of what runs where - a tile per service holding its marks, sized
     by `stackSpans` above so every row is full. Straight after the overview:
     what it is built with is the next thing a reader looks for after what it
-    is, and every project has one, so every page reads the same way down.
+    is, and every project has one, so every page reads the same way down. A
+    service with a repository of its own links to it from its name.
   */}
   <Section id="stack" label={labels.stack}>
     <dl class="proj-stack">
@@ -528,7 +547,21 @@ const meta = [
             class="card proj-group reveal-item"
             style={`--xs:${stackSpans[index].xs};--sm:${stackSpans[index].sm};--lg:${stackSpans[index].lg}`}
           >
-            <dt class="proj-group-name">{dict.projects.stackGroups[group.id]}</dt>
+            <dt class="proj-group-name">
+              {dict.projects.stackGroups[group.id]}
+              {group.source && (
+                <a
+                  href={group.source}
+                  target="_blank"
+                  rel="noopener"
+                  class="proj-group-source"
+                  aria-label={`${dict.projects.sourceLabel}: ${dict.projects.stackGroups[group.id]}`}
+                  title={`${dict.projects.sourceLabel}: ${dict.projects.stackGroups[group.id]}`}
+                >
+                  <CodeXml class="size-[1rem]" aria-hidden="true" />
+                </a>
+              )}
+            </dt>
             <dd class="proj-marks">
               {group.items.map((item) => (
                 <div class="proj-mark">

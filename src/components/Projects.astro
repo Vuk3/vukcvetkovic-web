@@ -19,7 +19,7 @@
  * full. The markup is repeated rather than shared, because the heading level
  * and the arrival differ, and two similar blocks are not worth an abstraction.
  */
-import { LayoutGrid } from '@lucide/astro';
+import { CodeXml, LayoutGrid } from '@lucide/astro';
 import type { Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
 import { site, type Project } from '../site';
@@ -40,12 +40,28 @@ const dict = getDict(lang);
    before it - see `keep` in ProjectDetail.astro. */
 const keep = (text: string) => text.replace(/ ([:;!?]|-(?= ))/g, ' $1');
 
-/** Live and source, dropping whichever has no URL yet. */
-const outboundLinks = (links: { live?: string; source?: string }) =>
-  [
-    { href: links.live, label: dict.projects.liveLabel },
-    { href: links.source, label: dict.projects.sourceLabel },
-  ].filter((link): link is { href: string; label: string } => Boolean(link.href));
+/**
+ * Live, and the source: a link per service where the project is several
+ * repositories (`source` on its stack groups, the thesis's four), each named
+ * for its service and announced as its source, otherwise the one in
+ * `links.source`. Whichever has no URL yet is dropped.
+ */
+const outboundLinks = (project: Project) => {
+  const services = project.stack.flatMap((group) =>
+    group.source
+      ? [
+          {
+            href: group.source,
+            label: dict.projects.stackGroups[group.id],
+            name: `${dict.projects.sourceLabel}: ${dict.projects.stackGroups[group.id]}`,
+          },
+        ]
+      : [],
+  );
+  const sources: { href: string; label: string; name?: string }[] =
+    services.length > 0 ? services : project.links.source ? [{ href: project.links.source, label: dict.projects.sourceLabel }] : [];
+  return { live: project.links.live, sources };
+};
 
 /**
  * A card's measured result, where its project has one (`outcome` in
@@ -84,7 +100,7 @@ const outcomeOf = (project: Project) => {
       site.projects.map((project, index) => {
         const copy = dict.projects.items[project.id];
         const page = localizePath(`/projects/${project.slug}/`, lang);
-        const links = outboundLinks(project.links);
+        const links = outboundLinks(project);
         const outcome = outcomeOf(project);
 
         return (
@@ -131,11 +147,21 @@ const outcomeOf = (project: Project) => {
 
               <p class="case-more">
                 <span class="link">{dict.projects.view}</span>
-                {links.map((link) => (
-                  <a href={link.href} target="_blank" rel="noopener" class="link above">
-                    {link.label}
+                {links.live && (
+                  <a href={links.live} target="_blank" rel="noopener" class="link above">
+                    {dict.projects.liveLabel}
                   </a>
-                ))}
+                )}
+                {links.sources.length > 0 && (
+                  <span class="case-source">
+                    <CodeXml class="case-source-icon" aria-hidden="true" />
+                    {links.sources.map((link) => (
+                      <a href={link.href} target="_blank" rel="noopener" class="link above" aria-label={link.name}>
+                        {link.label}
+                      </a>
+                    ))}
+                  </span>
+                )}
               </p>
             </div>
           </li>
