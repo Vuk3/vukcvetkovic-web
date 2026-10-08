@@ -2463,9 +2463,12 @@ duplication worth an abstraction.
   - ⚠️ **The two guards are load-bearing.** A sticky card taller than the screen cannot be
     scrolled to its foot while it is stuck, so below 44rem of height, or on a narrower screen
     where a case is a column, the cases simply follow each other.
-  - ⚠️ **A card with keyboard focus comes to the front** (`z-index` on `:focus-within`).
-    Tabbing backwards lands on a card stuck under the next one, which the browser counts as
-    on screen and does not scroll to, so the ring was drawn under the card on top.
+  - ⚠️ **A card with keyboard focus comes to the front** (`z-index` on
+    `:has(:focus-visible)`). Tabbing backwards lands on a card stuck under the next one, which
+    the browser counts as on screen and does not scroll to, so the ring was drawn under the
+    card on top. Keyboard focus only: a click leaves focus on the link it pressed, a source
+    link opens a tab and leaves the page standing, and on coming back `:focus-within` held a
+    card that had stepped back in front of the ones that had slid over it.
   - ⚠️ **The deck names six timelines.** A seventh project would not step back when the one
     after it came. The list in `timeline-scope` is where to add one.
   - `.surface` puts each card back on the theme's own paper on the ink stage, so its
@@ -2533,7 +2536,11 @@ flow.css.
 - **Technologies**, straight after the overview on every project page, is one tile per
   service, each a row of mark tiles, packed in order into rows and spanned so every mark in
   a row comes out the same width. A mark tile wider than 15rem sets its mark beside its
-  name.
+  name. A service with a repository of its own (the thesis's four, Easy Breathe's two) has
+  a round code button at the end of its name, and every name in that stack takes the
+  button's height, so the marks start level across a row. The same services are the head's
+  source buttons, each named for itself, and on a card the code icon leads the run of their
+  names once.
 - **The takeaway** is on ink, its two paragraphs in columns, with All projects, and the
   footer's ask follows it on the same ink.
 - The copy's spaced hyphen and the French space before `:` `;` `!` `?` are made
@@ -2642,6 +2649,11 @@ each its own box at its own line height, so what is measured is what is drawn.
 
 ## Changelog
 
+- 2026-10-08 - a deck card comes to the front on keyboard focus alone, so a card whose
+  source link was clicked no longer stays over the cards in front of it (§10).
+- 2026-10-08 - a project split across repositories links each service by name, in its
+  page's head and on its cards, and from a round code button beside the service's name in
+  its stack (§10).
 - 2026-10-03 - Four in a Row takes no press from the disc that ends a game until the ending
   is shown (§9).
 - 2026-10-02 - a cube press ends when its release goes astray, and a solved cube takes no

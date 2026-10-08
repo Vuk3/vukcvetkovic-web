@@ -196,11 +196,11 @@ take whatever is in the array.
 | `year` | shown on the project's card and as the figure in its page's title block |
 | `hue` | `cobalt`, `violet`, `teal` or `green` - the colour its card and its page are drawn in (`[data-hue]` in global.css). Four projects use the four, and a fifth repeats one or adds a hue to `ProjectHue` and `--hue-*`, a light and a dark value each |
 | `tech` | the short identifying list, as tags under the drawing on the project's card |
-| `stack` | the full list, grouped by **service** rather than category. Only the detail page shows it |
+| `stack` | the full list, grouped by **service** rather than category. Only the detail page shows it. A group's optional `source` is that service's own repository, for a project split across several, and puts a link on its tile |
 | `flowShape` | `roundTrip` or `pipeline` - the topology of the request diagram, see below |
 | `flowTech` | which technologies each node of the request diagram runs on: `{ entry, core, branches, exit }`, each a list of `TechName`. An empty list is a real answer - the node runs on nothing and shows no marks. ⚠️ The diagram **throws at build** if `branches` has a different length from the dictionary's `flow.branches`, or if a name is not in this project's `stack` |
 | `results` | optional. Omit it and the results section does not render |
-| `links` | `{}` hides both links. Filling either `live` or `source` makes that one appear |
+| `links` | `{}` hides both links. Filling either `live` or `source` makes that one appear. A project whose stack groups carry `source` links each of those services by name instead of one Source, so it leaves `links.source` empty |
 
 **In each of the four dictionaries**, add the matching entry under `projects.items`.
 
@@ -419,6 +419,10 @@ anybody as protection - see
 
 ## Changelog
 
+- 2026-10-08 - every project links to its source. Encryptix and Network Traffic Analyzer are
+  one repository each. The thesis is four and Easy Breathe two, so `source` on each of their
+  stack groups links every service by name: in the page's head, the homepage deck, the
+  index and the service's own tile.
 - 2026-10-03 - Four in a Row is `live`.
 - 2026-10-02 - the Cube is `live`.
 - 2026-10-01 - a copy review across all four dictionaries. The Serbian and German game copy

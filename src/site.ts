@@ -60,6 +60,14 @@ interface Degree {
 interface ProjectStackGroup {
   id: StackGroupId;
   items: TechName[];
+  /**
+   * The service's own repository, where a project is several of them. Every
+   * place the project links to its source then links each service by name -
+   * the page's head, the homepage deck, the index - and its tile on the
+   * project page links to it as well. A project in one repository leaves this
+   * out and carries the link once, in `links.source`.
+   */
+  source?: string;
 }
 
 /**
@@ -288,8 +296,10 @@ const education: Degree[] = [
  * what the project measures, not what it was built with, so they appear in the
  * results table and in the prose instead of as two more chips in a list.
  *
- * `links` is empty while the repository is private. Filling in either URL is
- * enough for the link to appear - the rows drop the ones with no href.
+ * Filling in either URL in `links` is enough for the link to appear - the rows
+ * drop the ones with no href. The thesis is four repositories and Easy Breathe
+ * two, so their `links.source` stays empty and the `source` on each of their
+ * stack groups stands in for it.
  */
 const projects: Project[] = [
   {
@@ -323,9 +333,11 @@ const projects: Project[] = [
       "ASP.NET Core",
       "ML.NET",
     ],
+    /* One repository per service, each linked by name. The data is the
+       Roboflow dataset, which has none. */
     stack: [
-      { id: "frontend", items: ["React"] },
-      { id: "gateway", items: ["NestJS"] },
+      { id: "frontend", items: ["React"], source: "https://github.com/Vuk3/master-frontend" },
+      { id: "gateway", items: ["NestJS"], source: "https://github.com/Vuk3/master-gateway-api" },
       {
         id: "pythonService",
         items: [
@@ -336,8 +348,13 @@ const projects: Project[] = [
           "OpenCV",
           "NumPy",
         ],
+        source: "https://github.com/Vuk3/master-python-api",
       },
-      { id: "dotnetService", items: ["ASP.NET Core", "C#", "ML.NET"] },
+      {
+        id: "dotnetService",
+        items: ["ASP.NET Core", "C#", "ML.NET"],
+        source: "https://github.com/Vuk3/master-dotnet-api",
+      },
       { id: "data", items: ["Roboflow"] },
     ],
     results: {
@@ -398,7 +415,7 @@ const projects: Project[] = [
     },
     /* A 150-file pass, sequential against parallel. */
     outcome: { value: 44.16, from: 68.91, digits: 2, unit: " s" },
-    links: {},
+    links: { source: "https://github.com/Vuk3/Encryptix" },
   },
   {
     id: "networkTrafficAnalyzer",
@@ -439,7 +456,7 @@ const projects: Project[] = [
      * the results section is simply absent from the page rather than padded with
      * a table that would have to invent its own subject.
      */
-    links: {},
+    links: { source: "https://github.com/Vuk3/Network-Traffic-Analyzer" },
   },
   {
     id: "easyBreathe",
@@ -459,9 +476,10 @@ const projects: Project[] = [
       exit: ["MongoDB"],
     },
     tech: ["React Native", "Expo", "NestJS", "MongoDB"],
+    /* The app and the API are a repository each, linked by name. */
     stack: [
-      { id: "mobile", items: ["React Native", "Expo"] },
-      { id: "api", items: ["NestJS", "MongoDB"] },
+      { id: "mobile", items: ["React Native", "Expo"], source: "https://github.com/Vuk3/easy-breathe-fe" },
+      { id: "api", items: ["NestJS", "MongoDB"], source: "https://github.com/Vuk3/easy-breathe-be" },
     ],
     links: {},
   },

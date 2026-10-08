@@ -182,6 +182,25 @@
     font-weight: 620;
   }
 
+  /*
+   * The source, led by the code icon once: "Source" for a project in one
+   * repository, or its services by name where it is several (the thesis's
+   * four), so the icon says what every name in the run links to.
+   */
+  .case-source {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 1rem;
+  }
+
+  .case-source-icon {
+    width: 1rem;
+    height: 1rem;
+    margin-right: -0.4rem;
+    color: var(--site-accent);
+  }
+
   .card-hover:hover .case-more > span.link,
   .card-hover:has(.stretch:focus-visible) .case-more > span.link {
     background-size:
@@ -287,8 +306,14 @@
      * backwards lands on a card that is stuck under the next one, which the
      * browser sees as on screen and does not scroll to, so without this the
      * focus ring was drawn under the card on top.
+     *
+     * ⚠️ Keyboard focus only, so `:focus-visible` rather than `:focus-within`.
+     * A click leaves focus on the link it pressed, and a source link opens a
+     * tab and leaves this page standing: on coming back, `:focus-within`
+     * still held, and a card that had stepped back stayed in front of the
+     * ones that had slid over it.
      */
-    .deck > .case:focus-within {
+    .deck > .case:has(:focus-visible) {
       z-index: 4;
     }
 
@@ -910,12 +935,51 @@
   }
 
   .proj-group-name {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
     padding-inline: 0.2rem;
     font-stretch: 110%;
     font-weight: 640;
     font-size: 1.0625rem;
     line-height: 1.25;
     letter-spacing: -0.015em;
+  }
+
+  /*
+   * A service's own repository, where a project is several (`source` on a
+   * stack group in site.ts): a round button at the end of the name, the
+   * header's Source link reduced to its icon, since a one-mark tile is about
+   * 200px wide. Every name in such a stack takes the button's height, so a
+   * tile without one - the thesis's dataset - starts its marks level with the
+   * tiles beside it.
+   */
+  .proj-stack:has(.proj-group-source) .proj-group-name {
+    min-height: 2rem;
+  }
+
+  .proj-group-source {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--site-hairline);
+    border-radius: var(--site-radius-pill);
+    background-color: var(--site-inset);
+    color: var(--site-muted);
+    transition:
+      border-color 250ms var(--site-ease),
+      color 250ms var(--site-ease),
+      background-color 250ms var(--site-ease);
+  }
+
+  .proj-group-source:hover {
+    border-color: color-mix(in oklab, var(--site-accent) 60%, var(--site-hairline));
+    background-color: color-mix(in oklab, var(--site-accent) 7%, var(--site-card));
+    color: var(--site-accent);
   }
 
   /*
