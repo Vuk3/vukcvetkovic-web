@@ -311,7 +311,7 @@ Astro inlines them into each page rather than emitting a bundle. About 4.8 KB of
 
 Eight of the files in `_astro` are the seven game engines and the piece they share. 2048 is
 2.9 KB gz, Minesweeper 3.6 KB, Memory 4.5 KB, Accretion 5.3 KB, Battleship 6.0 KB, Cube
-11.0 KB, Four in a Row 6.2 KB, and the shared chunk 1.7 KB: [games/record.ts](../src/games/record.ts),
+11.1 KB, Four in a Row 6.2 KB, and the shared chunk 1.7 KB: [games/record.ts](../src/games/record.ts),
 [games/sound.ts](../src/games/sound.ts) and [games/burst.ts](../src/games/burst.ts) in one
 file, because all seven games import all three and Rollup puts modules with the same
 importers into the same chunk. Each engine is requested by its own route
@@ -434,6 +434,16 @@ one-line change here and a push.
 through Astro's font API (`unifont`). The site loads its font from `@fontsource`, so that
 code never runs, and the pin is what keeps the warning out of the log.
 
+**The custom domains are the only way in.** [wrangler.jsonc](../wrangler.jsonc) sets
+`workers_dev` and `preview_urls` to `false`, so a deploy switches off
+`vukcvetkovic-web.<account>.workers.dev` and the per-version preview URLs, which wrangler
+otherwise keeps live for a Worker with no `routes`: a second copy of the whole site.
+⚠️ **The domains stay in the dashboard (§5), not in wrangler.jsonc.** Wrangler replaces the
+Worker's whole set of custom domains with the list given there (`override_scope: true` in
+its `publishCustomDomains`), so a list without www would delete www's DNS record and every
+old www link with it. With nothing for wrangler to attach, the deploy log says
+`No targets deployed for vukcvetkovic-web`, and that is expected.
+
 ---
 
 ## 6. The sitemap carries a trailing slash by hand
@@ -495,12 +505,18 @@ state the intent rather than leave it inferred from an absent rule.
 
 | # | Item | Severity |
 |---|---|---|
-| 1 | **The adapter declares a `SESSION` KV binding that nothing in [wrangler.jsonc](../wrangler.jsonc) asks for.** `astro build` logs `Enabling sessions with Cloudflare KV with the "SESSION" KV binding` and the generated `dist/client/wrangler.json` carries `kv_namespaces: [{ binding: "SESSION" }]` with no namespace id. No route is on-demand, so no session is ever read. Unverified against a real `wrangler deploy`. | unverified |
+| 1 | **The adapter declares a `SESSION` KV binding that nothing in [wrangler.jsonc](../wrangler.jsonc) asks for.** `astro build` logs `Enabling sessions with Cloudflare KV with the "SESSION" KV binding` and the generated `dist/client/wrangler.json` carries `kv_namespaces: [{ binding: "SESSION" }]` with no namespace id. No route is on-demand, so no session is ever read. A real deploy (Workers Builds) accepts it and its log lists `env.SESSION` under the Worker's bindings, but that line is the config: `wrangler versions view` shows the deployed version with no bindings, and `wrangler kv namespace list` shows the account with no namespace. Nothing is provisioned and nothing is attached. | harmless |
 
 ---
 
 ## Changelog
 
+- 2026-10-23 - `workers_dev` and `preview_urls` off, so the custom domains are the only way
+  in; why the domains stay out of wrangler.jsonc.
+- 2026-10-23 - the `SESSION` binding checked against a real deploy: nothing provisioned or
+  attached (§8).
+- 2026-10-23 - `npm audit fix` (Astro 7.4, wrangler 4.152, vite 8.3.5, sharp 0.35.5): the
+  newer minifier takes the cube's engine to 11.1 KB gz.
 - 2026-10-23 - `.nvmrc` pins Node 24.22.1, the Active LTS release with the October 2026
   security fixes (a Brotli decoder RCE, TLS hostname checks) that 22.23.2 does not have.
 - 2026-10-03 - Four in a Row's engine is 6.2 KB gz, with the board shut through the bounces

@@ -22,5 +22,13 @@
 	},
 	"observability": {
 		"enabled": true
-	}
+	},
+	// The custom domains are the only way in: with no routes here wrangler would
+	// otherwise keep vukcvetkovic-web.<account>.workers.dev live, a second copy of
+	// the site, and a preview URL for every version. The domains themselves stay
+	// in the dashboard and out of this file on purpose: wrangler replaces the
+	// Worker's whole set of custom domains with the list given here, and one
+	// left out (www) would take its DNS record, and the redirect, with it.
+	"workers_dev": false,
+	"preview_urls": false
 }
