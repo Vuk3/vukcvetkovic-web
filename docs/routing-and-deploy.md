@@ -426,7 +426,9 @@ which writes `worker-configuration.d.ts` - a file [tsconfig.json](../tsconfig.js
 where `files` would not, and `astro check` passes without it.
 
 **[.nvmrc](../.nvmrc) is the Node that Cloudflare's build installs**, and it is the one the
-site is built with locally, 22.23.2, so a build there runs on what was checked here.
+site is built with locally, 24.22.1, so a build there runs on what was checked here. It
+follows the newest security release of the Active LTS line, so a Node security release is a
+one-line change here and a push.
 `engines` in [package.json](../package.json) stays at `>=22.12.0`, Astro's own floor. At
 22.12.0 the install warns `EBADENGINE` for `undici@8`, which asks for 22.19 and comes in
 through Astro's font API (`unifont`). The site loads its font from `@fontsource`, so that
@@ -499,6 +501,8 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-10-23 - `.nvmrc` pins Node 24.22.1, the Active LTS release with the October 2026
+  security fixes (a Brotli decoder RCE, TLS hostname checks) that 22.23.2 does not have.
 - 2026-10-03 - Four in a Row's engine is 6.2 KB gz, with the board shut through the bounces
   of the disc that ends a game.
 - 2026-10-02 - the cube's engine is 11.0 KB gz, with a press that ends when its release goes
