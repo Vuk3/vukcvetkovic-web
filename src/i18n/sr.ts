@@ -86,7 +86,7 @@ const sr: Dict = {
     label: "Obrazovanje",
     degrees: {
       phd: {
-        degree: "Doktorske studije, Softversko inženjerstvo",
+        degree: "Doktorske studije, Računarstvo i informatika / Softversko inženjerstvo",
         thesis: "Doktorska disertacija",
         school: "Elektronski fakultet, Univerzitet u Nišu",
       },

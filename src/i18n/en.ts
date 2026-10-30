@@ -95,7 +95,7 @@ const en = {
       /* `thesis` labels the dissertation once there is one: every degree
          carries the same keys, so `Dict` stays one shape rather than a union. */
       phd: {
-        degree: "PhD, Software Engineering",
+        degree: "PhD, Computing and Informatics / Software Engineering",
         thesis: "Doctoral dissertation",
         school: "Faculty of Electronic Engineering, University of Niš",
       },

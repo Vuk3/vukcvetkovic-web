@@ -86,7 +86,7 @@ const de: Dict = {
     label: 'Ausbildung',
     degrees: {
       phd: {
-        degree: 'Promotion, Software Engineering',
+        degree: 'Promotion, Informatik / Software Engineering',
         thesis: 'Dissertation',
         school: 'Fakultät für Elektronik, Universität Niš',
       },

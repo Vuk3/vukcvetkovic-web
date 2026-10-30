@@ -90,7 +90,7 @@ const fr: Dict = {
     label: "Formation",
     degrees: {
       phd: {
-        degree: "Doctorat, génie logiciel",
+        degree: "Doctorat, informatique / génie logiciel",
         thesis: "Thèse de doctorat",
         school: "Faculté de génie électronique, Université de Niš",
       },
