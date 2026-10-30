@@ -22,7 +22,7 @@ rather than rendering a gap.
 | a skill group or the technologies in it | `skillGroups` in [src/site.ts](../src/site.ts) + a group name in every dictionary |
 | **a technology's icon or brand colour** | [src/tech.ts](../src/tech.ts) - §4 |
 | a service's tags, or where the site shows it done | `services` in [src/site.ts](../src/site.ts), by position against `services.items` in the dictionaries: `tech` and a `proof`, either `{ project }` or `{ role }` |
-| which project a degree's thesis was | `thesis` on the degree in `education` in [src/site.ts](../src/site.ts), with the thesis's label as `education.degrees.<id>.thesis` in every dictionary |
+| which project a degree's thesis was | `thesis` on the degree in `education` in [src/site.ts](../src/site.ts), left out while it has none, with the thesis's label as `education.degrees.<id>.thesis` in every dictionary, there on every degree so the dictionary keeps one shape |
 | a project's measured result on its card | `outcome` on the project in [src/site.ts](../src/site.ts) (the figure, what it is compared with, the digits and a unit), with its words as `projects.outcomes.<id>` in every dictionary, `{from}` where the compared figure goes |
 | a project's demo clip | `demo` on the project in [src/site.ts](../src/site.ts): the clip's URL on media.vukcvetkovic.com, its poster imported from src/assets, and the clip's width and height. The section's name is `projects.detail.demo` in every dictionary. Hosting: [routing-and-deploy.md §5](./routing-and-deploy.md#5-cloudflare-and-what-actually-ships) |
 | a project, its stack, its results table | `projects` in [src/site.ts](../src/site.ts) + `projects.items` in every dictionary - §5 |
@@ -394,7 +394,8 @@ anybody as protection - see
   [ArchitectureDiagram.astro](../src/components/ArchitectureDiagram.astro) checks both
 - `services` in site.ts with a different length from the dictionary's `services.items`, or
   a proof naming a project or a role that is not there - [Services.astro](../src/components/Services.astro)
-- a degree whose `thesis` names no project - [Experience.astro](../src/components/Experience.astro)
+- a degree whose `thesis` names no project - [Experience.astro](../src/components/Experience.astro).
+  A degree with no `thesis` at all builds, and its tile is its head alone
 - a project with an `outcome` and no `projects.outcomes.<id>` in the page's dictionary -
   [Projects.astro](../src/components/Projects.astro) and
   [ProjectIndex.astro](../src/components/ProjectIndex.astro)
@@ -419,6 +420,8 @@ anybody as protection - see
 
 ## Changelog
 
+- 2026-10-30 - a degree's `thesis` is optional and a degree can be `current`, for the PhD, whose
+  dictionary entry carries a `thesis` label all the same.
 - 2026-10-08 - every project links to its source. Encryptix and Network Traffic Analyzer are
   one repository each. The thesis is four and Easy Breathe two, so `source` on each of their
   stack groups links every service by name: in the page's head, the homepage deck, the

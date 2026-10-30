@@ -53,7 +53,7 @@ const en = {
     label: "About",
     paragraphs: [
       "I work on client projects from the first data model to the deployment on AWS. I always start from the domain: what the data is, who can access it, and which systems it has to talk to. The API, the services and the React interface follow from that.",
-      "I have a master’s in software engineering. My thesis compared two machine learning ecosystems on the same task: a YOLOv8m model in Python and an ML.NET model in .NET, behind one NestJS gateway and one React frontend.",
+      "I have a master’s in software engineering, and I am now doing a PhD in the same field. My master’s thesis compared two machine learning ecosystems on the same task: a YOLOv8m model in Python and an ML.NET model in .NET, behind one NestJS gateway and one React frontend.",
       "The best example of my frontend work is this site itself: four languages, and seven games written without a canvas or a game library. Each game has a write-up on how it was built.",
     ],
   },
@@ -92,6 +92,13 @@ const en = {
   education: {
     label: "Education",
     degrees: {
+      /* `thesis` labels the dissertation once there is one: every degree
+         carries the same keys, so `Dict` stays one shape rather than a union. */
+      phd: {
+        degree: "PhD, Software Engineering",
+        thesis: "Doctoral dissertation",
+        school: "Faculty of Electronic Engineering, University of Niš",
+      },
       master: {
         degree: "MSc, Software Engineering",
         thesis: "Master’s thesis",

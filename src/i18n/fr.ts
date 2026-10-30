@@ -50,7 +50,7 @@ const fr: Dict = {
     label: "À propos",
     paragraphs: [
       "Je travaille sur des projets clients, du premier modèle de données jusqu’au déploiement sur AWS. Je pars toujours du domaine : quelles sont les données, qui peut y accéder et avec quels systèmes elles doivent communiquer. L’API, les services et l’interface React en découlent.",
-      "Je suis titulaire d’un master en génie logiciel. Mon mémoire comparait deux écosystèmes d’apprentissage automatique sur une même tâche : un modèle YOLOv8m en Python et un modèle ML.NET en .NET, derrière une seule passerelle NestJS et un seul frontend React.",
+      "Je suis titulaire d’un master en génie logiciel et je prépare maintenant un doctorat dans le même domaine. Mon mémoire de master comparait deux écosystèmes d’apprentissage automatique sur une même tâche : un modèle YOLOv8m en Python et un modèle ML.NET en .NET, derrière une seule passerelle NestJS et un seul frontend React.",
       "Le meilleur exemple de mon travail frontend, c’est ce site : quatre langues et sept jeux écrits sans canvas ni bibliothèque de jeu. Chaque jeu est accompagné d’un texte qui explique comment il a été construit.",
     ],
   },
@@ -89,6 +89,11 @@ const fr: Dict = {
   education: {
     label: "Formation",
     degrees: {
+      phd: {
+        degree: "Doctorat, génie logiciel",
+        thesis: "Thèse de doctorat",
+        school: "Faculté de génie électronique, Université de Niš",
+      },
       master: {
         degree: "Master, génie logiciel",
         thesis: "Mémoire de master",

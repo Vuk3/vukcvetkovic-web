@@ -52,8 +52,13 @@ interface Service {
 interface Degree {
   id: DegreeId;
   period: string;
-  /** The project the degree's thesis was, which its tile links to. */
-  thesis: ProjectId;
+  /**
+   * The project the degree's thesis was, which its tile links to. Absent while
+   * the degree has none to point at yet, and the tile is then its head alone.
+   */
+  thesis?: ProjectId;
+  /** A degree still under way, which takes the running period a current role has. */
+  current?: boolean;
 }
 
 /** One row of a project's stack, as a service rather than as a category. */
@@ -262,8 +267,9 @@ const services: Service[] = [
 
 /**
  * Degrees, newest first. The dates and which project each thesis was live
- * here: both theses are projects on the site, so a degree's tile carries its
- * thesis rather than About repeating it.
+ * here: the finished degrees' theses are projects on the site, so a degree's
+ * tile carries its thesis rather than About repeating it. The PhD has no
+ * thesis yet, so it has no `thesis` to name.
  *
  * The school name sits in the dictionaries instead, unlike `company` above: a
  * company name is the same word in every language, while this faculty is
@@ -271,6 +277,11 @@ const services: Service[] = [
  * Treating it as a language-neutral fact left English on the other three pages.
  */
 const education: Degree[] = [
+  {
+    id: "phd",
+    period: "2026 -",
+    current: true,
+  },
   {
     id: "master",
     period: "2023 - 2026",

@@ -462,7 +462,7 @@ sit at 100% and never animate.
   they sit, lighting each one's edge and ground with the accent for a moment - the stack
   read as a path (`tray-lit`, fill `none`, so a held last frame cannot outrank the hover's
   tint). The dot before "Software engineer" is the signal colour and sends a ring out every
-  2.4s. So does the current role's period.
+  2.4s. So do the periods of the current role and the degree under way.
 - **The hero steps back as the page leaves it, in three depths.** The stage scales to 0.88
   from its foot, the portrait's frame to 0.84 and rises 2.5rem, and the masthead drifts up
   3.5rem and fades to 35%, so the three read as layers going away. All run linear on the
@@ -2300,8 +2300,8 @@ row still fills its columns.
   which came out larger at this quality.
 - **About** is the opening statement across the full measure at display size, straight on
   the ground, taking its ink word by word as it is read (§5), then the other two
-  paragraphs as tiles, labelled Education and Games, at 4 and 8 columns. The Education tile names the master's and its thesis only: both theses are on the
-  Experience rail, with their links. It is lit the way the Skills groups are - a wash and a
+  paragraphs as tiles, labelled Education and Games, at 4 and 8 columns. The Education tile names the master's and its thesis, and the PhD under way: both theses
+  are on the Experience rail, with their links. It is lit the way the Skills groups are - a wash and a
   light of the accent from the top and its top left corner, an edge that catches it, a
   white rim - with its icon white on cobalt. The Games tile is on cobalt, the tile a link to the
   games, and under its paragraph are the seven games drawn small
@@ -2417,6 +2417,10 @@ row still fills its columns.
     project, with the label ("Master's thesis"), the project's title and its tagline.
     Which project each thesis was is `thesis` on the degree in site.ts. On a phone the
     thesis starts at the name's edge, clear of the rail, and drops its tagline.
+  - **A degree with no thesis yet is its head alone**: the PhD names no `thesis`, so its
+    tile is the crest, the degree, the school and the period. It is `current`, so it takes
+    the running period a current role has, the accent ring and the pulsing dot, and is lit
+    harder from its top left corner.
 - **Projects** is the one full-width dark stage in the middle of the page (`tone="panel"`
   and `class="theater"`, on `--site-stage`), and on it the projects as a deck of case
   studies (see "Project cards" below). A project with a measured result leads with it,
@@ -2654,6 +2658,8 @@ each its own box at its own line height, so what is measured is what is drawn.
 
 ## Changelog
 
+- 2026-10-30 - the PhD heads the degrees on the Experience rail, its tile the head alone until
+  it has a thesis, its period running as the current role's does, and the About tile names it (§10).
 - 2026-10-30 - each role on the Experience rail shows its company's logo in place of its
   initial, ringed outside the artwork as the crest is (§10).
 - 2026-10-08 - a deck card comes to the front on keyboard focus alone, so a card whose

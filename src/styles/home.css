@@ -1154,8 +1154,9 @@
    * top of the tile, gone before the middle, an edge that catches it - the
    * accent along the top running down into the hairline, a gradient on the
    * border box under a transparent border, since `border-image` drops the
-   * radius - and a white rim along the top. The role he holds now is lit
-   * harder, from its top left corner where its initial is.
+   * radius - and a white rim along the top. The role he holds now, and the
+   * degree under way, are lit harder, from the top left corner where the
+   * logo or the crest is.
    */
   .role-list > .role {
     --edge-top: color-mix(in oklab, var(--site-accent) 34%, var(--site-hairline));
@@ -1285,7 +1286,8 @@
     color: var(--site-accent);
   }
 
-  /* The dot is the signal, the hero's "now": the one role that is running. */
+  /* The dot is the signal, the hero's "now": the role and the degree that are
+     running. */
   .role[data-current] .role-period::before {
     content: '';
     width: 0.5rem;

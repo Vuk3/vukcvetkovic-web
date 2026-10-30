@@ -52,10 +52,11 @@ const logos: Partial<Record<(typeof site.experience)[number]['id'], ImageMetadat
   which fills with the accent as the page scrolls past it. The roles come
   first, then the degrees, a chapter of their own under an "Education" heading
   whose icon is a stop on the rail, each with the school's crest where a role has its logo and
-  its thesis where a role has its points. The role he holds now takes the
-  accent round its logo and on its period, which is the one place the accent
-  marks a fact rather than a link; the period also carries a pulsing dot, so
-  "2024 -" reads as running rather than cut off.
+  its thesis where a role has its points, or its head alone while it has no
+  thesis yet. The role he holds now takes the accent round its logo and on its
+  period, and the degree under way takes it on its period, which are the
+  places the accent marks a fact rather than a link; the period also carries a
+  pulsing dot, so "2024 -" reads as running rather than cut off.
 
   A tile paints over whatever the tile above it draws, so the rail cannot be
   one element: each tile draws its own stretch - in from the tile above, across
@@ -112,12 +113,17 @@ const logos: Partial<Record<(typeof site.experience)[number]['id'], ImageMetadat
       site.education.map((degree, index) => {
         const stop = site.experience.length + index;
         const copy = dict.education.degrees[degree.id];
-        const thesis = site.projects.find((project) => project.id === degree.thesis);
-        if (!thesis) throw new Error(`${degree.id}: no project "${degree.thesis}" for its thesis.`);
-        const thesisCopy = dict.projects.items[thesis.id];
+        // A degree with no thesis yet has none to link, so only one that names a
+        // project it cannot find fails the build.
+        const thesis = degree.thesis && site.projects.find((project) => project.id === degree.thesis);
+        if (degree.thesis && !thesis) throw new Error(`${degree.id}: no project "${degree.thesis}" for its thesis.`);
 
         return (
-          <li class="card role role-degree" data-chapter={index === 0 ? '' : undefined}>
+          <li
+            class="card role role-degree"
+            data-current={degree.current ? '' : undefined}
+            data-chapter={index === 0 ? '' : undefined}
+          >
             {stop > 0 && <span class="role-rail role-rail-in" aria-hidden="true" />}
             {stop < stops - 1 && <span class="role-rail role-rail-out" aria-hidden="true" />}
             {/* The chapter's caption, on the rail in the gap above the first
@@ -156,16 +162,18 @@ const logos: Partial<Record<(typeof site.experience)[number]['id'], ImageMetadat
               <p class="role-period">{degree.period}</p>
             </div>
 
-            <a href={localizePath(`/projects/${thesis.slug}/`, lang)} class="role-thesis">
-              <span class="tile-label">
-                <span class="tile-icon">
-                  <FileText aria-hidden="true" />
+            {thesis && (
+              <a href={localizePath(`/projects/${thesis.slug}/`, lang)} class="role-thesis">
+                <span class="tile-label">
+                  <span class="tile-icon">
+                    <FileText aria-hidden="true" />
+                  </span>
+                  {copy.thesis}
                 </span>
-                {copy.thesis}
-              </span>
-              <span class="role-thesis-title">{thesisCopy.title}</span>
-              <span class="role-thesis-line">{thesisCopy.tagline}</span>
-            </a>
+                <span class="role-thesis-title">{dict.projects.items[thesis.id].title}</span>
+                <span class="role-thesis-line">{dict.projects.items[thesis.id].tagline}</span>
+              </a>
+            )}
           </li>
         );
       })
