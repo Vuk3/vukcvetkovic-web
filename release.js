@@ -6,7 +6,7 @@
  * only ever receives develop, so every step here is a fast-forward and the
  * script refuses rather than inventing a merge commit.
  *
- * Run it from develop after pushing:  npm run release -- minor
+ * Run it from develop after pushing:  pnpm release minor
  */
 import { execFileSync, spawnSync } from "node:child_process";
 import fs from "node:fs";
@@ -58,7 +58,7 @@ function bumpVersion([major, minor, patch], bumpType) {
 
 const bumpType = process.argv[2] || "patch";
 if (!VALID_BUMP_TYPES.has(bumpType)) {
-  console.error("Usage: npm run release -- [patch|minor|major]");
+  console.error("Usage: pnpm release [patch|minor|major]");
   process.exit(1);
 }
 
@@ -100,7 +100,7 @@ try {
 
   // The project's only gate, and main is production.
   console.log("Running the build...");
-  run("npm", ["run", "build"]);
+  run("pnpm", ["run", "build"]);
 
   /*
    * The highest of package.json and the release tags is the base, so a tag
@@ -129,14 +129,12 @@ try {
   }
 
   console.log(`Releasing ${newVersion} (${bumpType})...`);
+  // npm, because pnpm has no version command of its own and hands this one to
+  // npm anyway. Only package.json changes: pnpm-lock.yaml does not record the
+  // project's own version.
   run("npm", ["version", newVersion, "--no-git-tag-version"]);
 
-  const filesToAdd = ["package.json"];
-  if (fs.existsSync("package-lock.json") && capture("git", ["diff", "--name-only", "--", "package-lock.json"])) {
-    filesToAdd.push("package-lock.json");
-  }
-
-  run("git", ["add", "--", ...filesToAdd]);
+  run("git", ["add", "--", "package.json"]);
   // Not a conventional-commit type on purpose: the log here is all feat and
   // fix, and a release is neither.
   run("git", ["commit", "-m", `Release: ${newVersion}`]);

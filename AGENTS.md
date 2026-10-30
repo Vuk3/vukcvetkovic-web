@@ -28,14 +28,14 @@ not need the map to change a dictionary, add a project, or touch the stylesheet.
 
 ## Working rules
 
-- **`npm run check` is the only gate this project has.** There is no test runner and no
+- **`pnpm check` is the only gate this project has.** There is no test runner and no
   linter - nothing to run but `astro check`, which reports 0 errors, 0 warnings and 0 hints across 105 files. Do
   not add Vitest, ESLint or Prettier without asking.
-- **`npm run build` runs `astro check` first**, so a failed build is usually a type error
+- **`pnpm build` runs `astro check` first**, so a failed build is usually a type error
   rather than a build error. Read the first failure, not the last line. It ends by drawing
   the 52 share cards (src/og/), and a failure after the pages are written comes from there.
-- **Do not start the dev server.** Vuk runs it himself. Verify with `npm run check` and
-  `npm run build` instead. If he does ask for it, start it detached with
+- **Do not start the dev server.** Vuk runs it himself. Verify with `pnpm check` and
+  `pnpm build` instead. If he does ask for it, start it detached with
   `astro dev --background` and manage it with `astro dev stop`, `astro dev status` and
   `astro dev logs`.
 - **The type system is the safety net, so let it work.** Ids in
@@ -84,12 +84,12 @@ not need the map to change a dictionary, add a project, or touch the stylesheet.
   needs script, ask before adding it.
 - **The exceptions are the seven games**, which cannot be: 2.9 KB gz for
   [2048](./src/games/2048/game.ts), 3.6 KB for
-  [minesweeper](./src/games/minesweeper/game.ts), 4.5 KB for
+  [minesweeper](./src/games/minesweeper/game.ts), 4.4 KB for
   [memory](./src/games/memory/game.ts), 5.3 KB for
   [accretion](./src/games/accretion/game.ts), 6.0 KB for
   [battleship](./src/games/battleship/game.ts), 11.1 KB for
-  [cube](./src/games/cube/game.ts) and 6.2 KB for
-  [four in a row](./src/games/four/game.ts), each on its own route, plus a shared 1.7 KB
+  [cube](./src/games/cube/game.ts) and 6.1 KB for
+  [four in a row](./src/games/four/game.ts), each on its own route, plus a shared 1.6 KB
   chunk for the stored record, the sound and the burst, and 4.4 KB for the cube's hints, fetched only when one is
   asked for. That budget is the games', not a precedent - it does not
   make a script cheaper anywhere else.

@@ -134,5 +134,19 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+
+    /*
+     * In dev, Astro pre-bundles every package any file under src/ imports,
+     * for the workerd runtime the adapter serves pages from, and src/og is
+     * under src/. resvg is a native Node addon, a `.node` binary the bundler
+     * cannot read, so `astro dev` died before serving a page with "stream did
+     * not contain valid UTF-8". Nothing the dev server runs imports src/og:
+     * the share cards are drawn by the integration once a build has written
+     * the pages, so leaving resvg out costs nothing. The adapter passes this
+     * list on to its server environments.
+     */
+    optimizeDeps: {
+      exclude: ['@resvg/resvg-js'],
+    },
   },
 });

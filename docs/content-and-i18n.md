@@ -91,7 +91,7 @@ export type Dict = typeof import('./en').default;
 
 `sr.ts`, `fr.ts` and `de.ts` are each annotated `: Dict`. So **English is the source of
 truth for the shape**: a key that is missing, misspelled, or the wrong kind of value fails
-`astro check`, and therefore fails `npm run build`.
+`astro check`, and therefore fails `pnpm build`.
 
 ⚠️ **Array lengths are not part of that contract.** A locale may carry two paragraphs
 where English carries three, or four service items where English has four titles, and
@@ -292,7 +292,7 @@ There is no auto-discovery, but **the compiler now walks you through the whole l
 Adding a locale `xx` touches five places, and widening `locales` in
 [src/i18n/types.ts](../src/i18n/types.ts) is the one to do first: it widens `Lang`, which
 turns every `Record<Lang, …>` map below it into a type error until it is filled in. An
-incomplete registration fails `astro check`, so it fails `npm run build`.
+incomplete registration fails `astro check`, so it fails `pnpm build`.
 
 | # | Where | File | Checked? |
 |---|---|---|---|
@@ -375,7 +375,7 @@ anybody as protection - see
 
 ## 8. What throws, what warns, what falls back silently
 
-**Fails `astro check`, so fails `npm run build`:**
+**Fails `astro check`, so fails `pnpm build`:**
 
 - a key missing, misspelled or the wrong shape in `sr.ts`, `fr.ts` or `de.ts`
 - an `id` in [src/site.ts](../src/site.ts) with no matching copy in `en.ts`
@@ -387,7 +387,7 @@ anybody as protection - see
   name under `games.items.memory.pictures` - the page builds its name map from the module's
   ids, so the missing key is a type error there
 
-**Throws during `npm run build`:**
+**Throws during `pnpm build`:**
 
 - a project whose `flowTech.branches` has a different length from its dictionary
   `flow.branches`, or whose `flowTech` names a technology missing from its own `stack` -

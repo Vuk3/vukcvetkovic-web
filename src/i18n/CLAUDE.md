@@ -21,7 +21,7 @@ annotated `: Dict`. So:
 - **Add the key to [en.ts](./en.ts) first.** Everything else is then a type error until it
   is filled in, which is the compiler walking you through the change.
 - A key that is missing, misspelled or the wrong shape fails `astro check`, and therefore
-  fails `npm run build`.
+  fails `pnpm build`.
 - Keys under `skills.groups`, `experience.roles`, `education.degrees`, `projects.items` and
   `projects.stackGroups` are the `id` fields in [src/site.ts](../site.ts). They are the
   join key between the two files.

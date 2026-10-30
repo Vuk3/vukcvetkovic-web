@@ -50,17 +50,17 @@ A few things about it are worth a look if you are here to read code rather than 
 
 [Astro](https://astro.build) 7, [Tailwind](https://tailwindcss.com) 4, TypeScript, and
 `@astrojs/cloudflare` for the output shape. `sharp` handles images at build time and no
-image touches the runtime. Node 22.12 or newer.
+image touches the runtime. Node 22.12 or newer, and pnpm, at the version `packageManager` names.
 
 ## Commands
 
 | Command | What it does |
 |---|---|
-| `npm run dev` | Dev server |
-| `npm run check` | `astro check`, the project's only gate |
-| `npm run build` | Runs `astro check` first, then builds |
-| `npm run preview` | Serves the built output |
-| `npm run release -- [patch\|minor\|major]` | Fast-forwards `main` from `develop`, bumps the version, tags and pushes |
+| `pnpm dev` | Dev server |
+| `pnpm check` | `astro check`, the project's only gate |
+| `pnpm build` | Runs `astro check` first, then builds |
+| `pnpm preview` | Serves the built output |
+| `pnpm release [patch\|minor\|major]` | Fast-forwards `main` from `develop`, bumps the version, tags and pushes |
 
 ## Docs
 

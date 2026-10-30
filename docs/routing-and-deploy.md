@@ -310,8 +310,8 @@ Astro inlines them into each page rather than emitting a bundle. About 4.8 KB of
 (1.9 KB gz), in a 58 KB gz home page, with no extra request. Keep it that way: see [src/components/CLAUDE.md](../src/components/CLAUDE.md).
 
 Eight of the files in `_astro` are the seven game engines and the piece they share. 2048 is
-2.9 KB gz, Minesweeper 3.6 KB, Memory 4.5 KB, Accretion 5.3 KB, Battleship 6.0 KB, Cube
-11.1 KB, Four in a Row 6.2 KB, and the shared chunk 1.7 KB: [games/record.ts](../src/games/record.ts),
+2.9 KB gz, Minesweeper 3.6 KB, Memory 4.4 KB, Accretion 5.3 KB, Battleship 6.0 KB, Cube
+11.1 KB, Four in a Row 6.1 KB, and the shared chunk 1.6 KB: [games/record.ts](../src/games/record.ts),
 [games/sound.ts](../src/games/sound.ts) and [games/burst.ts](../src/games/burst.ts) in one
 file, because all seven games import all three and Rollup puts modules with the same
 importers into the same chunk. Each engine is requested by its own route
@@ -356,7 +356,7 @@ critical path: `font-display: swap` paints the fallback immediately and measured
 
 Every project, every game and the two indexes share a card of their own, in each of the
 four languages: 52 PNGs at 1200x630 under `dist/client/og/`, about 49 KB each and 2.5 MB
-together, drawn in about 10 seconds at the end of `npm run build`. How they look is
+together, drawn in about 10 seconds at the end of `pnpm build`. How they look is
 [design-system.md §10](./design-system.md#the-share-cards).
 
 - **An integration, not an endpoint.** `shareCards()` ([src/og/integration.ts](../src/og/integration.ts))
@@ -384,6 +384,13 @@ together, drawn in about 10 seconds at the end of `npm run build`. How they look
   generator, since `astro check` covers it.
 - **The dev server draws nothing.** A page's card address 404s under `astro dev`; build and
   serve `dist/client` to see one, or open the PNG under `dist/client/og/`.
+- ⚠️ **`@resvg/resvg-js` is in `vite.optimizeDeps.exclude`** in
+  [astro.config.ts](../astro.config.ts), or `astro dev` dies before serving a page with
+  `UNLOADABLE_DEPENDENCY ... stream did not contain valid UTF-8`. In dev, Astro pre-bundles
+  every package any file under `src/` imports, for workerd, and src/og is under `src/`:
+  the bundler reaches resvg's `.node` binary and cannot read it. Nothing the dev server
+  runs imports src/og, so leaving resvg out costs nothing. Taken out of the list, dev
+  fails again, which is how it was checked.
 
 ### Video lives on R2, not in the repo
 
@@ -420,7 +427,15 @@ sizes it like every other image.
 ### Deploying
 
 **Nothing in this repository runs the deploy.** There is no `deploy` script and no CI
-workflow. `wrangler` is a dependency and `npm run generate-types` calls `wrangler types`,
+workflow.
+
+**pnpm is the package manager**, the version in `packageManager` in
+[package.json](../package.json), and [pnpm-lock.yaml](../pnpm-lock.yaml) is the only
+lockfile: Cloudflare's build picks its package manager from the lockfile, so a second one
+would leave it to choose. pnpm runs no dependency's install script unless it is named in
+`pnpm.onlyBuiltDependencies`, which lists esbuild and workerd, the two whose scripts it
+held back on the first install. A new dependency that needs one shows up as a warning on
+`pnpm install` and goes into that list. `wrangler` is a dependency and `pnpm generate-types` calls `wrangler types`,
 which writes `worker-configuration.d.ts` - a file [tsconfig.json](../tsconfig.json) names in
 `include` and which is not checked in. That is harmless: `include` tolerates a missing path
 where `files` would not, and `astro check` passes without it.
@@ -511,6 +526,9 @@ state the intent rather than leave it inferred from an absent rule.
 
 ## Changelog
 
+- 2026-10-30 - pnpm replaces npm, with `packageManager`, `pnpm.onlyBuiltDependencies` and one
+  lockfile, and `@resvg/resvg-js` is kept out of the dev server's pre-bundling. The newer
+  minifier it installed takes Memory to 4.4 KB gz, Four in a Row to 6.1 and the shared chunk to 1.6.
 - 2026-10-23 - `workers_dev` and `preview_urls` off, so the custom domains are the only way
   in; why the domains stay out of wrangler.jsonc.
 - 2026-10-23 - the `SESSION` binding checked against a real deploy: nothing provisioned or
