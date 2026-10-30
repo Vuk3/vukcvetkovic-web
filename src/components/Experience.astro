@@ -1,7 +1,10 @@
 ---
 import { Check, FileText, GraduationCap } from '@lucide/astro';
+import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
 import elfak from '../assets/elfak.webp';
+import ncodedLogo from '../assets/ncoded-logo.png';
+import novateqLogo from '../assets/novateq-logo.jpg';
 import type { Lang } from '../i18n/types';
 import { getDict, localizePath } from '../i18n/utils';
 import { site } from '../site';
@@ -19,9 +22,20 @@ const dict = getDict(lang);
    the last can be told from the rest whichever list they come from. */
 const stops = site.experience.length + site.education.length;
 
-// The crest's displayed size in CSS pixels, the initial's: 1x, 2x and 3x are
-// emitted from the 597px source.
-const crestSize = 56;
+// The crest's and the logos' displayed size in CSS pixels, the initial's: 1x,
+// 2x and 3x are emitted, from the crest's 597px source and the logos' 200px.
+const markSize = 56;
+
+/*
+ * Each company's own logo, as it publishes it, where its role would have its
+ * initial: both companies start with N, so two initials said the same thing
+ * twice. Keyed by role, and partial on purpose - a role with no logo here
+ * keeps its initial rather than failing the build.
+ */
+const logos: Partial<Record<(typeof site.experience)[number]['id'], ImageMetadata>> = {
+  ncoded: ncodedLogo,
+  novateq: novateqLogo,
+};
 ---
 
 {/*
@@ -37,9 +51,9 @@ const crestSize = 56;
   line from the first to the last, through the tiles and the gaps between them,
   which fills with the accent as the page scrolls past it. The roles come
   first, then the degrees, a chapter of their own under an "Education" heading
-  whose icon is a stop on the rail, each with the school's crest where a role has its initial and
+  whose icon is a stop on the rail, each with the school's crest where a role has its logo and
   its thesis where a role has its points. The role he holds now takes the
-  accent on its initial and on its period, which is the one place the accent
+  accent round its logo and on its period, which is the one place the accent
   marks a fact rather than a link; the period also carries a pulsing dot, so
   "2024 -" reads as running rather than cut off.
 
@@ -54,6 +68,7 @@ const crestSize = 56;
     {
       site.experience.map((role, index) => {
         const copy = dict.experience.roles[role.id];
+        const logo = logos[role.id];
         return (
           /* Empty string rather than the boolean: Astro renders `false` as
              data-current="false", which [data-current] would still match. */
@@ -61,7 +76,14 @@ const crestSize = 56;
             {index > 0 && <span class="role-rail role-rail-in" aria-hidden="true" />}
             {index < stops - 1 && <span class="role-rail role-rail-out" aria-hidden="true" />}
             <div class="role-head">
-              <span class="role-mark" aria-hidden="true">{role.company.charAt(0)}</span>
+              {/* Decorative, as the crest is: the company is named beside it. */}
+              {logo ? (
+                <span class="role-mark role-logo" aria-hidden="true">
+                  <Image src={logo} alt="" width={markSize} densities={[1, 2, 3]} loading="lazy" />
+                </span>
+              ) : (
+                <span class="role-mark" aria-hidden="true">{role.company.charAt(0)}</span>
+              )}
 
               <div class="min-w-0">
                 <h3 class="role-company">{role.company}</h3>
@@ -120,7 +142,7 @@ const crestSize = 56;
               <Image
                 src={elfak}
                 alt=""
-                width={crestSize}
+                width={markSize}
                 densities={[1, 2, 3]}
                 loading="lazy"
                 class="role-crest"

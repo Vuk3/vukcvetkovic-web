@@ -1343,8 +1343,38 @@
   }
 
   /*
-   * A degree: the school's crest where a role has its initial - the size of
-   * the initial, on the same centre line, so the rail finds it the same way -
+   * A company's logo in its initial's place, at the initial's size and
+   * radius, as the company draws it: nothing is painted over the artwork, so
+   * the ring the rail lights stands outside it, as the crest's does, and the
+   * role he holds now keeps its ring lit and the cobalt glow its initial had.
+   * A hairline holds the edge of a logo drawn on black against the dark
+   * theme's tiles.
+   *
+   * `.role-mark.role-logo` to outrank the initial's two rules above.
+   */
+  .role .role-mark.role-logo {
+    outline-offset: 2px;
+    background: none;
+    box-shadow: 0 0 0 1px var(--site-hairline);
+  }
+
+  .role[data-current] .role-mark.role-logo {
+    outline: 2px solid var(--site-accent);
+    box-shadow:
+      0 0 0 1px var(--site-hairline),
+      0 10px 22px -10px color-mix(in oklab, var(--site-cobalt-bg) 80%, transparent);
+  }
+
+  .role-logo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+  }
+
+  /*
+   * A degree: the school's crest where a role has its logo - the size of
+   * the logo, on the same centre line, so the rail finds it the same way -
    * and above the rail, on its own white disc, because the crest is navy on
    * transparent and would vanish on the dark theme.
    */

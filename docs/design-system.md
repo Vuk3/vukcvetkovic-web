@@ -2365,20 +2365,25 @@ row still fills its columns.
   - ⚠️ **It arrives whole**, the stage one `reveal` like any block. Built group by group
     along the flow as it scrolled in, the loop ran ahead of it: a packet reached the end of
     Data's line with Data still to come, and the right of the row stood empty.
-- **Experience** is one wide tile per role: the company's initial, the name and the title
+- **Experience** is one wide tile per role: the company's logo, the name and the title
   across the top with the period at the far end from 60rem, and the points under them,
   starting where the name does. Beside each other, the head took a column the height of
-  the points and filled a third of it. A 2px rail runs from the first initial to the last, through the tiles and the
-  gaps, and fills with the accent as the page scrolls; the current role's initial and
+  the points and filled a third of it. A 2px rail runs from the first logo to the last, through the tiles and the
+  gaps, and fills with the accent as the page scrolls; the current role's logo and
   period take the accent, the period's dot is the signal and pulses so "2024 -" reads as
-  running, and an
-  initial the rail has reached takes an accent ring. Stacked, the bullets' checks sit on
+  running, and a
+  logo the rail has reached takes an accent ring. Stacked, the bullets' checks sit on
   the rail as its stops.
+  - **Each company's logo is its own file** in src/assets, as the company publishes it,
+    keyed by role in [Experience.astro](../src/components/Experience.astro): both
+    companies start with N, so their initials said the same thing twice. It sits at the
+    initial's size and radius and nothing is painted over it, so its ring stands outside
+    it as the crest's does, and a hairline holds the edge of Ncoded's black square on the
+    dark theme. A role with no logo there falls back to its initial.
   - **The tiles are lit the way the Skills groups are**: a wash of the accent at the top,
     an edge that catches it (a gradient on the border box) and a white rim, the current
-    role harder, from its top left corner. The current initial is white on solid cobalt
-    with a glow of its own blue, the others a lit fill inside their ring, and the checks
-    and the icons are on cobalt too.
+    role harder, from its top left corner. The current role's logo keeps its ring lit and
+    a glow of cobalt under it, and the checks and the icons are on cobalt too.
   - **From 60rem each point is a recessed tile** lit the way the thesis is, two across
     with an odd last one across both, so no row stops short, and from 84rem, where the
     shell stops growing, all of a role's points in one row (`auto-fit`), three across for
@@ -2392,8 +2397,8 @@ row still fills its columns.
     and its 2.75rem icon is a stop on the rail, centred on it, halfway down a gap of
     `--chapter` 4.5rem.
   - ⚠️ **Each tile draws its own stretch**, because a tile paints over everything the tile
-    above it draws: `-out` from its initial to its bottom edge, `-in` from the tile above,
-    across the gap, to its initial. The gap is the lower tile's - drawn by the upper one it
+    above it draws: `-out` from its logo to its bottom edge, `-in` from the tile above,
+    across the gap, to its logo. The gap is the lower tile's - drawn by the upper one it
     hung into empty space until the lower tile came in.
   - **One front, with nothing measured.** Every stretch fills on its own
     `view(50% 50%)` timeline, which shrinks the viewport to one line across the middle of
@@ -2403,11 +2408,11 @@ row still fills its columns.
     other tiles, which were in place before anyone looked at them - and the rail does not
     slide with them: `rail-hold` undoes the tile's translate on the tile's own `--role`
     timeline, so the line stays put and the tile comes in under it.
-  - At rest, or without scroll-driven animation, the rail is whole and every initial it
+  - At rest, or without scroll-driven animation, the rail is whole and every logo it
     reaches is lit.
   - **The degrees are the rail's second chapter**, not a section of their own: under an
     "Education" caption on the rail, in a wider gap (`--chapter`), each with the school's
-    crest at the initial's size and place, lit with an outline as the rail reaches it, and
+    crest at the logo's size and place, lit with an outline as the rail reaches it, and
     its thesis where a role has its points - a recessed tile, the whole of it a link to the
     project, with the label ("Master's thesis"), the project's title and its tagline.
     Which project each thesis was is `thesis` on the degree in site.ts. On a phone the
@@ -2649,6 +2654,8 @@ each its own box at its own line height, so what is measured is what is drawn.
 
 ## Changelog
 
+- 2026-10-30 - each role on the Experience rail shows its company's logo in place of its
+  initial, ringed outside the artwork as the crest is (§10).
 - 2026-10-08 - a deck card comes to the front on keyboard focus alone, so a card whose
   source link was clicked no longer stays over the cards in front of it (§10).
 - 2026-10-08 - a project split across repositories links each service by name, in its
