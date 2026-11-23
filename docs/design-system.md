@@ -410,9 +410,6 @@ layout shift on every frame it runs. Everything that moves on this site moves by
 `translate`, `scale`, `rotate`, `clip-path`, colour or opacity, and the pages measure a CLS
 of 0 on load at 1440 and 390.
 
-The footer's name uses the same method: `12.3cqi` of the shell, because "Vuk Cvetković" at
-125% and weight 800 measures 8.06 times its font size.
-
 ⚠️ **Titles hyphenate.** `.page-title` and `.sec-label` carry `hyphens: auto` and
 `overflow-wrap: break-word`, because German compounds at display size overhang a phone.
 The request diagram is the exception: in its wide arrangement every title word fits its
@@ -508,11 +505,6 @@ so the tightest reveal on the site has well over 500px of runway (it had 159 whe
 was one line). Ranges end by `cover 300px` for the traces and `cover 290px` for the reveals. To check a
 candidate, scroll a page to the bottom and read `getComputedStyle` on the last `.reveal`:
 `opacity` below 1 or a `translate` that is not `none` is the bug.
-
-⚠️ **The footer's own name is the exception.** It is flush with the page's bottom edge, so
-its whole runway is its own height - 40px on a phone. It reveals on `entry 0% entry 100%`,
-which ends exactly when the name is fully on screen, which is the bottom of the scroll. A
-`cover` range there parks it half risen.
 
 ### The trace, the statement and the deck
 
@@ -2563,10 +2555,10 @@ every page but the homepage it opens on **the ask**, `.foot-call`: Contact's int
 size with Contact me beside it (`call`, passed by [Base.astro](../src/layouts/Base.astro) as
 "not the homepage", where Contact itself is the section right above and says the same).
 Then the way back to every section, project and game - a link slides towards where it goes
-behind a trace that draws in ahead of it - the channels, the languages, and the name as
-wide as the page rising out of its floor, the accent sweeping across it once as it arrives
-(a `background-clip: text` gradient moved by `word-sweep`, the letters' fill transparent
-only where the clip is supported).
+behind a trace that draws in ahead of it - the channels, and the languages as the last
+line of the page. From 64rem that line keeps clear of the floating Back to top, which would
+otherwise sit on the last language at the bottom of the scroll wherever the gutter is too
+narrow to hold it.
 
 ### The games index and the game pages
 
@@ -2658,6 +2650,8 @@ each its own box at its own line height, so what is measured is what is drawn.
 
 ## Changelog
 
+- 2026-11-23 - the footer ends on the copyright and the languages: the name set as wide as
+  the page, and the accent's sweep across it, are gone (§5, §10).
 - 2026-10-30 - the PhD heads the degrees on the Experience rail, its tile the head alone until
   it has a thesis, its period running as the current role's does, and the About tile names it (§10).
 - 2026-10-30 - each role on the Experience rail shows its company's logo in place of its

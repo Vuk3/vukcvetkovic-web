@@ -1713,10 +1713,9 @@
   /*
    * The last scene of every page, on the ink: on every page but the homepage
    * it opens with the ask - the line from Contact at display size and the way
-   * to answer it - then the way back to every section, project and game, the
-   * languages, and the name set as wide as the page, rising out of its floor.
-   * On the homepage Contact is the section right above it and says the same,
-   * so the footer starts at its lists.
+   * to answer it - then the way back to every section, project and game, and
+   * the languages. On the homepage Contact is the section right above it and
+   * says the same, so the footer starts at its lists.
    *
    * Where a panelled section sits directly above it - Contact, a takeaway, a
    * game's build notes - the two share a ground and only the hairline between
@@ -1833,7 +1832,7 @@
     scale: 1 1;
   }
 
-  /* The copyright and the languages, above the name. */
+  /* The copyright and the languages, the last line of every page. */
   .foot-base {
     display: flex;
     flex-wrap: wrap;
@@ -1842,10 +1841,24 @@
     gap: 1rem 2rem;
     margin-top: clamp(2.5rem, 5vw, 4rem);
     border-top: 1px solid var(--site-hairline);
-    padding-top: 1.25rem;
+    padding-block: 1.25rem 2.5rem;
     font-size: 0.9375rem;
     color: var(--site-muted);
     font-variant-numeric: tabular-nums;
+  }
+
+  /*
+   * Where Back to top floats, the languages end at the right edge right under
+   * it: below about 90rem the gutter is too narrow to hold the button, and at
+   * the bottom of the scroll it would sit on the last language. The line
+   * clears it - the button's own `bottom`, its 3.05rem of padding and icon
+   * plus a border, and 1.25rem of air (measured: the button's top 79px above
+   * the screen's edge, the languages' 99px, at 1280).
+   */
+  @media (min-width: 64rem) {
+    .foot-base {
+      padding-bottom: calc(clamp(0.9rem, 2.5vw, 1.75rem) + 4.5rem);
+    }
   }
 
   .foot-langs {
@@ -1938,59 +1951,6 @@
 
     .foot-base {
       margin-top: 2rem;
-    }
-  }
-
-  /*
-   * The name, as wide as the page, rising out of its floor.
-   *
-   * Sized in `cqi` against the shell so it spans the measure exactly at every
-   * width - "Vuk Cvetković" at this stretch, weight and tracking is 8.06 times
-   * its font size wide, so 12.3cqi leaves it a hair inside - and pulled down by
-   * its own descender space so the baseline sits on the page's last pixel.
-   * Decorative: the name is the brand at the top of every page, so this copy
-   * is hidden from assistive technology.
-   *
-   * The ink it is set in is a trace of the page's own text, and the accent
-   * sweeps across it once as it arrives - a request reaching the end of the
-   * line.
-   */
-  .foot-word-wrap {
-    container-type: inline-size;
-    margin-top: clamp(1.5rem, 3vw, 2.5rem);
-  }
-
-  .foot-word {
-    display: block;
-    font-stretch: 125%;
-    font-weight: 800;
-    font-size: 12.3cqi;
-    line-height: 0.74;
-    letter-spacing: -0.055em;
-    white-space: nowrap;
-    --word-ink: color-mix(in oklab, var(--site-fg) 10%, var(--site-bg));
-
-    color: var(--word-ink);
-    margin-bottom: -0.02em;
-    user-select: none;
-  }
-
-  /* The letters are painted by the background, so the sweep can cross them:
-     the ink either side of a band of the accent, parked off the right edge at
-     rest. Only where the clip is supported - elsewhere the colour above. */
-  @supports (background-clip: text) or (-webkit-background-clip: text) {
-    .foot-word {
-      background-image: linear-gradient(
-        100deg,
-        var(--word-ink) 42%,
-        color-mix(in oklab, var(--site-accent) 60%, var(--site-bg)) 50%,
-        var(--word-ink) 58%
-      );
-      background-size: 260% 100%;
-      background-position: 100% 0;
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
     }
   }
 
@@ -2206,17 +2166,6 @@
   }
 }
 
-/* The footer's name: the accent's sweep crossing it once, left to right. */
-@keyframes word-sweep {
-  from {
-    background-position: 100% 0;
-  }
-
-  to {
-    background-position: 0% 0;
-  }
-}
-
 /*
  * Scroll-driven rather than timed, because everything below the hero is below
  * the fold: a block rises as it arrives and the position in the scroll drives
@@ -2274,20 +2223,6 @@
 
     .reveal-item:nth-child(n + 4) {
       animation-range: cover 80px cover 290px;
-    }
-
-    /*
-     * ⚠️ The footer's name is the one element with no page under it: it is
-     * flush with the bottom edge, so its whole runway is its own height - 40px
-     * on a phone. `entry` is measured in that height and ends exactly when the
-     * name is fully on screen, which is the bottom of the scroll.
-     */
-    .foot-word.reveal {
-      animation-name: rise-scale, word-sweep;
-      animation-timing-function: var(--site-ease-out), var(--site-ease);
-      animation-range:
-        entry 0% entry 100%,
-        entry 0% entry 100%;
     }
 
     /* A section title rises into its mask as it arrives. */
